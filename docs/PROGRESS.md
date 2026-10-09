@@ -11,7 +11,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - S2 done (2026-10-09): `.rhp` with `ProgramDiagram` (panel ①–⑧), `ProgramDiagramLevels` (level preview), `ProgramDiagramPickSection`.
   Test build: `dist/ProgramDiagram-0.1.0.zip` (rhp + PD.Core + NTS); rebuild with `tools/package.sh`. ⑦ Export writes only areas.csv + settings.json until S3.
 - S1 done: Core pipeline `Analyzer.Run` (roles → localize → masses → levels → span/overlap → issues). 29 tests green: T1 12/12, T2 5+2, T3 (11 levels, 3 outliers flagged), T4 areas add up.
-- Env: .NET 8 SDK via `apt-get install dotnet-sdk-8.0` (dot.net blocked); `pip install rhino3dm`; tests use `RollForward=Major`.
+- Env: `apt-get install dotnet-sdk-8.0` (dot.net blocked), `pip install rhino3dm`; tests `RollForward=Major`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → keep as tall space (area counted on base level, upper = open-to-below); else split.
@@ -38,5 +38,4 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 8. Optional: drag the `.yak` into Rhino (VERIFY-WIN that Rhino 8 installs it).
 
 ## Known issues
-- Section-closed volume is approximate (mid-height area × height); only affects overlap priority.
-- Underground context trimming (PRD 3.5) and overlap-by-layer-priority rule not implemented yet (S3/S4 drawing stage).
+- Section-closed volume ≈ mid area × height (overlap priority only). Underground context trimming (PRD 3.5) and overlap-by-layer-priority rule not implemented yet (S3/S4 drawing stage).
