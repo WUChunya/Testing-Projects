@@ -1,6 +1,10 @@
+using System.Diagnostics;
 using Eto.Forms;
-using PD.Core.Analysis;
+using Rhino;
+using PD.Core.Drawing;
+using PD.Core.Writers;
 using PD.Rhino.Adapter;
+using PD.Rhino.Output;
 
 namespace PD.Rhino.UI.Tabs;
 
@@ -16,6 +20,7 @@ internal sealed class OutputTab : TabBase
     readonly DropDown _artboard = new();
     readonly StackLayout _drawings = new() { Orientation = Orientation.Vertical, Spacing = 2 };
     readonly Button _export;
+    readonly CheckBox _launch = new() { Text = "导出后自动在 Illustrator 中生成 .ai", Checked = true };
     readonly Label _status = new();
     bool _loading;
 
@@ -42,7 +47,8 @@ internal sealed class OutputTab : TabBase
         layout.AddRow(new Label { Text = "比例" }, _scale);
         layout.AddRow(new Label { Text = "画板" }, _artboard);
         layout.AddRow(new Label { Text = "输出哪些图" }, _drawings);
-        layout.AddSeparateRow(_export, null);
+        layout.Add(_launch);
+        layout.AddSeparateRow(_export, Ui.Button("打开文件夹", OpenFolder), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "output"));
         layout.Add(null);
@@ -98,16 +104,55 @@ internal sealed class OutputTab : TabBase
         Store();
     }
 
-    /// <summary>S2: writes the area table and settings; Illustrator drawings arrive in S3.</summary>
+    /// <summary>Re-analyses (so the export never uses stale results), writes the folder, then runs the JSX in Illustrator.</summary>
     void Export()
     {
         Store();
-        var r = Session.Result;
-        if (r == null) return;
+        if (!Session.Analyze() || Session.Result == null)
+        {
+            MessageBox.Show(this, $"分析失败：{Session.LastError}", MessageBoxType.Error);
+            return;
+        }
+        ExportResult res;
+        try
+        {
+            res = Exporter.Write(new ExportContext
+            {
+                Result = Session.Result, Settings = Session.Settings, Programs = Session.Programs, Rules = Session.Rules,
+            }, Session.Settings.Output.Folder);
+        }
+        catch (Exception ex)
+        {
+            RhinoApp.WriteLine($"Program Diagram: export failed: {ex}");
+            MessageBox.Show(this, $"导出失败：{ex.Message}", MessageBoxType.Error);
+            return;
+        }
+        var notes = res.Notes.Count == 0 ? "" : "\n\n" + string.Join("\n", res.Notes);
+        if (_launch.Checked != true || !IllustratorLauncher.IsInstalled())
+        {
+            MessageBox.Show(this, $"已写出到：\n{res.Folder}\n\n在 Illustrator 中运行 文件 > 脚本 > 其他脚本… 选择 ProgramDiagram.jsx 生成 .ai。{notes}", MessageBoxType.Information);
+            return;
+        }
+        _status.Text = "Illustrator 正在生成 .ai …";
+        RhinoApp.WriteLine("Program Diagram: running ProgramDiagram.jsx in Illustrator…");
+        Task.Run(() =>
+        {
+            var error = IllustratorLauncher.Run(res.JsxPath);
+            var log = Path.Combine(res.Folder, "illustrator_log.txt");
+            var summary = File.Exists(log) ? File.ReadAllText(log) : "(no illustrator_log.txt)";
+            Application.Instance.AsyncInvoke(() =>
+            {
+                _status.Text = error == null ? "Illustrator 完成。" : "Illustrator 出错。";
+                MessageBox.Show(this, error == null
+                    ? $"完成：\n{summary}\n文件夹：{res.Folder}{notes}"
+                    : $"Illustrator 未能运行脚本：{error}\n可手动运行 {res.JsxPath}", error == null ? MessageBoxType.Information : MessageBoxType.Warning);
+            });
+        });
+    }
+
+    void OpenFolder()
+    {
         var dir = Session.Settings.Output.Folder;
-        Directory.CreateDirectory(dir);
-        File.WriteAllText(Path.Combine(dir, "areas.csv"), Reports.AreaCsv(r, Session.ProgramLabel));
-        File.WriteAllText(Path.Combine(dir, "settings.json"), Session.Settings.ToJson());
-        MessageBox.Show(this, $"已写出 areas.csv 和 settings.json 到：\n{dir}\n\nIllustrator 图纸将在 S3 加入。", MessageBoxType.Information);
+        if (Directory.Exists(dir)) Process.Start(new ProcessStartInfo(dir) { UseShellExecute = true });
     }
 }

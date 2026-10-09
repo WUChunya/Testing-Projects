@@ -58,7 +58,7 @@ internal sealed class CleanupTab : TabBase
     {
         if (r.Span == null || r.Span.LevelIndices.Length < 2) return;
         Session.Settings.SpanModes[r.M.Id] = Enum.Parse<SpanMode>(v);
-        Session.Save();
+        Application.Instance.AsyncInvoke(Analyze);
     }
 
     static string Status(MassStatus s) => s switch

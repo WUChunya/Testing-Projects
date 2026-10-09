@@ -1,4 +1,206 @@
-// Program Diagram — Illustrator runtime (ExtendScript). Filled in at S3.
-// The generated script embeds a Drawing JSON and calls PD.draw(drawing).
+// Program Diagram — Illustrator runtime (ExtendScript, ES3).
+// PD.run(drawings, {outDir}) creates or updates one .ai per drawing:
+//  - global process swatches (updated in place, so recolouring a swatch recolours the drawing),
+//  - paragraph styles, artboards, named layers,
+//  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
+// Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.1.0";
+PD.version = "0.2.0";
+
+PD.run = function (drawings, opts) {
+    var log = [];
+    var oldLevel = app.userInteractionLevel;
+    app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
+    var oldCoords = app.coordinateSystem;
+    app.coordinateSystem = CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
+    for (var i = 0; i < drawings.length; i++) {
+        try {
+            PD.drawFile(drawings[i], opts);
+            log.push("OK " + drawings[i].fileName);
+        } catch (e) {
+            log.push("ERROR " + drawings[i].fileName + ": " + e + (e.line ? " (line " + e.line + ")" : ""));
+        }
+    }
+    app.coordinateSystem = oldCoords;
+    app.userInteractionLevel = oldLevel;
+    PD.writeLog(opts.outDir + "/illustrator_log.txt", log);
+    return log.join("\n");
+};
+
+PD.writeLog = function (path, lines) {
+    var f = new File(path);
+    f.encoding = "UTF-8";
+    if (f.open("w")) {
+        for (var i = 0; i < lines.length; i++) f.writeln(lines[i]);
+        f.close();
+    }
+};
+
+PD.drawFile = function (dw, opts) {
+    var file = new File(opts.outDir + "/" + dw.fileName);
+    var doc = file.exists ? app.open(file)
+        : app.documents.add(DocumentColorSpace.RGB, dw.artboards[0].w, dw.artboards[0].h);
+    PD.setupArtboards(doc, dw.artboards);
+    var sw = {};
+    for (var s = 0; s < dw.swatches.length; s++) sw[dw.swatches[s].name] = PD.swatch(doc, dw.swatches[s].name, dw.swatches[s].hex);
+    var ps = {};
+    for (var p = 0; p < dw.paraStyles.length; p++) ps[dw.paraStyles[p].name] = PD.paraStyle(doc, dw.paraStyles[p], sw);
+
+    var rects = [];
+    for (var a = 0; a < doc.artboards.length; a++) rects.push(doc.artboards[a].artboardRect);
+
+    for (var l = 0; l < dw.layers.length; l++) {
+        var spec = dw.layers[l];
+        var layer = PD.layer(doc, spec.name);
+        var wasLocked = layer.locked, wasVisible = layer.visible;
+        layer.locked = false;
+        layer.visible = true;
+        PD.clearNamed(layer);
+        for (var k = 0; k < spec.items.length; k++) {
+            var it = spec.items[k];
+            try {
+                PD.drawItem(layer, it, rects[it.artboard || 0], sw, ps);
+            } catch (e) {
+                throw new Error("item " + it.name + ": " + e);
+            }
+        }
+        layer.zOrder(ZOrderMethod.BRINGTOFRONT);
+        layer.locked = wasLocked;
+        layer.visible = wasVisible;
+    }
+    // Protected layers: created empty if missing, kept on top, never cleared.
+    for (var q = 0; q < dw.protectedLayers.length; q++) PD.layer(doc, dw.protectedLayers[q]).zOrder(ZOrderMethod.BRINGTOFRONT);
+    PD.removeDefaultLayer(doc, dw);
+
+    doc.saveAs(file, new IllustratorSaveOptions());
+    doc.close(SaveOptions.DONOTSAVECHANGES);
+};
+
+PD.setupArtboards = function (doc, abs) {
+    for (var i = 0; i < abs.length; i++) {
+        var w = abs[i].w, h = abs[i].h, ab;
+        if (i < doc.artboards.length) {
+            ab = doc.artboards[i];
+            var r = ab.artboardRect;
+            ab.artboardRect = [r[0], r[1], r[0] + w, r[1] - h];
+        } else {
+            var prev = doc.artboards[i - 1].artboardRect;
+            ab = doc.artboards.add([prev[2] + 72, prev[1], prev[2] + 72 + w, prev[1] - h]);
+        }
+        ab.name = abs[i].name;
+    }
+};
+
+PD.layer = function (doc, name) {
+    try { return doc.layers.getByName(name); } catch (e) { }
+    var l = doc.layers.add();
+    l.name = name;
+    return l;
+};
+
+// A fresh document starts with "Layer 1"; drop it when it is empty and not one of ours.
+PD.removeDefaultLayer = function (doc, dw) {
+    for (var i = doc.layers.length - 1; i >= 0; i--) {
+        var l = doc.layers[i];
+        if (l.name === "Layer 1" && l.pageItems.length === 0 && doc.layers.length > 1) l.remove();
+    }
+};
+
+// Removes items the plugin drew last time (they all carry a name); unnamed user items stay.
+PD.clearNamed = function (layer) {
+    for (var i = layer.pageItems.length - 1; i >= 0; i--) {
+        var it = layer.pageItems[i];
+        if (it.name && it.name.length > 0) {
+            it.locked = false;
+            it.remove();
+        }
+    }
+};
+
+PD.hexToRgb = function (hex) {
+    var c = new RGBColor();
+    c.red = parseInt(hex.substr(1, 2), 16);
+    c.green = parseInt(hex.substr(3, 2), 16);
+    c.blue = parseInt(hex.substr(5, 2), 16);
+    return c;
+};
+
+// Global process swatch: an existing one with the same name is recoloured in place.
+PD.swatch = function (doc, name, hex) {
+    var spot = null;
+    try { spot = doc.spots.getByName(name); } catch (e) { spot = null; }
+    if (spot === null) {
+        spot = doc.spots.add();
+        spot.name = name;
+        spot.colorType = ColorModel.PROCESS;
+    }
+    spot.color = PD.hexToRgb(hex);
+    var sc = new SpotColor();
+    sc.spot = spot;
+    sc.tint = 100;
+    return sc;
+};
+
+PD.paraStyle = function (doc, st, sw) {
+    var ps = null;
+    try { ps = doc.paragraphStyles.getByName(st.name); } catch (e) { ps = doc.paragraphStyles.add(st.name); }
+    var ca = ps.characterAttributes;
+    ca.size = st.sizePt;
+    try { ca.textFont = app.textFonts.getByName(st.font); } catch (e1) {
+        try { ca.textFont = app.textFonts.getByName(st.fallbackFont); } catch (e2) { }
+    }
+    ca.capitalization = st.allCaps ? FontCapsOption.ALLCAPS : FontCapsOption.NORMALCAPS;
+    if (sw[st.color]) ca.fillColor = sw[st.color];
+    ps.paragraphAttributes.justification = st.align === "center" ? Justification.CENTER
+        : st.align === "right" ? Justification.RIGHT : Justification.LEFT;
+    return ps;
+};
+
+PD.pt = function (rect, x, y) { return [rect[0] + x, rect[1] - y]; };
+
+PD.style = function (item, it, sw) {
+    item.filled = !!(it.fill && sw[it.fill]);
+    if (item.filled) item.fillColor = sw[it.fill];
+    item.stroked = !!(it.stroke && sw[it.stroke] && it.strokePt > 0);
+    if (item.stroked) {
+        item.strokeColor = sw[it.stroke];
+        item.strokeWidth = it.strokePt;
+        item.strokeDashes = it.dash ? it.dash : [];
+    }
+};
+
+PD.drawItem = function (layer, it, rect, sw, ps) {
+    var item;
+    if (it.kind === "Path") {
+        if (!it.paths || it.paths.length === 0) return;
+        if (it.paths.length === 1) {
+            item = PD.pathItem(layer.pathItems, it.paths[0], it.closed, rect);
+            PD.style(item, it, sw);
+        } else {
+            item = layer.compoundPathItems.add();
+            for (var i = 0; i < it.paths.length; i++) PD.style(PD.pathItem(item.pathItems, it.paths[i], it.closed, rect), it, sw);
+        }
+    } else if (it.kind === "RoundRect") {
+        var tl = PD.pt(rect, it.x, it.y);
+        item = layer.pathItems.roundedRectangle(tl[1], tl[0], it.w, it.h, it.r, it.r);
+        PD.style(item, it, sw);
+    } else if (it.kind === "Text") {
+        item = layer.textFrames.pointText(PD.pt(rect, it.x, it.y));
+        item.contents = it.text.replace(/\n/g, "\r");
+        if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(item.textRange, true);
+        if (it.rotation) item.rotate(it.rotation); // VERIFY-WIN: rotates about the frame centre
+    } else {
+        return;
+    }
+    if (it.opacity !== undefined && it.opacity < 1) item.opacity = it.opacity * 100;
+    item.name = it.name;
+};
+
+PD.pathItem = function (collection, pts, closed, rect) {
+    var p = collection.add();
+    var arr = [];
+    for (var i = 0; i < pts.length; i++) arr.push(PD.pt(rect, pts[i][0], pts[i][1]));
+    p.setEntirePath(arr);
+    p.closed = closed;
+    return p;
+};

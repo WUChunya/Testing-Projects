@@ -59,6 +59,29 @@
       "A1 Landscape"
     ],
     "defaultArtboard": "11x17 Landscape",
-    "sectionDepthFt": 100.0
+    "sectionDepthFt": 100.0,
+    "artboardSizesPt": {
+      "11x17 Landscape": [
+        1224,
+        792
+      ],
+      "8.5x11 Landscape": [
+        792,
+        612
+      ],
+      "24x36 Landscape": [
+        2592,
+        1728
+      ],
+      "A3 Landscape": [
+        1190.55,
+        841.89
+      ],
+      "A1 Landscape": [
+        2383.94,
+        1683.78
+      ]
+    },
+    "illustratorTimeoutMin": 10
   }
 }

@@ -149,4 +149,19 @@ public class S1GeometryTests
         Assert.Equal(feet, v, 6);
         if (text.Contains('\'')) Assert.Equal(text, FeetInches.Format(feet));
     }
+
+    [Fact]
+    public void SpanOverride_SingleKeepsBaseLevelOnly()
+    {
+        var tall = R.Spans.First(s => s.LevelIndices.Length == 2);
+        var r = Analyzer.Run(new AnalysisInput
+        {
+            Model = PD.Core.IO.FixtureReader.Load(FixtureSmokeTests.FixturePath("template.json")),
+            SpanOverrides = new Dictionary<string, SpanMode> { [tall.MassId] = SpanMode.Single },
+        });
+        var span = r.Spans.Single(s => s.MassId == tall.MassId);
+        Assert.Equal(SpanMode.Single, span.Mode);
+        Assert.Single(span.LevelIndices);
+        Assert.Equal(1, r.Plans.Sum(p => p.Footprints.Count(f => f.Mass.Id == tall.MassId)));
+    }
 }

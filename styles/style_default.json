@@ -118,21 +118,50 @@
     "label": {
       "family": "Century Gothic",
       "sizePt": 7,
-      "allCaps": true
+      "allCaps": true,
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT"
     },
     "title": {
       "family": "Century Gothic",
       "sizePt": 14,
-      "allCaps": true
+      "allCaps": true,
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT"
     },
     "chart": {
       "family": "Helvetica",
       "fallback": "Arial",
-      "sizePt": 7
+      "sizePt": 7,
+      "postScript": "Helvetica",
+      "fallbackPostScript": "ArialMT"
     }
   },
   "facade": {
     "stackedAxonOpacity": 0.3,
     "explodedAxon": "hidden"
+  },
+  "section": {
+    "barInsetStoryFactor": 0.12,
+    "barCornerPt": 6.0,
+    "barGapPt": 1.5,
+    "slabFill": "#4D4D4D",
+    "noSlabLineOverhangFt": 2.0,
+    "noSlabLineGapPt": 1.0,
+    "groundBandDepthFt": 6.0,
+    "facadeCutPt": 0.5,
+    "facadeBeyond": "#CCCCCC",
+    "facadeBeyondPt": 0.25,
+    "levelColumn": true,
+    "levelLineStroke": "#999999",
+    "levelLineStrokePt": 0.25,
+    "heightDimension": true,
+    "titlePrefix": "SECTION"
+  },
+  "page": {
+    "marginPt": 36.0,
+    "titleGapPt": 18.0,
+    "labelColor": "#000000",
+    "labelMinBarWidthPt": 14.0
   }
 }

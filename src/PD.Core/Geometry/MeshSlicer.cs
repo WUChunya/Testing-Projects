@@ -14,7 +14,9 @@ public static class MeshSlicer
 
     /// <param name="closeOpen">Close chains that stay open with a straight segment (PRD 3.5 "按剖切线连接").</param>
     /// <param name="openChains">Number of chains that could not be closed within the gap tolerance.</param>
-    public static List<List<(double X, double Y)>> Slice(MeshData mesh, double z, double weldTol, double gapTol, bool closeOpen, out int openChains)
+    /// <param name="openOut">When given, receives the chains that stayed open (e.g. a cut through a single surface).</param>
+    public static List<List<(double X, double Y)>> Slice(MeshData mesh, double z, double weldTol, double gapTol, bool closeOpen, out int openChains,
+        List<List<(double X, double Y)>>? openOut = null)
     {
         var segs = new List<(V3 a, V3 b)>();
         var v = mesh.Vertices;
@@ -24,7 +26,7 @@ public static class MeshSlicer
             Cut(P(f[0]), P(f[1]), P(f[2]), z, segs);
             if (f.Length > 3) Cut(P(f[0]), P(f[2]), P(f[3]), z, segs);
         }
-        return Chain(segs, weldTol, gapTol, closeOpen, out openChains);
+        return Chain(segs, weldTol, gapTol, closeOpen, out openChains, openOut);
     }
 
     /// <summary>Slices and converts to an even-odd polygon (holes from nested loops). Empty when nothing closes.</summary>
@@ -65,7 +67,8 @@ public static class MeshSlicer
         pts.Add(p + (q - p) * t);
     }
 
-    static List<List<(double, double)>> Chain(List<(V3 a, V3 b)> segs, double weldTol, double gapTol, bool closeOpen, out int openChains)
+    static List<List<(double, double)>> Chain(List<(V3 a, V3 b)> segs, double weldTol, double gapTol, bool closeOpen, out int openChains,
+        List<List<(double, double)>>? openOut)
     {
         var welder = new PointWelder(weldTol);
         var adj = new Dictionary<int, List<int>>();
@@ -104,14 +107,14 @@ public static class MeshSlicer
         var open = new List<List<int>>();
         foreach (var c in chains)
             (c[0] == c[^1] ? loops : open).Add(c);
-        openChains = CloseGaps(open, loops, pts, gapTol, closeOpen);
+        openChains = CloseGaps(open, loops, pts, gapTol, closeOpen, openOut == null ? null : c => openOut.Add(c.Select(i => (pts[i].X, pts[i].Y)).ToList()));
 
         return loops.Where(l => l.Count >= 4)
             .Select(l => l.Take(l.Count - 1).Select(i => (pts[i].X, pts[i].Y)).ToList()).ToList();
     }
 
     /// <summary>Greedily joins open chains end-to-start (including to themselves) when the gap is within tolerance.</summary>
-    static int CloseGaps(List<List<int>> open, List<List<int>> loops, List<V3> pts, double gapTol, bool closeOpen)
+    static int CloseGaps(List<List<int>> open, List<List<int>> loops, List<V3> pts, double gapTol, bool closeOpen, Action<List<int>>? onOpen)
     {
         var stillOpen = 0;
         while (open.Count > 0)
@@ -134,6 +137,7 @@ public static class MeshSlicer
                 {
                     // Stays open: not a region (e.g. a single vertical sheet) unless forced closed.
                     stillOpen++;
+                    onOpen?.Invoke(c);
                     if (closeOpen && c.Count >= 3) { c.Add(c[0]); loops.Add(c); }
                     break;
                 }

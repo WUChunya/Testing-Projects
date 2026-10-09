@@ -6,6 +6,8 @@ using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 
 namespace PD.Core.Cleanup;
 
+/// <summary>Single: one level (for a multi-level mass the user forces its base level only). KeepTall: counted on the base
+/// level, upper levels drawn open-to-below. Split: counted on every level.</summary>
 public enum SpanMode { Single, KeepTall, Split }
 
 public sealed record SpanDecision(string MassId, int[] LevelIndices, SpanMode Mode, double Height, double StoryHeight);
@@ -49,7 +51,11 @@ public static class LevelAssignment
             var mode = occ.Length == 1 ? SpanMode.Single
                 : occ.Length <= r.SpanKeepTallMaxLevels && b.SizeZ <= r.SpanKeepTallMaxStoryFactor * story ? SpanMode.KeepTall
                 : SpanMode.Split;
-            if (occ.Length > 1 && overrides != null && overrides.TryGetValue(m.Id, out var o) && o != SpanMode.Single) mode = o;
+            if (occ.Length > 1 && overrides != null && overrides.TryGetValue(m.Id, out var o))
+            {
+                mode = o;
+                if (o == SpanMode.Single) occ = new[] { occ[0] }; // user: belongs to its base level only
+            }
             spans.Add(new SpanDecision(m.Id, occ, mode, b.SizeZ, story));
 
             foreach (var i in occ)

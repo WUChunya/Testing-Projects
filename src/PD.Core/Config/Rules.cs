@@ -68,4 +68,6 @@ public sealed class OutputRules
     public List<string> Artboards { get; set; } = new();
     public string DefaultArtboard { get; set; } = "";
     public double SectionDepthFt { get; set; }
+    public Dictionary<string, double[]> ArtboardSizesPt { get; set; } = new();
+    public double IllustratorTimeoutMin { get; set; }
 }

@@ -1,0 +1,164 @@
+using NetTopologySuite.Geometries;
+using PD.Core.Analysis;
+using PD.Core.Classification;
+using PD.Core.Cleanup;
+using PD.Core.Config;
+using PD.Core.Geometry;
+using PD.Core.Levels;
+using PD.Core.Model;
+using NtsGeometry = NetTopologySuite.Geometries.Geometry;
+
+namespace PD.Core.Sections;
+
+public sealed record CutBar(string MassId, string ProgramKey, double U0, double U1, double Z0, double Z1, double Story);
+
+public enum BeyondKind { Program, Building, Facade }
+
+public sealed record BeyondShape(string Id, BeyondKind Kind, NtsGeometry Geometry, string Label);
+
+/// <summary>Everything cut or seen by one section, in section feet (u along the line, z elevation).</summary>
+public sealed class SectionGeometry
+{
+    public required SectionPlane Plane { get; init; }
+    public List<CutBar> Bars { get; } = new();
+    public NtsGeometry Outline { get; set; } = MeshSlicer.Factory.CreatePolygon();
+    public List<NtsGeometry> Slabs { get; } = new();
+    /// <summary>Levels with no cut slab: double line from U0 to U1 at Z.</summary>
+    public List<(double U0, double U1, double Z)> NoSlabLines { get; } = new();
+    public List<(string Id, NtsGeometry Geometry)> BuildingCuts { get; } = new();
+    public List<BeyondShape> Beyond { get; } = new();
+    public List<List<(double X, double Y)>> FacadeCut { get; } = new();
+    public List<double> PropertyLines { get; } = new();
+    public List<Level> Levels { get; init; } = new();
+    public double Ground { get; init; }
+
+    public static SectionGeometry Build(AnalysisResult r, SectionPlane plane, double depthFt, Rules rules, Style style)
+    {
+        var c = rules.Cleanup;
+        var g = new SectionGeometry { Plane = plane, Levels = r.Levels, Ground = rules.Levels.GroundElevationFt };
+        var line = plane.PlanLine();
+        var spans = r.Spans.ToDictionary(s => s.MassId);
+
+        // Program bars from the resolved plan footprints (same overlap result as plans and areas).
+        for (var i = 0; i < r.Plans.Count; i++)
+        foreach (var f in r.Plans[i].Footprints.Where(f => !f.OpenToBelow))
+        {
+            var span = spans.GetValueOrDefault(f.Mass.Id);
+            var last = span is { Mode: SpanMode.KeepTall } ? span.LevelIndices[^1] : i;
+            var bandBot = r.Levels[i].Elevation;
+            var bandTop = Top(r, last);
+            var b = f.Mass.Source.BBox;
+            foreach (var (u0, u1) in Segments(f.Resolved.Intersection(line), plane))
+                g.Bars.Add(new CutBar(f.Mass.Id, f.Mass.ProgramKey, u0, u1, Math.Max(bandBot, b.MinZ), Math.Min(bandTop, b.MaxZ), Top(r, i) - bandBot));
+        }
+        g.Outline = g.Bars.Count == 0 ? g.Outline
+            : MeshSlicer.Factory.BuildGeometry(g.Bars.Select(x => Rect(x.U0, x.U1, x.Z0, x.Z1))).Union().Buffer(0.01).Buffer(-0.01);
+
+        var live = r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Mesh != null).ToList();
+        var facadeIds = r.FacadeIds.ToHashSet();
+        var massIds = r.Masses.Where(m => m.IsSolid).Select(m => m.Id).ToHashSet();
+
+        foreach (var o in live)
+        {
+            var (wMin, wMax) = WRange(o.Mesh!, plane);
+            var crosses = wMin < 0 && wMax > 0 && UOverlaps(o.Mesh!, plane);
+            var inFront = wMin >= 0 && wMin <= depthFt && UOverlaps(o.Mesh!, plane);
+            if (o.Role == Roles.Slab)
+            {
+                if (!crosses || o.BBox.SizeZ >= rules.Levels.SlabMaxThicknessFt) continue;
+                var slab = Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane);
+                if (!slab.IsEmpty) g.Slabs.Add(slab);
+            }
+            else if (facadeIds.Contains(o.Id))
+            {
+                if (crosses)
+                {
+                    var open = new List<List<(double X, double Y)>>();
+                    g.FacadeCut.AddRange(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open));
+                    g.FacadeCut.AddRange(open);
+                }
+                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Facade, Clip(BoxProjection(o, plane), plane), ""));
+            }
+            else if (o.Role == Roles.Building)
+            {
+                if (crosses) g.BuildingCuts.Add((o.Id, Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground)));
+                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Building, Clip(plane.Projection(o.Mesh!), plane, g.Ground), o.Name));
+            }
+            else if (massIds.Contains(o.Id) && !crosses && inFront)
+                g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Program, Clip(plane.Projection(o.Mesh!), plane), ""));
+        }
+
+        foreach (var o in r.Local.Objects.Where(o => o.Role == "BG.Line" && o.Points is { Length: > 1 }))
+        {
+            var pl = MeshSlicer.Factory.CreateLineString(o.Points!.Select(p => new Coordinate(p[0], p[1])).ToArray());
+            foreach (var pt in pl.Intersection(line).Coordinates) g.PropertyLines.Add(plane.U(pt.X, pt.Y));
+        }
+
+        // Levels the cut passes through without a slab get the generated double line.
+        var cutU = g.Outline.EnvelopeInternal;
+        if (!g.Outline.IsEmpty)
+            foreach (var l in r.Levels.Where(l => !l.IsMezzanine))
+                if (!g.Slabs.Any(s => Math.Abs(s.EnvelopeInternal.MaxY - l.Elevation) < rules.Levels.ClusterToleranceFt))
+                    g.NoSlabLines.Add((cutU.MinX - style.Section.NoSlabLineOverhangFt, cutU.MaxX + style.Section.NoSlabLineOverhangFt, l.Elevation));
+        return g;
+    }
+
+    /// <summary>Top of a level's band: next level, or for the top level the highest mass counted on it.</summary>
+    public static double Top(AnalysisResult r, int i)
+    {
+        if (i + 1 < r.Levels.Count) return r.Levels[i + 1].Elevation;
+        var tops = r.Plans[i].Footprints.Select(f => f.Mass.Source.BBox.MaxZ).ToList();
+        return tops.Count > 0 ? tops.Max() : r.Levels[i].Elevation + 12;
+    }
+
+    static IEnumerable<(double, double)> Segments(NtsGeometry g, SectionPlane p)
+    {
+        for (var i = 0; i < g.NumGeometries; i++)
+            if (g.GetGeometryN(i) is LineString ls && ls.Length > 0.05)
+            {
+                double a = p.U(ls.StartPoint.X, ls.StartPoint.Y), b = p.U(ls.EndPoint.X, ls.EndPoint.Y);
+                yield return (Math.Min(a, b), Math.Max(a, b));
+            }
+    }
+
+    public static Polygon Rect(double u0, double u1, double z0, double z1) => MeshSlicer.Factory.CreatePolygon(new[]
+    {
+        new Coordinate(u0, z0), new Coordinate(u1, z0), new Coordinate(u1, z1), new Coordinate(u0, z1), new Coordinate(u0, z0),
+    });
+
+    static NtsGeometry Polys(List<List<(double X, double Y)>> loops) => MeshSlicer.ToPolygon(loops);
+
+    /// <summary>Keeps geometry within the section line's extent (and above <paramref name="minZ"/>).</summary>
+    static NtsGeometry Clip(NtsGeometry g, SectionPlane p, double minZ = -1e6) =>
+        g.IsEmpty ? g : g.Intersection(Rect(0, p.Length, minZ, 1e6));
+
+    static (double, double) WRange(MeshData m, SectionPlane p)
+    {
+        double lo = double.MaxValue, hi = double.MinValue;
+        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
+        {
+            var w = p.W(m.Vertices[i], m.Vertices[i + 1]);
+            lo = Math.Min(lo, w); hi = Math.Max(hi, w);
+        }
+        return (lo, hi);
+    }
+
+    static bool UOverlaps(MeshData m, SectionPlane p)
+    {
+        double lo = double.MaxValue, hi = double.MinValue;
+        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
+        {
+            var u = p.U(m.Vertices[i], m.Vertices[i + 1]);
+            lo = Math.Min(lo, u); hi = Math.Max(hi, u);
+        }
+        return hi > 0 && lo < p.Length;
+    }
+
+    /// <summary>Facade panels: projected bounding rectangle is enough for the light grid lines.</summary>
+    static NtsGeometry BoxProjection(SourceObject o, SectionPlane p)
+    {
+        var b = o.BBox;
+        var us = new[] { p.U(b.MinX, b.MinY), p.U(b.MaxX, b.MinY), p.U(b.MinX, b.MaxY), p.U(b.MaxX, b.MaxY) };
+        return Rect(us.Min(), us.Max(), b.MinZ, b.MaxZ);
+    }
+}
