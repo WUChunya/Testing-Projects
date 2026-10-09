@@ -70,4 +70,7 @@ public sealed class OutputRules
     public double SectionDepthFt { get; set; }
     public Dictionary<string, double[]> ArtboardSizesPt { get; set; } = new();
     public double IllustratorTimeoutMin { get; set; }
+    public string ScaleHelp { get; set; } = "";
+    public bool ExportPng { get; set; }
+    public double PngScalePercent { get; set; }
 }

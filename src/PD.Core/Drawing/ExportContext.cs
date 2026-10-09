@@ -26,18 +26,26 @@ public sealed class ExportContext
 
     public string ProgramLabel(string key) => Program(key)?.Label ?? key;
 
+    /// <summary>Drawing scale; drawings are always at true scale (never fitted).</summary>
     public double PtPerFt => ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 2.25;
 
-    public (double W, double H) ArtboardSize =>
-        Rules.Output.ArtboardSizesPt.TryGetValue(Settings.Output.Artboard, out var s) ? (s[0], s[1])
-        : Rules.Output.ArtboardSizesPt.TryGetValue(Rules.Output.DefaultArtboard, out var d) ? (d[0], d[1])
-        : (1224, 792);
+    /// <summary>Fixed artboard size, or null for "Fit content" (artboard grows around the drawing).</summary>
+    public (double W, double H)? ArtboardSize =>
+        Rules.Output.ArtboardSizesPt.TryGetValue(Settings.Output.Artboard, out var s) ? (s[0], s[1]) : null;
 
-    /// <summary>"1/32\" = 1'-0\"" → 2.25 pt per foot; "1\" = 50'-0\"" → 1.44.</summary>
+    /// <summary>
+    /// Imperial "1/32\" = 1'-0\"" → 2.25 pt per foot, "1\" = 50'" → 1.44; metric ratio "1:200" → 4.32.
+    /// </summary>
     public static double? ParseScale(string? scale)
     {
         if (scale == null) return null;
-        var m = Regex.Match(scale, "^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*/\\s*(\\d+))?\\s*\"\\s*=\\s*(\\d+(?:\\.\\d+)?)\\s*'");
+        var ratio = Regex.Match(scale, "^\\s*1\\s*:\\s*(\\d+(?:\\.\\d+)?)\\s*$");
+        if (ratio.Success)
+        {
+            var n = double.Parse(ratio.Groups[1].Value, CultureInfo.InvariantCulture);
+            return n <= 0 ? null : 12.0 * 72.0 / n;
+        }
+        var m = Regex.Match(scale, "^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*/\\s*(\\d+))?\\s*(?:\"|in)\\s*=\\s*(\\d+(?:\\.\\d+)?)\\s*(?:'|ft)");
         if (!m.Success) return null;
         var inches = double.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
         if (m.Groups[2].Success) inches /= double.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture);
@@ -60,8 +68,10 @@ public sealed class ExportContext
     {
         var f = Style.Fonts;
         var color = d.Gray(Style.Page.LabelColor)!;
-        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, f.Label.SizePt, f.Label.AllCaps, "center", color));
-        d.ParaStyles.Add(new ParaStyle("PD Note", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, f.Label.SizePt, f.Label.AllCaps, "left", color));
-        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, f.Title.SizePt, f.Title.AllCaps, "left", color));
+        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, f.Label.SizePt, f.Label.AllCaps, "center", color, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, f.Note.SizePt, f.Note.AllCaps, "left", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, f.Note.SizePt, f.Note.AllCaps, "right", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Level", f.Level.PostScript, f.Level.FallbackPostScript, f.Level.Family, f.Level.SizePt, f.Level.AllCaps, "left", color, f.Level.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, f.Title.SizePt, f.Title.AllCaps, "left", color, f.Title.Weight));
     }
 }

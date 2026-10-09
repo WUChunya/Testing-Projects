@@ -40,6 +40,8 @@ public sealed class DItem
     public string Align { get; set; } = "left";
     /// <summary>Degrees counter-clockwise.</summary>
     public double Rotation { get; set; }
+    /// <summary>Text: (X,Y) is the visual centre of the glyphs (Illustrator measures outlined glyphs and moves the text there).</summary>
+    public bool Center { get; set; }
 }
 
 public sealed class DLayer
@@ -55,7 +57,9 @@ public sealed record Swatch(string Name, string Hex);
 /// <param name="Font">PostScript name for Illustrator.</param>
 /// <param name="Family">CSS family for the SVG preview.</param>
 /// <param name="Color">Swatch name.</param>
-public sealed record ParaStyle(string Name, string Font, string FallbackFont, string Family, double SizePt, bool AllCaps, string Align, string Color);
+/// <param name="Weight">CSS weight for the SVG preview.</param>
+public sealed record ParaStyle(string Name, string Font, string FallbackFont, string Family, double SizePt, bool AllCaps, string Align, string Color,
+    string Weight = "normal");
 
 /// <summary>A whole .ai file: artboards, layers (bottom → top), global swatches and paragraph styles.</summary>
 public sealed class Drawing

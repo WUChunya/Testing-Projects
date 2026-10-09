@@ -36,6 +36,9 @@ public class S3SectionTests
     [InlineData("1/32\" = 1'-0\"", 2.25)]
     [InlineData("1/16\" = 1'-0\"", 4.5)]
     [InlineData("1\" = 50'-0\"", 1.44)]
+    [InlineData("1\" = 40'", 1.8)]
+    [InlineData("3/64\" = 1'-0\"", 3.375)]
+    [InlineData("1:200", 4.32)]
     public void ParseScale(string text, double ptPerFt) => Assert.Equal(ptPerFt, ExportContext.ParseScale(text)!.Value, 6);
 
     [Fact]
@@ -50,13 +53,51 @@ public class S3SectionTests
         Assert.All(bars, b => Assert.StartsWith("PRG_", b.Fill));
         Assert.NotEmpty(d.Layer("PD_SLAB").Items);
         Assert.Single(d.Layer("PD_OUTLINE").Items, i => i.Name == "SEC_A_OUTLINE");
-        Assert.NotEmpty(d.Layer("PD_LABELS").Items);
+        Assert.All(d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_LBL") && !i.Name.Contains("CONTEXT")), t => Assert.True(t.Center));
         Assert.NotEmpty(d.Layer("FACADE").Items);
         Assert.Equal(d.Layers.SelectMany(l => l.Items).Count(), d.Layers.SelectMany(l => l.Items).Select(i => i.Name).Distinct().Count());
         // Every item inside the artboard.
         var ab = d.Artboards[0];
         foreach (var it in d.Layers.SelectMany(l => l.Items).Where(i => i.Paths != null))
             Assert.All(it.Paths!.SelectMany(p => p), q => { Assert.InRange(q[0], -1, ab.W + 1); Assert.InRange(q[1], -1, ab.H + 1); });
+    }
+
+    [Fact]
+    public void SectionA_TrueScaleVisualSlabsAndContextStyles()
+    {
+        var ctx = Context();
+        var d = SectionDrawing.Build(ctx, SectionA);
+        var st = ctx.Style.Section;
+        Assert.Equal(2.25, ctx.PtPerFt);
+        // Fit content: artboard = drawing at true scale + margins (never fitted).
+        Assert.Equal("Fit content", ctx.Settings.Output.Artboard);
+        // Slabs have the fixed visual weight; consecutive tower slabs are 12'-6" apart at true scale.
+        var slabs = d.Layer("PD_SLAB").Items.Select(i => (top: i.Paths![0][0][1], h: i.Paths[0][2][1] - i.Paths[0][0][1])).ToList();
+        Assert.All(slabs, s => Assert.Equal(st.SlabPt, s.h, 3));
+        var ys = slabs.Select(s => Math.Round(s.top, 2)).Distinct().OrderBy(y => y).ToList();
+        Assert.Contains(ys.Zip(ys.Skip(1), (a, b) => b - a), dy => Math.Abs(dy - 12.5 * 2.25) < 0.05);
+        // No slab runs through a block (tall spaces stay open; roof slabs only cap their own block).
+        foreach (var bar in d.Layer("PD_PROGRAM").Items)
+            Assert.DoesNotContain(d.Layer("PD_SLAB").Items, sl =>
+                sl.Paths![0][0][1] > bar.Y + 0.5 && sl.Paths[0][2][1] < bar.Y + bar.H - 0.5 &&
+                sl.Paths[0][0][0] < bar.X + bar.W - 0.5 && sl.Paths[0][1][0] > bar.X + 0.5);
+        // Bars clear the slab by half its weight plus the gap.
+        Assert.All(d.Layer("PD_PROGRAM").Items, b => Assert.True(b.H > 0));
+        // Other buildings: filled silhouettes; our own building behind the cut: faint lines, no fill.
+        Assert.All(d.Layer("PD_CONTEXT").Items, i => Assert.Equal("BG_CONTEXT", i.Fill));
+        Assert.All(d.Layer("PD_BEYOND").Items.Concat(d.Layer("FACADE").Items), i => Assert.Null(i.Fill));
+        _out.WriteLine($"artboard {d.Artboards[0].W}x{d.Artboards[0].H}, context {d.Layer("PD_CONTEXT").Items.Count}, beyond {d.Layer("PD_BEYOND").Items.Count}");
+    }
+
+    [Fact]
+    public void FixedSheet_KeepsScaleAndWarnsWhenTooSmall()
+    {
+        var ctx = Context();
+        ctx.Settings.Output.Artboard = "8.5x11 Landscape";
+        ctx.Settings.Output.Scale = "1/8\" = 1'-0\"";
+        var d = SectionDrawing.Build(ctx, SectionA);
+        Assert.Equal(792, d.Artboards[0].W);
+        Assert.Contains(d.Notes, n => n.Contains("larger than"));
     }
 
     [Fact]

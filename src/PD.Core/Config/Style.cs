@@ -51,12 +51,16 @@ public sealed class Font
     public string FallbackPostScript { get; set; } = "";
     public double SizePt { get; set; }
     public bool AllCaps { get; set; }
+    /// <summary>CSS weight for the SVG preview (Illustrator uses the PostScript name).</summary>
+    public string Weight { get; set; } = "normal";
 }
 
 public sealed class Fonts
 {
     public Font Label { get; set; } = new();
     public Font Title { get; set; } = new();
+    public Font Note { get; set; } = new();
+    public Font Level { get; set; } = new();
     public Font Chart { get; set; } = new();
 }
 
@@ -68,13 +72,25 @@ public sealed class FacadeStyle
 
 public sealed class SectionStyle
 {
-    public double BarInsetStoryFactor { get; set; }
+    /// <summary>Slabs are drawn at a fixed visual weight (not their real thickness).</summary>
+    public double SlabPt { get; set; }
+    public string SlabColor { get; set; } = "";
+    /// <summary>White space between a colour block and the slab above/below it.</summary>
+    public double BarSlabGapPt { get; set; }
     public double BarCornerPt { get; set; }
     public double BarGapPt { get; set; }
-    public string SlabFill { get; set; } = "";
-    public double NoSlabLineOverhangFt { get; set; }
-    public double NoSlabLineGapPt { get; set; }
-    public double GroundBandDepthFt { get; set; }
+    /// <summary>Exterior wall line of the cut building.</summary>
+    public double OutlinePt { get; set; }
+    /// <summary>Our own building seen behind the cut (uncut masses, facade grid): faint lines, no fill.</summary>
+    public string BeyondStroke { get; set; } = "";
+    public double BeyondStrokePt { get; set; }
+    /// <summary>Other buildings (BG.Building): light grey silhouette with a thin outline, trimmed at grade.</summary>
+    public string ContextFill { get; set; } = "";
+    public string ContextStroke { get; set; } = "";
+    public double ContextStrokePt { get; set; }
+    /// <summary>Ground line drawn at a fixed visual weight below grade.</summary>
+    public double GroundPt { get; set; }
+    public string GroundFill { get; set; } = "";
     public double FacadeCutPt { get; set; }
     public string FacadeBeyond { get; set; } = "";
     public double FacadeBeyondPt { get; set; }
@@ -88,6 +104,9 @@ public sealed class SectionStyle
 public sealed class PageStyle
 {
     public double MarginPt { get; set; }
+    public double LevelColumnPt { get; set; }
+    public double DimColumnPt { get; set; }
+    public double TitleBandPt { get; set; }
     public double TitleGapPt { get; set; }
     public string LabelColor { get; set; } = "";
     public double LabelMinBarWidthPt { get; set; }

@@ -16,7 +16,10 @@ internal sealed class OutputTab : TabBase
 
     readonly TextBox _folder = new();
     readonly TextBox _scheme = new();
-    readonly DropDown _scale = new();
+    /// <summary>Free text like Bluebeam (3/64" = 1'-0", 1" = 30', 1:250) with presets in the list.</summary>
+    readonly ComboBox _scale = new() { AutoComplete = true };
+    readonly Label _scaleInfo = new();
+    readonly CheckBox _png = new() { Text = "同时导出 PNG（每个画板一张）" };
     readonly DropDown _artboard = new();
     readonly StackLayout _drawings = new() { Orientation = Orientation.Vertical, Spacing = 2 };
     readonly Button _export;
@@ -37,17 +40,21 @@ internal sealed class OutputTab : TabBase
         }
         _folder.LostFocus += (_, _) => Store();
         _scheme.LostFocus += (_, _) => Store();
-        _scale.SelectedValueChanged += (_, _) => { if (!_loading) Store(); };
+        _scale.TextChanged += (_, _) => { if (!_loading) { ShowScale(); Store(); } };
+        _png.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _artboard.SelectedValueChanged += (_, _) => { if (!_loading) Store(); };
         _export = Ui.Button("导出 Export", Export);
 
         var layout = Ui.Layout();
         layout.AddRow(new Label { Text = "输出文件夹" }, _folder, Ui.Button("…", Browse));
         layout.AddRow(new Label { Text = "方案" }, _scheme);
-        layout.AddRow(new Label { Text = "比例" }, _scale);
+        layout.AddRow(new Label { Text = "比例（可直接输入）" }, _scale);
+        layout.AddRow(null, _scaleInfo);
         layout.AddRow(new Label { Text = "画板" }, _artboard);
+        layout.AddRow(null, new Label { Text = "图纸始终按真实比例；「Fit content」时画板随图面大小自动调整。" });
         layout.AddRow(new Label { Text = "输出哪些图" }, _drawings);
         layout.Add(_launch);
+        layout.Add(_png);
         layout.AddSeparateRow(_export, Ui.Button("打开文件夹", OpenFolder), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "output"));
@@ -74,7 +81,9 @@ internal sealed class OutputTab : TabBase
         if (string.IsNullOrEmpty(o.Folder)) o.Folder = DefaultFolder();
         _folder.Text = o.Folder;
         _scheme.Text = o.Scheme;
-        _scale.SelectedValue = o.Scale;
+        _scale.Text = o.Scale;
+        _png.Checked = o.ExportPng ?? Session.Rules.Output.ExportPng;
+        ShowScale();
         _artboard.SelectedValue = o.Artboard;
         foreach (var cb in _drawings.Items.Select(i => i.Control).OfType<CheckBox>())
             cb.Checked = o.Drawings!.Contains((string)cb.Tag);
@@ -90,10 +99,18 @@ internal sealed class OutputTab : TabBase
         var o = Session.Settings.Output;
         o.Folder = _folder.Text;
         o.Scheme = _scheme.Text;
-        o.Scale = _scale.SelectedValue as string ?? o.Scale;
+        if (ExportContext.ParseScale(_scale.Text) != null) o.Scale = _scale.Text.Trim();
+        o.ExportPng = _png.Checked == true;
         o.Artboard = _artboard.SelectedValue as string ?? o.Artboard;
         o.Drawings = _drawings.Items.Select(i => i.Control).OfType<CheckBox>().Where(c => c.Checked == true).Select(c => (string)c.Tag).ToList();
         Session.Save();
+    }
+
+    void ShowScale()
+    {
+        var k = ExportContext.ParseScale(_scale.Text);
+        _scaleInfo.Text = k == null ? $"无法识别的比例。{Session.Rules.Output.ScaleHelp}" : $"1 ft = {k:0.###} pt（1\" = {72 / k:0.##} ft）";
+        _scaleInfo.TextColor = k == null ? Eto.Drawing.Colors.Red : Eto.Drawing.Colors.Gray;
     }
 
     void Browse()

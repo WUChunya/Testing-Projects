@@ -44,21 +44,29 @@
       "Pie"
     ],
     "scales": [
+      "1/8\" = 1'-0\"",
+      "3/32\" = 1'-0\"",
       "1/16\" = 1'-0\"",
       "1/32\" = 1'-0\"",
       "1/64\" = 1'-0\"",
+      "1\" = 20'-0\"",
+      "1\" = 40'-0\"",
       "1\" = 50'-0\"",
-      "1\" = 100'-0\""
+      "1\" = 100'-0\"",
+      "1:100",
+      "1:200",
+      "1:500"
     ],
     "defaultScale": "1/32\" = 1'-0\"",
     "artboards": [
+      "Fit content",
       "11x17 Landscape",
       "8.5x11 Landscape",
       "24x36 Landscape",
       "A3 Landscape",
       "A1 Landscape"
     ],
-    "defaultArtboard": "11x17 Landscape",
+    "defaultArtboard": "Fit content",
     "sectionDepthFt": 100.0,
     "artboardSizesPt": {
       "11x17 Landscape": [
@@ -82,6 +90,9 @@
         1683.78
       ]
     },
-    "illustratorTimeoutMin": 10
+    "illustratorTimeoutMin": 10,
+    "scaleHelp": "Type any scale like Bluebeam: 3/64\" = 1'-0\", 1\" = 30', 1:250.",
+    "exportPng": true,
+    "pngScalePercent": 300
   }
 }

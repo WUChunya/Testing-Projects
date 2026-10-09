@@ -52,9 +52,11 @@ public static class SvgWriter
         var anchor = it.Align switch { "center" => "middle", "right" => "end", _ => "start" };
         var text = ps?.AllCaps == true ? it.Text!.ToUpperInvariant() : it.Text!;
         var rot = it.Rotation != 0 ? $" transform=\"rotate({F(-it.Rotation)} {F(it.X)} {F(it.Y)})\"" : "";
-        var sb = new StringBuilder($"<text id=\"{Esc(it.Name)}\" x=\"{F(it.X)}\" y=\"{F(it.Y)}\" font-family=\"{Esc(ps?.Family ?? "Arial")}, Arial, sans-serif\" " +
-            $"font-size=\"{F(size)}\" text-anchor=\"{anchor}\" fill=\"{paint(ps?.Color)}\"{rot}>");
         var lines = text.Split('\n');
+        // Centred labels: (X,Y) is the visual centre; cap height ≈ 0.7 × size.
+        var y = it.Center ? it.Y - (lines.Length - 1) * size * 1.2 / 2 + size * 0.35 : it.Y;
+        var sb = new StringBuilder($"<text id=\"{Esc(it.Name)}\" x=\"{F(it.X)}\" y=\"{F(y)}\" font-family=\"{Esc(ps?.Family ?? "Arial")}, Arial, sans-serif\" " +
+            $"font-weight=\"{ps?.Weight ?? "normal"}\" font-size=\"{F(size)}\" text-anchor=\"{anchor}\" fill=\"{paint(ps?.Color)}\"{rot}>");
         for (var i = 0; i < lines.Length; i++)
             sb.Append($"<tspan x=\"{F(it.X)}\" dy=\"{(i == 0 ? "0" : F(size * 1.2))}\">{Esc(lines[i])}</tspan>");
         return sb.Append("</text>\n").ToString();

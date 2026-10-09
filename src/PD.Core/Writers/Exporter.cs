@@ -48,7 +48,7 @@ public static class Exporter
             for (var a = 0; a < d.Artboards.Count; a++)
                 Save(Path.Combine(preview, Path.GetFileNameWithoutExtension(d.FileName) + (a > 0 ? $"_{a + 1}" : "") + ".svg"), SvgWriter.Write(d, a));
         var jsx = Path.Combine(folder, "ProgramDiagram.jsx");
-        Save(jsx, JsxWriter.Write(drawings, folder));
+        Save(jsx, JsxWriter.Write(drawings, folder, ctx.Settings.Output.ExportPng ?? ctx.Rules.Output.ExportPng, ctx.Rules.Output.PngScalePercent));
         Save(Path.Combine(folder, "diagram.json"), JsonSerializer.Serialize(new
         {
             generated = DateTime.Now.ToString("s"),

@@ -12,7 +12,8 @@ public static class SectionBars
         var count = new Dictionary<string, int>();
         foreach (var b in g.Bars.OrderBy(b => b.Z0).ThenBy(b => b.U0))
         {
-            var inset = st.BarInsetStoryFactor * b.Story * map.K;
+            // Clear of the visual slab (half its weight) plus the white gap, top and bottom.
+            var inset = st.SlabPt / 2 + st.BarSlabGapPt;
             var x0 = Math.Min(map.X(b.U0), map.X(b.U1)) + st.BarGapPt / 2;
             var x1 = Math.Max(map.X(b.U0), map.X(b.U1)) - st.BarGapPt / 2;
             var yTop = map.Y(b.Z1) + inset;
@@ -36,10 +37,8 @@ public static class SectionBars
             if (label.AllCaps) text = text.ToUpperInvariant();
             var wrapped = TextFit.Wrap(text, label.SizePt, w - 4, h - 2);
             if (wrapped == null) continue;
-            var th = TextFit.Height(wrapped, label.SizePt);
-            // Baseline of the first line so the block is vertically centred in the bar.
-            var y = yTop + (h - th) / 2 + label.SizePt * 0.95;
-            d.Layer("PD_LABELS").Items.Add(SectionDrawing.Text(name + "_LBL", x0 + w / 2, y, wrapped, "PD Label", "center"));
+            // Visual centre of the block: Illustrator re-centres on the outlined glyphs, the SVG estimates it.
+            d.Layer("PD_LABELS").Items.Add(SectionDrawing.Text(name + "_LBL", x0 + w / 2, yTop + h / 2, wrapped, "PD Label", "center", center: true));
         }
     }
 }

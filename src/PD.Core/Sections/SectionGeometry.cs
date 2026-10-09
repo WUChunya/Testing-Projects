@@ -22,9 +22,8 @@ public sealed class SectionGeometry
     public required SectionPlane Plane { get; init; }
     public List<CutBar> Bars { get; } = new();
     public NtsGeometry Outline { get; set; } = MeshSlicer.Factory.CreatePolygon();
-    public List<NtsGeometry> Slabs { get; } = new();
-    /// <summary>Levels with no cut slab: double line from U0 to U1 at Z.</summary>
-    public List<(double U0, double U1, double Z)> NoSlabLines { get; } = new();
+    /// <summary>Visual slabs (drawn at a fixed weight): every level and every roof/top edge of the cut, U0–U1 at Z.</summary>
+    public List<(double U0, double U1, double Z)> SlabLines { get; } = new();
     public List<(string Id, NtsGeometry Geometry)> BuildingCuts { get; } = new();
     public List<BeyondShape> Beyond { get; } = new();
     public List<List<(double X, double Y)>> FacadeCut { get; } = new();
@@ -63,13 +62,8 @@ public sealed class SectionGeometry
             var (wMin, wMax) = WRange(o.Mesh!, plane);
             var crosses = wMin < 0 && wMax > 0 && UOverlaps(o.Mesh!, plane);
             var inFront = wMin >= 0 && wMin <= depthFt && UOverlaps(o.Mesh!, plane);
-            if (o.Role == Roles.Slab)
-            {
-                if (!crosses || o.BBox.SizeZ >= rules.Levels.SlabMaxThicknessFt) continue;
-                var slab = Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane);
-                if (!slab.IsEmpty) g.Slabs.Add(slab);
-            }
-            else if (facadeIds.Contains(o.Id))
+            if (o.Role == Roles.Slab) continue; // slabs are drawn as visual lines from the cut outline
+            if (facadeIds.Contains(o.Id))
             {
                 if (crosses)
                 {
@@ -94,12 +88,27 @@ public sealed class SectionGeometry
             foreach (var pt in pl.Intersection(line).Coordinates) g.PropertyLines.Add(plane.U(pt.X, pt.Y));
         }
 
-        // Levels the cut passes through without a slab get the generated double line.
-        var cutU = g.Outline.EnvelopeInternal;
+        // Slab lines: every level across the cut, plus an exposed top or bottom of a block between levels (roof, setback),
+        // limited to that block so it never runs through a neighbouring program.
         if (!g.Outline.IsEmpty)
-            foreach (var l in r.Levels.Where(l => !l.IsMezzanine))
-                if (!g.Slabs.Any(s => Math.Abs(s.EnvelopeInternal.MaxY - l.Elevation) < rules.Levels.ClusterToleranceFt))
-                    g.NoSlabLines.Add((cutU.MinX - style.Section.NoSlabLineOverhangFt, cutU.MaxX + style.Section.NoSlabLineOverhangFt, l.Elevation));
+        {
+            foreach (var l in r.Levels)
+            {
+                // A tall space (one bar crossing this level) has no floor through it.
+                var open = g.Bars.Where(b => b.Z0 < l.Elevation - 0.1 && b.Z1 > l.Elevation + 0.1).Select(b => (b.U0, b.U1)).ToList();
+                foreach (var range in Merge(Across(g.Outline, l.Elevation + 0.05).Concat(Across(g.Outline, l.Elevation - 0.05))))
+                    foreach (var (u0, u1) in Subtract(range, open))
+                        g.SlabLines.Add((u0, u1, l.Elevation));
+            }
+            bool OnLevel(double z) => r.Levels.Any(l => Math.Abs(l.Elevation - z) < 0.1);
+            bool Inside(double u, double z) => g.Outline.Contains(MeshSlicer.Factory.CreatePoint(new Coordinate(u, z)));
+            foreach (var b in g.Bars)
+            {
+                var mid = (b.U0 + b.U1) / 2;
+                if (!OnLevel(b.Z1) && !Inside(mid, b.Z1 + 0.05)) g.SlabLines.Add((b.U0, b.U1, b.Z1));
+                if (!OnLevel(b.Z0) && !Inside(mid, b.Z0 - 0.05)) g.SlabLines.Add((b.U0, b.U1, b.Z0));
+            }
+        }
         return g;
     }
 
@@ -109,6 +118,39 @@ public sealed class SectionGeometry
         if (i + 1 < r.Levels.Count) return r.Levels[i + 1].Elevation;
         var tops = r.Plans[i].Footprints.Select(f => f.Mass.Source.BBox.MaxZ).ToList();
         return tops.Count > 0 ? tops.Max() : r.Levels[i].Elevation + 12;
+    }
+
+    /// <summary>u-ranges where a horizontal line at z lies inside the outline.</summary>
+    static IEnumerable<(double, double)> Across(NtsGeometry outline, double z)
+    {
+        var e = outline.EnvelopeInternal;
+        var h = MeshSlicer.Factory.CreateLineString(new[] { new Coordinate(e.MinX - 1, z), new Coordinate(e.MaxX + 1, z) });
+        var x = outline.Intersection(h);
+        for (var i = 0; i < x.NumGeometries; i++)
+            if (x.GetGeometryN(i) is LineString ls && ls.Length > 0.1)
+                yield return (Math.Min(ls.StartPoint.X, ls.EndPoint.X), Math.Max(ls.StartPoint.X, ls.EndPoint.X));
+    }
+
+    static IEnumerable<(double, double)> Subtract((double a, double b) range, List<(double a, double b)> holes)
+    {
+        var start = range.a;
+        foreach (var h in holes.Where(h => h.b > range.a && h.a < range.b).OrderBy(h => h.a))
+        {
+            if (h.a > start + 0.05) yield return (start, h.a);
+            start = Math.Max(start, h.b);
+        }
+        if (range.b > start + 0.05) yield return (start, range.b);
+    }
+
+    static List<(double, double)> Merge(IEnumerable<(double a, double b)> ranges)
+    {
+        var res = new List<(double, double)>();
+        foreach (var (a, b) in ranges.OrderBy(r => r.a))
+        {
+            if (res.Count > 0 && a <= res[^1].Item2 + 0.01) res[^1] = (res[^1].Item1, Math.Max(res[^1].Item2, b));
+            else res.Add((a, b));
+        }
+        return res;
     }
 
     static IEnumerable<(double, double)> Segments(NtsGeometry g, SectionPlane p)

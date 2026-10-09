@@ -8,7 +8,7 @@ namespace PD.Core.Sections;
 public static class SectionAnnotation
 {
     public static void Add(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p,
-        SectionSetting sec, double zMin, double zMax)
+        SectionSetting sec, double zMin, double zMax, double titleX, double titleY)
     {
         var anno = d.Layer("PD_ANNOTATION");
         var black = d.Gray("#000000");
@@ -35,14 +35,9 @@ public static class SectionAnnotation
             anno.Items.Add(SectionDrawing.Text(p + "DIM_HEIGHT_TXT", x - 4, (yTop + yBot) / 2, FeetInches.Format(env.MaxY - g.Ground), "PD Note", "center", 90));
         }
 
-        var m = ctx.Style.Page.MarginPt;
-        var (_, abH) = ctx.ArtboardSize;
-        anno.Items.Add(SectionDrawing.Text(p + "TITLE", m, abH - m - 12, $"{ctx.Style.Section.TitlePrefix} {sec.Name}", "PD Title", "left"));
-        anno.Items.Add(SectionDrawing.Text(p + "SCALE", m, abH - m, ScaleNote(ctx, map), "PD Note", "left"));
+        anno.Items.Add(SectionDrawing.Text(p + "TITLE", titleX, titleY, $"{ctx.Style.Section.TitlePrefix} {sec.Name}", "PD Title", "left"));
+        anno.Items.Add(SectionDrawing.Text(p + "SCALE", titleX, titleY + 12, $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
     }
-
-    static string ScaleNote(ExportContext ctx, PageMap map) =>
-        Math.Abs(map.K - ctx.PtPerFt) < 1e-6 ? $"SCALE {ctx.Settings.Output.Scale}" : "NOT TO SCALE (fitted to artboard)";
 
     static DItem Seg(string name, double x0, double y0, double x1, double y1, string? stroke, double pt) => new()
     {

@@ -7,6 +7,10 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - S3 done (v0.2.0): `Drawing` model → `SvgWriter` (preview) + `JsxWriter` (runtime + data literal) + `Exporter` (program_areas.csv, diagram.json,
   export_log.txt, `_preview/*.svg`, ProgramDiagram.jsx); `IllustratorLauncher` COM; Section A golden `tests/golden/section_A.svg`. 47 tests green.
   S3 gaps: key plan, street names, stair hatch (Circ-Vertical), basement pit, Unassigned hatch (solid grey for now).
+- Rev 3 (v0.2.1, user refs): true scale always (scale box accepts any Bluebeam-style text or 1:N), artboard "Fit content";
+  visual slabs (fixed 3 pt, never through a block or tall space), 2 pt white gap block↔slab, thin wall line, black ground band,
+  labels centred on outlined glyphs (bold caps), own building behind = faint lines, other buildings = grey silhouettes; optional PNG.
+  Style follows the 1st reference (no level column / height dim by default). 52 tests green.
 - Rev 2: span "Single" on a multi-level mass = base level only; span edits and Export re-analyse first (v0.1.1 exported stale results).
 - Rev 1 (v0.1.1): custom programs on ⑤, linked to ① layer combo and ④ per-object program (`ObjectPrograms`); no key → UNASSIGNED.
 - Windows runs (user): v0.1.0/0.1.1 install from a user folder; T1 ✓; T3 ✓ 11 levels; T4 ✓; Linux Core reproduces the user's areas.csv exactly.
@@ -20,10 +24,10 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable (ids `L03_KEY_01`, swatches `PRG_<KEY>`); custom aliases beat legend aliases.
 - Section bars come from the resolved plan footprints ∩ cut line (same overlap result as areas); outline = union of bar bands.
 - AI update rule: generated layers drop their *named* items and redraw; unnamed items, `_MANUAL`, `OVERLAY` untouched; swatches recoloured in place.
-- Item names: `SEC_<sec>_<stableId>`, `_LBL`, `SEC_<sec>_OUTLINE|SLAB_nn|BEYOND_nnn|LVL_<L>`.
+- Item names: `SEC_<sec>_<stableId>`, `_LBL`, `SEC_<sec>_OUTLINE|SLAB_<z>_<u>|BEYOND_nnn|CONTEXT_nnn|GROUND`.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.2.0.zip` to a user folder, replace old files, restart Rhino.
+1. Unzip `ProgramDiagram-0.2.1.zip` to a user folder, replace old files, restart Rhino.
 2. Open the test model; ⑥ keep section A; confirm all tabs; ⑦ Export (auto Illustrator ticked).
 3. Illustrator starts, writes `02_Section_A.ai`; message shows illustrator_log.txt "OK". VERIFY-WIN COM launch.
 4. Open the .ai: layers PD_GROUND…PD_ANNOTATION, FACADE, _MANUAL, OVERLAY; swatches PRG_LAB etc. are global; text uses "PD Label"
@@ -33,5 +37,6 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 7. Earlier checks (①–⑧, custom programs) as before.
 
 ## Known issues
-- Golden SVG title/scale text present in markup but not seen in the headless screenshot (preview only; verify in Illustrator).
+- Section depth 500 ft pulls a large context building in behind the whole cut; use a smaller depth if unwanted.
+- Not yet: street names under grade, building name above, key plan, trees (ref 1) — candidates for the next revision.
 - Section-closed volume ≈ mid area × height. Underground context trimmed in sections only. Layer-priority overlap rule not implemented.

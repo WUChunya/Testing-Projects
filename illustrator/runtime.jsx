@@ -1,11 +1,11 @@
 // Program Diagram — Illustrator runtime (ExtendScript, ES3).
-// PD.run(drawings, {outDir}) creates or updates one .ai per drawing:
+// PD.run(drawings, {outDir, png, pngScale}) creates or updates one .ai per drawing (and a PNG per artboard when png):
 //  - global process swatches (updated in place, so recolouring a swatch recolours the drawing),
 //  - paragraph styles, artboards, named layers,
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.2.0";
+PD.version = "0.2.1";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -73,7 +73,23 @@ PD.drawFile = function (dw, opts) {
     PD.removeDefaultLayer(doc, dw);
 
     doc.saveAs(file, new IllustratorSaveOptions());
+    if (opts.png) PD.exportPng(doc, opts.outDir + "/" + dw.fileName.replace(/\.ai$/i, ""), opts.pngScale || 300);
     doc.close(SaveOptions.DONOTSAVECHANGES);
+};
+
+// One PNG per artboard, clipped to the artboard (drawings are at true scale; the PNG resolution is pngScale %).
+PD.exportPng = function (doc, base, scale) {
+    for (var i = 0; i < doc.artboards.length; i++) {
+        doc.artboards.setActiveArtboardIndex(i);
+        var o = new ExportOptionsPNG24();
+        o.artBoardClipping = true;
+        o.antiAliasing = true;
+        o.transparency = false;
+        o.horizontalScale = scale;
+        o.verticalScale = scale;
+        var name = doc.artboards.length > 1 ? base + "_" + (i + 1) + ".png" : base + ".png";
+        doc.exportFile(new File(name), ExportType.PNG24, o);
+    }
 };
 
 PD.setupArtboards = function (doc, abs) {
@@ -189,11 +205,21 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
         item.contents = it.text.replace(/\n/g, "\r");
         if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(item.textRange, true);
         if (it.rotation) item.rotate(it.rotation); // VERIFY-WIN: rotates about the frame centre
+        if (it.center) PD.centerOnGlyphs(item, PD.pt(rect, it.x, it.y));
     } else {
         return;
     }
     if (it.opacity !== undefined && it.opacity < 1) item.opacity = it.opacity * 100;
     item.name = it.name;
+};
+
+// Moves a text frame so the centre of its outlined glyphs lands on target (exact centring in a colour block).
+PD.centerOnGlyphs = function (tf, target) {
+    var dup = tf.duplicate();
+    var outlined = dup.createOutline();
+    var b = outlined.geometricBounds; // [left, top, right, bottom]
+    outlined.remove();
+    tf.translate(target[0] - (b[0] + b[2]) / 2, target[1] - (b[1] + b[3]) / 2);
 };
 
 PD.pathItem = function (collection, pts, closed, rect) {

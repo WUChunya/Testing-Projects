@@ -119,15 +119,17 @@
       "family": "Century Gothic",
       "sizePt": 7,
       "allCaps": true,
-      "postScript": "CenturyGothic",
-      "fallbackPostScript": "ArialMT"
+      "postScript": "CenturyGothic-Bold",
+      "fallbackPostScript": "Arial-BoldMT",
+      "weight": "bold"
     },
     "title": {
       "family": "Century Gothic",
       "sizePt": 14,
       "allCaps": true,
       "postScript": "CenturyGothic",
-      "fallbackPostScript": "ArialMT"
+      "fallbackPostScript": "ArialMT",
+      "weight": "bold"
     },
     "chart": {
       "family": "Helvetica",
@@ -135,6 +137,22 @@
       "sizePt": 7,
       "postScript": "Helvetica",
       "fallbackPostScript": "ArialMT"
+    },
+    "note": {
+      "family": "Century Gothic",
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT",
+      "sizePt": 7,
+      "allCaps": true,
+      "weight": "normal"
+    },
+    "level": {
+      "family": "Century Gothic",
+      "postScript": "CenturyGothic-Bold",
+      "fallbackPostScript": "Arial-BoldMT",
+      "sizePt": 7,
+      "allCaps": true,
+      "weight": "bold"
     }
   },
   "facade": {
@@ -142,25 +160,34 @@
     "explodedAxon": "hidden"
   },
   "section": {
-    "barInsetStoryFactor": 0.12,
+    "slabPt": 3.0,
+    "slabColor": "#000000",
+    "barSlabGapPt": 2.0,
     "barCornerPt": 6.0,
     "barGapPt": 1.5,
-    "slabFill": "#4D4D4D",
-    "noSlabLineOverhangFt": 2.0,
-    "noSlabLineGapPt": 1.0,
-    "groundBandDepthFt": 6.0,
+    "outlinePt": 0.75,
+    "beyondStroke": "#D2D2D2",
+    "beyondStrokePt": 0.3,
+    "groundFill": "#000000",
     "facadeCutPt": 0.5,
-    "facadeBeyond": "#CCCCCC",
+    "facadeBeyond": "#DCDCDC",
     "facadeBeyondPt": 0.25,
-    "levelColumn": true,
-    "levelLineStroke": "#999999",
+    "levelColumn": false,
+    "levelLineStroke": "#E6E6E6",
     "levelLineStrokePt": 0.25,
-    "heightDimension": true,
-    "titlePrefix": "SECTION"
+    "heightDimension": false,
+    "titlePrefix": "SECTION",
+    "groundPt": 12.0,
+    "contextFill": "#F0F0F0",
+    "contextStroke": "#A6A6A6",
+    "contextStrokePt": 0.5,
+    "comment": "beyond* = our own building seen behind the cut (faint lines, no fill); context* = other buildings (light grey silhouette)."
   },
   "page": {
     "marginPt": 36.0,
-    "titleGapPt": 18.0,
+    "levelColumnPt": 78.0,
+    "dimColumnPt": 46.0,
+    "titleBandPt": 44.0,
     "labelColor": "#000000",
     "labelMinBarWidthPt": 14.0
   }

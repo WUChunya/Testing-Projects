@@ -96,6 +96,8 @@ public sealed class OutputSetting
     public List<string>? Drawings { get; set; }
     public string Scale { get; set; } = "";
     public string Artboard { get; set; } = "";
+    /// <summary>Also export a PNG per artboard from Illustrator; null = rules default.</summary>
+    public bool? ExportPng { get; set; }
 
     public void FillDefaults(PD.Core.Config.OutputRules r, string folder)
     {
