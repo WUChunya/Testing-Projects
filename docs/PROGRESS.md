@@ -14,8 +14,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   cut context = white fill + 2.5 pt black; ground line = 2 × slab, centred on grade; basements draw like other levels. 56 tests green.
 - Rev 3 (v0.2.1): true scale (any Bluebeam-style scale), "Fit content" artboard, visual 3 pt slabs, centred bold labels, optional PNG.
 - Rev 1–2: custom programs (⑤ ↔ ① ↔ ④); span "Single" = base level only; edits and Export re-analyse first.
-- Windows runs (user): v0.1.0/0.1.1 install from a user folder; T1 ✓; T3 ✓ 11 levels; T4 ✓; Linux Core reproduces the user's areas.csv exactly.
-- Env: `apt-get install dotnet-sdk-8.0` (dot.net blocked), `pip install rhino3dm`; tests `RollForward=Major`; node 22 for `--check`.
+- Windows (user): installs from a user folder; T1 ✓ T3 ✓ T4 ✓; Core reproduces the user's areas.csv. Env: apt dotnet-sdk-8.0, pip rhino3dm, `RollForward=Major`, node 22.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space (base level counts); else split. Facade: stacked 30% veil, exploded hidden.
@@ -39,4 +38,4 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 
 ## Known issues
 - Not yet: street names, building name above, key plan, trees, stair hatch, Unassigned hatch (grey) — next revision candidates.
-- Section-closed volume ≈ mid area × height. Underground context trimmed in sections only. Layer-priority overlap rule not implemented.
+- Section-closed volume ≈ mid area × height; layer-priority overlap rule not implemented. Old saves must tick "Elevation" in ⑦.
