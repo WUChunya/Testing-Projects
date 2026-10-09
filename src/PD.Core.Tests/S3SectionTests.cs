@@ -106,8 +106,11 @@ public class S3SectionTests
         var order = d.Layers.Select(l => l.Name).ToList();
         Assert.True(order.IndexOf("PD_BEYOND") < order.IndexOf("PD_CONTEXT_CUT") && order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_PROGRAM"));
         Assert.True(order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_LEVELS") && order.IndexOf("PD_LEVELS") < order.IndexOf("PD_PROGRAM"));
-        // Ground line = 2 × slab weight, centred on grade.
+        // Ground line = 2 × slab weight, centred on grade; nothing seen beyond the cut goes below grade.
         var ground = d.Layer("PD_GROUND").Items.Single();
+        var gradeY = (ground.Paths![0][0][1] + ground.Paths[0][2][1]) / 2;
+        Assert.All(d.Layers.Where(l => l.Name.StartsWith("VIEW_") || l.Name == "PD_BEYOND").SelectMany(l => l.Items).SelectMany(i => i.Paths!).SelectMany(p => p),
+            q => Assert.True(q[1] <= gradeY + 0.01, $"beyond point at y={q[1]:0.0} below grade y={gradeY:0.0}"));
         Assert.Equal(st.SlabPt * st.GroundSlabFactor, ground.Paths![0][2][1] - ground.Paths[0][0][1], 3);
         // Level column and height dimension are back.
         Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_LVL_L1_TXT");

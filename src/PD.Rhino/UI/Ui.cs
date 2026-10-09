@@ -35,7 +35,7 @@ internal static class Ui
             DataCell = new ComboBoxCell
             {
                 DataStore = items.Cast<object>().ToList(),
-                Binding = Binding.Delegate<T, object>(r => get(r), (r, v) => set(r, v as string ?? "")),
+                Binding = Binding.Delegate<T, object>(r => get(r), (r, v) => set(r, v as string ?? (v as IListItem)?.Key ?? v?.ToString() ?? "")),
             },
         };
         if (width > 0) col.Width = width;

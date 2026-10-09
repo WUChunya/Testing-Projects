@@ -73,7 +73,8 @@ public sealed class SectionGeometry
                 continue;
             }
             if (wMin < 0 || wMin > depthFt) continue;
-            var item = Views.ProjectedView.Item(o, kind, plane, wMin, kind == Views.ViewKind.Context ? g.Ground : -1e6);
+            // Seen beyond the cut: below grade it is hidden by the earth (only the cut basement shows).
+            var item = Views.ProjectedView.Item(o, kind, plane, wMin, g.Ground);
             if (!item.Geometry.IsEmpty) g.View.Add(item);
         }
 

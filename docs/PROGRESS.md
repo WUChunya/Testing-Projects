@@ -6,12 +6,13 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Next session: **S4 Plan + Axon** (see `docs/DEV_PROMPT.md`). Reuse `ExportContext`, `PageMap`-style mapping, `Drawing` model, `Exporter.BuildDrawings`.
 - S3 done (v0.2.0): `Drawing` model → `SvgWriter` (preview) + `JsxWriter` (runtime + data literal) + `Exporter` (program_areas.csv, diagram.json,
   export_log.txt, `_preview/*.svg`, ProgramDiagram.jsx); `IllustratorLauncher` COM; golden `tests/golden/section_A.svg`.
+- Rev 6 (v0.3.1): re-export purges stale generated layers (PD_*/VIEW_*/FACADE not in the drawing: named items, then empty
+  layer) — v0.2.1's grey PD_CONTEXT lingered in the user's .ai; section beyond clipped at grade; ⑥ type combo fixed (async refresh).
 - Rev 5 (v0.3.0): `Views/ProjectedView` = Make2D-like opaque view (masses light-grey base; one AI layer + global swatch per
   slab/facade source layer, glass white; near hides far via trim by nearer lower-layer items). Used behind section cuts and by
   new `ElevationDrawing` (⑥ type = Elevation or ELEV:: layers; ▼ level markers, dashed level lines). 57 tests green.
 - Rev 4 (v0.2.2): text scales with drawing scale (ref 1" = 45'); level column/height dim/level lines; cut context solid; ground = 2 × slab; basements.
-- Rev 3 (v0.2.1): true scale (any Bluebeam-style scale), "Fit content" artboard, visual 3 pt slabs, centred bold labels, optional PNG.
-- Rev 1–2: custom programs (⑤ ↔ ① ↔ ④); span "Single" = base level only; edits and Export re-analyse first.
+- Rev 1–3: custom programs; span "Single"; true scale (Bluebeam-style), "Fit content" artboard, visual 3 pt slabs, centred labels, PNG.
 - Windows (user): installs from a user folder; T1 ✓ T3 ✓ T4 ✓; Core reproduces the user's areas.csv. Env: apt dotnet-sdk-8.0, pip rhino3dm, `RollForward=Major`, node 22.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
@@ -26,7 +27,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Elevation: neighbours straddling the view line are omitted; our building always shown. Layers `VIEW_<own layer name>`.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.3.0.zip` to a user folder, replace old files, restart Rhino.
+1. Unzip `ProgramDiagram-0.3.1.zip` to a user folder, replace old files, restart Rhino.
 2. Open the test model; ⑥ keep section A; confirm all tabs; ⑦ Export (auto Illustrator ticked).
 3. Illustrator starts, writes `02_Section_A.ai`; message shows illustrator_log.txt "OK". VERIFY-WIN COM launch.
 4. Open the .ai/.png: true scale, labels centred in blocks (VERIFY-WIN glyph centring), PD_* layers + FACADE/_MANUAL/OVERLAY, global PRG_* swatches.

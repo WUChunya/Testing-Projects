@@ -17,7 +17,14 @@ internal sealed class SectionTab : TabBase
     {
         _grid.Columns.Add(Ui.Text<SectionSetting>("名称", x => x.Name, (x, v) => Edit(() => x.Name = v), 60));
         _grid.Columns.Add(Ui.Combo<SectionSetting>("类型", new[] { SectionSetting.SectionKind, SectionSetting.ElevationKind }, x => x.Kind,
-            (x, v) => { x.Kind = v; Session.NotifyChanged(); }, 90));
+            (x, v) =>
+            {
+                if (v != SectionSetting.SectionKind && v != SectionSetting.ElevationKind) return;
+                x.Kind = v;
+                Session.Save();
+                // Refresh after the cell edit has finished; refreshing inside it reset the combo to the old value.
+                Application.Instance.AsyncInvoke(Session.NotifyChanged);
+            }, 90));
         _grid.Columns.Add(Ui.Check<SectionSetting>("看向左侧", x => x.LookLeft, (x, v) => Edit(() => x.LookLeft = v)));
         _grid.Columns.Add(Ui.Text<SectionSetting>("可见进深", x => Ui.Ft(Depth(x)),
             (x, v) => { if (PD.Core.Model.FeetInches.TryParse(v, out var f)) Edit(() => x.DepthFt = f); }, 80));

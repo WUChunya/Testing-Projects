@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.2.1";
+PD.version = "0.3.1";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -70,6 +70,7 @@ PD.drawFile = function (dw, opts) {
     }
     // Protected layers: created empty if missing, kept on top, never cleared.
     for (var q = 0; q < dw.protectedLayers.length; q++) PD.layer(doc, dw.protectedLayers[q]).zOrder(ZOrderMethod.BRINGTOFRONT);
+    PD.purgeStaleLayers(doc, dw);
     PD.removeDefaultLayer(doc, dw);
 
     doc.saveAs(file, new IllustratorSaveOptions());
@@ -112,6 +113,22 @@ PD.layer = function (doc, name) {
     var l = doc.layers.add();
     l.name = name;
     return l;
+};
+
+// Layers an earlier plugin version generated but this drawing no longer uses (e.g. PD_CONTEXT from v0.2.1):
+// drop their named items, and the layer when it is then empty. Unnamed user items keep the layer alive.
+PD.purgeStaleLayers = function (doc, dw) {
+    var keep = {};
+    for (var i = 0; i < dw.layers.length; i++) keep[dw.layers[i].name] = true;
+    for (var j = 0; j < dw.protectedLayers.length; j++) keep[dw.protectedLayers[j]] = true;
+    for (var k = doc.layers.length - 1; k >= 0; k--) {
+        var l = doc.layers[k];
+        if (keep[l.name] || !/^(PD_|VIEW_|FACADE$)/.test(l.name)) continue;
+        l.locked = false;
+        l.visible = true;
+        PD.clearNamed(l);
+        if (l.pageItems.length === 0 && l.layers.length === 0) l.remove();
+    }
 };
 
 // A fresh document starts with "Layer 1"; drop it when it is empty and not one of ours.
