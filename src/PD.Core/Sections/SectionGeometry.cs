@@ -12,10 +12,6 @@ namespace PD.Core.Sections;
 
 public sealed record CutBar(string MassId, string ProgramKey, double U0, double U1, double Z0, double Z1, double Story);
 
-public enum BeyondKind { Program, Building, Facade }
-
-/// <param name="Distance">Nearest distance behind the cut plane (ft); used to paint far to near.</param>
-public sealed record BeyondShape(string Id, BeyondKind Kind, NtsGeometry Geometry, string Label, double Distance);
 
 /// <summary>Everything cut or seen by one section, in section feet (u along the line, z elevation).</summary>
 public sealed class SectionGeometry
@@ -26,7 +22,8 @@ public sealed class SectionGeometry
     /// <summary>Visual slabs (drawn at a fixed weight): every level and every roof/top edge of the cut, U0–U1 at Z.</summary>
     public List<(double U0, double U1, double Z)> SlabLines { get; } = new();
     public List<(string Id, NtsGeometry Geometry)> BuildingCuts { get; } = new();
-    public List<BeyondShape> Beyond { get; } = new();
+    /// <summary>What is seen behind the cut (projected view): our uncut masses/slabs/facade and other buildings.</summary>
+    public List<Views.ViewItem> View { get; } = new();
     public List<List<(double X, double Y)>> FacadeCut { get; } = new();
     public List<double> PropertyLines { get; } = new();
     public List<Level> Levels { get; init; } = new();
@@ -54,33 +51,30 @@ public sealed class SectionGeometry
         g.Outline = g.Bars.Count == 0 ? g.Outline
             : MeshSlicer.Factory.BuildGeometry(g.Bars.Select(x => Rect(x.U0, x.U1, x.Z0, x.Z1))).Union().Buffer(0.01).Buffer(-0.01);
 
-        var live = r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Mesh != null).ToList();
-        var facadeIds = r.FacadeIds.ToHashSet();
-        var massIds = r.Masses.Where(m => m.IsSolid).Select(m => m.Id).ToHashSet();
+        var (massIds, facadeIds) = Views.ProjectedView.Ids(r);
+        var glass = Views.ProjectedView.GlassRegex(style.View);
 
-        foreach (var o in live)
+        foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Mesh != null))
         {
-            var (wMin, wMax) = WRange(o.Mesh!, plane);
-            var crosses = wMin < 0 && wMax > 0 && UOverlaps(o.Mesh!, plane);
-            var inFront = wMin >= 0 && wMin <= depthFt && UOverlaps(o.Mesh!, plane);
-            if (o.Role == Roles.Slab) continue; // slabs are drawn as visual lines from the cut outline
-            if (facadeIds.Contains(o.Id))
+            if (Views.ProjectedView.Kind(o, massIds, facadeIds, glass) is not { } kind || !plane.UOverlaps(o.Mesh!)) continue;
+            var (wMin, wMax) = plane.WRange(o.Mesh!);
+            var crosses = wMin < 0 && wMax > 0;
+            if (crosses)
             {
-                if (crosses)
+                // Cut: our masses are the bars, slabs are the visual slab lines; facade and other buildings are cut here.
+                if (kind is Views.ViewKind.Glass or Views.ViewKind.Facade)
                 {
                     var open = new List<List<(double X, double Y)>>();
                     g.FacadeCut.AddRange(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open));
                     g.FacadeCut.AddRange(open);
                 }
-                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Facade, Clip(BoxProjection(o, plane), plane), "", wMin));
+                else if (kind == Views.ViewKind.Context)
+                    g.BuildingCuts.Add((o.Id, Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground)));
+                continue;
             }
-            else if (o.Role == Roles.Building)
-            {
-                if (crosses) g.BuildingCuts.Add((o.Id, Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground)));
-                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Building, Clip(plane.Projection(o.Mesh!), plane, g.Ground), o.Name, wMin));
-            }
-            else if (massIds.Contains(o.Id) && !crosses && inFront)
-                g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Program, Clip(plane.Projection(o.Mesh!), plane), "", wMin));
+            if (wMin < 0 || wMin > depthFt) continue;
+            var item = Views.ProjectedView.Item(o, kind, plane, wMin, kind == Views.ViewKind.Context ? g.Ground : -1e6);
+            if (!item.Geometry.IsEmpty) g.View.Add(item);
         }
 
         foreach (var o in r.Local.Objects.Where(o => o.Role == "BG.Line" && o.Points is { Length: > 1 }))
@@ -175,33 +169,4 @@ public sealed class SectionGeometry
     static NtsGeometry Clip(NtsGeometry g, SectionPlane p, double minZ = -1e6) =>
         g.IsEmpty ? g : g.Intersection(Rect(0, p.Length, minZ, 1e6));
 
-    static (double, double) WRange(MeshData m, SectionPlane p)
-    {
-        double lo = double.MaxValue, hi = double.MinValue;
-        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
-        {
-            var w = p.W(m.Vertices[i], m.Vertices[i + 1]);
-            lo = Math.Min(lo, w); hi = Math.Max(hi, w);
-        }
-        return (lo, hi);
-    }
-
-    static bool UOverlaps(MeshData m, SectionPlane p)
-    {
-        double lo = double.MaxValue, hi = double.MinValue;
-        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
-        {
-            var u = p.U(m.Vertices[i], m.Vertices[i + 1]);
-            lo = Math.Min(lo, u); hi = Math.Max(hi, u);
-        }
-        return hi > 0 && lo < p.Length;
-    }
-
-    /// <summary>Facade panels: projected bounding rectangle is enough for the light grid lines.</summary>
-    static NtsGeometry BoxProjection(SourceObject o, SectionPlane p)
-    {
-        var b = o.BBox;
-        var us = new[] { p.U(b.MinX, b.MinY), p.U(b.MaxX, b.MinY), p.U(b.MinX, b.MaxY), p.U(b.MaxX, b.MaxY) };
-        return Rect(us.Min(), us.Max(), b.MinZ, b.MaxZ);
-    }
 }

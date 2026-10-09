@@ -12,6 +12,8 @@ public sealed class Style
     public Fonts Fonts { get; set; } = new();
     public FacadeStyle Facade { get; set; } = new();
     public SectionStyle Section { get; set; } = new();
+    public ViewStyle View { get; set; } = new();
+    public ElevationStyle Elevation { get; set; } = new();
     public PageStyle Page { get; set; } = new();
 
     public static Style Default()
@@ -80,11 +82,6 @@ public sealed class SectionStyle
     public double BarGapPt { get; set; }
     /// <summary>Exterior wall line of the cut building.</summary>
     public double OutlinePt { get; set; }
-    /// <summary>Uncut masses behind the cut (ours and other buildings): dashed outline with an opaque fill, painted far to near.</summary>
-    public string BeyondStroke { get; set; } = "";
-    public double BeyondStrokePt { get; set; }
-    public double[]? BeyondDash { get; set; }
-    public string BeyondFill { get; set; } = "";
     /// <summary>Other buildings cut by the section: solid (filled) with a heavy outline.</summary>
     public string ContextCutStroke { get; set; } = "";
     public double ContextCutStrokePt { get; set; }
@@ -93,8 +90,6 @@ public sealed class SectionStyle
     public double GroundSlabFactor { get; set; }
     public string GroundColor { get; set; } = "";
     public double FacadeCutPt { get; set; }
-    public string FacadeBeyond { get; set; } = "";
-    public double FacadeBeyondPt { get; set; }
     public bool LevelColumn { get; set; }
     public string LevelLineStroke { get; set; } = "";
     public double LevelLineStrokePt { get; set; }
@@ -113,4 +108,35 @@ public sealed class PageStyle
     public double TitleGapPt { get; set; }
     public string LabelColor { get; set; } = "";
     public double LabelMinBarWidthPt { get; set; }
+}
+
+/// <summary>Projected (Make2D-like) view: behind section cuts and in elevations.</summary>
+public sealed class ViewStyle
+{
+    public string MassFill { get; set; } = "";
+    public string MassStroke { get; set; } = "";
+    public double MassStrokePt { get; set; }
+    public string EdgeStroke { get; set; } = "";
+    public double EdgeStrokePt { get; set; }
+    /// <summary>Regex on the layer's own name: matching facade layers are glass (white, solid).</summary>
+    public string GlassPattern { get; set; } = "";
+    public string GlassFill { get; set; } = "";
+    /// <summary>Greys handed out to the other element layers in name order.</summary>
+    public List<string> LayerGrays { get; set; } = new();
+    /// <summary>Per layer (own name) fill overrides.</summary>
+    public Dictionary<string, string> LayerFills { get; set; } = new();
+    public string ContextFill { get; set; } = "";
+    public string ContextStroke { get; set; } = "";
+    public double ContextStrokePt { get; set; }
+    public double[]? ContextDash { get; set; }
+}
+
+public sealed class ElevationStyle
+{
+    public string TitlePrefix { get; set; } = "";
+    public bool LevelMarkers { get; set; }
+    public string LevelLineStroke { get; set; } = "";
+    public double LevelLineStrokePt { get; set; }
+    public double[]? LevelLineDash { get; set; }
+    public double MarkerSizePt { get; set; }
 }

@@ -108,7 +108,7 @@ public sealed class PdSession
     /// <summary>B2 "剖切线没有穿过任何体块".</summary>
     void AddSectionIssues(AnalysisResult r)
     {
-        foreach (var sec in Settings.Sections.Where(x => x.Line.Length == 4))
+        foreach (var sec in Settings.Sections.Where(x => x.Line.Length == 4 && !x.IsElevation))
         {
             var (ax, ay, _) = r.Frame.ToLocal(sec.Line[0], sec.Line[1], 0);
             var (bx, by, _) = r.Frame.ToLocal(sec.Line[2], sec.Line[3], 0);

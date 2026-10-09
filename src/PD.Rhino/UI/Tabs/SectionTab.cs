@@ -7,7 +7,7 @@ using PD.Rhino.Adapter;
 
 namespace PD.Rhino.UI.Tabs;
 
-/// <summary>⑥ Section cuts: curves on SEC::* layers, or picked; look direction and visible depth.</summary>
+/// <summary>⑥ Sections and elevations: curves on SEC::* / ELEV::* layers, or picked; type, look direction and visible depth.</summary>
 internal sealed class SectionTab : TabBase
 {
     readonly GridView _grid = Ui.Grid(220);
@@ -16,14 +16,16 @@ internal sealed class SectionTab : TabBase
     public SectionTab(PdSession s) : base(s)
     {
         _grid.Columns.Add(Ui.Text<SectionSetting>("名称", x => x.Name, (x, v) => Edit(() => x.Name = v), 60));
+        _grid.Columns.Add(Ui.Combo<SectionSetting>("类型", new[] { SectionSetting.SectionKind, SectionSetting.ElevationKind }, x => x.Kind,
+            (x, v) => { x.Kind = v; Session.NotifyChanged(); }, 90));
         _grid.Columns.Add(Ui.Check<SectionSetting>("看向左侧", x => x.LookLeft, (x, v) => Edit(() => x.LookLeft = v)));
         _grid.Columns.Add(Ui.Text<SectionSetting>("可见进深", x => Ui.Ft(Depth(x)),
             (x, v) => { if (PD.Core.Model.FeetInches.TryParse(v, out var f)) Edit(() => x.DepthFt = f); }, 80));
-        _grid.Columns.Add(Ui.Text<SectionSetting>("穿过体块", x => Crosses(x) switch { true => "✓", false => "✗ 未穿过", _ => "?" }, null, 80));
+        _grid.Columns.Add(Ui.Text<SectionSetting>("穿过体块", x => x.IsElevation ? "—" : Crosses(x) switch { true => "✓", false => "✗ 未穿过", _ => "?" }, null, 80));
         _grid.CellDoubleClick += (_, e) => { if (e.Item is SectionSetting x && x.ObjectId != null) SelectCurve(x.ObjectId); };
 
         var layout = Ui.Layout();
-        layout.AddSeparateRow(Ui.Button("读取 SEC:: 图层", ReadLayers), Ui.Button("拾取剖切线…", Pick), Ui.Button("删除选中", Remove), null);
+        layout.AddSeparateRow(Ui.Button("读取 SEC:: / ELEV:: 图层", ReadLayers), Ui.Button("拾取线…", Pick), Ui.Button("删除选中", Remove), null);
         layout.Add(_grid, yscale: true);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "section"));
@@ -51,30 +53,32 @@ internal sealed class SectionTab : TabBase
     {
         _grid.DataStore = Session.Settings.Sections.ToList();
         _status.Text = Session.Settings.Sections.Count == 0
-            ? "没有剖切线：把直线放在 SEC::A 等图层后点「读取」，或点「拾取」。"
-            : $"{Session.Settings.Sections.Count} 条剖切线。从起点看向终点，「看向左侧」决定投影方向。";
+            ? "没有剖切线/立面线：把直线放在 SEC::A 或 ELEV::North 等图层后点「读取」，或点「拾取」后改类型。"
+            : $"{Session.Settings.Sections.Count(s => !s.IsElevation)} 条剖切线，{Session.Settings.Sections.Count(s => s.IsElevation)} 条立面线。从起点看向终点，「看向左侧」决定看的方向。";
     }
 
-    /// <summary>Every curve on a layer whose path starts with SEC (e.g. SEC::A) becomes a section named after the sub-layer.</summary>
+    /// <summary>Every curve on a layer whose path starts with SEC (e.g. SEC::A) or ELEV (ELEV::North) becomes a section / elevation named after the sub-layer.</summary>
     void ReadLayers()
     {
         var doc = Session.Doc;
         if (doc == null) return;
         var found = 0;
-        foreach (var layer in doc.Layers.Where(l => !l.IsDeleted && l.FullPath.StartsWith("SEC", StringComparison.OrdinalIgnoreCase)))
+        foreach (var layer in doc.Layers.Where(l => !l.IsDeleted && (l.FullPath.StartsWith("SEC", StringComparison.OrdinalIgnoreCase) || l.FullPath.StartsWith("ELEV", StringComparison.OrdinalIgnoreCase))))
         foreach (var obj in doc.Objects.FindByLayer(layer) ?? Array.Empty<global::Rhino.DocObjects.RhinoObject>())
         {
             if (obj.Geometry is not Curve c || Session.Settings.Sections.Any(x => x.ObjectId == obj.Id.ToString())) continue;
             Session.Settings.Sections.Add(new SectionSetting
             {
-                Name = layer.Name.Equals("SEC", StringComparison.OrdinalIgnoreCase) ? $"{(char)('A' + Session.Settings.Sections.Count % 26)}" : layer.Name,
+                Name = layer.Name.Equals("SEC", StringComparison.OrdinalIgnoreCase) || layer.Name.Equals("ELEV", StringComparison.OrdinalIgnoreCase)
+                    ? $"{(char)('A' + Session.Settings.Sections.Count % 26)}" : layer.Name,
+                Kind = layer.FullPath.StartsWith("ELEV", StringComparison.OrdinalIgnoreCase) ? SectionSetting.ElevationKind : SectionSetting.SectionKind,
                 ObjectId = obj.Id.ToString(),
                 Line = new[] { c.PointAtStart.X, c.PointAtStart.Y, c.PointAtEnd.X, c.PointAtEnd.Y },
             });
             found++;
         }
         Session.NotifyChanged();
-        if (found == 0) MessageBox.Show(this, "没有在 SEC:: 图层上找到新的曲线。", MessageBoxType.Information);
+        if (found == 0) MessageBox.Show(this, "没有在 SEC:: / ELEV:: 图层上找到新的曲线。", MessageBoxType.Information);
     }
 
     void Pick() => RhinoApp.RunScript("_ProgramDiagramPickSection", false);

@@ -52,6 +52,30 @@ public sealed class SectionPlane
     public List<List<(double X, double Y)>> Cut(MeshData m, double weldTol, double gapTol, List<List<(double X, double Y)>>? open = null) =>
         MeshSlicer.Slice(ToSectionSpace(m), 0, weldTol, gapTol, false, out _, open);
 
+    /// <summary>Nearest and farthest signed distance of the mesh from the plane (positive = in the viewing direction).</summary>
+    public (double Min, double Max) WRange(MeshData m)
+    {
+        double lo = double.MaxValue, hi = double.MinValue;
+        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
+        {
+            var w = W(m.Vertices[i], m.Vertices[i + 1]);
+            lo = Math.Min(lo, w); hi = Math.Max(hi, w);
+        }
+        return (lo, hi);
+    }
+
+    /// <summary>True when the mesh overlaps the line's extent along u.</summary>
+    public bool UOverlaps(MeshData m)
+    {
+        double lo = double.MaxValue, hi = double.MinValue;
+        for (var i = 0; i + 2 < m.Vertices.Length; i += 3)
+        {
+            var u = U(m.Vertices[i], m.Vertices[i + 1]);
+            lo = Math.Min(lo, u); hi = Math.Max(hi, u);
+        }
+        return hi > 0 && lo < Length;
+    }
+
     /// <summary>Union of the mesh's faces projected onto the plane, in (u, z).</summary>
     public NtsGeometry Projection(MeshData m)
     {

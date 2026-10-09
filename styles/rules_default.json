@@ -38,6 +38,7 @@
     "drawings": [
       "Plan",
       "Section",
+      "Elevation",
       "AxonStacked",
       "AxonExploded",
       "ProgramChart",

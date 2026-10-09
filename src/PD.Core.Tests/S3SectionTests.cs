@@ -21,9 +21,21 @@ public class S3SectionTests
         Line = new[] { -4138907.2863464905, 3565993.778312886, -4138907.2863464905, 3442730.248196322 },
     };
 
+    /// <summary>Elevation from a line 30 ft south of the building, looking north.</summary>
+    internal static SectionSetting ElevationSouth
+    {
+        get
+        {
+            var f = AnalysisFixture.Result.Frame;
+            var (x0, y0, _) = f.ToModel(-20, -30, 0);
+            var (x1, y1, _) = f.ToModel(140, -30, 0);
+            return new SectionSetting { Name = "S", Kind = SectionSetting.ElevationKind, LookLeft = true, DepthFt = 600, Line = new[] { x0, y0, x1, y1 } };
+        }
+    }
+
     internal static ExportContext Context()
     {
-        var settings = new PdSettings { Sections = { SectionA } };
+        var settings = new PdSettings { Sections = { SectionA, ElevationSouth } };
         settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output, "");
         return new ExportContext
         {
@@ -83,9 +95,11 @@ public class S3SectionTests
                 sl.Paths[0][0][0] < bar.X + bar.W - 0.5 && sl.Paths[0][1][0] > bar.X + 0.5);
         // Bars clear the slab by half its weight plus the gap.
         Assert.All(d.Layer("PD_PROGRAM").Items, b => Assert.True(b.H > 0));
-        // Behind the cut (ours and others): opaque fill + dashed outline; cut context: solid white with a heavy outline.
+        // Behind the cut: other buildings white + dashed; our building as an opaque grey elevation (masses = solid base).
         Assert.NotEmpty(d.Layer("PD_BEYOND").Items);
-        Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("PD_BEYOND_FILL", i.Fill); Assert.NotNull(i.Dash); });
+        Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("VIEW_CONTEXT", i.Fill); Assert.NotNull(i.Dash); });
+        Assert.NotEmpty(d.Layer("VIEW_MASS").Items);
+        Assert.All(d.Layers.Where(l => l.Name.StartsWith("VIEW_")).SelectMany(l => l.Items), i => Assert.NotNull(i.Fill));
         Assert.All(d.Layer("PD_CONTEXT_CUT").Items, i => { Assert.Equal("PD_CUT_FILL", i.Fill); Assert.Equal(st.ContextCutStrokePt, i.StrokePt); });
         Assert.All(d.Layer("FACADE").Items, i => Assert.Null(i.Fill));
         // Painter's order: layers bottom → top put what is behind under what is cut.
@@ -131,12 +145,13 @@ public class S3SectionTests
     {
         var dir = Path.Combine(Path.GetTempPath(), "pd_export_" + Guid.NewGuid().ToString("N"));
         var res = Exporter.Write(Context(), dir);
-        foreach (var f in new[] { "program_areas.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx", "_preview/02_Section_A.svg" })
+        foreach (var f in new[] { "program_areas.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx", "_preview/02_Section_A.svg", "_preview/07_Elevation_S.svg" })
             Assert.True(File.Exists(Path.Combine(dir, f)), f);
         Assert.Contains(res.Notes, n => n.StartsWith("Plan"));
 
         // Golden preview for review (checked in).
         File.Copy(Path.Combine(dir, "_preview", "02_Section_A.svg"), Path.Combine(Golden(), "section_A.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "07_Elevation_S.svg"), Path.Combine(Golden(), "elevation_S.svg"), true);
 
         // node --check after stripping the #target directive (ExtendScript-only).
         var js = Path.Combine(dir, "check.js");
@@ -151,4 +166,42 @@ public class S3SectionTests
     }
 
     static string Golden() => Path.Combine(Path.GetDirectoryName(FixtureSmokeTests.FixturePath("x"))!, "..", "golden");
+
+    [Fact]
+    public void ElevationSouth_GreyLayersGlassWhiteLevelMarkers()
+    {
+        var ctx = Context();
+        var d = PD.Core.Elevations.ElevationDrawing.Build(ctx, ElevationSouth);
+        var layers = d.Layers.Select(l => l.Name).ToList();
+        _out.WriteLine(string.Join(", ", layers.Select(n => $"{n}:{d.Layer(n).Items.Count}")));
+        Assert.Equal("07_Elevation_S.ai", d.FileName);
+        Assert.NotEmpty(d.Layer("VIEW_MASS").Items);
+        // A neighbour straddling the view line is not drawn in front of our building.
+        var massArea = d.Layer("VIEW_MASS").Items.Sum(i => i.Paths!.Sum(Area));
+        Assert.True(massArea > 20000, $"visible mass area {massArea:0} pt²");
+        // Each facade/slab source layer is its own AI layer with its own global swatch; glass is solid white.
+        Assert.Contains("VIEW_GLASS", layers);
+        Assert.Equal("#FFFFFF", d.Swatches.Single(s => s.Name == "VIEW_GLASS").Hex);
+        Assert.All(d.Layer("VIEW_GLASS").Items, i => Assert.Equal("VIEW_GLASS", i.Fill));
+        var slab = d.Swatches.Single(s => s.Name == "VIEW_SLAB").Hex;
+        Assert.NotEqual("#FFFFFF", slab);
+        // Stacking: other buildings < masses < slabs < glass; annotations on top.
+        Assert.True(layers.IndexOf("VIEW_MASS") < layers.IndexOf("VIEW_SLAB") && layers.IndexOf("VIEW_SLAB") < layers.IndexOf("VIEW_GLASS"));
+        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "ELV_S_LVL_L1_TXT");
+        Assert.Contains(d.Layer("PD_LEVELS").Items, i => i.Name == "ELV_S_LVL_L5_MARK");
+        Assert.Equal(d.Layers.SelectMany(l => l.Items).Count(), d.Layers.SelectMany(l => l.Items).Select(i => i.Name).Distinct().Count());
+        // No glass or element drawn where a nearer mass covers it is left untrimmed (all items have area).
+        Assert.All(d.Layers.Where(l => l.Name.StartsWith("VIEW_")).SelectMany(l => l.Items), i => Assert.NotEmpty(i.Paths!));
+    }
+
+    static double Area(double[][] ring)
+    {
+        double a = 0;
+        for (var i = 0; i < ring.Length; i++)
+        {
+            var (p, q) = (ring[i], ring[(i + 1) % ring.Length]);
+            a += p[0] * q[1] - q[0] * p[1];
+        }
+        return Math.Abs(a) / 2;
+    }
 }

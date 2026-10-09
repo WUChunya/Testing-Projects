@@ -24,13 +24,14 @@ public static class SectionDrawing
         ctx.AddStandardStyles(d);
         // Bottom → top: what is farther away is painted first and hidden by what is nearer.
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
-        foreach (var n in new[] { "PD_BEYOND", "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
+        Views.ProjectedView.AddLayers(d, g.View);
+        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
         var k = ctx.PtPerFt;
         var groundT = st.SlabPt * st.GroundSlabFactor;
-        var geoms = new[] { g.Outline }.Concat(g.Beyond.Select(b => b.Geometry)).Concat(g.BuildingCuts.Select(b => b.Geometry)).Where(x => !x.IsEmpty).ToList();
+        var geoms = new[] { g.Outline }.Concat(g.View.Select(b => b.Geometry)).Concat(g.BuildingCuts.Select(b => b.Geometry)).Where(x => !x.IsEmpty).ToList();
         var zMax = geoms.Select(x => x.EnvelopeInternal.MaxY).DefaultIfEmpty(g.Ground + 30).Max();
         var zMin = Math.Min(g.Ground, geoms.Select(x => x.EnvelopeInternal.MinY).DefaultIfEmpty(g.Ground).Min());
         double w = plane.Length * k, h = (zMax - zMin) * k + groundT / 2, m = pg.MarginPt;
@@ -68,32 +69,8 @@ public static class SectionDrawing
             d.Layer("PD_ANNOTATION").Items.Add(Text(p + "LVL_" + l.Name + "_TXT", x0 - colL + ctx.Pt(4), map.Y(l.Elevation) - ctx.Pt(2), label, "PD Note", "left"));
         }
 
-        // Behind the cut, ours and other buildings alike: opaque (white) masses with a dashed outline, painted far → near.
-        // Facade grids are glass (no fill): the parts hidden by nearer masses are removed.
-        var fill = d.Swatch("PD_BEYOND_FILL", st.BeyondFill);
-        var dashed = d.Gray(st.BeyondStroke);
-        var sorted = g.Beyond.Select((b, i) => (b, i)).Where(x => !x.b.Geometry.IsEmpty).OrderByDescending(x => x.b.Distance).ToList();
-        foreach (var (b, i) in sorted)
-        {
-            if (b.Kind == BeyondKind.Facade)
-            {
-                var nearer = sorted.Where(x => x.b.Kind != BeyondKind.Facade && x.b.Distance < b.Distance).Select(x => x.b.Geometry)
-                    .Concat(g.BuildingCuts.Select(c => c.Geometry)).Where(x => !x.IsEmpty).ToList();
-                var lines = b.Geometry.Boundary;
-                if (nearer.Count > 0) lines = lines.Difference(MeshSlicer().BuildGeometry(nearer).Union());
-                if (!lines.IsEmpty)
-                    d.Layer("FACADE").Items.Add(map.Geom(p + $"FACADE_BEYOND_{i:000}", lines, null, d.Gray(st.FacadeBeyond), st.FacadeBeyondPt, closed: false));
-                continue;
-            }
-            var item = map.Poly(p + $"BEYOND_{i:000}", b.Geometry, fill, dashed, st.BeyondStrokePt);
-            item.Dash = st.BeyondDash;
-            d.Layer("PD_BEYOND").Items.Add(item);
-            if (b.Kind == BeyondKind.Building && b.Label.Length > 0)
-            {
-                var e = b.Geometry.EnvelopeInternal;
-                d.Layer("PD_LABELS").Items.Add(Text(p + $"BEYOND_{i:000}_LBL", map.X((e.MinX + e.MaxX) / 2), map.Y(e.MaxY) - ctx.Pt(4), b.Label, "PD Note", "center"));
-            }
-        }
+        // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.
+        Views.ProjectedView.Draw(d, ctx, map, p + "VIEW_", g.View);
 
         // Other buildings cut by the section: solid section (white fill) with a heavy outline, above everything behind.
         foreach (var (id, geom) in g.BuildingCuts.Where(x => !x.Geometry.IsEmpty))

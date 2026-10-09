@@ -77,9 +77,16 @@ public sealed class ProgramSetting
     public string? Hatch { get; set; }
 }
 
+/// <summary>A section cut or an elevation: a plan line, the side it looks at, and the visible depth.</summary>
 public sealed class SectionSetting
 {
+    public const string SectionKind = "Section";
+    public const string ElevationKind = "Elevation";
+
     public string Name { get; set; } = "A";
+    /// <summary>"Section" (cuts the building) or "Elevation" (projected view, nothing cut).</summary>
+    public string Kind { get; set; } = SectionKind;
+    public bool IsElevation => Kind == ElevationKind;
     public string? ObjectId { get; set; }
     /// <summary>Two model-unit points [x0,y0,x1,y1].</summary>
     public double[] Line { get; set; } = Array.Empty<double>();

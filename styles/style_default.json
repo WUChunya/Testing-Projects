@@ -159,23 +159,14 @@
     "barGapPt": 1.5,
     "outlinePt": 0.75,
     "facadeCutPt": 0.5,
-    "facadeBeyond": "#DCDCDC",
-    "facadeBeyondPt": 0.25,
     "levelColumn": true,
     "levelLineStroke": "#999999",
     "levelLineStrokePt": 0.25,
     "heightDimension": true,
     "titlePrefix": "SECTION",
-    "comment": "Beyond (own and other buildings) = dashed grey outline with white fill, drawn far-to-near so nearer masses hide farther ones. Cut context = black outline, white fill. Ground line = slab weight x groundSlabFactor, centred on grade.",
+    "comment": "Cut parts of the section. What is seen behind the cut uses \"view\".",
     "groundSlabFactor": 2.0,
     "groundColor": "#000000",
-    "beyondStroke": "#999999",
-    "beyondStrokePt": 0.5,
-    "beyondDash": [
-      3,
-      2
-    ],
-    "beyondFill": "#FFFFFF",
     "contextCutStroke": "#000000",
     "contextCutStrokePt": 2.5,
     "contextCutFill": "#FFFFFF"
@@ -189,5 +180,41 @@
     "labelMinBarWidthPt": 14.0,
     "textReferenceScale": "1\" = 45'-0\"",
     "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale."
+  },
+  "view": {
+    "comment": "Projected (Make2D-like) view used behind section cuts and for elevations. Our building: masses = solid light-grey base; every slab/facade layer gets its own AI layer and global swatch (grey by layer order, glass white); all opaque, near hides far. Other buildings: white fill + dashed grey outline.",
+    "massFill": "#E6E6E6",
+    "massStroke": "#8C8C8C",
+    "massStrokePt": 0.35,
+    "edgeStroke": "#8C8C8C",
+    "edgeStrokePt": 0.25,
+    "glassPattern": "GLASS|GLAZ|^CW|CURTAIN|WINDOW|VISION",
+    "glassFill": "#FFFFFF",
+    "layerGrays": [
+      "#C8C8C8",
+      "#B0B0B0",
+      "#9A9A9A",
+      "#D6D6D6",
+      "#848484"
+    ],
+    "layerFills": {},
+    "contextFill": "#FFFFFF",
+    "contextStroke": "#999999",
+    "contextStrokePt": 0.5,
+    "contextDash": [
+      3,
+      2
+    ]
+  },
+  "elevation": {
+    "titlePrefix": "ELEVATION",
+    "levelMarkers": true,
+    "levelLineStroke": "#808080",
+    "levelLineStrokePt": 0.35,
+    "levelLineDash": [
+      6,
+      3
+    ],
+    "markerSizePt": 6.0
   }
 }
