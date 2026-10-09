@@ -5,8 +5,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 ## Status
 - Next session: **S4 Plan + Axon** (see `docs/DEV_PROMPT.md`). Reuse `ExportContext`, `PageMap`-style mapping, `Drawing` model, `Exporter.BuildDrawings`.
 - S3 done (v0.2.0): `Drawing` model → `SvgWriter` (preview) + `JsxWriter` (runtime + data literal) + `Exporter` (program_areas.csv, diagram.json,
-  export_log.txt, `_preview/*.svg`, ProgramDiagram.jsx); `IllustratorLauncher` COM; Section A golden `tests/golden/section_A.svg`. 47 tests green.
-  S3 gaps: key plan, street names, stair hatch (Circ-Vertical), basement pit, Unassigned hatch (solid grey for now).
+  export_log.txt, `_preview/*.svg`, ProgramDiagram.jsx); `IllustratorLauncher` COM; golden `tests/golden/section_A.svg`.
 - Rev 3 (v0.2.1, user refs): true scale always (scale box accepts any Bluebeam-style text or 1:N), artboard "Fit content";
   visual slabs (fixed 3 pt, never through a block or tall space), 2 pt white gap block↔slab, thin wall line, black ground band,
   labels centred on outlined glyphs (bold caps), own building behind = faint lines, other buildings = grey silhouettes; optional PNG.
@@ -30,13 +29,12 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 1. Unzip `ProgramDiagram-0.2.1.zip` to a user folder, replace old files, restart Rhino.
 2. Open the test model; ⑥ keep section A; confirm all tabs; ⑦ Export (auto Illustrator ticked).
 3. Illustrator starts, writes `02_Section_A.ai`; message shows illustrator_log.txt "OK". VERIFY-WIN COM launch.
-4. Open the .ai: layers PD_GROUND…PD_ANNOTATION, FACADE, _MANUAL, OVERLAY; swatches PRG_LAB etc. are global; text uses "PD Label"
-   (Century Gothic, fallback Arial). Rotated texts (height dim, property line) sit right. VERIFY-WIN rotation pivot.
+4. Open the .ai/.png: true scale, labels centred in blocks (VERIFY-WIN glyph centring), PD_* layers + FACADE/_MANUAL/OVERLAY, global PRG_* swatches.
 5. Draw something unnamed in PD_PROGRAM and something on _MANUAL; change a mass; export again → both kept, bars updated.
 6. Recolour swatch PRG_LAB in ⑤, export → existing .ai recolours. Compare with `_preview/02_Section_A.svg`.
 7. Earlier checks (①–⑧, custom programs) as before.
 
 ## Known issues
 - Section depth 500 ft pulls a large context building in behind the whole cut; use a smaller depth if unwanted.
-- Not yet: street names under grade, building name above, key plan, trees (ref 1) — candidates for the next revision.
+- Not yet: street names, building name above, key plan, trees, stair hatch, Unassigned hatch (grey) — next revision candidates.
 - Section-closed volume ≈ mid area × height. Underground context trimmed in sections only. Layer-priority overlap rule not implemented.
