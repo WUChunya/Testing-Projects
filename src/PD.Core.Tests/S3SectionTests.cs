@@ -207,4 +207,26 @@ public class S3SectionTests
         }
         return Math.Abs(a) / 2;
     }
+
+    [Fact]
+    public void SiteSection_CutsEveryNeighbourOnTheLine()
+    {
+        // East–west line across the whole site: open-polysurface neighbours must still be cut (or at least drawn).
+        var r = AnalysisFixture.Result;
+        var y = (r.Building.MinY + r.Building.MaxY) / 2;
+        var (x0, y0, _) = r.Frame.ToModel(-1500, y, 0);
+        var (x1, y1, _) = r.Frame.ToModel(1500, y, 0);
+        var sec = new SectionSetting { Name = "GG", Line = new[] { x0, y0, x1, y1 }, DepthFt = 100 };
+        var plane = new PD.Core.Geometry.SectionPlane(-1500, y, 1500, y, true);
+        var g = SectionGeometry.Build(r, plane, 100, ctxRules(), PD.Core.Config.Style.Default());
+        var crossing = r.Local.Objects.Count(o => o.Role == "BG.Building" && o.Mesh != null && !r.Stray.Contains(o.Id)
+            && plane.WRange(o.Mesh!) is var w && w.Min < 0 && w.Max > 0 && plane.UOverlaps(o.Mesh!));
+        _out.WriteLine($"crossing {crossing}, cut {g.BuildingCuts.Count}");
+        Assert.True(crossing >= 4);
+        Assert.Equal(crossing, g.BuildingCuts.Count + g.View.Count(v => v.Kind == PD.Core.Views.ViewKind.Context && v.Distance == 0));
+        Assert.True(g.BuildingCuts.Count >= crossing - 1);
+        Assert.NotNull(SectionDrawing.Build(Context(), sec));
+    }
+
+    static PD.Core.Config.Rules ctxRules() => PD.Core.Config.Rules.Default();
 }

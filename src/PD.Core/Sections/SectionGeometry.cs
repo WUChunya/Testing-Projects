@@ -69,7 +69,19 @@ public sealed class SectionGeometry
                     g.FacadeCut.AddRange(open);
                 }
                 else if (kind == Views.ViewKind.Context)
-                    g.BuildingCuts.Add((o.Id, Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground)));
+                {
+                    // Neighbours are often open polysurfaces: close the cut along the section line (PRD 3.5 ②);
+                    // if it still does not close, show the building as seen rather than dropping it.
+                    var cut = Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground);
+                    if (cut.Area < 1)
+                        cut = Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt * 10, closeOpen: true)), plane, g.Ground);
+                    if (cut.Area >= 1) g.BuildingCuts.Add((o.Id, cut));
+                    else
+                    {
+                        var seen = Views.ProjectedView.Item(o, kind, plane, 0, g.Ground);
+                        if (!seen.Geometry.IsEmpty) g.View.Add(seen);
+                    }
+                }
                 continue;
             }
             if (wMin < 0 || wMin > depthFt) continue;

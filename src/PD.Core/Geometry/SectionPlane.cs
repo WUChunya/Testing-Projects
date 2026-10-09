@@ -49,8 +49,9 @@ public sealed class SectionPlane
     }
 
     /// <summary>Cut loops in (u, z).</summary>
-    public List<List<(double X, double Y)>> Cut(MeshData m, double weldTol, double gapTol, List<List<(double X, double Y)>>? open = null) =>
-        MeshSlicer.Slice(ToSectionSpace(m), 0, weldTol, gapTol, false, out _, open);
+    public List<List<(double X, double Y)>> Cut(MeshData m, double weldTol, double gapTol, List<List<(double X, double Y)>>? open = null,
+        bool closeOpen = false) =>
+        MeshSlicer.Slice(ToSectionSpace(m), 0, weldTol, gapTol, closeOpen, out _, open);
 
     /// <summary>Nearest and farthest signed distance of the mesh from the plane (positive = in the viewing direction).</summary>
     public (double Min, double Max) WRange(MeshData m)
