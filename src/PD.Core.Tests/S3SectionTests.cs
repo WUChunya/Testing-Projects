@@ -83,10 +83,36 @@ public class S3SectionTests
                 sl.Paths[0][0][0] < bar.X + bar.W - 0.5 && sl.Paths[0][1][0] > bar.X + 0.5);
         // Bars clear the slab by half its weight plus the gap.
         Assert.All(d.Layer("PD_PROGRAM").Items, b => Assert.True(b.H > 0));
-        // Other buildings: filled silhouettes; our own building behind the cut: faint lines, no fill.
-        Assert.All(d.Layer("PD_CONTEXT").Items, i => Assert.Equal("BG_CONTEXT", i.Fill));
-        Assert.All(d.Layer("PD_BEYOND").Items.Concat(d.Layer("FACADE").Items), i => Assert.Null(i.Fill));
-        _out.WriteLine($"artboard {d.Artboards[0].W}x{d.Artboards[0].H}, context {d.Layer("PD_CONTEXT").Items.Count}, beyond {d.Layer("PD_BEYOND").Items.Count}");
+        // Behind the cut (ours and others): opaque fill + dashed outline; cut context: solid white with a heavy outline.
+        Assert.NotEmpty(d.Layer("PD_BEYOND").Items);
+        Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("PD_BEYOND_FILL", i.Fill); Assert.NotNull(i.Dash); });
+        Assert.All(d.Layer("PD_CONTEXT_CUT").Items, i => { Assert.Equal("PD_CUT_FILL", i.Fill); Assert.Equal(st.ContextCutStrokePt, i.StrokePt); });
+        Assert.All(d.Layer("FACADE").Items, i => Assert.Null(i.Fill));
+        // Painter's order: layers bottom → top put what is behind under what is cut.
+        var order = d.Layers.Select(l => l.Name).ToList();
+        Assert.True(order.IndexOf("PD_BEYOND") < order.IndexOf("PD_CONTEXT_CUT") && order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_PROGRAM"));
+        Assert.True(order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_LEVELS") && order.IndexOf("PD_LEVELS") < order.IndexOf("PD_PROGRAM"));
+        // Ground line = 2 × slab weight, centred on grade.
+        var ground = d.Layer("PD_GROUND").Items.Single();
+        Assert.Equal(st.SlabPt * st.GroundSlabFactor, ground.Paths![0][2][1] - ground.Paths[0][0][1], 3);
+        // Level column and height dimension are back.
+        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_LVL_L1_TXT");
+        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_DIM_HEIGHT_TXT");
+        _out.WriteLine($"artboard {d.Artboards[0].W}x{d.Artboards[0].H}, beyond {d.Layer("PD_BEYOND").Items.Count}, cut ctx {d.Layer("PD_CONTEXT_CUT").Items.Count}");
+    }
+
+    [Theory]
+    [InlineData("1\" = 45'-0\"", 1.0)]
+    [InlineData("1/32\" = 1'-0\"", 1.40625)]
+    [InlineData("1\" = 90'-0\"", 0.5)]
+    public void TextScalesWithDrawingScale(string scale, double factor)
+    {
+        var ctx = Context();
+        ctx.Settings.Output.Scale = scale;
+        var d = SectionDrawing.Build(ctx, SectionA);
+        var label = d.ParaStyles.Single(s => s.Name == "PD Label");
+        Assert.Equal(ctx.Style.Fonts.Label.SizePt * factor, label.SizePt, 6);
+        Assert.Equal(factor, ctx.TextScale, 6);
     }
 
     [Fact]

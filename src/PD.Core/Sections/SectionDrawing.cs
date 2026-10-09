@@ -22,30 +22,34 @@ public static class SectionDrawing
 
         var d = new PD.Core.Drawing.Drawing { FileName = $"02_Section_{Safe(sec.Name)}.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "PD_CONTEXT", "PD_LEVELS", "PD_BEYOND", "FACADE", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
+        // Bottom → top: what is farther away is painted first and hidden by what is nearer.
+        // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
+        foreach (var n in new[] { "PD_BEYOND", "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
             d.Layer(n);
 
-        // True scale always; the artboard grows around the drawing ("Fit content") or the drawing is centred on a fixed sheet.
+        // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
         var k = ctx.PtPerFt;
-        var zMax = new[] { g.Outline }.Concat(g.Beyond.Select(b => b.Geometry)).Concat(g.BuildingCuts.Select(b => b.Geometry))
-            .Where(x => !x.IsEmpty).Select(x => x.EnvelopeInternal.MaxY).DefaultIfEmpty(g.Ground + 30).Max();
-        double w = plane.Length * k, h = (zMax - g.Ground) * k + st.GroundPt, m = pg.MarginPt;
-        // Side columns only when their annotations are switched on.
-        var colL = st.LevelColumn ? pg.LevelColumnPt : 0;
-        var colR = st.HeightDimension ? pg.DimColumnPt : 0;
+        var groundT = st.SlabPt * st.GroundSlabFactor;
+        var geoms = new[] { g.Outline }.Concat(g.Beyond.Select(b => b.Geometry)).Concat(g.BuildingCuts.Select(b => b.Geometry)).Where(x => !x.IsEmpty).ToList();
+        var zMax = geoms.Select(x => x.EnvelopeInternal.MaxY).DefaultIfEmpty(g.Ground + 30).Max();
+        var zMin = Math.Min(g.Ground, geoms.Select(x => x.EnvelopeInternal.MinY).DefaultIfEmpty(g.Ground).Min());
+        double w = plane.Length * k, h = (zMax - zMin) * k + groundT / 2, m = pg.MarginPt;
+        var colL = st.LevelColumn ? ctx.Pt(pg.LevelColumnPt) : 0;
+        var colR = st.HeightDimension ? ctx.Pt(pg.DimColumnPt) : 0;
+        var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
         if (ctx.ArtboardSize is { } fixedSize)
         {
             (abW, abH) = fixedSize;
             x0 = m + colL + (abW - 2 * m - colL - colR - w) / 2;
-            y0 = m + (abH - 2 * m - pg.TitleBandPt - h) / 2;
+            y0 = m + (abH - 2 * m - titleBand - h) / 2;
             if (x0 < m + colL - 0.5 || y0 < m - 0.5)
                 d.Notes.Add($"Section {sec.Name} at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
         }
         else
         {
             abW = 2 * m + colL + w + colR;
-            abH = 2 * m + h + pg.TitleBandPt;
+            abH = 2 * m + h + titleBand;
             x0 = m + colL;
             y0 = m;
         }
@@ -53,41 +57,52 @@ public static class SectionDrawing
         d.Artboards.Add(new Artboard($"SECTION {sec.Name}", Math.Ceiling(abW), Math.Ceiling(abH)));
         var p = $"SEC_{Safe(sec.Name)}_";
 
-        // Other buildings: light grey silhouettes with a thin outline (cut or seen), trimmed at grade.
-        var ctxFill = d.Swatch("BG_CONTEXT", st.ContextFill);
-        var ctxLine = d.Gray(st.ContextStroke);
-        foreach (var (b, i) in g.Beyond.Select((b, i) => (b, i)).Where(x => x.b.Kind == BeyondKind.Building && !x.b.Geometry.IsEmpty))
-        {
-            d.Layer("PD_CONTEXT").Items.Add(map.Poly(p + $"CONTEXT_{i:000}", b.Geometry, ctxFill, ctxLine, st.ContextStrokePt));
-            if (b.Label.Length == 0) continue;
-            var e = b.Geometry.EnvelopeInternal;
-            d.Layer("PD_LABELS").Items.Add(Text(p + $"CONTEXT_{i:000}_LBL", map.X((e.MinX + e.MaxX) / 2), map.Y(e.MaxY) - 6, b.Label, "PD Note", "center"));
-        }
-        foreach (var (id, geom) in g.BuildingCuts.Where(x => !x.Geometry.IsEmpty))
-            d.Layer("PD_CONTEXT").Items.Add(map.Poly(p + "CONTEXT_CUT_" + id[..Math.Min(8, id.Length)], geom, ctxFill, ctxLine, st.ContextStrokePt));
-
-        // Faint level lines and the left level column: bold level name + floor-to-floor height.
+        // Level lines and the left level column (name + floor-to-floor height).
         var main = g.Levels.Where(l => !l.IsMezzanine).ToList();
         foreach (var l in g.Levels)
         {
             d.Layer("PD_LEVELS").Items.Add(map.Line(p + "LVL_" + l.Name, new[] { (0.0, l.Elevation), (plane.Length, l.Elevation) }, d.Gray(st.LevelLineStroke), st.LevelLineStrokePt));
             if (!st.LevelColumn) continue;
             var next = main.FirstOrDefault(x => x.Elevation > l.Elevation + 0.01);
-            var height = next == null || l.IsRoof ? "ROOF" : FeetInches.Format(next.Elevation - l.Elevation);
-            var y = map.Y(l.Elevation) - 3;
-            var lx = x0 - colL + 6;
-            d.Layer("PD_ANNOTATION").Items.Add(Text(p + "LVL_" + l.Name + "_TXT", lx, y, l.Name, "PD Level", "left"));
-            d.Layer("PD_ANNOTATION").Items.Add(Text(p + "LVL_" + l.Name + "_HT", lx + 22, y, height, "PD Note", "left"));
+            var label = next == null || l.IsRoof ? $"{l.Name} ROOF" : $"{l.Name}  {FeetInches.Format(next.Elevation - l.Elevation)}";
+            d.Layer("PD_ANNOTATION").Items.Add(Text(p + "LVL_" + l.Name + "_TXT", x0 - colL + ctx.Pt(4), map.Y(l.Elevation) - ctx.Pt(2), label, "PD Note", "left"));
         }
 
-        // Our own building behind the cut (uncut masses, facade grid): faint lines only, hidden by the colour blocks.
-        foreach (var (b, i) in g.Beyond.Select((b, i) => (b, i)).Where(x => x.b.Kind != BeyondKind.Building && !x.b.Geometry.IsEmpty))
-            d.Layer(b.Kind == BeyondKind.Facade ? "FACADE" : "PD_BEYOND").Items.Add(
-                map.Poly(p + $"BEYOND_{i:000}", b.Geometry, null, d.Gray(st.BeyondStroke), st.BeyondStrokePt));
+        // Behind the cut, ours and other buildings alike: opaque (white) masses with a dashed outline, painted far → near.
+        // Facade grids are glass (no fill): the parts hidden by nearer masses are removed.
+        var fill = d.Swatch("PD_BEYOND_FILL", st.BeyondFill);
+        var dashed = d.Gray(st.BeyondStroke);
+        var sorted = g.Beyond.Select((b, i) => (b, i)).Where(x => !x.b.Geometry.IsEmpty).OrderByDescending(x => x.b.Distance).ToList();
+        foreach (var (b, i) in sorted)
+        {
+            if (b.Kind == BeyondKind.Facade)
+            {
+                var nearer = sorted.Where(x => x.b.Kind != BeyondKind.Facade && x.b.Distance < b.Distance).Select(x => x.b.Geometry)
+                    .Concat(g.BuildingCuts.Select(c => c.Geometry)).Where(x => !x.IsEmpty).ToList();
+                var lines = b.Geometry.Boundary;
+                if (nearer.Count > 0) lines = lines.Difference(MeshSlicer().BuildGeometry(nearer).Union());
+                if (!lines.IsEmpty)
+                    d.Layer("FACADE").Items.Add(map.Geom(p + $"FACADE_BEYOND_{i:000}", lines, null, d.Gray(st.FacadeBeyond), st.FacadeBeyondPt, closed: false));
+                continue;
+            }
+            var item = map.Poly(p + $"BEYOND_{i:000}", b.Geometry, fill, dashed, st.BeyondStrokePt);
+            item.Dash = st.BeyondDash;
+            d.Layer("PD_BEYOND").Items.Add(item);
+            if (b.Kind == BeyondKind.Building && b.Label.Length > 0)
+            {
+                var e = b.Geometry.EnvelopeInternal;
+                d.Layer("PD_LABELS").Items.Add(Text(p + $"BEYOND_{i:000}_LBL", map.X((e.MinX + e.MaxX) / 2), map.Y(e.MaxY) - ctx.Pt(4), b.Label, "PD Note", "center"));
+            }
+        }
+
+        // Other buildings cut by the section: solid section (white fill) with a heavy outline, above everything behind.
+        foreach (var (id, geom) in g.BuildingCuts.Where(x => !x.Geometry.IsEmpty))
+            d.Layer("PD_CONTEXT_CUT").Items.Add(map.Poly(p + "CONTEXT_CUT_" + id[..Math.Min(8, id.Length)], geom,
+                d.Swatch("PD_CUT_FILL", st.ContextCutFill), d.Gray(st.ContextCutStroke), st.ContextCutStrokePt));
 
         SectionBars.Add(d, ctx, g, map, p);
 
-        // Thin exterior wall line, visual slabs (fixed weight, centred on the floor line), facade cuts, ground line.
+        // Our building: thin wall line, visual slabs (fixed weight, centred on the floor line), facade cuts.
         if (!g.Outline.IsEmpty)
             d.Layer("PD_OUTLINE").Items.Add(map.Poly(p + "OUTLINE", g.Outline, null, d.Gray("#000000"), st.OutlinePt));
         foreach (var (c, i) in g.FacadeCut.Select((c, i) => (c, i)))
@@ -99,13 +114,15 @@ public static class SectionDrawing
                 Kind = ItemKind.Path, Name = p + $"SLAB_{FeetInches.Format(z)}_{u0:0}", Fill = slab,
                 Paths = new() { RectPts(Math.Min(map.X(u0), map.X(u1)), map.Y(z) - st.SlabPt / 2, Math.Max(map.X(u0), map.X(u1)), map.Y(z) + st.SlabPt / 2) },
             });
+
+        // Ground line: slab weight × factor, centred on grade; basement levels below it draw like any other level.
         d.Layer("PD_GROUND").Items.Add(new DItem
         {
-            Kind = ItemKind.Path, Name = p + "GROUND", Fill = d.Swatch("BG_GROUND", st.GroundFill),
-            Paths = new() { RectPts(map.X(0), map.Y(g.Ground), map.X(plane.Length), map.Y(g.Ground) + st.GroundPt) },
+            Kind = ItemKind.Path, Name = p + "GROUND", Fill = d.Swatch("BG_GROUND", st.GroundColor),
+            Paths = new() { RectPts(map.X(0), map.Y(g.Ground) - groundT / 2, map.X(plane.Length), map.Y(g.Ground) + groundT / 2) },
         });
 
-        SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(g.Ground) + st.GroundPt + 26);
+        SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(26));
         return d;
     }
 

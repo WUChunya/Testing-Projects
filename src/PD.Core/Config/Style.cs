@@ -60,7 +60,6 @@ public sealed class Fonts
     public Font Label { get; set; } = new();
     public Font Title { get; set; } = new();
     public Font Note { get; set; } = new();
-    public Font Level { get; set; } = new();
     public Font Chart { get; set; } = new();
 }
 
@@ -81,16 +80,18 @@ public sealed class SectionStyle
     public double BarGapPt { get; set; }
     /// <summary>Exterior wall line of the cut building.</summary>
     public double OutlinePt { get; set; }
-    /// <summary>Our own building seen behind the cut (uncut masses, facade grid): faint lines, no fill.</summary>
+    /// <summary>Uncut masses behind the cut (ours and other buildings): dashed outline with an opaque fill, painted far to near.</summary>
     public string BeyondStroke { get; set; } = "";
     public double BeyondStrokePt { get; set; }
-    /// <summary>Other buildings (BG.Building): light grey silhouette with a thin outline, trimmed at grade.</summary>
-    public string ContextFill { get; set; } = "";
-    public string ContextStroke { get; set; } = "";
-    public double ContextStrokePt { get; set; }
-    /// <summary>Ground line drawn at a fixed visual weight below grade.</summary>
-    public double GroundPt { get; set; }
-    public string GroundFill { get; set; } = "";
+    public double[]? BeyondDash { get; set; }
+    public string BeyondFill { get; set; } = "";
+    /// <summary>Other buildings cut by the section: solid (filled) with a heavy outline.</summary>
+    public string ContextCutStroke { get; set; } = "";
+    public double ContextCutStrokePt { get; set; }
+    public string ContextCutFill { get; set; } = "";
+    /// <summary>Ground line weight = slab weight × this factor, centred on grade (basements draw like other levels).</summary>
+    public double GroundSlabFactor { get; set; }
+    public string GroundColor { get; set; } = "";
     public double FacadeCutPt { get; set; }
     public string FacadeBeyond { get; set; } = "";
     public double FacadeBeyondPt { get; set; }
@@ -104,6 +105,8 @@ public sealed class SectionStyle
 public sealed class PageStyle
 {
     public double MarginPt { get; set; }
+    /// <summary>Scale at which text sizes and annotation offsets are given; they scale with the drawing scale.</summary>
+    public string TextReferenceScale { get; set; } = "";
     public double LevelColumnPt { get; set; }
     public double DimColumnPt { get; set; }
     public double TitleBandPt { get; set; }

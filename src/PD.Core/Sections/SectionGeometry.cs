@@ -14,7 +14,8 @@ public sealed record CutBar(string MassId, string ProgramKey, double U0, double 
 
 public enum BeyondKind { Program, Building, Facade }
 
-public sealed record BeyondShape(string Id, BeyondKind Kind, NtsGeometry Geometry, string Label);
+/// <param name="Distance">Nearest distance behind the cut plane (ft); used to paint far to near.</param>
+public sealed record BeyondShape(string Id, BeyondKind Kind, NtsGeometry Geometry, string Label, double Distance);
 
 /// <summary>Everything cut or seen by one section, in section feet (u along the line, z elevation).</summary>
 public sealed class SectionGeometry
@@ -71,15 +72,15 @@ public sealed class SectionGeometry
                     g.FacadeCut.AddRange(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open));
                     g.FacadeCut.AddRange(open);
                 }
-                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Facade, Clip(BoxProjection(o, plane), plane), ""));
+                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Facade, Clip(BoxProjection(o, plane), plane), "", wMin));
             }
             else if (o.Role == Roles.Building)
             {
                 if (crosses) g.BuildingCuts.Add((o.Id, Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground)));
-                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Building, Clip(plane.Projection(o.Mesh!), plane, g.Ground), o.Name));
+                else if (inFront) g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Building, Clip(plane.Projection(o.Mesh!), plane, g.Ground), o.Name, wMin));
             }
             else if (massIds.Contains(o.Id) && !crosses && inFront)
-                g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Program, Clip(plane.Projection(o.Mesh!), plane), ""));
+                g.Beyond.Add(new BeyondShape(o.Id, BeyondKind.Program, Clip(plane.Projection(o.Mesh!), plane), "", wMin));
         }
 
         foreach (var o in r.Local.Objects.Where(o => o.Role == "BG.Line" && o.Points is { Length: > 1 }))

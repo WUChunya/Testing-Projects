@@ -32,10 +32,10 @@ public static class SectionBars
                 R = Math.Min(st.BarCornerPt, Math.Min(w, h) / 2), Fill = fill, Stroke = stroke, StrokePt = strokePt, Dash = dash,
             });
 
-            if (w < ctx.Style.Page.LabelMinBarWidthPt) continue;
+            if (w < ctx.Pt(ctx.Style.Page.LabelMinBarWidthPt)) continue;
             var text = row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
             if (label.AllCaps) text = text.ToUpperInvariant();
-            var wrapped = TextFit.Wrap(text, label.SizePt, w - 4, h - 2);
+            var wrapped = TextFit.Wrap(text, ctx.Pt(label.SizePt), w - 4, h - 2);
             if (wrapped == null) continue;
             // Visual centre of the block: Illustrator re-centres on the outlined glyphs, the SVG estimates it.
             d.Layer("PD_LABELS").Items.Add(SectionDrawing.Text(name + "_LBL", x0 + w / 2, yTop + h / 2, wrapped, "PD Label", "center", center: true));

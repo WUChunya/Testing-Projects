@@ -20,23 +20,23 @@ public static class SectionAnnotation
             var line = map.Line(p + $"PROPERTY_{i}", new[] { (u, zMin), (u, zMax) }, d.Swatch("BG_PROPERTY_LINE", prop?.Stroke ?? "#FF0000"), ctx.Style.Strokes.RoomPt);
             line.Dash = prop?.Dash;
             anno.Items.Add(line);
-            anno.Items.Add(SectionDrawing.Text(p + $"PROPERTY_{i}_TXT", map.X(u) - 3, map.Y(g.Ground) - 6, "PROPERTY LINE", "PD Note", "left", 90));
+            anno.Items.Add(SectionDrawing.Text(p + $"PROPERTY_{i}_TXT", map.X(u) - ctx.Pt(3), map.Y(g.Ground) - ctx.Pt(6), "PROPERTY LINE", "PD Note", "left", 90));
         }
 
         var env = g.Outline.EnvelopeInternal;
         if (ctx.Style.Section.HeightDimension && !g.Outline.IsEmpty && env.MaxY > g.Ground)
         {
-            var x = map.X(g.Plane.Length) + 22;
+            var x = map.X(g.Plane.Length) + ctx.Pt(22);
             double yTop = map.Y(env.MaxY), yBot = map.Y(g.Ground);
-            const double tick = 4;
+            var tick = ctx.Pt(4);
             anno.Items.Add(Seg(p + "DIM_HEIGHT", x, yTop, x, yBot, black, thin));
             anno.Items.Add(Seg(p + "DIM_HEIGHT_T1", x - tick, yTop + tick, x + tick, yTop - tick, black, thin));
             anno.Items.Add(Seg(p + "DIM_HEIGHT_T2", x - tick, yBot + tick, x + tick, yBot - tick, black, thin));
-            anno.Items.Add(SectionDrawing.Text(p + "DIM_HEIGHT_TXT", x - 4, (yTop + yBot) / 2, FeetInches.Format(env.MaxY - g.Ground), "PD Note", "center", 90));
+            anno.Items.Add(SectionDrawing.Text(p + "DIM_HEIGHT_TXT", x - ctx.Pt(4), (yTop + yBot) / 2, FeetInches.Format(env.MaxY - g.Ground), "PD Note", "center", 90));
         }
 
         anno.Items.Add(SectionDrawing.Text(p + "TITLE", titleX, titleY, $"{ctx.Style.Section.TitlePrefix} {sec.Name}", "PD Title", "left"));
-        anno.Items.Add(SectionDrawing.Text(p + "SCALE", titleX, titleY + 12, $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
+        anno.Items.Add(SectionDrawing.Text(p + "SCALE", titleX, titleY + ctx.Pt(12), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
     }
 
     static DItem Seg(string name, double x0, double y0, double x1, double y1, string? stroke, double pt) => new()

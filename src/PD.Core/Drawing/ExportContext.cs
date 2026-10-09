@@ -29,6 +29,12 @@ public sealed class ExportContext
     /// <summary>Drawing scale; drawings are always at true scale (never fitted).</summary>
     public double PtPerFt => ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 2.25;
 
+    /// <summary>Text and annotation spacing scale: drawing scale ÷ the style's reference scale (1" = 45' → 1).</summary>
+    public double TextScale => PtPerFt / (ParseScale(Style.Page.TextReferenceScale) ?? PtPerFt);
+
+    /// <summary>A size given at the reference scale, in points at the drawing scale.</summary>
+    public double Pt(double atReference) => atReference * TextScale;
+
     /// <summary>Fixed artboard size, or null for "Fit content" (artboard grows around the drawing).</summary>
     public (double W, double H)? ArtboardSize =>
         Rules.Output.ArtboardSizesPt.TryGetValue(Settings.Output.Artboard, out var s) ? (s[0], s[1]) : null;
@@ -68,10 +74,9 @@ public sealed class ExportContext
     {
         var f = Style.Fonts;
         var color = d.Gray(Style.Page.LabelColor)!;
-        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, f.Label.SizePt, f.Label.AllCaps, "center", color, f.Label.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, f.Note.SizePt, f.Note.AllCaps, "left", color, f.Note.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, f.Note.SizePt, f.Note.AllCaps, "right", color, f.Note.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Level", f.Level.PostScript, f.Level.FallbackPostScript, f.Level.Family, f.Level.SizePt, f.Level.AllCaps, "left", color, f.Level.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, f.Title.SizePt, f.Title.AllCaps, "left", color, f.Title.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", color, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "left", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "right", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), f.Title.AllCaps, "left", color, f.Title.Weight));
     }
 }
