@@ -1,0 +1,45 @@
+using Eto.Forms;
+using PD.Core.Analysis;
+using PD.Rhino.Adapter;
+
+namespace PD.Rhino.UI.Tabs;
+
+/// <summary>④ Names: label per mass (object name → program name), stable ids L03_LAB_01, batch replace.</summary>
+internal sealed class NamesTab : TabBase
+{
+    readonly GridView _grid = Ui.Grid(360);
+    readonly TextBox _find = new() { PlaceholderText = "查找" };
+    readonly TextBox _replace = new() { PlaceholderText = "替换为" };
+
+    public NamesTab(PdSession s) : base(s)
+    {
+        _grid.Columns.Add(Ui.Text<NameRow>("ID", r => r.StableId, null, 130));
+        _grid.Columns.Add(Ui.Text<NameRow>("Program", r => r.ProgramKey, null, 90));
+        _grid.Columns.Add(Ui.Text<NameRow>("标签 Label", r => r.Label, (r, v) => { s.Settings.Names[r.MassId] = v; s.Save(); }, 180));
+        _grid.CellDoubleClick += (_, e) => { if (e.Item is NameRow r) Ui.SelectAndZoom(Session, new[] { r.MassId }); };
+
+        var layout = Ui.Layout();
+        layout.Add(_grid, yscale: true);
+        layout.AddSeparateRow(_find, _replace, Ui.Button("全部替换", ReplaceAll), Ui.Button("清除修改", Reset));
+        layout.Add(Ui.Confirm(s, "names"));
+        Content = layout;
+    }
+
+    List<NameRow> Rows() => Session.Result == null ? new() : Naming.Build(Session.Result, Session.Settings.Names, Session.ProgramLabel);
+
+    public override void Refresh() => _grid.DataStore = Rows();
+
+    void ReplaceAll()
+    {
+        if (string.IsNullOrEmpty(_find.Text)) return;
+        foreach (var r in Rows().Where(r => r.Label.Contains(_find.Text, StringComparison.OrdinalIgnoreCase)))
+            Session.Settings.Names[r.MassId] = r.Label.Replace(_find.Text, _replace.Text ?? "", StringComparison.OrdinalIgnoreCase);
+        Session.NotifyChanged();
+    }
+
+    void Reset()
+    {
+        Session.Settings.Names.Clear();
+        Session.NotifyChanged();
+    }
+}

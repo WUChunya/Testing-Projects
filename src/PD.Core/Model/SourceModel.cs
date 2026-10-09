@@ -33,6 +33,8 @@ public sealed class SourceObject
     public string ProgramKey { get; set; } = "";
     public BBox3 BBox { get; init; }
     public bool IsClosed { get; init; }
+    /// <summary>Set by the Rhino adapter when CapPlanarHoles closed the Brep.</summary>
+    public bool WasCapped { get; init; }
     public int FaceCount { get; init; }
     public double Volume { get; set; }
     public MeshData? Mesh { get; init; }

@@ -24,6 +24,7 @@ public static class MassClassifier
         var rep = MeshAnalysis.Analyze(o.Mesh, r.WeldToleranceFt, r.CapPlanarToleranceFt);
         var solid = rep.Volume >= r.MinSolidVolumeCf;
         if (o.FaceCount == 1 && !(o.IsClosed && solid)) return new Mass(o, MassStatus.SingleSurface, 0);
+        if (solid && o.WasCapped) return new Mass(o, MassStatus.Capped, rep.Volume);
         if (solid && (o.IsClosed || rep.IsClosed)) return new Mass(o, MassStatus.Closed, rep.Volume);
         if (solid && rep.LoopsPlanar) return new Mass(o, MassStatus.Capped, rep.Volume);
         var sectionVolume = SectionCloseVolume(o, r);

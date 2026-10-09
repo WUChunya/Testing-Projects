@@ -25,10 +25,40 @@
     "spanKeepTallMaxLevels": 2,
     "spanKeepTallMaxStoryFactor": 1.6,
     "singleSurface": "ask",
+    "singleSurfaceExtrudeFt": 10.0,
     "minOverlapAreaSf": 1.0
   },
   "facade": {
     "thinSheetMaxFt": 1.0,
     "outlineDistanceFt": 3.0
+  },
+  "output": {
+    "folderPattern": "_Diagrams/{project}_{scheme}_{date}",
+    "scheme": "OPT-1",
+    "drawings": [
+      "Plan",
+      "Section",
+      "AxonStacked",
+      "AxonExploded",
+      "ProgramChart",
+      "Pie"
+    ],
+    "scales": [
+      "1/16\" = 1'-0\"",
+      "1/32\" = 1'-0\"",
+      "1/64\" = 1'-0\"",
+      "1\" = 50'-0\"",
+      "1\" = 100'-0\""
+    ],
+    "defaultScale": "1/32\" = 1'-0\"",
+    "artboards": [
+      "11x17 Landscape",
+      "8.5x11 Landscape",
+      "24x36 Landscape",
+      "A3 Landscape",
+      "A1 Landscape"
+    ],
+    "defaultArtboard": "11x17 Landscape",
+    "sectionDepthFt": 100.0
   }
 }

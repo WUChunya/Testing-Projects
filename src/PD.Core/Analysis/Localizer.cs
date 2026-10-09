@@ -77,7 +77,7 @@ public static class Localizer
     static SourceObject Transform(SourceObject o, LocalFrame f) => new()
     {
         Id = o.Id, LayerPath = o.LayerPath, GeometryType = o.GeometryType, Name = o.Name,
-        Role = o.Role, ProgramKey = o.ProgramKey, IsClosed = o.IsClosed, FaceCount = o.FaceCount,
+        Role = o.Role, ProgramKey = o.ProgramKey, IsClosed = o.IsClosed, WasCapped = o.WasCapped, FaceCount = o.FaceCount,
         Volume = o.Volume * f.FeetPerUnit * f.FeetPerUnit * f.FeetPerUnit,
         BBox = Transform(o.BBox, f),
         Mesh = o.Mesh == null ? null : new MeshData { Vertices = TransformFlat(o.Mesh.Vertices, f), Faces = o.Mesh.Faces },

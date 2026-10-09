@@ -40,3 +40,23 @@ public class SettingsTests
     [InlineData("B1", "B01")]
     public void Naming_Pad(string level, string expected) => Assert.Equal(expected, Naming.Pad(level));
 }
+
+public class ReportTests
+{
+    [Fact]
+    public void AreaCsv_HasRowPerLevel()
+    {
+        var csv = PD.Core.Analysis.Reports.AreaCsv(AnalysisFixture.Result, k => k).Trim().Split('\n');
+        Assert.Equal(AnalysisFixture.Result.Plans.Count + 1, csv.Length);
+        Assert.StartsWith("Level,Elevation", csv[0]);
+    }
+
+    [Fact]
+    public void Section_ThroughBuildingCrosses()
+    {
+        var b = AnalysisFixture.Result.Building;
+        var midY = (b.MinY + b.MaxY) / 2;
+        Assert.True(PD.Core.Analysis.Reports.SectionCrossesMasses(AnalysisFixture.Result, b.MinX - 10, midY, b.MaxX + 10, midY));
+        Assert.False(PD.Core.Analysis.Reports.SectionCrossesMasses(AnalysisFixture.Result, b.MaxX + 100, b.MinY, b.MaxX + 100, b.MaxY));
+    }
+}

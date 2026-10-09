@@ -42,11 +42,15 @@ public sealed class PdSettings
     }
 
     public Dictionary<string, LayerGuess> RoleOverrides() =>
-        Layers.ToDictionary(kv => kv.Key, kv => new LayerGuess(kv.Key, kv.Value.Role, kv.Value.ProgramKey));
+        Layers.ToDictionary(kv => kv.Key, kv => kv.Value.Use
+            ? new LayerGuess(kv.Key, kv.Value.Role, kv.Value.ProgramKey)
+            : new LayerGuess(kv.Key, Roles.Ignore, ""));
 }
 
 public sealed class LayerSetting
 {
+    /// <summary>Unchecked layers are ignored (hidden layers start unchecked).</summary>
+    public bool Use { get; set; } = true;
     public string Role { get; set; } = Roles.Ignore;
     public string ProgramKey { get; set; } = "";
     /// <summary>Style mode per drawing: grayscale | line | color.</summary>
@@ -69,14 +73,24 @@ public sealed class SectionSetting
     public double[] Line { get; set; } = Array.Empty<double>();
     /// <summary>Look to the left (+) or right (−) of the line direction.</summary>
     public bool LookLeft { get; set; } = true;
-    public double DepthFt { get; set; } = 100;
+    public double DepthFt { get; set; }
 }
 
 public sealed class OutputSetting
 {
+    /// <summary>Empty values are filled from rules_default.json "output".</summary>
     public string Folder { get; set; } = "";
-    public string Scheme { get; set; } = "OPT-1";
-    public List<string> Drawings { get; set; } = new() { "Plan", "Section", "AxonStacked", "AxonExploded", "ProgramChart", "Pie" };
-    public string Scale { get; set; } = "1/32\" = 1'-0\"";
-    public string Artboard { get; set; } = "11x17 Landscape";
+    public string Scheme { get; set; } = "";
+    public List<string>? Drawings { get; set; }
+    public string Scale { get; set; } = "";
+    public string Artboard { get; set; } = "";
+
+    public void FillDefaults(PD.Core.Config.OutputRules r, string folder)
+    {
+        if (string.IsNullOrEmpty(Scheme)) Scheme = r.Scheme;
+        if (string.IsNullOrEmpty(Folder)) Folder = folder;
+        Drawings ??= r.Drawings.ToList();
+        if (string.IsNullOrEmpty(Scale)) Scale = r.DefaultScale;
+        if (string.IsNullOrEmpty(Artboard)) Artboard = r.DefaultArtboard;
+    }
 }

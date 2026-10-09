@@ -9,6 +9,7 @@ public sealed class Rules
     public LevelRules Levels { get; set; } = new();
     public CleanupRules Cleanup { get; set; } = new();
     public FacadeRules Facade { get; set; } = new();
+    public OutputRules Output { get; set; } = new();
 
     internal static readonly JsonSerializerOptions Json = new()
     {
@@ -47,6 +48,7 @@ public sealed class CleanupRules
     public int SpanKeepTallMaxLevels { get; set; }
     public double SpanKeepTallMaxStoryFactor { get; set; }
     public string SingleSurface { get; set; } = "ask";
+    public double SingleSurfaceExtrudeFt { get; set; }
     public double MinOverlapAreaSf { get; set; }
 }
 
@@ -54,4 +56,16 @@ public sealed class FacadeRules
 {
     public double ThinSheetMaxFt { get; set; }
     public double OutlineDistanceFt { get; set; }
+}
+
+public sealed class OutputRules
+{
+    public string FolderPattern { get; set; } = "";
+    public string Scheme { get; set; } = "";
+    public List<string> Drawings { get; set; } = new();
+    public List<string> Scales { get; set; } = new();
+    public string DefaultScale { get; set; } = "";
+    public List<string> Artboards { get; set; } = new();
+    public string DefaultArtboard { get; set; } = "";
+    public double SectionDepthFt { get; set; }
 }

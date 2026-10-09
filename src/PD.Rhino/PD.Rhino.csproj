@@ -19,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\illustrator\*.jsx" LogicalName="PD.Rhino.Illustrator.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Resources\icon.ico" LogicalName="PD.Rhino.Resources.icon.ico" />
   </ItemGroup>
 </Project>
