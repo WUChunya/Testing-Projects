@@ -8,8 +8,8 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   combo and ④ per-object program (`ObjectPrograms`). Program layer without key → UNASSIGNED. 41 tests green.
 - Windows run of v0.1.0 (user, 2026-10-09): rhp installs from a user folder; T1 ✓ 11/11 layers; T3 ✓ 11 levels (Rhino tight bbox
   gives 104'-2"/116'-8"/130'-2", within 0.5 ft); T4 ✓ every level total = sum of programs; 2 single surfaces → user chose Facade.
-- S2 done (2026-10-09): `.rhp` with `ProgramDiagram` (panel ①–⑧), `ProgramDiagramLevels` (level preview), `ProgramDiagramPickSection`.
-  Test build: `dist/ProgramDiagram-0.1.0.zip` (rhp + PD.Core + NTS); rebuild with `tools/package.sh`. ⑦ Export writes only areas.csv + settings.json until S3.
+- S2 done: `.rhp` with `ProgramDiagram` (panel ①–⑧), `ProgramDiagramLevels` (level preview), `ProgramDiagramPickSection`.
+  Build: `tools/package.sh` → `dist/*.zip`. ⑦ Export writes only areas.csv + settings.json until S3.
 - S1 done: Core pipeline `Analyzer.Run` (roles → localize → masses → levels → span/overlap → issues). 29 tests green: T1 12/12, T2 5+2, T3 (11 levels, 3 outliers flagged), T4 areas add up.
 - Env: `apt-get install dotnet-sdk-8.0` (dot.net blocked), `pip install rhino3dm`; tests `RollForward=Major`.
 
