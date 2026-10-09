@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "comment": "Geometry and level rules (PRD 3.5, B1). Lengths in feet.",
+  "levels": {
+    "clusterToleranceFt": 1.5,
+    "minFloorHeightFt": 10.0,
+    "groundElevationFt": 0.0,
+    "slabMaxThicknessFt": 3.0,
+    "slabMinAreaSf": 200.0,
+    "facadeMinRepeat": 2,
+    "massOnlyMinSupport": 3,
+    "scatterWarnFt": 1.0,
+    "slabMismatchFt": 3.0
+  },
+  "cleanup": {
+    "outlierDistanceFactor": 3.0,
+    "outlierMinDistanceFt": 500.0,
+    "weldToleranceFt": 0.01,
+    "capPlanarToleranceFt": 0.05,
+    "minSolidVolumeCf": 1.0,
+    "gapCloseToleranceFt": 0.5,
+    "planCutHeightFt": 4.0,
+    "minLevelOverlapFt": 4.0,
+    "overlap": "smallerVolumeWins",
+    "spanKeepTallMaxLevels": 2,
+    "spanKeepTallMaxStoryFactor": 1.6,
+    "singleSurface": "ask",
+    "minOverlapAreaSf": 1.0
+  },
+  "facade": {
+    "thinSheetMaxFt": 1.0,
+    "outlineDistanceFt": 3.0
+  }
+}

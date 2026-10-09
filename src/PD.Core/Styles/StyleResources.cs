@@ -9,6 +9,7 @@ public static class StyleResources
     public const string ProgramLegend = "program_legend.json";
     public const string StyleDefault = "style_default.json";
     public const string LayerKeywords = "layer_keywords.json";
+    public const string RulesDefault = "rules_default.json";
 
     public static string ReadText(string fileName)
     {
