@@ -14,16 +14,18 @@ internal sealed class LayersTab : TabBase
     static readonly string[] Modes = { "", "grayscale", "line", "color" };
 
     readonly GridView _grid = Ui.Grid(320);
+    readonly ComboBoxCell _programCell;
     readonly Label _status = new();
 
     public LayersTab(PdSession s) : base(s)
     {
-        var programs = new[] { "" }.Concat(s.Classifier.Programs.Select(p => p.Key)).ToArray();
         _grid.Columns.Add(Ui.Check<Row>("使用", r => r.S.Use, (r, v) => Edit(() => r.S.Use = v)));
         _grid.Columns.Add(Ui.Text<Row>("图层 Layer", r => r.Path, null, 170));
         _grid.Columns.Add(Ui.Text<Row>("对象", r => r.Count.ToString(), null, 44));
         _grid.Columns.Add(Ui.Combo<Row>("角色 Role", Roles, r => r.S.Role, (r, v) => Edit(() => { r.S.Role = v; r.S.Mode = PdSession.DefaultMode(v); }), 110));
-        _grid.Columns.Add(Ui.Combo<Row>("Program", programs, r => r.S.ProgramKey, (r, v) => Edit(() => r.S.ProgramKey = v), 120));
+        var programCol = Ui.Combo<Row>("Program", ProgramKeys().Cast<string>(), r => r.S.ProgramKey, (r, v) => Edit(() => r.S.ProgramKey = v), 120);
+        _programCell = (ComboBoxCell)programCol.DataCell;
+        _grid.Columns.Add(programCol);
         _grid.Columns.Add(Ui.Combo<Row>("风格 Mode", Modes, r => r.S.Mode, (r, v) => Edit(() => r.S.Mode = v), 90));
 
         var layout = Ui.Layout();
@@ -41,8 +43,12 @@ internal sealed class LayersTab : TabBase
         Session.Save();
     }
 
+    /// <summary>Keys of the current scheme, custom programs included (refreshed when tab ⑤ changes).</summary>
+    List<object> ProgramKeys() => new object[] { "" }.Concat(Session.Programs.Select(p => (object)p.Key)).ToList();
+
     public override void Refresh()
     {
+        _programCell.DataStore = ProgramKeys();
         var ex = Session.Extraction;
         if (ex == null)
         {

@@ -15,6 +15,8 @@ public sealed class AnalysisInput
     public LayerClassifier Classifier { get; init; } = LayerClassifier.Default();
     /// <summary>User role choices by layer path; missing layers are auto-filled.</summary>
     public IReadOnlyDictionary<string, LayerGuess> RoleOverrides { get; init; } = new Dictionary<string, LayerGuess>();
+    /// <summary>Per-object program keys overriding the layer's program.</summary>
+    public IReadOnlyDictionary<string, string> ProgramOverrides { get; init; } = new Dictionary<string, string>();
     public IReadOnlyDictionary<string, SpanMode> SpanOverrides { get; init; } = new Dictionary<string, SpanMode>();
     public IReadOnlyDictionary<string, SingleSurfaceChoice> SingleSurfaceChoices { get; init; } = new Dictionary<string, SingleSurfaceChoice>();
     /// <summary>Stray objects the user chose to keep.</summary>
@@ -49,7 +51,12 @@ public static class Analyzer
         var roles = input.Model.Layers.ToDictionary(l => l.Path,
             l => input.RoleOverrides.TryGetValue(l.Path, out var o) ? o : input.Classifier.Guess(l));
         foreach (var o in input.Model.Objects)
+        {
             if (roles.TryGetValue(o.LayerPath, out var g)) { o.Role = g.Role; o.ProgramKey = g.ProgramKey; }
+            if (o.Role != Roles.Program) continue;
+            if (input.ProgramOverrides.TryGetValue(o.Id, out var key) && !string.IsNullOrEmpty(key)) o.ProgramKey = key;
+            if (string.IsNullOrEmpty(o.ProgramKey)) o.ProgramKey = ProgramCatalog.Unassigned;
+        }
 
         var (local, frame, building, stray) = Localizer.Localize(input.Model, o => o.Role == Roles.Program, rules.Cleanup);
         stray.ExceptWith(input.KeepStray);
@@ -93,9 +100,16 @@ public static class Analyzer
         var unnamed = masses.Where(m => string.IsNullOrWhiteSpace(m.Source.Name)).Select(m => m.Id).ToArray();
         if (unnamed.Length > 0)
             issues.Add(new Issue(IssueKind.UnnamedMass, $"{unnamed.Length} masses have no name: program name used", unnamed));
-        foreach (var p in masses.Select(m => m.ProgramKey).Distinct())
-            if (string.IsNullOrEmpty(p) || input.Classifier.Programs.FirstOrDefault(d => d.Key == p) is not { } def || (def.Fill == null && def.Key != "VOID"))
-                issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{p}' has no colour in the legend", Array.Empty<string>()));
+        foreach (var g in masses.GroupBy(m => m.ProgramKey))
+        {
+            var ids = g.Select(m => m.Id).ToArray();
+            if (g.Key == ProgramCatalog.Unassigned)
+                issues.Add(new Issue(IssueKind.ProgramNoColor, $"{ids.Length} masses have no program (layer or tab ④): drawn as Unassigned", ids));
+            else if (input.Classifier.Programs.FirstOrDefault(d => d.Key == g.Key) is not { } def)
+                issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{g.Key}' is not in the colour scheme (tab ⑤)", ids));
+            else if (def.Fill == null && def.Stroke == null)
+                issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{def.Label}' has neither fill nor outline", ids));
+        }
         if (input.Levels == null)
             issues.AddRange(detected.Issues.Select(i => new Issue(i.Kind switch
             {

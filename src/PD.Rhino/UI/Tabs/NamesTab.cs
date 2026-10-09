@@ -8,26 +8,47 @@ namespace PD.Rhino.UI.Tabs;
 internal sealed class NamesTab : TabBase
 {
     readonly GridView _grid = Ui.Grid(360);
+    readonly ComboBoxCell _programCell;
     readonly TextBox _find = new() { PlaceholderText = "查找" };
     readonly TextBox _replace = new() { PlaceholderText = "替换为" };
 
     public NamesTab(PdSession s) : base(s)
     {
         _grid.Columns.Add(Ui.Text<NameRow>("ID", r => r.StableId, null, 130));
-        _grid.Columns.Add(Ui.Text<NameRow>("Program", r => r.ProgramKey, null, 90));
+        // Per-object program: overrides the layer's program for special cases (re-analyses on change).
+        var programCol = Ui.Combo<NameRow>("Program", Keys().Cast<string>(), r => r.ProgramKey, SetProgram, 120);
+        _programCell = (ComboBoxCell)programCol.DataCell;
+        _grid.Columns.Add(programCol);
         _grid.Columns.Add(Ui.Text<NameRow>("标签 Label", r => r.Label, (r, v) => { s.Settings.Names[r.MassId] = v; s.Save(); }, 180));
         _grid.CellDoubleClick += (_, e) => { if (e.Item is NameRow r) Ui.SelectAndZoom(Session, new[] { r.MassId }); };
 
         var layout = Ui.Layout();
         layout.Add(_grid, yscale: true);
         layout.AddSeparateRow(_find, _replace, Ui.Button("全部替换", ReplaceAll), Ui.Button("清除修改", Reset));
+        layout.Add(new Label { Text = "Program 列可单独改某个体块的 program（覆盖图层设置），用于特殊情况。" });
         layout.Add(Ui.Confirm(s, "names"));
         Content = layout;
     }
 
     List<NameRow> Rows() => Session.Result == null ? new() : Naming.Build(Session.Result, Session.Settings.Names, Session.ProgramLabel);
 
-    public override void Refresh() => _grid.DataStore = Rows();
+    List<object> Keys() => Session.Programs.Select(p => (object)p.Key).ToList();
+
+    public override void Refresh()
+    {
+        _programCell.DataStore = Keys();
+        _grid.DataStore = Rows();
+    }
+
+    void SetProgram(NameRow r, string key)
+    {
+        if (string.IsNullOrEmpty(key) || key == r.ProgramKey) return;
+        var mass = Session.Result?.Masses.FirstOrDefault(m => m.Id == r.MassId);
+        var layerKey = mass == null ? null : Session.Settings.Layers.GetValueOrDefault(mass.Source.LayerPath)?.ProgramKey;
+        if (key == layerKey) Session.Settings.ObjectPrograms.Remove(r.MassId);
+        else Session.Settings.ObjectPrograms[r.MassId] = key;
+        Application.Instance.AsyncInvoke(Analyze);
+    }
 
     void ReplaceAll()
     {
@@ -40,6 +61,8 @@ internal sealed class NamesTab : TabBase
     void Reset()
     {
         Session.Settings.Names.Clear();
-        Session.NotifyChanged();
+        var hadPrograms = Session.Settings.ObjectPrograms.Count > 0;
+        Session.Settings.ObjectPrograms.Clear();
+        if (hadPrograms) Analyze(); else Session.NotifyChanged();
     }
 }

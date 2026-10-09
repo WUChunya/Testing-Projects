@@ -17,7 +17,16 @@ public sealed class PdSession
     public RhinoDoc? Doc => RhinoDoc.FromRuntimeSerialNumber(DocSerial);
     public PdSettings Settings { get; private set; }
     public Rules Rules { get; } = Rules.Default();
-    public LayerClassifier Classifier { get; } = LayerClassifier.Default();
+    readonly List<ProgramDef> _legend = LayerClassifier.LoadPrograms();
+    LayerClassifier? _classifier;
+
+    /// <summary>Company legend, or the project scheme with custom programs (tab ⑤).</summary>
+    public List<ProgramSetting> Programs => ProgramCatalog.Effective(_legend, Settings.Programs);
+
+    /// <summary>The scheme as an editable list stored in the settings (materialised from the legend on first edit).</summary>
+    public List<ProgramSetting> EditablePrograms() => Settings.Programs ??= ProgramCatalog.Effective(_legend, null);
+
+    public LayerClassifier Classifier => _classifier ??= ProgramCatalog.Classifier(Programs);
     public Extraction? Extraction { get; private set; }
     public AnalysisResult? Result { get; private set; }
     public string? LastError { get; private set; }
@@ -44,17 +53,23 @@ public sealed class PdSession
         Doc?.Strings.SetString(Section, Entry, Settings.ToJson());
     }
 
+    /// <summary>Call after adding, removing or re-aliasing programs so tab ① and auto-fill see them.</summary>
+    public void ProgramsChanged()
+    {
+        _classifier = null;
+        NotifyChanged();
+    }
+
     public void ReplaceSettings(PdSettings s)
     {
         Settings = s;
+        _classifier = null;
         Save();
         Changed?.Invoke();
     }
 
     public string ProgramLabel(string key) =>
-        Settings.Programs?.FirstOrDefault(p => p.Key == key)?.Label
-        ?? Classifier.Programs.FirstOrDefault(p => p.Key == key)?.Label
-        ?? key;
+        Programs.FirstOrDefault(p => p.Key == key)?.Label ?? key;
 
     /// <summary>Reads the document and runs the Core pipeline with the saved user choices.</summary>
     public bool Analyze()
@@ -71,6 +86,7 @@ public sealed class PdSession
                 Rules = Rules,
                 Classifier = Classifier,
                 RoleOverrides = Settings.RoleOverrides(),
+                ProgramOverrides = Settings.ObjectPrograms,
                 SpanOverrides = Settings.SpanModes,
                 SingleSurfaceChoices = Settings.SingleSurfaces,
                 KeepStray = Settings.KeepStray.ToHashSet(),

@@ -15,7 +15,9 @@ public static class Roles
     public const string Ignore = "Ignore";
 }
 
-public sealed record ProgramDef(string Key, string Label, string? Fill, string[] Aliases);
+/// <summary>One legend entry; stroke/dash/hatch carry the special styles (Shell, Void, Unassigned) to the AI output.</summary>
+public sealed record ProgramDef(string Key, string Label, string? Fill, string[] Aliases,
+    string? Stroke = null, double? StrokePt = null, double[]? Dash = null, string? Hatch = null);
 
 public sealed record LayerGuess(string LayerPath, string Role, string ProgramKey, bool IsFallback = false);
 
@@ -36,10 +38,13 @@ public sealed class LayerClassifier
         Programs = programs;
     }
 
-    public static LayerClassifier Default()
+    public static LayerClassifier Default() => WithPrograms(LoadPrograms());
+
+    /// <summary>Keyword rules from styles/layer_keywords.json with a project's effective program list.</summary>
+    public static LayerClassifier WithPrograms(IReadOnlyList<ProgramDef> programs)
     {
         using var kw = StyleResources.Read(StyleResources.LayerKeywords);
-        return new LayerClassifier(kw, LoadPrograms());
+        return new LayerClassifier(kw, programs);
     }
 
     public static List<ProgramDef> LoadPrograms(JsonDocument? legend = null)
@@ -51,13 +56,19 @@ public sealed class LayerClassifier
                 p.GetProperty("key").GetString()!,
                 p.GetProperty("label").GetString()!,
                 p.GetProperty("fill").ValueKind == JsonValueKind.String ? p.GetProperty("fill").GetString() : null,
-                p.GetProperty("aliases").EnumerateArray().Select(a => a.GetString()!).ToArray())).ToList();
+                p.GetProperty("aliases").EnumerateArray().Select(a => a.GetString()!).ToArray(),
+                Str(p, "stroke"), p.TryGetProperty("strokePt", out var sp) ? sp.GetDouble() : null,
+                p.TryGetProperty("dash", out var da) && da.ValueKind == JsonValueKind.Array ? da.EnumerateArray().Select(x => x.GetDouble()).ToArray() : null,
+                Str(p, "hatch"))).ToList();
         }
         finally
         {
             if (legend == null) doc.Dispose();
         }
     }
+
+    static string? Str(JsonElement e, string name) =>
+        e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 
     public LayerGuess Guess(LayerInfo layer)
     {

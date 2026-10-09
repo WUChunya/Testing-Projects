@@ -20,7 +20,8 @@ public sealed class PickSectionCommand : Command
         var name = ((char)('A' + session.Settings.Sections.Count % 26)).ToString();
         session.Settings.Sections.Add(new SectionSetting
         {
-            Name = name, ObjectId = objRef.ObjectId.ToString(),
+            // An edge picked from a Brep is fine as a cut line, but its object id is the Brep, so do not store it.
+            Name = name, ObjectId = objRef.Object() is CurveObject ? objRef.ObjectId.ToString() : null,
             Line = new[] { curve.PointAtStart.X, curve.PointAtStart.Y, curve.PointAtEnd.X, curve.PointAtEnd.Y },
         });
         session.NotifyChanged();

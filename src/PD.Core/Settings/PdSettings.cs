@@ -17,6 +17,8 @@ public sealed class PdSettings
     /// <summary>Null until the user edits levels on tab ③.</summary>
     public List<LevelOverride>? Levels { get; set; }
     public Dictionary<string, string> Names { get; set; } = new();
+    /// <summary>Per-object program (mass id → program key) overriding its layer's program; tab ④.</summary>
+    public Dictionary<string, string> ObjectPrograms { get; set; } = new();
     /// <summary>Null means the company legend (styles/program_legend.json).</summary>
     public List<ProgramSetting>? Programs { get; set; }
     public List<SectionSetting> Sections { get; set; } = new();
@@ -57,12 +59,22 @@ public sealed class LayerSetting
     public string Mode { get; set; } = "";
 }
 
+/// <summary>One program in the project colour scheme (tab ⑤). Becomes a global swatch and legend entry in the AI output.</summary>
 public sealed class ProgramSetting
 {
+    /// <summary>Stable id used in layer mapping, object names (L03_KEY_01) and swatch names. Never renamed.</summary>
     public string Key { get; set; } = "";
     public string Label { get; set; } = "";
     public string? Fill { get; set; }
     public int Order { get; set; }
+    /// <summary>Added by the user on tab ⑤ (not in the company legend); only these can be deleted.</summary>
+    public bool IsCustom { get; set; }
+    /// <summary>Layer names that auto-fill to this program on tab ①.</summary>
+    public List<string> Aliases { get; set; } = new();
+    public string? Stroke { get; set; }
+    public double? StrokePt { get; set; }
+    public double[]? Dash { get; set; }
+    public string? Hatch { get; set; }
 }
 
 public sealed class SectionSetting
