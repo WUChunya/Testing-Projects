@@ -9,9 +9,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Rev 5 (v0.3.0): `Views/ProjectedView` = Make2D-like opaque view (masses light-grey base; one AI layer + global swatch per
   slab/facade source layer, glass white; near hides far via trim by nearer lower-layer items). Used behind section cuts and by
   new `ElevationDrawing` (⑥ type = Elevation or ELEV:: layers; ▼ level markers, dashed level lines). 57 tests green.
-- Rev 4 (v0.2.2): text + annotation offsets scale with drawing scale (reference 1" = 45'-0" = v0.2.0 sizes); level column, height dim,
-  visible level lines back; beyond (ours + others) = white fill + dashed grey, painted far→near, facade grid clipped by nearer masses;
-  cut context = white fill + 2.5 pt black; ground line = 2 × slab, centred on grade; basements draw like other levels. 56 tests green.
+- Rev 4 (v0.2.2): text scales with drawing scale (ref 1" = 45'); level column/height dim/level lines; cut context solid; ground = 2 × slab; basements.
 - Rev 3 (v0.2.1): true scale (any Bluebeam-style scale), "Fit content" artboard, visual 3 pt slabs, centred bold labels, optional PNG.
 - Rev 1–2: custom programs (⑤ ↔ ① ↔ ④); span "Single" = base level only; edits and Export re-analyse first.
 - Windows (user): installs from a user folder; T1 ✓ T3 ✓ T4 ✓; Core reproduces the user's areas.csv. Env: apt dotnet-sdk-8.0, pip rhino3dm, `RollForward=Major`, node 22.
