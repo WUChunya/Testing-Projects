@@ -4,8 +4,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 
 ## Status
 - Next session: **S3 Output engine + Section** (see `docs/DEV_PROMPT.md`). Swatches/legend come from `PdSession.Programs` (custom included).
-- Rev 1 (v0.1.1): custom programs on ⑤ (add / delete / aliases / create from Program layers with no key), linked to ① layer
-  combo and ④ per-object program (`ObjectPrograms`). Program layer without key → UNASSIGNED. 41 tests green.
+- Rev 1 (v0.1.1): custom programs on ⑤ (add / delete / aliases / create from Program layers with no key), linked to ① layer combo and ④ per-object program (`ObjectPrograms`). Program layer without key → UNASSIGNED. 41 tests green.
 - Windows run of v0.1.0 (user, 2026-10-09): rhp installs from a user folder; T1 ✓ 11/11 layers; T3 ✓ 11 levels (Rhino tight bbox
   gives 104'-2"/116'-8"/130'-2", within 0.5 ft); T4 ✓ every level total = sum of programs; 2 single surfaces → user chose Facade.
 - S2 done: `.rhp` with `ProgramDiagram` (panel ①–⑧), `ProgramDiagramLevels` (level preview), `ProgramDiagramPickSection`.
