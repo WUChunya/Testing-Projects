@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "name": "Default (reference projects)",
+  "background": {
+    "block":     { "fill": "#EBEBEB" },
+    "road":      { "fill": "#D9D9D9" },
+    "hardscape": { "fill": "#F5F5F5" },
+    "landscape": { "fill": "#D7DEBC" },
+    "tree":      { "fill": "#C8E2BF", "stroke": "#5A7F4F" },
+    "groundBand":{ "fill": "#E5E5E5" },
+    "propertyLine": { "stroke": "#FF0000", "dash": [12, 3, 2, 3] },
+    "useRhinoLayerColor": false
+  },
+  "roleModes": {
+    "comment": "mode per role per drawing: grayscale | line | color",
+    "BG.Building":  { "plan": "grayscale", "section": "line", "axon": "grayscale" },
+    "BG.Road":      { "plan": "color", "section": "line", "axon": "color" },
+    "BG.Hardscape": { "plan": "color", "section": "line", "axon": "color" },
+    "BG.Landscape": { "plan": "color", "section": "line", "axon": "color" },
+    "BG.Tree":      { "plan": "color", "section": "line", "axon": "color" },
+    "BG.Water":     { "plan": "color", "section": "line", "axon": "color" },
+    "BG.Facade":    { "plan": "line", "section": "line", "axon": "color" },
+    "BG.Slab":      { "plan": "line", "section": "grayscale", "axon": "grayscale" },
+    "BG.Base":      { "plan": "line", "section": "grayscale", "axon": "grayscale" },
+    "BG.Line":      { "plan": "line", "section": "line", "axon": "line" }
+  },
+  "modes": {
+    "grayscale": { "stroke": "#333333", "strokePt": 0.35 },
+    "line":      { "fill": null, "stroke": "#000000", "strokePt": 0.35, "dash": null },
+    "color":     { "strokePt": 0.35 }
+  },
+  "strokes": {
+    "cutPt": 2.5,
+    "outlinePt": 2.5,
+    "roomPt": 0.5,
+    "backgroundPt": 0.35,
+    "beyond": { "strokePt": 0.5, "stroke": "#999999", "dash": [3, 2] }
+  },
+  "fonts": {
+    "label": { "family": "Century Gothic", "sizePt": 7, "allCaps": true },
+    "title": { "family": "Century Gothic", "sizePt": 14, "allCaps": true },
+    "chart": { "family": "Helvetica", "fallback": "Arial", "sizePt": 7 }
+  },
+  "facade": { "stackedAxonOpacity": 0.3, "explodedAxon": "hidden" },
+  "rules": {
+    "overlap": "smallerVolumeWins",
+    "spanKeepTallMaxLevels": 2,
+    "singleSurface": "ask"
+  }
+}

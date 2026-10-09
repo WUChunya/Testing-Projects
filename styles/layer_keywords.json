@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "comment": "Case-insensitive match on the layer's own name (last path segment); sub-layers never inherit the parent's role. First match wins.",
+  "roles": ["Program", "BG.Building", "BG.Road", "BG.Hardscape", "BG.Landscape", "BG.Tree", "BG.Water", "BG.Facade", "BG.Slab", "BG.Base", "BG.Line", "Ignore"],
+  "rules": [
+    { "pattern": "^(GLASS|CW[-_ ].*|CW|MULLION.*|CURTAIN ?WALL.*|FACADE.*)$", "role": "BG.Facade" },
+    { "pattern": "SLAB", "role": "BG.Slab" },
+    { "pattern": "TREE", "role": "BG.Tree" },
+    { "pattern": "ROAD|STREET", "role": "BG.Road" },
+    { "pattern": "WATER|POND|POOL", "role": "BG.Water" },
+    { "pattern": "LANDSCAPE|GRASS|LAWN|PLANT", "role": "BG.Landscape" },
+    { "pattern": "SITE|PLAZA|SIDEWALK|HARDSCAPE", "role": "BG.Hardscape" },
+    { "pattern": "CONTEXT", "role": "BG.Building" },
+    { "pattern": "FRAME|BASE", "role": "BG.Base" },
+    { "pattern": "PROPERTY|GRID|BOUNDARY", "role": "BG.Line" },
+    { "pattern": "^DEFAULT$|RENDER|MATERIAL", "role": "Ignore" }
+  ],
+  "programFallback": "Program layer names are matched against program_legend.json aliases; a match gives role Program.",
+  "unmatchedRole": "Ignore"
+}
