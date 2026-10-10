@@ -44,6 +44,7 @@
       "Elevation",
       "AxonStacked",
       "AxonExploded",
+      "AxonLevels",
       "ProgramChart",
       "Pie"
     ],

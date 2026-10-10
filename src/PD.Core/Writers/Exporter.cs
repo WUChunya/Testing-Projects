@@ -29,9 +29,10 @@ public static class Exporter
             if (els.Count == 0) notes.Add("Elevation: no elevation line (tab 7 Elevations).");
             foreach (var s in els) drawings.Add(PD.Core.Elevations.ElevationDrawing.Build(ctx, s));
         }
-        if (wanted.Contains("AxonStacked")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, exploded: false));
-        if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, exploded: true));
-        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded")))
+        if (wanted.Contains("AxonStacked")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Stacked));
+        if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Exploded));
+        if (wanted.Contains("AxonLevels")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Levels));
+        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded" or "AxonLevels")))
             notes.Add($"{w}: not implemented yet (charts in S5).");
         foreach (var d in drawings) notes.AddRange(d.Notes);
         return drawings;

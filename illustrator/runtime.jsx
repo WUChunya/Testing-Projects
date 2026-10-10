@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.4.0";
+PD.version = "0.4.1";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -15,8 +15,10 @@ PD.run = function (drawings, opts) {
     app.coordinateSystem = CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
     for (var i = 0; i < drawings.length; i++) {
         try {
-            PD.drawFile(drawings[i], opts);
-            log.push("OK " + drawings[i].fileName);
+            var warnings = [];
+            PD.drawFile(drawings[i], opts, warnings);
+            log.push("OK " + drawings[i].fileName + (warnings.length ? " (" + warnings.length + " item warnings)" : ""));
+            for (var w = 0; w < warnings.length && w < 20; w++) log.push("  " + warnings[w]);
         } catch (e) {
             log.push("ERROR " + drawings[i].fileName + ": " + e + (e.line ? " (line " + e.line + ")" : ""));
         }
@@ -36,7 +38,7 @@ PD.writeLog = function (path, lines) {
     }
 };
 
-PD.drawFile = function (dw, opts) {
+PD.drawFile = function (dw, opts, warnings) {
     var file = new File(opts.outDir + "/" + dw.fileName);
     var doc = file.exists ? app.open(file)
         : app.documents.add(DocumentColorSpace.RGB, dw.artboards[0].w, dw.artboards[0].h);
@@ -61,7 +63,7 @@ PD.drawFile = function (dw, opts) {
             try {
                 PD.drawItem(layer, it, rects[it.artboard || 0], sw, ps);
             } catch (e) {
-                throw new Error("item " + it.name + ": " + e);
+                warnings.push("WARN " + dw.fileName + " item " + it.name + ": " + e + (e.line ? " (line " + e.line + ")" : ""));
             }
         }
         layer.zOrder(ZOrderMethod.BRINGTOFRONT);
@@ -93,17 +95,23 @@ PD.exportPng = function (doc, base, scale) {
     }
 };
 
+// Artboards keep the plugin's row layout (x, y from the drawing), centred on where the first artboard started so
+// many-artboard files (plans) stay inside Illustrator's canvas.
 PD.setupArtboards = function (doc, abs) {
+    var r0 = doc.artboards[0].artboardRect;
+    var cx = (r0[0] + r0[2]) / 2, cy = (r0[1] + r0[3]) / 2;
+    var lw = 0, lh = 0;
+    for (var k = 0; k < abs.length; k++) {
+        lw = Math.max(lw, (abs[k].x || 0) + abs[k].w);
+        lh = Math.max(lh, (abs[k].y || 0) + abs[k].h);
+    }
+    if (lw > 16000 || lh > 16000) throw new Error("artboards need " + Math.round(lw) + " x " + Math.round(lh) + " pt: larger than the Illustrator canvas; use a smaller scale");
+    var left = cx - lw / 2, top = cy + lh / 2;
     for (var i = 0; i < abs.length; i++) {
-        var w = abs[i].w, h = abs[i].h, ab;
-        if (i < doc.artboards.length) {
-            ab = doc.artboards[i];
-            var r = ab.artboardRect;
-            ab.artboardRect = [r[0], r[1], r[0] + w, r[1] - h];
-        } else {
-            var prev = doc.artboards[i - 1].artboardRect;
-            ab = doc.artboards.add([prev[2] + 72, prev[1], prev[2] + 72 + w, prev[1] - h]);
-        }
+        var x = left + (abs[i].x || 0), y = top - (abs[i].y || 0);
+        var rect = [x, y, x + abs[i].w, y - abs[i].h];
+        var ab = i < doc.artboards.length ? doc.artboards[i] : doc.artboards.add(rect);
+        ab.artboardRect = rect;
         ab.name = abs[i].name;
     }
 };

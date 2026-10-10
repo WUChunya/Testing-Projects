@@ -75,7 +75,16 @@ public static class PlanDrawing
             DrawLevel(d, ctx, a, map, i, p, background);
 
             var anno = d.Layer("PD_ANNOTATION");
-            anno.Items.Add(At(SectionDrawing.Text(p + "TITLE", m, m + ctx.Pt(16), Title(ps.LevelTitleFormat, lvl.Name), "PD Title", "left"), a));
+            // Title: yellow square + "Level 1" (reference: Atlanta level labels).
+            var sq = ctx.Pt(ps.TitleMarkerPt);
+            var ty = m + ctx.Pt(16);
+            if (sq > 0)
+                anno.Items.Add(At(new DItem
+                {
+                    Kind = ItemKind.Path, Name = p + "TITLE_MARK", Fill = d.Swatch("PD_LEVEL_MARKER", ps.TitleMarker),
+                    Paths = new() { new[] { new[] { m, ty - sq }, new[] { m + sq, ty - sq }, new[] { m + sq, ty }, new[] { m, ty } } },
+                }, a));
+            anno.Items.Add(At(SectionDrawing.Text(p + "TITLE", m + (sq > 0 ? sq * 1.8 : 0), ty, Title(ps.LevelTitleFormat, lvl.Name), "PD Level Title", "left"), a));
             var yb = abH - m - bottom + band;
             Legend(d, ctx, a, p, keys, m, yb);
             var xr = abW - m;
@@ -148,7 +157,7 @@ public static class PlanDrawing
             block.Dash = pDash;
             d.Layer("PD_PROGRAM").Items.Add(block);
             var text = row?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
-            Label(d, ctx, a, map, name, f.Resolved, text, sizeFt, centre, outline);
+            Label(d, ctx, a, map, name, f.Resolved, text, sizeFt, centre, outline, ctx.LabelStyle(d, fill));
         }
 
         if (!outline.IsEmpty)
@@ -172,14 +181,14 @@ public static class PlanDrawing
 
     /// <summary>Inside the block when it fits (widest spot, long direction); otherwise a leader to a label outside the building.</summary>
     static void Label(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string name, NtsGeometry block, string text,
-        double sizeFt, Coordinate? centre, NtsGeometry outline)
+        double sizeFt, Coordinate? centre, NtsGeometry outline, string inside = "PD Label")
     {
         if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
         var layer = d.Layer("PD_LABELS");
         var spot = PlanLabels.Fit(block, text, sizeFt);
         if (spot != null)
         {
-            layer.Items.Add(At(SectionDrawing.Text(name + "_LBL", map.X(spot.X), map.Y(spot.Y), spot.Text, "PD Label", "center", spot.AngleDeg, center: true), a));
+            layer.Items.Add(At(SectionDrawing.Text(name + "_LBL", map.X(spot.X), map.Y(spot.Y), spot.Text, inside, "center", spot.AngleDeg, center: true), a));
             return;
         }
         var anchor = PlanLabels.Anchor(block);

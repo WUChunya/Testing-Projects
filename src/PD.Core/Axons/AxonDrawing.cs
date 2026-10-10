@@ -1,6 +1,4 @@
-using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.Simplify;
 using PD.Core.Analysis;
 using PD.Core.Classification;
 using PD.Core.Drawing;
@@ -11,22 +9,46 @@ using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 
 namespace PD.Core.Axons;
 
+public enum AxonKind { Stacked, Exploded, Levels }
+
 /// <summary>
-/// PRD 5.4: 03_Axon_Stacked.ai (whole program masses, tops in the program colour, sides darkened, facade veil, green
-/// site) and 04_Axon_Exploded.ai (white plates pulled apart, program colours on the plates, labels laid on the plates
-/// as live text, level column with leaders). True scale, isometric by default.
+/// PRD 5.4, styled after the Atlanta exploded axon (thin dark outlines, darker sides, labels laid on the floors, white
+/// context, level names with a yellow marker and grey leaders):
+///  - 03_Axon_Stacked.ai: whole program masses among white context buildings, hidden faces removed;
+///  - 04_Axon_Exploded.ai: one plate per level, spaced so no plate hides another; cores connect the plates and tall
+///    spaces stretch to the plate above;
+///  - 04_Axon_Levels.ai: one artboard per level — that level's plate inside the building volume drawn dashed.
+/// True scale, isometric from the south-west by default (or the Rhino viewport direction).
 /// </summary>
 public static class AxonDrawing
 {
-    /// <summary>One face to paint: screen polygon (feet), depth (larger = nearer), paint and name.</summary>
-    sealed record Face(string Name, NtsGeometry Screen, double Depth, string? Fill, string Layer);
+    /// <summary>A path (or plane text) waiting for the page mapping; geometry in screen feet.</summary>
+    sealed record Spec(string Name, NtsGeometry Geometry, string? Fill, string? Stroke, double StrokePt, double[]? Dash = null, bool Closed = true,
+        double Opacity = 1, string? Text = null, (double X, double Y)? TextAt = null, double[]? Matrix = null, string? Style = null);
 
-    public static PD.Core.Drawing.Drawing Build(ExportContext ctx, bool exploded)
+    sealed class Sheet
+    {
+        public string Name = "";
+        public string Prefix = "";
+        public string Title = "";
+        public List<(string Layer, Spec Spec)> Paint { get; } = new();
+        /// <summary>Level column entries: level index, drawn height of its plate.</summary>
+        public List<(int Level, double Z)> Tags { get; } = new();
+    }
+
+    public static string FileName(AxonKind kind) => kind switch
+    {
+        AxonKind.Stacked => "03_Axon_Stacked.ai",
+        AxonKind.Exploded => "04_Axon_Exploded.ai",
+        _ => "04_Axon_Levels.ai",
+    };
+
+    public static PD.Core.Drawing.Drawing Build(ExportContext ctx, AxonKind kind)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
         var proj = AxonProjection.FromAngles(ax.AzimuthDeg, ax.ElevationDeg, ctx.Settings.Output.AxonViewDirection);
-        var d = new PD.Core.Drawing.Drawing { FileName = exploded ? "04_Axon_Exploded.ai" : "03_Axon_Stacked.ai" };
+        var d = new PD.Core.Drawing.Drawing { FileName = FileName(kind) };
         ctx.AddStandardStyles(d);
         var blocks = ProgramBlocks.Build(r);
         if (blocks.Count == 0)
@@ -34,37 +56,267 @@ public static class AxonDrawing
             d.Notes.Add("Axon: no program blocks.");
             return d;
         }
+        var sheets = kind switch
+        {
+            AxonKind.Stacked => new List<Sheet> { Stacked(d, ctx, proj, blocks) },
+            AxonKind.Exploded => new List<Sheet> { Exploded(d, ctx, proj, blocks) },
+            _ => Levels(d, ctx, proj, blocks),
+        };
+        Page(d, ctx, proj, sheets, kind);
+        return d;
+    }
+
+    // ---------------------------------------------------------------- stacked
+
+    static Sheet Stacked(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
+    {
+        var ax = ctx.Style.Axon;
+        var sheet = new Sheet { Name = "AXON STACKED", Prefix = "AXS_", Title = ax.TitleStacked };
         var ground = ctx.Rules.Levels.GroundElevationFt;
-        var site = new Envelope();
-        foreach (var b in blocks) site.ExpandToInclude(b.Geometry.EnvelopeInternal);
-        site.ExpandBy(ax.SiteMarginFt);
+        Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, out var context);
+        var prisms = context.Concat(ProgramPrisms(d, ctx, blocks, b => (b.Z0, b.Z1))).ToList();
+        EmitFaces(d, ctx, proj, AxonFaces.Render(proj, prisms), sheet, "PD_PROGRAM", "PD_LABELS");
 
+        if (ax.FacadeVeil && ctx.Style.Facade.StackedAxonOpacity > 0)
+        {
+            var ids = ctx.Result.FacadeIds.ToHashSet();
+            foreach (var group in ctx.Result.Local.Objects.Where(o => ids.Contains(o.Id) && o.Mesh != null && !ctx.Result.Stray.Contains(o.Id))
+                         .GroupBy(o => o.LayerPath).OrderBy(g => g.Key, StringComparer.Ordinal))
+            {
+                var veil = AxonFaces.Union(group.Select(o => MeshProjection.Union(o.Mesh!, proj.Project, proj.Faces)));
+                if (veil.IsEmpty) continue;
+                sheet.Paint.Add(("FACADE", new Spec("FACADE_" + SectionDrawing.Safe(group.Key).ToUpperInvariant(), veil, d.Swatch("AXON_FACADE_VEIL", ax.FacadeVeilFill),
+                    d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: ctx.Style.Facade.StackedAxonOpacity)));
+            }
+        }
+        return sheet;
+    }
+
+    // ---------------------------------------------------------------- exploded
+
+    /// <summary>
+    /// Plates bottom → top, each on its own layer; the gap above each plate grows until the next plate clears every
+    /// plate below it on the page (plus explodeGapPt). Tall spaces stretch to the underside of the plate above;
+    /// connector programs (cores) present on consecutive plates are joined by translucent volumes.
+    /// </summary>
+    static Sheet Exploded(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
+    {
+        var r = ctx.Result;
+        var ax = ctx.Style.Axon;
+        var t = ax.SlabThicknessFt;
+        var sheet = new Sheet { Name = "AXON EXPLODED", Prefix = "AXE_", Title = ax.TitleExploded };
         var levels = blocks.Select(b => b.LevelIndex).Distinct().OrderBy(i => i).ToList();
-        var e0 = r.Levels[levels[0]].Elevation;
-        // Exploded: plate spacing = factor × story height (heights above the first plate stretch by the factor).
-        double Lift(double z) => exploded ? e0 + ax.ExplodeFactor * (z - e0) : z;
-        var siteZ = Math.Min(Lift(ground), Lift(e0) - (exploded ? ax.SlabThicknessFt : 0));
+        var plates = levels.ToDictionary(i => i, i => AxonFaces.Union(blocks.Where(b => b.LevelIndex == i).Select(b => b.Geometry)));
 
-        var paint = new List<(string Layer, DItemSpec Spec)>();
-        // Site plate and site background (flat, always behind everything).
-        var siteGeom = MeshSlicer.Factory.ToGeometry(site);
-        paint.Add(("AXON_SITE", new DItemSpec("SITE", proj.Plane(siteGeom, siteZ), d.Swatch("AXON_SITE", ax.SiteFill), d.Gray(ax.SiteStroke), ax.SiteStroke == null ? 0 : ax.EdgePt)));
+        // Spacing: the next plate rises until its page footprint clears all lower plates.
+        var gapFt = ctx.Pt(ax.ExplodeGapPt) / ctx.PtPerFt;
+        var lifted = new Dictionary<int, double>();
+        NtsGeometry? below = null;
+        foreach (var (i, n) in levels.Select((i, n) => (i, n)))
+        {
+            var e = r.Levels[i].Elevation;
+            var z = n == 0 ? e : lifted[levels[n - 1]] + Math.Max(1, e - r.Levels[levels[n - 1]].Elevation);
+            NtsGeometry Screen(double zz) => AxonFaces.Union(new[] { proj.Plane(plates[i], zz), proj.Plane(plates[i], zz - t) });
+            if (below != null)
+            {
+                var step = Math.Max(1, gapFt / Math.Max(0.05, proj.ZScale) / 4);
+                for (var k = 0; k < 4000 && Screen(z).Intersects(below); k++) z += step;
+            }
+            lifted[i] = z;
+            var me = Screen(z);
+            below = below == null ? me.Buffer(gapFt) : AxonFaces.Safe(() => below.Union(me.Buffer(gapFt)), below);
+        }
+        // Real elevation → drawn height: piecewise linear through the plates (tall spaces stretch with it).
+        double Lift(double z)
+        {
+            var pts = levels.Select(i => (e: r.Levels[i].Elevation, z: lifted[i])).ToList();
+            if (z <= pts[0].e) return pts[0].z + (z - pts[0].e);
+            for (var k = 0; k + 1 < pts.Count; k++)
+                if (z <= pts[k + 1].e)
+                    return pts[k].z + (z - pts[k].e) * (pts[k + 1].z - pts[k].z) / Math.Max(1e-6, pts[k + 1].e - pts[k].e);
+            return pts[^1].z + (z - pts[^1].e);
+        }
+
+        var ground = ctx.Rules.Levels.GroundElevationFt;
+        Site(d, ctx, proj, blocks, sheet, Math.Min(Lift(ground), lifted[levels[0]]) - t, flatContext: true, out _);
+        var connector = ax.ConnectorPrograms.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var joined = 0;
+        foreach (var (i, n) in levels.Select((i, n) => (i, n)))
+        {
+            var layer = "AXON_" + SectionDrawing.Safe(r.Levels[i].Name).ToUpperInvariant();
+            var z = lifted[i];
+            var mine = blocks.Where(b => b.LevelIndex == i).ToList();
+            // One floor in the next band: plate thickness; a tall space reaches the underside of the plate above.
+            var next = n + 1 < levels.Count ? r.Levels[levels[n + 1]].Elevation : double.MaxValue;
+            var prisms = ProgramPrisms(d, ctx, mine, b => (z - t, b.Z1 > next + 0.5 ? Lift(b.Z1) - t : z)).ToList();
+            EmitFaces(d, ctx, proj, AxonFaces.Render(proj, prisms), sheet, layer, layer, silhouetteName: $"{SectionDrawing.Safe(r.Levels[i].Name)}_OUTLINE");
+            sheet.Tags.Add((i, z));
+
+            // Cores: translucent volume from this plate to the underside of the next one, where both have the program.
+            if (n + 1 >= levels.Count || connector.Count == 0) continue;
+            var up = levels[n + 1];
+            NtsGeometry Cores(int lvl) => AxonFaces.Union(blocks.Where(b => b.LevelIndex == lvl && connector.Contains(b.ProgramKey)).Select(b => b.Geometry));
+            var shared = AxonFaces.Safe(() => Cores(i).Intersection(Cores(up)), MeshSlicer.Factory.CreatePolygon());
+            if (shared.IsEmpty || shared.Area < 1) continue;
+            var fill = d.Swatch("AXON_CONNECTOR", ax.ConnectorFill);
+            var link = new Prism($"{SectionDrawing.Safe(r.Levels[i].Name)}_CONNECTOR", shared, z, lifted[up] - t, fill, fill, fill, "LINK");
+            foreach (var f in AxonFaces.Render(proj, new[] { link }))
+                sheet.Paint.Add((layer, new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.ConnectorStroke), ax.ConnectorPt, Opacity: ax.ConnectorOpacity)));
+            joined++;
+        }
+        if (joined == 0 && connector.Count > 0)
+            d.Notes.Add($"Exploded axon: no {string.Join("/", connector)} program on consecutive levels, so plates are not connected (assign the core masses to CORE).");
+        return sheet;
+    }
+
+    // ---------------------------------------------------------------- floor keys
+
+    /// <summary>One sheet per level: the building volume as dashed hidden-line edges, that level's plate in colour inside it.</summary>
+    static List<Sheet> Levels(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
+    {
+        var r = ctx.Result;
+        var ax = ctx.Style.Axon;
+        var t = ax.SlabThicknessFt;
+        var ground = ctx.Rules.Levels.GroundElevationFt;
+        var ghost = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, b.Z0, b.Z1, null, null, null, b.LevelIndex.ToString())));
+        var sheets = new List<Sheet>();
+        foreach (var i in blocks.Select(b => b.LevelIndex).Distinct().OrderBy(i => i))
+        {
+            var lvl = r.Levels[i];
+            var n = SectionDrawing.Safe(lvl.Name);
+            var sheet = new Sheet { Name = $"AXON {lvl.Name}", Prefix = $"AXK_{n}_", Title = $"{ax.TitleLevels} {PlanDrawing.Title(ctx.Style.Plan.LevelTitleFormat, lvl.Name)}" };
+            Site(d, ctx, proj, blocks, sheet, ground, flatContext: true, out _);
+            var stroke = d.Gray(ax.GhostStroke);
+            var lowerEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) < i).Select(f => f.Screen));
+            if (!lowerEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_BELOW", new Spec("GHOST_BELOW", lowerEdges, null, stroke, ax.GhostPt, ax.GhostDash, Closed: false)));
+            var prisms = ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), _ => (lvl.Elevation - t, lvl.Elevation)).ToList();
+            EmitFaces(d, ctx, proj, AxonFaces.Render(proj, prisms), sheet, "PD_PROGRAM", "PD_LABELS");
+            var upperEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) >= i).Select(f => f.Screen));
+            if (!upperEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_ABOVE", new Spec("GHOST_ABOVE", upperEdges, null, stroke, ax.GhostPt, ax.GhostDash, Closed: false)));
+            sheet.Tags.Add((i, lvl.Elevation));
+            sheets.Add(sheet);
+        }
+        return sheets;
+    }
+
+    // ---------------------------------------------------------------- shared
+
+    /// <summary>Program prisms: top in the program colour, sides darkened (own global swatches), label = tab 4 name.</summary>
+    static IEnumerable<Prism> ProgramPrisms(PD.Core.Drawing.Drawing d, ExportContext ctx, IEnumerable<ProgramBlock> blocks, Func<ProgramBlock, (double Z0, double Z1)> band)
+    {
+        var count = new Dictionary<string, int>();
+        var ax = ctx.Style.Axon;
+        foreach (var b in blocks)
+        {
+            var lvl = SectionDrawing.Safe(ctx.Result.Levels[b.LevelIndex].Name);
+            var row = ctx.Names.GetValueOrDefault(b.MassId);
+            var id = $"{lvl}_{row?.StableId ?? b.MassId[..Math.Min(8, b.MassId.Length)]}";
+            var c = count[id] = count.GetValueOrDefault(id) + 1;
+            if (c > 1) id += $"_{c}";
+            var (fill, _, _, _) = ctx.ProgramPaint(d, b.ProgramKey);
+            var hex = fill == null ? null : d.Swatches.First(s => s.Name == fill).Hex;
+            var dk = ax.SideDarken;
+            var side1 = hex == null ? null : d.Swatch(fill + "_SIDE1", Darken(hex, dk.ElementAtOrDefault(0)));
+            var side2 = hex == null ? null : d.Swatch(fill + "_SIDE2", Darken(hex, dk.ElementAtOrDefault(1)));
+            var text = b.ProgramKey == "CORE" ? ax.CoreLabel : row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
+            var (z0, z1) = band(b);
+            yield return new Prism(id, b.Geometry, z0, z1, fill, side1, side2, "PRG", text, ctx.LabelStyle(d, fill, "PD Plane Label"));
+        }
+    }
+
+    /// <summary>Faces (context white with grey edges, program with dark edges), the program silhouette, and labels on visible tops.</summary>
+    static void EmitFaces(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<VisibleFace> faces, Sheet sheet, string layer, string labelLayer,
+        string silhouetteName = "OUTLINE")
+    {
+        var ax = ctx.Style.Axon;
+        foreach (var f in faces)
+        {
+            var isContext = f.Prism.Group == "CTX";
+            sheet.Paint.Add((isContext ? "AXON_CONTEXT" : layer, new Spec(f.Name, f.Screen, f.Fill,
+                d.Gray(isContext ? ax.ContextStroke : ax.EdgeStroke), isContext ? ax.ContextPt : ax.EdgePt)));
+        }
+        var program = faces.Where(f => f.Prism.Group == "PRG").ToList();
+        var outline = AxonFaces.Union(program.Select(f => f.Screen));
+        if (!outline.IsEmpty)
+            sheet.Paint.Add((layer == "PD_PROGRAM" ? "AXON_OUTLINE" : layer, new Spec(silhouetteName, outline, null, d.Gray(ax.SilhouetteStroke), ax.SilhouettePt)));
+
+        var sizeFt = ctx.Pt(ax.LabelSizePt > 0 ? ax.LabelSizePt : ctx.Style.Fonts.Label.SizePt) / ctx.PtPerFt;
+        var caps = ctx.Style.Fonts.Label.AllCaps;
+        foreach (var group in program.Where(f => f.IsTop && f.Prism.Label != null).GroupBy(f => f.Prism))
+        {
+            var p = group.Key;
+            var top = proj.Unplane(AxonFaces.Union(group.Select(f => f.Screen)), p.Z1);
+            var text = caps ? p.Label!.ToUpperInvariant() : p.Label!;
+            var spot = PlanLabels.Fit(top, text, sizeFt);
+            if (spot == null) continue;
+            var angle = spot.AngleDeg;
+            var m = proj.PlaneTextMatrix(angle);
+            if (m[0] < 0) m = proj.PlaneTextMatrix(angle + 180); // read left → right on the page
+            sheet.Paint.Add((labelLayer, new Spec(p.Name + "_LBL", MeshSlicer.Factory.CreatePolygon(), null, null, 0,
+                Text: spot.Text, TextAt: proj.Project(spot.X, spot.Y, p.Z1), Matrix: m, Style: p.LabelStyle)));
+        }
+    }
+
+    /// <summary>
+    /// Site plate and site background at <paramref name="z"/>; other buildings either as white prisms (stacked, returned
+    /// for hidden-face removal with our masses) or as flat white footprints on the site.
+    /// </summary>
+    static void Site(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, Sheet sheet, double z,
+        bool flatContext, out List<Prism> context)
+    {
+        var r = ctx.Result;
+        var ax = ctx.Style.Axon;
+        var own = new Envelope();
+        foreach (var b in blocks) own.ExpandToInclude(b.Geometry.EnvelopeInternal);
+        var site = new Envelope(own);
+        site.ExpandBy(ax.SiteMarginFt);
+        sheet.Paint.Add(("AXON_SITE", new Spec("SITE", proj.Plane(MeshSlicer.Factory.ToGeometry(site), z), d.Swatch("AXON_SITE", ax.SiteFill),
+            d.Gray(ax.SiteStroke), ax.SiteStroke == null ? 0 : ax.ContextPt)));
         foreach (var (bg, n) in PlanBackground.Collect(r, site).Where(b => b.Role != Roles.Building).Select((b, n) => (b, n)))
         {
             var (fill, stroke, pt, dash) = PlanBackground.Paint(d, ctx.Style, bg);
-            paint.Add(("AXON_SITE", new DItemSpec($"BG_{n:000}", proj.Plane(bg.Geometry, siteZ), fill, stroke, pt, dash, !bg.IsLine)));
+            sheet.Paint.Add(("AXON_SITE", new Spec($"BG_{n:000}", proj.Plane(bg.Geometry, z), fill, stroke, pt, dash, !bg.IsLine)));
         }
 
-        if (exploded) Exploded(d, ctx, proj, blocks, levels, Lift, paint);
-        else Stacked(d, ctx, proj, blocks, paint);
+        // Other buildings near ours; never over our own footprint.
+        var near = new Envelope(own);
+        near.ExpandBy(ax.ContextMarginFt);
+        var ours = AxonFaces.Union(blocks.Select(b => b.Geometry)).Buffer(1);
+        var white = d.Swatch("AXON_CONTEXT", ax.ContextFill);
+        context = new List<Prism>();
+        var k = 0;
+        foreach (var bg in PlanBackground.Collect(r, near).Where(b => b.Role == Roles.Building && !b.IsLine))
+        {
+            var foot = AxonFaces.Safe(() => bg.Geometry.Difference(ours), bg.Geometry);
+            if (foot.IsEmpty || foot.Area < 4) continue;
+            var src = r.Local.Objects.Where(o => o.Role == Roles.Building && o.Mesh != null).FirstOrDefault(o =>
+                new Envelope(o.BBox.MinX, o.BBox.MaxX, o.BBox.MinY, o.BBox.MaxY).Intersects(bg.Geometry.EnvelopeInternal) &&
+                MeshProjection.TopDown(o.Mesh!).Intersects(bg.Geometry.InteriorPoint));
+            var name = $"CONTEXT_{++k:000}";
+            if (flatContext || src == null || (ax.ContextHeightFt > 0 && ax.ContextHeightFt < 0.5))
+                sheet.Paint.Add(("AXON_CONTEXT", new Spec(name, proj.Plane(foot, z), white, d.Gray(ax.ContextStroke), ax.ContextPt)));
+            else
+            {
+                // Low white blocks so our building reads (reference); contextHeightFt 0 = real height.
+                var z0 = Math.Max(z, src.BBox.MinZ);
+                var z1 = ax.ContextHeightFt > 0 ? Math.Min(src.BBox.MaxZ, z0 + ax.ContextHeightFt) : src.BBox.MaxZ;
+                context.Add(new Prism(name, foot, z0, z1, white, white, white, "CTX"));
+            }
+        }
+    }
 
-        // Page: everything at true scale, fit content (or centred on a fixed artboard).
-        var env = new Envelope();
-        foreach (var (_, s) in paint) env.ExpandToInclude(s.Geometry.EnvelopeInternal);
-        var k = ctx.PtPerFt;
+    /// <summary>Artboards (one per sheet, same size), items, level column with markers and leaders, titles.</summary>
+    static void Page(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<Sheet> sheets, AxonKind kind)
+    {
+        var ax = ctx.Style.Axon;
         var pg = ctx.Style.Page;
+        var k = ctx.PtPerFt;
+        var env = new Envelope();
+        foreach (var s in sheets)
+        foreach (var (_, spec) in s.Paint.Where(x => x.Spec.Text == null && !x.Spec.Geometry.IsEmpty))
+            env.ExpandToInclude(spec.Geometry.EnvelopeInternal);
         double m = pg.MarginPt, w = env.Width * k, h = env.Height * k;
-        var colR = exploded ? ctx.Pt(ax.LevelColumnPt) : 0;
+        var colR = sheets.Any(s => s.Tags.Count > 0) ? ctx.Pt(ax.LevelColumnPt) : 0;
         var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
         if (ctx.ArtboardSize is { } fixedSize)
@@ -73,7 +325,7 @@ public static class AxonDrawing
             x0 = (abW - w - colR) / 2;
             y0 = m + (abH - 2 * m - titleBand - h) / 2;
             if (x0 < m - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"{(exploded ? "Exploded" : "Stacked")} axon at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+                d.Notes.Add($"{kind} axon at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
         }
         else
         {
@@ -82,209 +334,78 @@ public static class AxonDrawing
             x0 = m;
             y0 = m;
         }
-        d.Artboards.Add(new Artboard(exploded ? "AXON EXPLODED" : "AXON STACKED", Math.Ceiling(abW), Math.Ceiling(abH)));
         var map = new PageMap(x0 - env.MinX * k, y0, k, env.MaxY, env.Width, flip: false);
-        var p = exploded ? "AXE_" : "AXS_";
 
-        foreach (var (layer, s) in paint) d.Layer(layer);
+        // Layer order: site and context, then per-sheet layers in first-use order, labels and annotation on top.
+        var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
+        string[] order = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_OUTLINE" };
+        foreach (var n in order.Where(used.Contains)) d.Layer(n);
+        foreach (var n in used.Where(n => !order.Contains(n) && n is not ("FACADE" or "AXON_GHOST_ABOVE" or "PD_LABELS"))) d.Layer(n);
+        foreach (var n in new[] { "FACADE", "AXON_GHOST_ABOVE" }.Where(used.Contains)) d.Layer(n);
         foreach (var n in new[] { "PD_LABELS", "PD_ANNOTATION" }) d.Layer(n);
-        foreach (var (layer, s) in paint)
+
+        foreach (var (s, a) in sheets.Select((s, a) => (s, a)))
         {
-            if (s.Text != null)
+            d.Artboards.Add(new Artboard(s.Name, Math.Ceiling(abW), Math.Ceiling(abH)));
+            foreach (var (layer, spec) in s.Paint)
             {
-                var (sx, sy) = (s.TextAt!.Value.X, s.TextAt!.Value.Y);
-                var t = SectionDrawing.Text(p + s.Name, map.X(sx), map.Y(sy), s.Text, "PD Label", "center", center: true);
-                t.Matrix = s.Matrix;
-                d.Layer(layer).Items.Add(t);
-                continue;
-            }
-            if (s.Geometry.IsEmpty) continue;
-            var item = map.Geom(p + s.Name, s.Geometry, s.Fill, s.Stroke, s.StrokePt, s.Closed);
-            item.Dash = s.Dash;
-            item.Opacity = s.Opacity;
-            d.Layer(layer).Items.Add(item);
-        }
-
-        if (exploded) LevelColumn(d, ctx, proj, levels, Lift, map, x0 + w + ctx.Pt(24), p);
-        var ty = y0 + h + ctx.Pt(26);
-        d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "TITLE", x0, ty, exploded ? ax.TitleExploded : ax.TitleStacked, "PD Title", "left"));
-        d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "SCALE", x0, ty + ctx.Pt(12), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
-        return d;
-    }
-
-    /// <summary>A path (or plane text) waiting for the page mapping; geometry in screen feet.</summary>
-    sealed record DItemSpec(string Name, NtsGeometry Geometry, string? Fill, string? Stroke, double StrokePt, double[]? Dash = null, bool Closed = true,
-        double Opacity = 1, string? Text = null, (double X, double Y)? TextAt = null, double[]? Matrix = null);
-
-    /// <summary>Whole blocks as prisms; near hides far (each face trimmed by every nearer face), then one heavy silhouette.</summary>
-    static void Stacked(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, List<(string, DItemSpec)> paint)
-    {
-        var ax = ctx.Style.Axon;
-        var faces = new List<Face>();
-        var count = new Dictionary<string, int>();
-        foreach (var b in blocks)
-        {
-            var id = Id(ctx, b, count);
-            var (top, side1, side2) = Paints(d, ctx, b.ProgramKey);
-            var plan = Simplify(b.Geometry);
-            var n = 0;
-            foreach (var poly in Polygons(plan))
-            {
-                var c = poly.Centroid.Coordinate;
-                faces.Add(new Face($"{id}_TOP{(n > 0 ? $"_{n}" : "")}", proj.Plane(poly, b.Z1), proj.Depth(c.X, c.Y, b.Z1), top, "PD_PROGRAM"));
-                var w = 0;
-                foreach (var ring in Rings(poly))
+                DItem item;
+                if (spec.Text != null)
                 {
-                    var pts = ring.Coordinates;
-                    for (var i = 0; i + 1 < pts.Length; i++)
-                    {
-                        var (a, q) = (pts[i], pts[i + 1]);
-                        var normal = (q.Y - a.Y, a.X - q.X, 0.0);
-                        if (!proj.Faces(normal) || a.Distance(q) < 1e-3) continue;
-                        var quad = proj.Polygon(new[] { (a.X, a.Y, b.Z0), (q.X, q.Y, b.Z0), (q.X, q.Y, b.Z1), (a.X, a.Y, b.Z1) });
-                        var depth = proj.Depth((a.X + q.X) / 2, (a.Y + q.Y) / 2, (b.Z0 + b.Z1) / 2);
-                        faces.Add(new Face($"{id}_SIDE{(n > 0 ? $"{n}_" : "")}{++w:000}", quad, depth, proj.ScreenX(normal) < 0 ? side1 : side2, "PD_PROGRAM"));
-                    }
+                    item = SectionDrawing.Text(s.Prefix + spec.Name, map.X(spec.TextAt!.Value.X), map.Y(spec.TextAt!.Value.Y), spec.Text, spec.Style ?? "PD Plane Label", "center", center: true);
+                    item.Matrix = spec.Matrix;
                 }
-                n++;
-            }
-        }
-
-        // Near → far: trim by everything nearer; paint far → near.
-        NtsGeometry? nearer = null;
-        var visible = new List<(Face face, NtsGeometry geom)>();
-        foreach (var f in faces.OrderByDescending(f => f.Depth))
-        {
-            var g = f.Screen;
-            if (nearer != null && nearer.EnvelopeInternal.Intersects(g.EnvelopeInternal)) g = Safe(() => g.Difference(nearer), g);
-            nearer = nearer == null ? f.Screen : Safe(() => nearer.Union(f.Screen), nearer);
-            if (!g.IsEmpty && g.Area > 1e-3) visible.Add((f, g));
-        }
-        var edge = d.Gray(ax.EdgeStroke);
-        foreach (var (f, g) in Enumerable.Reverse(visible))
-            paint.Add((f.Layer, new DItemSpec(f.Name, g, f.Fill, edge, ax.EdgePt)));
-        if (nearer != null)
-            paint.Add(("AXON_OUTLINE", new DItemSpec("OUTLINE", nearer, null, d.Gray(ax.OutlineStroke), ax.OutlinePt)));
-
-        // Facade veil: front faces of every facade layer, translucent white (A3: stacked axon 30 %).
-        var opacity = ctx.Style.Facade.StackedAxonOpacity;
-        var ids = ctx.Result.FacadeIds.ToHashSet();
-        foreach (var group in ctx.Result.Local.Objects.Where(o => ids.Contains(o.Id) && o.Mesh != null && !ctx.Result.Stray.Contains(o.Id)).GroupBy(o => o.LayerPath).OrderBy(g => g.Key, StringComparer.Ordinal))
-        {
-            var parts = group.Select(o => MeshProjection.Union(o.Mesh!, proj.Project, proj.Faces)).Where(x => !x.IsEmpty).ToList();
-            if (parts.Count == 0 || opacity <= 0) continue;
-            var veil = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(parts), parts[0]);
-            paint.Add(("FACADE", new DItemSpec("FACADE_" + SectionDrawing.Safe(group.Key).ToUpperInvariant(), veil, d.Swatch("AXON_FACADE_VEIL", ax.FacadeVeilFill),
-                d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: opacity)));
-        }
-    }
-
-    /// <summary>Plates bottom → top, each on its own layer so upper plates cover lower ones: slab sides, white top, program colours, labels.</summary>
-    static void Exploded(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, List<int> levels,
-        Func<double, double> lift, List<(string, DItemSpec)> paint)
-    {
-        var r = ctx.Result;
-        var ax = ctx.Style.Axon;
-        var ps = ctx.Style.Plan;
-        var label = ctx.Style.Fonts.Label;
-        var sizeFt = ctx.Pt(label.SizePt) / ctx.PtPerFt;
-        var count = new Dictionary<string, int>();
-        foreach (var i in levels)
-        {
-            var lvl = r.Levels[i];
-            var layer = "AXON_" + SectionDrawing.Safe(lvl.Name).ToUpperInvariant();
-            var p = SectionDrawing.Safe(lvl.Name) + "_";
-            var z = lift(lvl.Elevation);
-            var mine = blocks.Where(b => b.LevelIndex == i).ToList();
-            var plate = Simplify(Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(mine.Select(b => b.Geometry).ToList()), mine[0].Geometry));
-
-            // Slab: front side faces (far → near), then the white top with a heavy outline.
-            var sides = new List<(NtsGeometry g, double depth)>();
-            foreach (var poly in Polygons(plate))
-            foreach (var ring in Rings(poly))
-            {
-                var pts = ring.Coordinates;
-                for (var n = 0; n + 1 < pts.Length; n++)
+                else
                 {
-                    var (a, q) = (pts[n], pts[n + 1]);
-                    var normal = (q.Y - a.Y, a.X - q.X, 0.0);
-                    if (!proj.Faces(normal) || a.Distance(q) < 1e-3) continue;
-                    sides.Add((proj.Polygon(new[] { (a.X, a.Y, z - ax.SlabThicknessFt), (q.X, q.Y, z - ax.SlabThicknessFt), (q.X, q.Y, z), (a.X, a.Y, z) }),
-                        proj.Depth((a.X + q.X) / 2, (a.Y + q.Y) / 2, z)));
+                    if (spec.Geometry.IsEmpty) continue;
+                    item = map.Geom(s.Prefix + spec.Name, spec.Geometry, spec.Fill, spec.Stroke, spec.StrokePt, spec.Closed);
+                    item.Dash = spec.Dash;
+                    item.Opacity = spec.Opacity;
                 }
+                item.Artboard = a;
+                d.Layer(layer).Items.Add(item);
             }
-            var slabFill = d.Swatch("AXON_SLAB", ax.SlabFill);
-            var slabLine = d.Gray(ax.SlabStroke);
-            foreach (var (s, n) in sides.OrderBy(s => s.depth).Select((s, n) => (s, n)))
-                paint.Add((layer, new DItemSpec($"{p}SLAB_SIDE_{n + 1:000}", s.g, slabFill, slabLine, ax.EdgePt)));
-            var top = proj.Plane(plate, z);
-            paint.Add((layer, new DItemSpec($"{p}SLAB_TOP", top, slabFill, slabLine, ax.EdgePt)));
-
-            var ids = mine.Select(b => Id(ctx, b, count)).ToList();
-            foreach (var (b, id) in mine.Zip(ids))
-            {
-                var (fill, stroke, pt, dash) = ctx.ProgramPaint(d, b.ProgramKey);
-                paint.Add((layer, new DItemSpec($"{p}{id}", proj.Plane(b.Geometry, z), fill, stroke ?? d.Gray(ps.RoomStroke), stroke != null ? pt : ps.RoomPt, dash)));
-            }
-            // Heavy plate outline: the silhouette of the whole plate (top and sides).
-            var silhouette = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(sides.Select(s => s.g).Append(top).ToList()), top);
-            paint.Add((layer, new DItemSpec($"{p}SLAB_OUTLINE", silhouette, null, slabLine, ax.SlabOutlinePt)));
-
-            foreach (var (b, id) in mine.Zip(ids))
-            {
-                var row = ctx.Names.GetValueOrDefault(b.MassId);
-                var text = b.ProgramKey == "CORE" ? ax.CoreLabel : row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
-                if (label.AllCaps) text = text.ToUpperInvariant();
-                var spot = PlanLabels.Fit(b.Geometry, text, sizeFt);
-                if (spot == null) continue;
-                var angle = spot.AngleDeg;
-                var m = proj.PlaneTextMatrix(angle);
-                if (m[0] < 0) m = proj.PlaneTextMatrix(angle += 180); // read left → right on the page
-                var at = proj.Project(spot.X, spot.Y, z);
-                var name = $"{p}{id}_LBL";
-                paint.Add((layer, new DItemSpec(name, MeshSlicer.Factory.CreatePolygon(), null, null, 0, Text: spot.Text, TextAt: at, Matrix: m)));
-            }
+            LevelColumn(d, ctx, proj, s, map, x0 + w + ctx.Pt(24), a);
+            var ty = y0 + h + ctx.Pt(26);
+            var anno = d.Layer("PD_ANNOTATION");
+            anno.Items.Add(At(SectionDrawing.Text(s.Prefix + "TITLE", x0, ty, s.Title, "PD Title", "left"), a));
+            anno.Items.Add(At(SectionDrawing.Text(s.Prefix + "SCALE", x0, ty + ctx.Pt(12), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"), a));
         }
     }
 
     /// <summary>
-    /// Right-hand column of level names, bottom → top, never closer than 1.6 × the text size; each joined by a thin leader
-    /// to the rightmost corner of its plate.
+    /// Level names right of the drawing, bottom → top and never closer than 1.8 × the text size: a yellow square,
+    /// "Level 3", and a thin grey leader to the rightmost corner of the plate.
     /// </summary>
-    static void LevelColumn(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<int> levels,
-        Func<double, double> lift, PageMap map, double colX, string p)
+    static void LevelColumn(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet s, PageMap map, double colX, int a)
     {
         var ax = ctx.Style.Axon;
         var layer = d.Layer("PD_ANNOTATION");
-        var minGap = ctx.Pt(ctx.Style.Fonts.Note.SizePt) * 1.6;
+        var minGap = ctx.Pt(ctx.Style.Fonts.Level.SizePt) * 1.8;
+        var sq = ctx.Pt(ax.LevelMarkerPt);
         var labelY = double.MaxValue;
-        foreach (var i in levels)
+        foreach (var (i, z) in s.Tags)
         {
             var lvl = ctx.Result.Levels[i];
-            var z = lift(lvl.Elevation);
             var plate = ctx.Result.Plans[i].Union;
             if (plate.IsEmpty) continue;
             var right = plate.Coordinates.Select(c => proj.Project(c.X, c.Y, z)).OrderByDescending(q => q.X).First();
-            double x = map.X(right.X) + ctx.Pt(4), y = map.Y(right.Y);
+            double x = map.X(right.X) + ctx.Pt(3), y = map.Y(right.Y);
             labelY = Math.Min(y, labelY - minGap);
             var n = SectionDrawing.Safe(lvl.Name);
-            layer.Items.Add(new DItem
+            layer.Items.Add(At(new DItem
             {
-                Kind = ItemKind.Path, Name = $"{p}LVL_{n}_LDR", Closed = false, Stroke = d.Gray(ax.LeaderStroke), StrokePt = ax.LeaderPt,
-                Paths = new() { new[] { new[] { x, y }, new[] { colX - ctx.Pt(10), labelY }, new[] { colX - ctx.Pt(4), labelY } } },
-            });
-            layer.Items.Add(SectionDrawing.Text($"{p}LVL_{n}_TXT", colX, labelY + ctx.Pt(2.5), PlanDrawing.Title(ctx.Style.Plan.LevelTitleFormat, lvl.Name), "PD Note", "left"));
+                Kind = ItemKind.Path, Name = $"{s.Prefix}LVL_{n}_LDR", Closed = false, Stroke = d.Gray(ax.LeaderStroke), StrokePt = ax.LeaderPt,
+                Paths = new() { new[] { new[] { x, y }, new[] { colX - ctx.Pt(4), labelY } } },
+            }, a));
+            layer.Items.Add(At(new DItem
+            {
+                Kind = ItemKind.Path, Name = $"{s.Prefix}LVL_{n}_MARK", Fill = d.Swatch("PD_LEVEL_MARKER", ax.LevelMarker),
+                Paths = new() { new[] { new[] { colX, labelY - sq / 2 }, new[] { colX + sq, labelY - sq / 2 }, new[] { colX + sq, labelY + sq / 2 }, new[] { colX, labelY + sq / 2 } } },
+            }, a));
+            layer.Items.Add(At(SectionDrawing.Text($"{s.Prefix}LVL_{n}_TXT", colX + sq * 2, labelY + ctx.Pt(ctx.Style.Fonts.Level.SizePt) * 0.35,
+                PlanDrawing.Title(ctx.Style.Plan.LevelTitleFormat, lvl.Name), "PD Level", "left"), a));
         }
-    }
-
-    /// <summary>Top in the program colour; sides darkened by style axon.sideDarken (lit, shaded) as their own global swatches.</summary>
-    static (string? top, string? side1, string? side2) Paints(PD.Core.Drawing.Drawing d, ExportContext ctx, string key)
-    {
-        var (fill, _, _, _) = ctx.ProgramPaint(d, key);
-        var hex = fill == null ? null : d.Swatches.First(s => s.Name == fill).Hex;
-        if (hex == null) return (null, null, null);
-        var dk = ctx.Style.Axon.SideDarken;
-        return (fill, d.Swatch(fill + "_SIDE1", Darken(hex, dk.ElementAtOrDefault(0))), d.Swatch(fill + "_SIDE2", Darken(hex, dk.ElementAtOrDefault(1))));
     }
 
     public static string Darken(string hex, double amount)
@@ -293,34 +414,9 @@ public static class AxonDrawing
         return $"#{C(0):X2}{C(1):X2}{C(2):X2}";
     }
 
-    static string Id(ExportContext ctx, ProgramBlock b, Dictionary<string, int> count)
+    static DItem At(DItem item, int artboard)
     {
-        var lvl = SectionDrawing.Safe(ctx.Result.Levels[b.LevelIndex].Name);
-        var id = ctx.Names.TryGetValue(b.MassId, out var row) ? row.StableId : b.MassId[..Math.Min(8, b.MassId.Length)];
-        var key = $"{lvl}_{id}";
-        var c = count[key] = count.GetValueOrDefault(key) + 1;
-        return c > 1 ? $"{key}_{c}" : key;
-    }
-
-    static NtsGeometry Simplify(NtsGeometry g) => Safe(() => TopologyPreservingSimplifier.Simplify(g, 0.1), g);
-
-    static IEnumerable<Polygon> Polygons(NtsGeometry g)
-    {
-        for (var i = 0; i < g.NumGeometries; i++)
-            if (g.GetGeometryN(i) is Polygon p && p.Area > 1e-3) yield return p;
-    }
-
-    /// <summary>Shell counter-clockwise, holes clockwise, so (dy, −dx) is always the outward normal of an edge.</summary>
-    static IEnumerable<LineString> Rings(Polygon p)
-    {
-        yield return Orientation.IsCCW(p.ExteriorRing.CoordinateSequence) ? p.ExteriorRing : (LineString)p.ExteriorRing.Reverse();
-        foreach (var h in p.InteriorRings)
-            yield return Orientation.IsCCW(h.CoordinateSequence) ? (LineString)h.Reverse() : h;
-    }
-
-    static NtsGeometry Safe(Func<NtsGeometry> op, NtsGeometry fallback)
-    {
-        try { return op(); }
-        catch (TopologyException) { return fallback; }
+        item.Artboard = artboard;
+        return item;
     }
 }

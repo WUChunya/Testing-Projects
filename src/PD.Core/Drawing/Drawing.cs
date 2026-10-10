@@ -55,7 +55,12 @@ public sealed class DLayer
     public List<DItem> Items { get; set; } = new();
 }
 
-public sealed record Artboard(string Name, double W, double H);
+/// <param name="X">Left of the artboard in the file's artboard layout (points, y down); set by <see cref="Drawing.LayoutArtboards"/>.</param>
+public sealed record Artboard(string Name, double W, double H)
+{
+    public double X { get; set; }
+    public double Y { get; set; }
+}
 
 public sealed record Swatch(string Name, string Hex);
 
@@ -97,6 +102,30 @@ public sealed class Drawing
 
     /// <summary>Swatch named after its colour, for neutral greys and annotation colours.</summary>
     public string? Gray(string? hex) => hex == null ? null : Swatch("PD_" + hex.TrimStart('#').ToUpperInvariant(), hex);
+
+    /// <summary>
+    /// Places artboards in rows (wrapping at <paramref name="maxRowPt"/>) so a many-artboard file stays inside
+    /// Illustrator's 16383 pt canvas; returns the layout size. Illustrator centres the layout on the canvas.
+    /// </summary>
+    public (double W, double H) LayoutArtboards(double maxRowPt = 6000, double gap = 72)
+    {
+        double x = 0, y = 0, rowH = 0, w = 0;
+        foreach (var a in Artboards)
+        {
+            if (x > 0 && x + a.W > maxRowPt)
+            {
+                x = 0;
+                y += rowH + gap;
+                rowH = 0;
+            }
+            a.X = x;
+            a.Y = y;
+            x += a.W + gap;
+            rowH = Math.Max(rowH, a.H);
+            w = Math.Max(w, a.X + a.W);
+        }
+        return (w, y + rowH);
+    }
 
     public static string F(double v) => v.ToString("0.###", CultureInfo.InvariantCulture);
 }

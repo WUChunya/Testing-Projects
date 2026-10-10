@@ -36,6 +36,9 @@ public sealed class AxonProjection
 
     public (double X, double Y) Project(double x, double y, double z) => (Dot(_r, x, y, z), Dot(_u, x, y, z));
 
+    /// <summary>Screen feet per foot of height.</summary>
+    public double ZScale => _u.Z;
+
     public double Depth(double x, double y, double z) => Dot(_c, x, y, z);
 
     /// <summary>True when a face with this outward normal faces the viewer.</summary>
@@ -54,6 +57,23 @@ public sealed class AxonProjection
             Dot(_r, ex, ey, 0), -Dot(_u, ex, ey, 0),
             -Dot(_r, ux, uy, 0), Dot(_u, ux, uy, 0),
         };
+    }
+
+    /// <summary>Inverse of <see cref="Project"/> on the horizontal plane at height z.</summary>
+    public (double X, double Y) Unproject(double sx, double sy, double z)
+    {
+        double a = _r.X, b = _r.Y, c = _u.X, d = _u.Y;
+        double px = sx - _r.Z * z, py = sy - _u.Z * z, det = a * d - b * c;
+        return ((d * px - b * py) / det, (a * py - c * px) / det);
+    }
+
+    /// <summary>Screen geometry lying on the horizontal plane at z, back in plan feet.</summary>
+    public NtsGeometry Unplane(NtsGeometry screen, double z)
+    {
+        var g = screen.Copy();
+        g.Apply(new PlaneFilter(this, z, inverse: true));
+        g.GeometryChanged();
+        return g;
     }
 
     /// <summary>A horizontal polygon (holes kept) at height z, projected; parallel projection keeps it a polygon.</summary>
@@ -77,10 +97,11 @@ public sealed class AxonProjection
     {
         readonly AxonProjection _p;
         readonly double _z;
-        public PlaneFilter(AxonProjection p, double z) { _p = p; _z = z; }
+        readonly bool _inverse;
+        public PlaneFilter(AxonProjection p, double z, bool inverse = false) { _p = p; _z = z; _inverse = inverse; }
         public void Filter(CoordinateSequence seq, int i)
         {
-            var (x, y) = _p.Project(seq.GetX(i), seq.GetY(i), _z);
+            var (x, y) = _inverse ? _p.Unproject(seq.GetX(i), seq.GetY(i), _z) : _p.Project(seq.GetX(i), seq.GetY(i), _z);
             seq.SetX(i, x);
             seq.SetY(i, y);
         }

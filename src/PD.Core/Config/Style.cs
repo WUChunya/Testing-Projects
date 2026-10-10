@@ -65,6 +65,8 @@ public sealed class Fonts
     public Font Title { get; set; } = new();
     public Font Note { get; set; } = new();
     public Font Chart { get; set; } = new();
+    /// <summary>Level names next to axons and plan titles ("Level 3", not all caps).</summary>
+    public Font Level { get; set; } = new();
 }
 
 public sealed class FacadeStyle
@@ -112,6 +114,9 @@ public sealed class PageStyle
     public double TitleGapPt { get; set; }
     public string LabelColor { get; set; } = "";
     public double LabelMinBarWidthPt { get; set; }
+    /// <summary>Labels on fills darker than this luma (0–255) are white.</summary>
+    public double LabelLightBelowLuma { get; set; } = 150;
+    public string LightLabelColor { get; set; } = "#FFFFFF";
 }
 
 /// <summary>Projected (Make2D-like) view: behind section cuts and in elevations.</summary>
@@ -179,37 +184,59 @@ public sealed class PlanStyle
     public string LeaderStroke { get; set; } = "";
     public double LeaderPt { get; set; }
     public double LeaderLengthPt { get; set; }
+    /// <summary>Small square before the level title (reference: Atlanta level labels).</summary>
+    public string TitleMarker { get; set; } = "";
+    public double TitleMarkerPt { get; set; }
 }
 
-/// <summary>PRD 5.4 axons (stacked and exploded).</summary>
+/// <summary>PRD 5.4 axons (stacked, exploded, floor keys), styled after the Atlanta exploded axon.</summary>
 public sealed class AxonStyle
 {
     /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>
     public double AzimuthDeg { get; set; }
     /// <summary>35.264 = true isometric.</summary>
     public double ElevationDeg { get; set; }
-    public string OutlineStroke { get; set; } = "";
-    public double OutlinePt { get; set; }
+    /// <summary>Outline of our building (stacked) or of each plate (exploded).</summary>
+    public string SilhouetteStroke { get; set; } = "";
+    public double SilhouettePt { get; set; }
     public string EdgeStroke { get; set; } = "";
     public double EdgePt { get; set; }
     /// <summary>Side faces darken the program colour: [lit side, shaded side].</summary>
-    public double[] SideDarken { get; set; } = { 0.1, 0.2 };
+    public double[] SideDarken { get; set; } = { 0.12, 0.24 };
+    public string ContextFill { get; set; } = "";
+    public string ContextStroke { get; set; } = "";
+    public double ContextPt { get; set; }
+    public double ContextMarginFt { get; set; }
+    /// <summary>Other buildings as low white blocks of this height (0 = real height).</summary>
+    public double ContextHeightFt { get; set; }
     public string SiteFill { get; set; } = "";
     public string? SiteStroke { get; set; }
     public double SiteMarginFt { get; set; }
+    public bool FacadeVeil { get; set; }
     public string FacadeVeilFill { get; set; } = "";
     public string FacadeVeilStroke { get; set; } = "";
     public double FacadeVeilStrokePt { get; set; }
-    /// <summary>Exploded: plate spacing = factor × story height.</summary>
-    public double ExplodeFactor { get; set; }
+    public double LabelSizePt { get; set; }
     public double SlabThicknessFt { get; set; }
-    public string SlabFill { get; set; } = "";
-    public string SlabStroke { get; set; } = "";
-    public double SlabOutlinePt { get; set; }
+    /// <summary>Exploded: clear page space between plates (none hides another).</summary>
+    public double ExplodeGapPt { get; set; }
+    /// <summary>Programs drawn as vertical connectors between exploded plates (cores).</summary>
+    public List<string> ConnectorPrograms { get; set; } = new();
+    public string ConnectorFill { get; set; } = "";
+    public double ConnectorOpacity { get; set; }
+    public string ConnectorStroke { get; set; } = "";
+    public double ConnectorPt { get; set; }
+    /// <summary>Floor keys: the building volume as dashed hidden-line edges.</summary>
+    public string GhostStroke { get; set; } = "";
+    public double GhostPt { get; set; }
+    public double[]? GhostDash { get; set; }
     public double LevelColumnPt { get; set; }
     public string LeaderStroke { get; set; } = "";
     public double LeaderPt { get; set; }
+    public string LevelMarker { get; set; } = "";
+    public double LevelMarkerPt { get; set; }
     public string CoreLabel { get; set; } = "";
     public string TitleStacked { get; set; } = "";
     public string TitleExploded { get; set; } = "";
+    public string TitleLevels { get; set; } = "";
 }

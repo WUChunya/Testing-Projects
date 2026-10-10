@@ -145,6 +145,14 @@
       "sizePt": 7,
       "allCaps": true,
       "weight": "normal"
+    },
+    "level": {
+      "family": "Century Gothic",
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT",
+      "sizePt": 8,
+      "allCaps": false,
+      "weight": "normal"
     }
   },
   "facade": {
@@ -180,7 +188,9 @@
     "labelColor": "#000000",
     "labelMinBarWidthPt": 14.0,
     "textReferenceScale": "1\" = 45'-0\"",
-    "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale."
+    "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale.",
+    "lightLabelColor": "#FFFFFF",
+    "labelLightBelowLuma": 150
   },
   "view": {
     "comment": "Projected (Make2D-like) view used behind section cuts and for elevations. Our building: masses = solid light-grey base; every slab/facade layer gets its own AI layer and global swatch (grey by layer order, glass white); all opaque, near hides far. Other buildings: white fill + dashed grey outline.",
@@ -224,7 +234,10 @@
     "outlinePt": 2.5,
     "roomStroke": "#000000",
     "roomPt": 0.5,
-    "voidDash": [4, 3],
+    "voidDash": [
+      4,
+      3
+    ],
     "voidStroke": "#000000",
     "voidPt": 0.5,
     "openToBelowLabel": "OPEN TO BELOW",
@@ -232,47 +245,85 @@
     "facadePt": 0.35,
     "facadeOffsetPt": 2.0,
     "contextMarginFt": 60.0,
-    "contextBuilding": { "fill": "#E6E6E6", "stroke": "#8C8C8C", "strokePt": 0.35 },
+    "contextBuilding": {
+      "fill": "#E6E6E6",
+      "stroke": "#8C8C8C",
+      "strokePt": 0.35
+    },
     "levelTitleFormat": "Level {n}",
     "legendColumns": 3,
     "legendSwatchPt": 8.0,
     "legendColumnPt": 120.0,
     "legendRowPt": 12.0,
-    "scaleBarChoicesFt": [10, 20, 25, 40, 50, 100, 200, 400],
+    "scaleBarChoicesFt": [
+      10,
+      20,
+      25,
+      40,
+      50,
+      100,
+      200,
+      400
+    ],
     "scaleBarHeightPt": 4.0,
     "northArrowPt": 18.0,
     "bandPt": 24.0,
     "overviewColumns": 3,
     "overviewGapPt": 48.0,
-    "leaderStroke": "#000000",
+    "leaderStroke": "#808080",
     "leaderPt": 0.35,
-    "leaderLengthPt": 18.0
+    "leaderLengthPt": 18.0,
+    "titleMarker": "#F2B705",
+    "titleMarkerPt": 9.0
   },
   "axon": {
-    "comment": "PRD 5.4. azimuthDeg = where the viewer stands (225 = south-west); elevationDeg 35.264 = isometric. Exploded plate spacing = explodeFactor x story height.",
+    "comment": "PRD 5.4, styled after the Atlanta exploded axon. azimuthDeg = where the viewer stands (225 = south-west); elevationDeg 35.264 = isometric. Exploded plates are spaced so no plate hides another (explodeGapPt of clear page space between them).",
     "azimuthDeg": 225.0,
     "elevationDeg": 35.264,
-    "outlineStroke": "#000000",
-    "outlinePt": 2.5,
-    "edgeStroke": "#000000",
-    "edgePt": 0.5,
-    "sideDarken": [0.1, 0.2],
-    "siteFill": "#D7DEBC",
-    "siteStroke": null,
+    "silhouetteStroke": "#1A1A1A",
+    "silhouettePt": 1.0,
+    "edgeStroke": "#333333",
+    "edgePt": 0.35,
+    "sideDarken": [
+      0.12,
+      0.24
+    ],
+    "contextFill": "#FFFFFF",
+    "contextStroke": "#A6A6A6",
+    "contextPt": 0.35,
+    "contextMarginFt": 120.0,
+    "contextHeightFt": 8.0,
+    "siteFill": "#F4F4F4",
+    "siteStroke": "#CCCCCC",
     "siteMarginFt": 40.0,
+    "facadeVeil": false,
     "facadeVeilFill": "#FFFFFF",
     "facadeVeilStroke": "#9A9A9A",
     "facadeVeilStrokePt": 0.25,
-    "explodeFactor": 1.5,
-    "slabThicknessFt": 2.0,
-    "slabFill": "#FFFFFF",
-    "slabStroke": "#000000",
-    "slabOutlinePt": 1.5,
-    "levelColumnPt": 70.0,
-    "leaderStroke": "#000000",
+    "labelSizePt": 9.0,
+    "slabThicknessFt": 3.0,
+    "explodeGapPt": 24.0,
+    "connectorPrograms": [
+      "CORE"
+    ],
+    "connectorFill": "#E9E2CC",
+    "connectorOpacity": 0.6,
+    "connectorStroke": "#9A9A9A",
+    "connectorPt": 0.35,
+    "ghostStroke": "#808080",
+    "ghostPt": 0.5,
+    "ghostDash": [
+      3,
+      2
+    ],
+    "levelColumnPt": 90.0,
+    "leaderStroke": "#9A9A9A",
     "leaderPt": 0.35,
+    "levelMarker": "#F2B705",
+    "levelMarkerPt": 5.0,
     "coreLabel": "CORE",
     "titleStacked": "STACKED AXON",
-    "titleExploded": "EXPLODED AXON"
+    "titleExploded": "EXPLODED AXON",
+    "titleLevels": "FLOOR KEY AXON"
   }
 }

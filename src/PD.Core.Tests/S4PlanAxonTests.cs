@@ -90,39 +90,120 @@ public class S4PlanAxonTests
     }
 
     [Fact]
-    public void AxonStacked_ProgramFacesSidesDarkerOutlineAndVeil()
+    public void AxonStacked_ThinOutlinesWhiteContextAndPlaneLabels()
     {
         var ctx = S3SectionTests.Context();
-        var d = AxonDrawing.Build(ctx, exploded: false);
+        var d = AxonDrawing.Build(ctx, AxonKind.Stacked);
         Assert.Equal("03_Axon_Stacked.ai", d.FileName);
         var prog = d.Layer("PD_PROGRAM").Items;
         Assert.Contains(prog, i => i.Name.Contains("_TOP") && i.Fill == "PRG_LAB");
         Assert.Contains(prog, i => i.Fill == "PRG_LAB_SIDE1" || i.Fill == "PRG_LAB_SIDE2");
-        Assert.Equal(AxonDrawing.Darken("#F7A238", 0.1), d.Swatches.Single(s => s.Name == "PRG_LAB_SIDE1").Hex);
-        Assert.Single(d.Layer("AXON_OUTLINE").Items, i => i.StrokePt == ctx.Style.Axon.OutlinePt);
-        Assert.All(d.Layer("FACADE").Items, i => Assert.Equal(ctx.Style.Facade.StackedAxonOpacity, i.Opacity));
-        Assert.NotEmpty(d.Layer("FACADE").Items);
-        Assert.NotEmpty(d.Layer("AXON_SITE").Items);
+        Assert.Equal(AxonDrawing.Darken("#F7A238", ctx.Style.Axon.SideDarken[0]), d.Swatches.Single(s => s.Name == "PRG_LAB_SIDE1").Hex);
+        Assert.All(prog, i => Assert.Equal(ctx.Style.Axon.EdgePt, i.StrokePt));
+        var outline = Assert.Single(d.Layer("AXON_OUTLINE").Items);
+        Assert.Equal(ctx.Style.Axon.SilhouettePt, outline.StrokePt);
+        Assert.True(ctx.Style.Axon.SilhouettePt <= 1.5, "line hierarchy: no heavy silhouette");
+        // Other buildings: white prisms with grey edges, hidden faces removed together with ours.
+        var context = d.Layer("AXON_CONTEXT").Items;
+        Assert.NotEmpty(context);
+        Assert.All(context, i => Assert.Equal("AXON_CONTEXT", i.Fill));
+        var labels = d.Layer("PD_LABELS").Items;
+        Assert.NotEmpty(labels);
+        Assert.All(labels, t => { Assert.NotNull(t.Matrix); Assert.StartsWith("PD Plane Label", t.ParaStyle); });
+        Assert.Empty(d.Layers.Where(l => l.Name == "FACADE").SelectMany(l => l.Items));
         UniqueNamesInsideArtboards(d);
     }
 
     [Fact]
-    public void AxonExploded_PlatesPerLevelWithPlaneLabelsAndLevelColumn()
+    public void AxonExploded_PlatesClearOfEachOtherWithLevelColumn()
     {
         var ctx = S3SectionTests.Context();
-        var d = AxonDrawing.Build(ctx, exploded: true);
+        var d = AxonDrawing.Build(ctx, AxonKind.Exploded);
         var r = AnalysisFixture.Result;
         Assert.Equal("04_Axon_Exploded.ai", d.FileName);
         var plates = d.Layers.Where(l => l.Name.StartsWith("AXON_L")).ToList();
         Assert.True(plates.Count >= 5, string.Join(",", d.Layers.Select(l => l.Name)));
-        // Lower plates are painted first (layer order bottom → top).
         Assert.Equal(plates.Select(l => l.Name), plates.OrderBy(l => r.Levels.FindIndex(x => "AXON_" + x.Name.ToUpperInvariant() == l.Name)).Select(l => l.Name));
-        Assert.All(plates, l => Assert.Contains(l.Items, i => i.Name.EndsWith("SLAB_TOP")));
+        // No plate hides another: plate outlines (page bounding boxes) are disjoint up the stack.
+        var outlines = plates.Select(l => l.Items.Single(i => i.Name.EndsWith("_OUTLINE"))).ToList();
+        var f = PD.Core.Geometry.MeshSlicer.Factory;
+        NetTopologySuite.Geometries.Geometry Poly(DItem i) => f.BuildGeometry(i.Paths!.Select(p =>
+            (NetTopologySuite.Geometries.Geometry)f.CreatePolygon(p.Append(p[0]).Select(q => new NetTopologySuite.Geometries.Coordinate(q[0], q[1])).ToArray()).Buffer(0))).Union();
+        // A tall space stretches from its plate up to the next one, so that pair touches by design.
+        var tallBase = r.Spans.Where(x => x.Mode == PD.Core.Cleanup.SpanMode.KeepTall).Select(x => "AXON_" + r.Levels[x.LevelIndices[0]].Name.ToUpperInvariant()).ToHashSet();
+        for (var n = 1; n < outlines.Count; n++)
+            if (!tallBase.Contains(plates[n - 1].Name))
+                Assert.True(Poly(outlines[n]).Intersection(Poly(outlines[n - 1])).Area < 1, $"{plates[n].Name} overlaps {plates[n - 1].Name}");
         var labels = plates.SelectMany(l => l.Items).Where(i => i.Kind == ItemKind.Text).ToList();
         Assert.NotEmpty(labels);
         Assert.All(labels, t => { Assert.NotNull(t.Matrix); Assert.True(t.Matrix![0] > 0); });
-        Assert.Equal(plates.Count, d.Layer("PD_ANNOTATION").Items.Count(i => i.Name.EndsWith("_LDR")));
-        Assert.Empty(d.Layers.Where(l => l.Name == "FACADE").SelectMany(l => l.Items));
+        var anno = d.Layer("PD_ANNOTATION").Items;
+        Assert.Equal(plates.Count, anno.Count(i => i.Name.EndsWith("_LDR")));
+        Assert.Equal(plates.Count, anno.Count(i => i.Name.EndsWith("_MARK")));
+        Assert.Contains(anno, i => i.Text == "Level 1" && i.ParaStyle == "PD Level");
         UniqueNamesInsideArtboards(d);
+    }
+
+    [Fact]
+    public void AxonExploded_CoresConnectPlates()
+    {
+        // Treat the stacked LAB masses as the core: consecutive LAB plates must be joined.
+        var model = PD.Core.IO.FixtureReader.Load(FixtureSmokeTests.FixturePath("template.json"));
+        var labs = AnalysisFixture.Result.Masses.Where(m => m.ProgramKey == "LAB").ToDictionary(m => m.Id, _ => "CORE");
+        var res = PD.Core.Analysis.Analyzer.Run(new PD.Core.Analysis.AnalysisInput { Model = model, ProgramOverrides = labs });
+        var ctx = S3SectionTests.Context();
+        var core = new ExportContext { Result = res, Settings = ctx.Settings, Programs = ctx.Programs };
+        var d = AxonDrawing.Build(core, AxonKind.Exploded);
+        var links = d.Layers.SelectMany(l => l.Items).Where(i => i.Name.Contains("_CONNECTOR")).ToList();
+        Assert.NotEmpty(links);
+        Assert.All(links, i => Assert.Equal(core.Style.Axon.ConnectorOpacity, i.Opacity));
+        Assert.DoesNotContain(d.Notes, n => n.Contains("not connected"));
+        Assert.Contains(AxonDrawing.Build(ctx, AxonKind.Exploded).Notes, n => n.Contains("not connected"));
+    }
+
+    [Fact]
+    public void AxonLevels_OneArtboardPerLevelWithDashedVolume()
+    {
+        var ctx = S3SectionTests.Context();
+        var d = AxonDrawing.Build(ctx, AxonKind.Levels);
+        Assert.Equal("04_Axon_Levels.ai", d.FileName);
+        var levels = ProgramBlocksLevels();
+        Assert.Equal(levels, d.Artboards.Count);
+        for (var a = 0; a < d.Artboards.Count; a++)
+        {
+            var on = d.Layers.SelectMany(l => l.Items).Where(i => i.Artboard == a).ToList();
+            Assert.Contains(on, i => i.Fill?.StartsWith("PRG_") == true);
+            Assert.Contains(on, i => i.Name.Contains("GHOST") && i.Dash != null && !i.Closed);
+            Assert.Single(on, i => i.Name.EndsWith("_LDR"));
+        }
+        Assert.True(d.Layers.FindIndex(l => l.Name == "AXON_GHOST_BELOW") < d.Layers.FindIndex(l => l.Name == "PD_PROGRAM"));
+        Assert.True(d.Layers.FindIndex(l => l.Name == "AXON_GHOST_ABOVE") > d.Layers.FindIndex(l => l.Name == "PD_PROGRAM"));
+        UniqueNamesInsideArtboards(d);
+    }
+
+    static int ProgramBlocksLevels() => PD.Core.Analysis.ProgramBlocks.Build(AnalysisFixture.Result).Select(b => b.LevelIndex).Distinct().Count();
+
+    [Fact]
+    public void Artboards_LaidOutInRowsInsideTheCanvas()
+    {
+        var d = PlanDrawing.Build(S3SectionTests.Context());
+        var (w, h) = d.LayoutArtboards();
+        Assert.True(w <= 16000 && h <= 16000, $"{w} x {h}");
+        Assert.True(d.Artboards.Select(a => a.Y).Distinct().Count() > 1, "wraps into rows");
+        for (var i = 0; i < d.Artboards.Count; i++)
+        for (var j = i + 1; j < d.Artboards.Count; j++)
+        {
+            var (a, b) = (d.Artboards[i], d.Artboards[j]);
+            Assert.False(a.X < b.X + b.W && b.X < a.X + a.W && a.Y < b.Y + b.H && b.Y < a.Y + a.H, $"{a.Name} overlaps {b.Name}");
+        }
+    }
+
+    [Fact]
+    public void LabelStyle_WhiteOnDarkFills()
+    {
+        var ctx = S3SectionTests.Context();
+        var d = new PD.Core.Drawing.Drawing();
+        Assert.Equal("PD Label Light", ctx.LabelStyle(d, d.Swatch("X", "#5A3E8C")));
+        Assert.Equal("PD Label", ctx.LabelStyle(d, d.Swatch("Y", "#FDF5D1")));
     }
 }

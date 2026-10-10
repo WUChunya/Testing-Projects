@@ -155,7 +155,7 @@ public class S3SectionTests
         foreach (var f in new[] { "program_areas.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx", "_preview/02_Section_A.svg", "_preview/07_Elevation_S.svg" })
             Assert.True(File.Exists(Path.Combine(dir, f)), f);
         Assert.Contains(res.Notes, n => n.StartsWith("ProgramChart"));
-        foreach (var f in new[] { "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked.svg", "04_Axon_Exploded.svg" })
+        foreach (var f in new[] { "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked.svg", "04_Axon_Exploded.svg", "04_Axon_Levels_AXON_L3.svg" })
             Assert.True(File.Exists(Path.Combine(dir, "_preview", f)), f);
 
         // Golden preview for review (checked in).
@@ -164,6 +164,7 @@ public class S3SectionTests
         File.Copy(Path.Combine(dir, "_preview", "01_Plans_PLAN_L1.svg"), Path.Combine(Golden(), "plan_L1.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "03_Axon_Stacked.svg"), Path.Combine(Golden(), "axon_stacked.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded.svg"), Path.Combine(Golden(), "axon_exploded.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Levels_AXON_L3.svg"), Path.Combine(Golden(), "axon_levels_L3.svg"), true);
 
         // node --check after stripping the #target directive (ExtendScript-only).
         var js = Path.Combine(dir, "check.js");

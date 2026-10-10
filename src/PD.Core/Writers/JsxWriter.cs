@@ -25,6 +25,7 @@ public static class JsxWriter
 
     public static string Write(IEnumerable<PD.Core.Drawing.Drawing> drawings, string outDir, bool png = false, double pngScalePercent = 300)
     {
+        foreach (var d in drawings) d.LayoutArtboards();
         // JSON is a JS literal except for U+2028/2029; ExtendScript (ES3) has no JSON.parse, so embed directly.
         var data = JsonSerializer.Serialize(drawings, Json).Replace("\u2028", "\\u2028").Replace("\u2029", "\\u2029");
         var opts = JsonSerializer.Serialize(new { outDir = outDir.Replace('\\', '/'), png, pngScale = pngScalePercent }, Json);

@@ -78,5 +78,22 @@ public sealed class ExportContext
         d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "left", color, f.Note.Weight));
         d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "right", color, f.Note.Weight));
         d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), f.Title.AllCaps, "left", color, f.Title.Weight));
+        var light = d.Gray(Style.Page.LightLabelColor)!;
+        d.ParaStyles.Add(new ParaStyle("PD Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", light, f.Label.Weight));
+        var plane = Pt(Style.Axon.LabelSizePt > 0 ? Style.Axon.LabelSizePt : f.Label.SizePt);
+        d.ParaStyles.Add(new ParaStyle("PD Plane Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", color, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Plane Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", light, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Level", f.Level.PostScript, f.Level.FallbackPostScript, f.Level.Family, Pt(f.Level.SizePt), f.Level.AllCaps, "left", color, f.Level.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Level Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), false, "left", color, f.Title.Weight));
+    }
+
+    /// <summary>The dark or the light ("… Light") variant of a label style, whichever reads on the given fill swatch.</summary>
+    public string LabelStyle(Drawing d, string? fillSwatch, string baseStyle = "PD Label")
+    {
+        var hex = fillSwatch == null ? null : d.Swatches.FirstOrDefault(s => s.Name == fillSwatch)?.Hex;
+        if (hex is not { Length: 7 }) return baseStyle;
+        int C(int i) => Convert.ToInt32(hex.Substring(1 + 2 * i, 2), 16);
+        var luma = 0.299 * C(0) + 0.587 * C(1) + 0.114 * C(2);
+        return luma < Style.Page.LabelLightBelowLuma ? baseStyle + " Light" : baseStyle;
     }
 }
