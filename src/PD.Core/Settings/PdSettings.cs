@@ -109,6 +109,10 @@ public sealed class OutputSetting
     public string Artboard { get; set; } = "";
     /// <summary>Also export a PNG per artboard from Illustrator; null = rules default.</summary>
     public bool? ExportPng { get; set; }
+    /// <summary>Axon view direction (into the scene) taken from the Rhino viewport; null = style axon azimuth/elevation (isometric).</summary>
+    public double[]? AxonViewDirection { get; set; }
+    /// <summary>Take <see cref="AxonViewDirection"/> from the active Rhino viewport at export time.</summary>
+    public bool AxonFromViewport { get; set; }
 
     public void FillDefaults(PD.Core.Config.OutputRules r)
     {

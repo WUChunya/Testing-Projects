@@ -15,6 +15,8 @@ public sealed class Style
     public ViewStyle View { get; set; } = new();
     public ElevationStyle Elevation { get; set; } = new();
     public PageStyle Page { get; set; } = new();
+    public PlanStyle Plan { get; set; } = new();
+    public AxonStyle Axon { get; set; } = new();
 
     public static Style Default()
     {
@@ -141,4 +143,73 @@ public sealed class ElevationStyle
     public double LevelLineStrokePt { get; set; }
     public double[]? LevelLineDash { get; set; }
     public double MarkerSizePt { get; set; }
+}
+
+/// <summary>PRD 5.2 plans (sizes in points at the text reference scale unless named Ft).</summary>
+public sealed class PlanStyle
+{
+    public string OutlineStroke { get; set; } = "";
+    public double OutlinePt { get; set; }
+    public string RoomStroke { get; set; } = "";
+    public double RoomPt { get; set; }
+    /// <summary>Open-to-below (upper levels of a tall space): dashed outline with a diagonal cross.</summary>
+    public double[]? VoidDash { get; set; }
+    public string VoidStroke { get; set; } = "";
+    public double VoidPt { get; set; }
+    public string OpenToBelowLabel { get; set; } = "";
+    /// <summary>Glass line outside the building outline (A3).</summary>
+    public string FacadeStroke { get; set; } = "";
+    public double FacadePt { get; set; }
+    public double FacadeOffsetPt { get; set; }
+    /// <summary>Background drawn around the building (site, other buildings), clipped to this margin.</summary>
+    public double ContextMarginFt { get; set; }
+    public Paint ContextBuilding { get; set; } = new();
+    public string LevelTitleFormat { get; set; } = "";
+    public int LegendColumns { get; set; }
+    public double LegendSwatchPt { get; set; }
+    public double LegendColumnPt { get; set; }
+    public double LegendRowPt { get; set; }
+    public List<double> ScaleBarChoicesFt { get; set; } = new();
+    public double ScaleBarHeightPt { get; set; }
+    public double NorthArrowPt { get; set; }
+    /// <summary>Space between the drawing and the title / legend bands.</summary>
+    public double BandPt { get; set; }
+    public int OverviewColumns { get; set; }
+    public double OverviewGapPt { get; set; }
+    public string LeaderStroke { get; set; } = "";
+    public double LeaderPt { get; set; }
+    public double LeaderLengthPt { get; set; }
+}
+
+/// <summary>PRD 5.4 axons (stacked and exploded).</summary>
+public sealed class AxonStyle
+{
+    /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>
+    public double AzimuthDeg { get; set; }
+    /// <summary>35.264 = true isometric.</summary>
+    public double ElevationDeg { get; set; }
+    public string OutlineStroke { get; set; } = "";
+    public double OutlinePt { get; set; }
+    public string EdgeStroke { get; set; } = "";
+    public double EdgePt { get; set; }
+    /// <summary>Side faces darken the program colour: [lit side, shaded side].</summary>
+    public double[] SideDarken { get; set; } = { 0.1, 0.2 };
+    public string SiteFill { get; set; } = "";
+    public string? SiteStroke { get; set; }
+    public double SiteMarginFt { get; set; }
+    public string FacadeVeilFill { get; set; } = "";
+    public string FacadeVeilStroke { get; set; } = "";
+    public double FacadeVeilStrokePt { get; set; }
+    /// <summary>Exploded: plate spacing = factor × story height.</summary>
+    public double ExplodeFactor { get; set; }
+    public double SlabThicknessFt { get; set; }
+    public string SlabFill { get; set; } = "";
+    public string SlabStroke { get; set; } = "";
+    public double SlabOutlinePt { get; set; }
+    public double LevelColumnPt { get; set; }
+    public string LeaderStroke { get; set; } = "";
+    public double LeaderPt { get; set; }
+    public string CoreLabel { get; set; } = "";
+    public string TitleStacked { get; set; } = "";
+    public string TitleExploded { get; set; } = "";
 }

@@ -51,14 +51,18 @@ public static class SvgWriter
         var size = ps?.SizePt ?? 7;
         var anchor = it.Align switch { "center" => "middle", "right" => "end", _ => "start" };
         var text = ps?.AllCaps == true ? it.Text!.ToUpperInvariant() : it.Text!;
-        var rot = it.Rotation != 0 ? $" transform=\"rotate({F(-it.Rotation)} {F(it.X)} {F(it.Y)})\"" : "";
         var lines = text.Split('\n');
+        // Plane text draws in its own space at the origin; the matrix carries it onto the page.
+        var m = it.Matrix is { Length: 4 } mm ? mm : null;
+        double ax = m == null ? it.X : 0, ay = m == null ? it.Y : 0;
+        var rot = m != null ? $" transform=\"matrix({F(m[0])} {F(m[1])} {F(m[2])} {F(m[3])} {F(it.X)} {F(it.Y)})\""
+            : it.Rotation != 0 ? $" transform=\"rotate({F(-it.Rotation)} {F(it.X)} {F(it.Y)})\"" : "";
         // Centred labels: (X,Y) is the visual centre; cap height ≈ 0.7 × size.
-        var y = it.Center ? it.Y - (lines.Length - 1) * size * 1.2 / 2 + size * 0.35 : it.Y;
-        var sb = new StringBuilder($"<text id=\"{Esc(it.Name)}\" x=\"{F(it.X)}\" y=\"{F(y)}\" font-family=\"{Esc(ps?.Family ?? "Arial")}, Arial, sans-serif\" " +
+        var y = it.Center ? ay - (lines.Length - 1) * size * 1.2 / 2 + size * 0.35 : ay;
+        var sb = new StringBuilder($"<text id=\"{Esc(it.Name)}\" x=\"{F(ax)}\" y=\"{F(y)}\" font-family=\"{Esc(ps?.Family ?? "Arial")}, Arial, sans-serif\" " +
             $"font-weight=\"{ps?.Weight ?? "normal"}\" font-size=\"{F(size)}\" text-anchor=\"{anchor}\" fill=\"{paint(ps?.Color)}\"{rot}>");
         for (var i = 0; i < lines.Length; i++)
-            sb.Append($"<tspan x=\"{F(it.X)}\" dy=\"{(i == 0 ? "0" : F(size * 1.2))}\">{Esc(lines[i])}</tspan>");
+            sb.Append($"<tspan x=\"{F(ax)}\" dy=\"{(i == 0 ? "0" : F(size * 1.2))}\">{Esc(lines[i])}</tspan>");
         return sb.Append("</text>\n").ToString();
     }
 

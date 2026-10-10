@@ -16,6 +16,7 @@ public static class Exporter
     {
         var drawings = new List<PD.Core.Drawing.Drawing>();
         var wanted = ctx.Settings.Output.Drawings ?? ctx.Rules.Output.Drawings;
+        if (wanted.Contains("Plan")) drawings.Add(PD.Core.Plans.PlanDrawing.Build(ctx));
         if (wanted.Contains("Section"))
         {
             var secs = ctx.Settings.Sections.Where(s => s.Line.Length == 4 && !s.IsElevation).ToList();
@@ -28,8 +29,10 @@ public static class Exporter
             if (els.Count == 0) notes.Add("Elevation: no elevation line (tab 7 Elevations).");
             foreach (var s in els) drawings.Add(PD.Core.Elevations.ElevationDrawing.Build(ctx, s));
         }
-        foreach (var w in wanted.Where(w => w is not ("Section" or "Elevation")))
-            notes.Add($"{w}: not implemented yet (Plan/Axon in S4, charts in S5).");
+        if (wanted.Contains("AxonStacked")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, exploded: false));
+        if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, exploded: true));
+        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded")))
+            notes.Add($"{w}: not implemented yet (charts in S5).");
         foreach (var d in drawings) notes.AddRange(d.Notes);
         return drawings;
     }
@@ -52,7 +55,7 @@ public static class Exporter
         Save(Path.Combine(folder, "program_areas.csv"), Reports.AreaCsv(ctx.Result, ctx.ProgramLabel));
         foreach (var d in drawings)
             for (var a = 0; a < d.Artboards.Count; a++)
-                Save(Path.Combine(preview, Path.GetFileNameWithoutExtension(d.FileName) + (a > 0 ? $"_{a + 1}" : "") + ".svg"), SvgWriter.Write(d, a));
+                Save(Path.Combine(preview, PreviewName(d, a)), SvgWriter.Write(d, a));
         var jsx = Path.Combine(folder, "ProgramDiagram.jsx");
         Save(jsx, JsxWriter.Write(drawings, folder, ctx.Settings.Output.ExportPng ?? ctx.Rules.Output.ExportPng, ctx.Rules.Output.PngScalePercent));
         Save(Path.Combine(folder, "diagram.json"), JsonSerializer.Serialize(new
@@ -67,6 +70,10 @@ public static class Exporter
         Save(Path.Combine(folder, "export_log.txt"), Log(ctx, notes));
         return new ExportResult(folder, jsx, files, notes);
     }
+
+    /// <summary>"02_Section_A.svg"; multi-artboard files add the artboard name ("01_Plans_PLAN_L1.svg").</summary>
+    public static string PreviewName(PD.Core.Drawing.Drawing d, int artboard) =>
+        Path.GetFileNameWithoutExtension(d.FileName) + (d.Artboards.Count > 1 ? "_" + SectionDrawing.Safe(d.Artboards[artboard].Name) : "") + ".svg";
 
     static string Log(ExportContext ctx, List<string> notes)
     {

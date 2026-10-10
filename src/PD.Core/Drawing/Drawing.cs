@@ -42,6 +42,11 @@ public sealed class DItem
     public double Rotation { get; set; }
     /// <summary>Text: (X,Y) is the visual centre of the glyphs (Illustrator measures outlined glyphs and moves the text there).</summary>
     public bool Center { get; set; }
+    /// <summary>
+    /// Text laid on a plane (axon labels): [a, b, c, d] maps text space (x right, y down, points) to the page (y down):
+    /// page = (X, Y) + (a·x + c·y, b·x + d·y). Replaces <see cref="Rotation"/>; the text stays editable.
+    /// </summary>
+    public double[]? Matrix { get; set; }
 }
 
 public sealed class DLayer

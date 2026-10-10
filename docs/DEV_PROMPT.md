@@ -14,15 +14,17 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: start of S4, after v0.3.2)
+## Next-session message (current: start of S5, after v0.4.0)
 
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.6; S0–S3 + Elevation are done (plugin v0.3.2, 58 tests green).
-Do stage S4 (Plan + Axon) from docs/DEV_PROMPT.md, reusing what exists — do not rebuild it:
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.7; S0–S4 are done (plugin v0.4.0, 68 tests green).
+Do stage S5 (Charts + Entourage) from docs/DEV_PROMPT.md, reusing what exists — do not rebuild it:
 - Drawing model + ExportContext (true scale, ctx.Pt() text scaling, Fit-content artboard), SvgWriter/JsxWriter/Exporter, runtime.jsx.
 - Views/ProjectedView (opaque, near-hides-far, one AI layer + global swatch per source layer, glass white) for anything "seen".
+- ProgramBlocks (resolved footprints × level bands), PlanLabels (MIC + long direction), PlanDrawing legend helpers, AxonProjection.
+- UI is English; tabs 1–9 (6 Sections, 7 Elevations, 8 Output, 9 Check); output = model folder/"YYYY MMDD_Conceptual Program Diagram_HHMMSS".
 - Section style lessons from the user: never fit-to-page; slabs/ground are fixed visual weights; labels bold caps centred
   (Center=true); our building vs other buildings are drawn differently; generated layers must keep stable item names.
 Defaults: PRD §9 (listed in PROGRESS.md); ask me only if blocked. Talk to me in Chinese; code/commits in English.
@@ -63,7 +65,7 @@ bump the version, run tools/package.sh, commit, push, send me the zip, reply in 
 | **S1 Core geometry** ✅ | B1, §3.5, §7.2–7.3 | Units and localize; outliers; mesh slicer; level clustering; span rule; 2D overlap resolution; area stats | Tests for T3 (levels match §7.2 within 0.5 ft, outlier elevations flagged) and T4 (areas add up after resolution) pass on the fixture |
 | **S2 Rhino plugin shell** ✅ | §1, A1–A3, §3 | `.rhp` project; `ProgramDiagram` command; Eto dockable panel with tabs ①–⑧ (functional, plain UI); layer role auto-fill (T1); facade detection; 3D cleanup (T2); level-plane conduit; settings persistence; Yak manifest | Builds on Linux; Windows checklist written for: install, open the test model, walk all tabs |
 | **S3 Output engine + Section** ✅ (+ Elevation, v0.3.x) | §5.0, §5.1, §5.3, F8 notes | `runtime.jsx` (layers, global swatches, para styles, named items, in-place update, `_MANUAL` protection); `SvgWriter`; COM launcher; Section generator (cut bars, slab poche, beyond dashed, ground, property line, height dims, facade) | A golden SVG of Section A from the fixture looks right (one Playwright screenshot, viewed once); JSX passes a syntax check (`node --check` after stripping `#target`) |
-| **S4 Plan + Axon** | §5.2, §5.4, A3 | Plan per level plus overview sheet, labels (NTS MaximumInscribedCircle), legend, scale bar; stacked and exploded axon (affine projection, painter's sort, facade veil, level leaders) | Golden SVGs for L1, Axon Stacked, Axon Exploded |
+| **S4 Plan + Axon** ✅ | §5.2, §5.4, A3 | Plan per level plus overview sheet, labels (NTS MaximumInscribedCircle), legend, scale bar; stacked and exploded axon (affine projection, painter's sort, facade veil, level leaders) | Golden SVGs for L1, Axon Stacked, Axon Exploded |
 | **S5 Charts + Entourage** | §5.5, §5.6, §4 | Excel template and reader (ClosedXML); program diagram with shelf packing; donut pie; CSV; entourage (seeded Poisson disk, density by program, `ENTOURAGE` layer, symbols from `entourage.ai` with built-in placeholders) | Golden SVGs; same seed gives the same layout |
 | **S6 Acceptance + docs** | §7.3, §8 | Run T1–T7 (Linux part); write `docs/USER_GUIDE.md` (Chinese, short) and `docs/MODELING_CONVENTION.md` (one page); finalize the Windows checklist | All Linux-checkable criteria pass; the user signs off the Windows checks |
 

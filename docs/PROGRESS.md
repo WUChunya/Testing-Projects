@@ -3,38 +3,37 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Next session: **S4 Plan + Axon** — entry prompt in `docs/DEV_PROMPT.md` (Next-session message). PRD v0.6; history `docs/CHANGELOG.md`.
-- Rev 7 (v0.3.2): open-polysurface neighbours on a section line: cut closed along the line, else drawn as seen (never dropped). 58 tests.
-- S3 done (v0.2.0): `Drawing` model → `SvgWriter` (preview) + `JsxWriter` (runtime + data literal) + `Exporter` (program_areas.csv, diagram.json,
-  export_log.txt, `_preview/*.svg`, ProgramDiagram.jsx); `IllustratorLauncher` COM; golden `tests/golden/section_A.svg`.
-- Rev 6 (v0.3.1): re-export purges stale generated layers (PD_*/VIEW_*/FACADE not in the drawing: named items, then empty
-  layer) — v0.2.1's grey PD_CONTEXT lingered in the user's .ai; section beyond clipped at grade; ⑥ type combo fixed (async refresh).
-- Rev 5 (v0.3.0): `Views/ProjectedView` = Make2D-like opaque view (masses light-grey base; one AI layer + global swatch per
-  slab/facade source layer, glass white; near hides far via trim by nearer lower-layer items). Used behind section cuts and by
-  new `ElevationDrawing` (⑥ type = Elevation or ELEV:: layers; ▼ level markers, dashed level lines). 57 tests green.
-- Rev 4 (v0.2.2): text scales with drawing scale (ref 1" = 45'); level column/height dim/level lines; cut context solid; ground = 2 × slab; basements.
-- Windows (user): installs from a user folder; T1 ✓ T3 ✓ T4 ✓; Core reproduces the user's areas.csv. Env: apt dotnet-sdk-8.0, pip rhino3dm, `RollForward=Major`, node 22.
+- Next session: **S5 Charts + Entourage** — entry prompt in `docs/DEV_PROMPT.md`. PRD v0.7; history `docs/CHANGELOG.md`.
+- S4 done (v0.4.0, 68 tests): `Plans/PlanDrawing` (01_Plans.ai: artboard per level + PLANS OVERVIEW; shared extent; legend, scale bar, north,
+  background via `PlanBackground`, glass line, open-to-below void, `PlanLabels` MIC/long-side or leader); `Axons/AxonDrawing`
+  (03 stacked: prisms from `ProgramBlocks`, faces trimmed near→far, sides `PRG_*_SIDE1/2`, silhouette, facade veil 30 %;
+  04 exploded: plate layer per level `AXON_L*`, plane text via `DItem.Matrix`, level column). Goldens: plan_L1, axon_stacked, axon_exploded.
+- Rev 8 (with S4): section `PD_PROGRAM_BG` white under colour blocks; English UI; tabs 6 Sections / 7 Elevations split
+  (`ProgramDiagramPickElevation`); export folder = model folder/`YYYY MMDD_Conceptual Program Diagram_HHMMSS` (`OutputFolder`),
+  Illustrator runs in background and quits if the plugin started it (`quitIllustratorWhenDone`).
+- S3 (v0.2–0.3.2): Drawing → SvgWriter/JsxWriter/Exporter, runtime.jsx, Section, Elevation, ProjectedView.
+- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (launch args --disable-gpu; screenshot fullPage:false).
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
-- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space (base level counts); else split. Facade: stacked 30% veil, exploded hidden.
-- Localize XY only (Z = level datum). Levels: slab tops anchor, bottoms snap down ≤1'-6", one-hop join, ≥3 slab-less bottoms form a level.
-- One 4-face LAB is missing top *and* a side → closed along section (`SectionClosed`, flagged).
-- Defaults live in `styles/` (`rules_default.json` geometry/output/artboards, `style_default.json` section/page/fonts with PostScript names).
-- Program keys immutable (ids `L03_KEY_01`, swatches `PRG_<KEY>`); custom aliases beat legend aliases.
-- Section bars come from the resolved plan footprints ∩ cut line (same overlap result as areas); outline = union of bar bands.
-- AI update rule: generated layers drop their *named* items and redraw; unnamed items, `_MANUAL`, `OVERLAY` untouched; swatches recoloured in place.
-- Item names: `SEC_<sec>_<stableId>`, `_LBL`, `SEC_<sec>_OUTLINE|SLAB_<z>_<u>|VIEW_<KIND>_nnn|GROUND`; elevations `ELV_<name>_…`.
-- Elevation: neighbours straddling the view line are omitted; our building always shown. Layers `VIEW_<own layer name>`.
+- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade: stacked 30% veil, exploded hidden.
+- Defaults live in `styles/` (`rules_default.json` output/folder/Illustrator flags; `style_default.json` section/plan/axon/page/fonts).
+- Program keys immutable (`L03_KEY_01`, swatches `PRG_<KEY>`); AI update: named items redrawn, `_MANUAL`/`OVERLAY`/unnamed kept.
+- Item names: `SEC_*`, `ELV_*`, plans `PLN_<lvl>_<id>` / overview `PLO_<lvl>_*`, axons `AXS_<lvl>_<id>_TOP|SIDEnnn`, `AXE_<lvl>_*`.
+- Stale generated layers purged: `PD_*`, `VIEW_*`, `BG_*`, `AXON_*`, `FACADE`.
+- Axon: isometric from SW (style axon azimuth/elevation) or active viewport direction (tab 8 checkbox). Exploded spacing 1.5 × story.
+- Plan: all levels share one extent (building + 60'); model +Y = north; level title "Level {n}" for Ln names.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.3.2.zip` to a user folder, replace old files, restart Rhino.
-2. Open the test model; ⑥ keep section A; confirm all tabs; ⑦ Export (auto Illustrator ticked).
-3. Illustrator starts, writes `02_Section_A.ai`; message shows illustrator_log.txt "OK". VERIFY-WIN COM launch.
-4. Open the .ai/.png: true scale, labels centred in blocks (VERIFY-WIN glyph centring), PD_* layers + FACADE/_MANUAL/OVERLAY, global PRG_* swatches.
-5. Draw something unnamed in PD_PROGRAM and something on _MANUAL; change a mass; export again → both kept, bars updated.
-6. ⑥ add a line south of the building, type Elevation; ⑦ tick Elevation; export → `07_Elevation_*.ai`: VIEW_MASS, VIEW_SLAB, VIEW_GLASS layers.
-7. Earlier checks (①–⑧, custom programs) as before.
+1. Unzip `ProgramDiagram-0.4.0.zip` over the old files, restart Rhino; panel shows tabs 1–9 in English.
+2. Tab 6: Read SEC:: layers / Pick section line. Tab 7: Read ELEV:: layers / Pick elevation line (VERIFY-WIN both pick commands).
+3. Tab 8: "Save in" empty → info shows `<model folder>\YYYY MMDD_Conceptual Program Diagram_HHMMSS`; tick Plan, Section, Elevation, AxonStacked, AxonExploded.
+4. Export with Illustrator closed: Illustrator runs, saves all .ai, then quits; no file left open (VERIFY-WIN Quit). With Illustrator open: it stays open.
+5. 02_Section_*.ai: no grey view lines in the white gaps between colour blocks (layer PD_PROGRAM_BG).
+6. 01_Plans.ai: one artboard per level + PLANS OVERVIEW; legend/scale bar/north; labels rotated along long sides.
+7. 04_Axon_Exploded.ai: labels lie on the plates and stay editable text (VERIFY-WIN `PD.planeText` matrix transform).
+8. Tick "Axons: use the active viewport's view direction", set a Rhino parallel view, export → axon matches the viewport.
 
 ## Known issues
-- Not yet: street names, building name above, key plan, trees, stair hatch, Unassigned hatch (grey) — next revision candidates.
-- Section-closed volume ≈ mid area × height; layer-priority overlap rule not implemented. Old saves must tick "Elevation" in ⑦.
+- Not yet: Unassigned hatch, street names/arrows, trees/people, key plan, stair hatch; axon context buildings, mullion lines, vertical connectors.
+- Exploded labels under the next plate are hidden (expected); raise `axon.explodeFactor` for more space.
+- Section-closed volume ≈ mid area × height; layer-priority overlap rule not implemented.

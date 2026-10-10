@@ -24,6 +24,7 @@ internal sealed class OutputTab : TabBase
     readonly StackLayout _drawings = new() { Orientation = Orientation.Vertical, Spacing = 2 };
     readonly Button _export;
     readonly CheckBox _launch = new() { Text = "Generate the .ai files in Illustrator (runs in the background; nothing is opened)" };
+    readonly CheckBox _axonView = new() { Text = "Axons: use the active viewport's view direction (else isometric from the south-west)" };
     readonly Label _status = new();
     bool _loading;
 
@@ -43,6 +44,7 @@ internal sealed class OutputTab : TabBase
         _scale.TextChanged += (_, _) => { if (!_loading) { ShowScale(); Store(); } };
         _png.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _launch.CheckedChanged += (_, _) => { if (!_loading) Store(); };
+        _axonView.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _artboard.SelectedValueChanged += (_, _) => { if (!_loading) Store(); };
         _export = Ui.Button("Export", Export);
 
@@ -57,6 +59,7 @@ internal sealed class OutputTab : TabBase
         layout.AddRow(new Label { Text = "Drawings" }, _drawings);
         layout.Add(_launch);
         layout.Add(_png);
+        layout.Add(_axonView);
         layout.AddSeparateRow(_export, Ui.Button("Open last export folder", OpenFolder), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "output"));
@@ -82,6 +85,7 @@ internal sealed class OutputTab : TabBase
         _scheme.Text = o.Scheme;
         _scale.Text = o.Scale;
         _png.Checked = o.ExportPng ?? Session.Rules.Output.ExportPng;
+        _axonView.Checked = o.AxonFromViewport;
         ShowScale();
         ShowFolder();
         _artboard.SelectedValue = o.Artboard;
@@ -102,6 +106,7 @@ internal sealed class OutputTab : TabBase
         o.Scheme = _scheme.Text;
         if (ExportContext.ParseScale(_scale.Text) != null) o.Scale = _scale.Text.Trim();
         o.ExportPng = _png.Checked == true;
+        o.AxonFromViewport = _axonView.Checked == true;
         o.Artboard = _artboard.SelectedValue as string ?? o.Artboard;
         o.Drawings = _drawings.Items.Select(i => i.Control).OfType<CheckBox>().Where(c => c.Checked == true).Select(c => (string)c.Tag).ToList();
         Session.Save();
@@ -127,6 +132,10 @@ internal sealed class OutputTab : TabBase
     void Export()
     {
         Store();
+        // VERIFY-WIN: camera direction of the active viewport (points into the scene).
+        var cam = Session.Doc?.Views.ActiveView?.ActiveViewport.CameraDirection;
+        Session.Settings.Output.AxonViewDirection = Session.Settings.Output.AxonFromViewport && cam is { } c && c.IsValid && !c.IsZero
+            ? new[] { c.X, c.Y, c.Z } : null;
         if (!Session.Analyze() || Session.Result == null)
         {
             MessageBox.Show(this, $"Analysis failed: {Session.LastError}", MessageBoxType.Error);

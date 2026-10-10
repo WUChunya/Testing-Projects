@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="788" height="1271" viewBox="0 0 788 1271">
+<title>PLAN L1</title>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<g id="BG_SITE">
+<path id="PLN_L1_BG_000" fill="#F5F5F5" stroke="none" stroke-width="0.35" fill-rule="evenodd" d="M609.014,97.875 L609.014,865.584 L606.245,865.584 L604.489,865.584 L519.206,865.584 L519.206,1026.074 L604.489,1026.074 L606.496,1026.074 L609.014,1026.074 L609.014,1155.596 L127.618,1155.596 L127.618,97.875 Z"/>
+</g>
+<g id="BG_CONTEXT">
+<path id="PLN_L1_BG_001" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M127.618,396.533 L147.018,410.409 L127.618,437.534 Z M127.618,530.13 L147.897,544.634 L127.618,572.985 Z"/>
+<path id="PLN_L1_BG_002" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M127.618,1042.093 L458.829,1042.093 L504.117,1042.093 L519.206,1042.093 L519.206,1155.596 L127.618,1155.596 Z"/>
+</g>
+<g id="PD_PROGRAM">
+<path id="PLN_L1_L01_LOBBY_03" fill="#EFB7D7" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M326.184,332.531 L422.413,356.748 L461.553,366.598 L440.3,451.052 L431.656,485.402 L335.427,461.179 L296.287,451.327 L317.54,366.878 Z"/>
+<path id="PLN_L1_L01_OFFICE_01" fill="#7CBECD" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M486.666,774.986 L505.396,774.986 L519.988,774.986 L519.988,822.401 L519.988,829.391 L420.995,829.391 L406.403,829.391 L406.403,800.018 L410.263,800.018 L486.666,800.018 Z"/>
+<path id="PLN_L1_L01_LOBBY_01" fill="#EFB7D7" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M486.666,800.018 L410.263,800.018 L375.288,800.018 L375.288,706.641 L375.288,669.433 L379.37,669.433 L468.182,669.433 L468.182,663.896 L486.666,663.896 L486.666,757.274 Z"/>
+<path id="PLN_L1_L01_LAB_01" fill="#F7A238" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M523.295,637.395 L523.295,644.092 L523.295,887.56 L521.17,887.56 L443.925,887.56 L443.925,880.863 L443.925,829.391 L519.988,829.391 L519.988,822.401 L519.988,774.986 L505.396,774.986 L486.666,774.986 L486.666,757.274 L486.666,663.896 L468.182,663.896 L468.182,663.487 L468.182,637.395 Z"/>
+<path id="PLN_L1_L01_OFFICE_02" fill="#7CBECD" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M342.424,508.404 L420.242,508.404 L450.015,508.404 L450.015,534.112 L450.015,543.948 L372.198,543.948 L342.424,543.948 L342.424,518.24 Z"/>
+<path id="PLN_L1_L01_LOBBY_02" fill="#EFB7D7" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M360.591,635.365 L449.403,635.365 L468.182,635.365 L468.182,663.487 L468.182,669.433 L379.37,669.433 L360.591,669.433 L360.591,641.311 Z"/>
+</g>
+<g id="PD_VOID">
+</g>
+<g id="PD_OUTLINE">
+<path id="PLN_L1_OUTLINE" fill="none" stroke="#000000" stroke-width="2.5" fill-rule="evenodd" d="M342.424,508.404 L420.242,508.404 L450.015,508.404 L450.015,534.112 L450.015,543.948 L372.198,543.948 L342.424,543.948 L342.424,518.24 Z M360.591,635.365 L449.403,635.365 L468.182,635.365 L468.182,637.395 L523.295,637.395 L523.295,644.092 L523.295,887.56 L521.17,887.56 L443.925,887.56 L443.925,880.863 L443.925,829.391 L420.995,829.391 L406.403,829.391 L406.403,800.018 L375.288,800.018 L375.288,706.641 L375.288,669.433 L360.591,669.433 L360.591,641.311 Z M326.184,332.531 L422.413,356.748 L461.553,366.598 L440.3,451.052 L431.656,485.402 L335.427,461.179 L296.287,451.327 L317.54,366.878 Z"/>
+</g>
+<g id="FACADE">
+</g>
+<g id="PD_LABELS">
+<text id="PLN_L1_L01_LOBBY_03_LBL" x="378.92" y="412.411" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="middle" fill="#000000" transform="rotate(14.129 378.92 408.965)"><tspan x="378.92" dy="0">LOBBY / BREAK</tspan></text>
+<path id="PLN_L1_L01_OFFICE_01_LDR" fill="none" stroke="#000000" stroke-width="0.35" fill-rule="evenodd" d="M501.575,810.84 L532.75,888.263"/>
+<text id="PLN_L1_L01_OFFICE_01_LBL" x="534.75" y="891.779" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="534.75" dy="0">OFFICE</tspan></text>
+<text id="PLN_L1_L01_LOBBY_01_LBL" x="430.977" y="735.402" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="middle" fill="#000000" transform="rotate(-90 430.977 731.957)"><tspan x="430.977" dy="0">LOBBY / BREAK</tspan></text>
+<text id="PLN_L1_L01_LAB_01_LBL" x="487.275" y="861.933" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="middle" fill="#000000" transform="rotate(-90 487.275 858.488)"><tspan x="487.275" dy="0">LAB</tspan></text>
+<text id="PLN_L1_L01_OFFICE_02_LBL" x="396.22" y="529.621" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="middle" fill="#000000"><tspan x="396.22" dy="0">OFFICE</tspan></text>
+<text id="PLN_L1_L01_LOBBY_02_LBL" x="414.386" y="655.844" font-family="Century Gothic, Arial, sans-serif" font-weight="bold" font-size="9.844" text-anchor="middle" fill="#000000"><tspan x="414.386" dy="0">LOBBY / BREAK</tspan></text>
+</g>
+<g id="PD_LEGEND">
+<path id="PLN_L1_LEGEND_OFFICE" fill="#7CBECD" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M36,1189.346 L47.25,1189.346 L47.25,1200.596 L36,1200.596 Z"/>
+<text id="PLN_L1_LEGEND_OFFICE_TXT" x="52.875" y="1198.346" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="52.875" dy="0">OFFICE</tspan></text>
+<path id="PLN_L1_LEGEND_LAB" fill="#F7A238" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M204.75,1189.346 L216,1189.346 L216,1200.596 L204.75,1200.596 Z"/>
+<text id="PLN_L1_LEGEND_LAB_TXT" x="221.625" y="1198.346" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="221.625" dy="0">LAB</tspan></text>
+<path id="PLN_L1_LEGEND_LOBBY" fill="#EFB7D7" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M373.5,1189.346 L384.75,1189.346 L384.75,1200.596 L373.5,1200.596 Z"/>
+<text id="PLN_L1_LEGEND_LOBBY_TXT" x="390.375" y="1198.346" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="390.375" dy="0">LOBBY / BREAK</tspan></text>
+</g>
+<g id="PD_ANNOTATION">
+<text id="PLN_L1_TITLE" x="36" y="58.5" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="19.688" text-anchor="start" fill="#000000"><tspan x="36" dy="0">LEVEL 1</tspan></text>
+<text id="PLN_L1_NORTH_TXT" x="739.125" y="1198.206" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="middle" fill="#000000"><tspan x="739.125" dy="0">N</tspan></text>
+<path id="PLN_L1_NORTH" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M739.125,1202.003 L746.719,1224.784 L739.125,1219.721 L731.531,1224.784 Z"/>
+<path id="PLN_L1_SCALEBAR_1" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M588.656,1204.534 L616.781,1204.534 L616.781,1210.159 L588.656,1210.159 Z"/>
+<path id="PLN_L1_SCALEBAR_2" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M616.781,1204.534 L644.906,1204.534 L644.906,1210.159 L616.781,1210.159 Z"/>
+<path id="PLN_L1_SCALEBAR_3" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M644.906,1204.534 L673.031,1204.534 L673.031,1210.159 L644.906,1210.159 Z"/>
+<path id="PLN_L1_SCALEBAR_4" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M673.031,1204.534 L701.156,1204.534 L701.156,1210.159 L673.031,1210.159 Z"/>
+<text id="PLN_L1_SCALEBAR_0" x="588.656" y="1221.409" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="middle" fill="#000000"><tspan x="588.656" dy="0">0</tspan></text>
+<text id="PLN_L1_SCALEBAR_END" x="701.156" y="1221.409" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="middle" fill="#000000"><tspan x="701.156" dy="0">50&apos;</tspan></text>
+<text id="PLN_L1_SCALE" x="588.656" y="1198.909" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="588.656" dy="0">SCALE 1/32&quot; = 1&apos;-0&quot;</tspan></text>
+</g>
+</svg>

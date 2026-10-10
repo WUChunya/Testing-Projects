@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.3.1";
+PD.version = "0.4.0";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -123,7 +123,7 @@ PD.purgeStaleLayers = function (doc, dw) {
     for (var j = 0; j < dw.protectedLayers.length; j++) keep[dw.protectedLayers[j]] = true;
     for (var k = doc.layers.length - 1; k >= 0; k--) {
         var l = doc.layers[k];
-        if (keep[l.name] || !/^(PD_|VIEW_|FACADE$)/.test(l.name)) continue;
+        if (keep[l.name] || !/^(PD_|VIEW_|BG_|AXON_|FACADE$)/.test(l.name)) continue;
         l.locked = false;
         l.visible = true;
         PD.clearNamed(l);
@@ -218,16 +218,41 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
         item = layer.pathItems.roundedRectangle(tl[1], tl[0], it.w, it.h, it.r, it.r);
         PD.style(item, it, sw);
     } else if (it.kind === "Text") {
-        item = layer.textFrames.pointText(PD.pt(rect, it.x, it.y));
-        item.contents = it.text.replace(/\n/g, "\r");
-        if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(item.textRange, true);
-        if (it.rotation) item.rotate(it.rotation); // VERIFY-WIN: rotates about the frame centre
-        if (it.center) PD.centerOnGlyphs(item, PD.pt(rect, it.x, it.y));
+        if (it.matrix) {
+            item = PD.planeText(layer, it, rect, ps);
+        } else {
+            item = layer.textFrames.pointText(PD.pt(rect, it.x, it.y));
+            item.contents = it.text.replace(/\n/g, "\r");
+            if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(item.textRange, true);
+            if (it.rotation) item.rotate(it.rotation); // VERIFY-WIN: rotates about the frame centre
+            if (it.center) PD.centerOnGlyphs(item, PD.pt(rect, it.x, it.y));
+        }
     } else {
         return;
     }
     if (it.opacity !== undefined && it.opacity < 1) item.opacity = it.opacity * 100;
     item.name = it.name;
+};
+
+// Text laid on a plane (axon labels): built at the document origin, centred on its glyphs there, carried onto the
+// page by the drawing's matrix (y-down page matrix [a,b,c,d] → Illustrator y-up matrix), then moved to its anchor.
+// The frame stays live text. VERIFY-WIN: transform about DOCUMENTORIGIN with the document coordinate system.
+PD.planeText = function (layer, it, rect, ps) {
+    var tf = layer.textFrames.pointText([0, 0]);
+    tf.contents = it.text.replace(/\n/g, "\r");
+    if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(tf.textRange, true);
+    if (it.center) PD.centerOnGlyphs(tf, [0, 0]);
+    var m = app.getIdentityMatrix();
+    m.mValueA = it.matrix[0];
+    m.mValueB = -it.matrix[1];
+    m.mValueC = -it.matrix[2];
+    m.mValueD = it.matrix[3];
+    m.mValueTX = 0;
+    m.mValueTY = 0;
+    tf.transform(m, true, true, true, true, 1, Transformation.DOCUMENTORIGIN);
+    var target = PD.pt(rect, it.x, it.y);
+    tf.translate(target[0], target[1]);
+    return tf;
 };
 
 // Moves a text frame so the centre of its outlined glyphs lands on target (exact centring in a colour block).
