@@ -8,13 +8,13 @@ using PD.Rhino.Adapter;
 namespace PD.Rhino.UI.Tabs;
 
 /// <summary>
-/// ⑤ Colour scheme: company legend plus project-specific (custom) programs. Every program here is offered in
-/// tab ① (layer program) and tab ④ (per-object program) and becomes a swatch / legend entry in the AI output.
+/// Tab 5 Colour scheme: company legend plus project-specific (custom) programs. Every program here is offered in
+/// tab 1 (layer program) and tab 4 (per-object program) and becomes a swatch / legend entry in the AI output.
 /// </summary>
 internal sealed class ColorsTab : TabBase
 {
     readonly GridView _grid = Ui.Grid(340);
-    readonly TextBox _newLabel = new() { PlaceholderText = "新 program 名称，如 Clean Room" };
+    readonly TextBox _newLabel = new() { PlaceholderText = "New program name, e.g. Clean Room" };
     readonly Label _status = new();
 
     public ColorsTab(PdSession s) : base(s)
@@ -28,22 +28,22 @@ internal sealed class ColorsTab : TabBase
         };
         _grid.Columns.Add(new GridColumn { HeaderText = "", DataCell = swatch, Width = 30 });
         _grid.Columns.Add(Ui.Text<ProgramSetting>("Key", p => p.Key, null, 110));
-        _grid.Columns.Add(Ui.Text<ProgramSetting>("显示名 Label", p => p.Label, (p, v) => Edit(p, x => x.Label = v.Trim()), 160));
-        _grid.Columns.Add(Ui.Text<ProgramSetting>("颜色 #RRGGBB", p => p.Fill ?? "", SetFill, 90));
-        _grid.Columns.Add(Ui.Text<ProgramSetting>("图层别名 Aliases", p => string.Join(", ", p.Aliases), SetAliases, 140));
-        _grid.Columns.Add(Ui.Text<ProgramSetting>("类型", p => p.IsCustom ? "自定义" : "公司", null, 50));
-        _grid.Columns.Add(Ui.Text<ProgramSetting>("使用中 (图层 / 单独指定)", UsedBy, null, 200));
+        _grid.Columns.Add(Ui.Text<ProgramSetting>("Label", p => p.Label, (p, v) => Edit(p, x => x.Label = v.Trim()), 160));
+        _grid.Columns.Add(Ui.Text<ProgramSetting>("Colour #RRGGBB", p => p.Fill ?? "", SetFill, 90));
+        _grid.Columns.Add(Ui.Text<ProgramSetting>("Layer aliases", p => string.Join(", ", p.Aliases), SetAliases, 140));
+        _grid.Columns.Add(Ui.Text<ProgramSetting>("Type", p => p.IsCustom ? "Custom" : "Company", null, 60));
+        _grid.Columns.Add(Ui.Text<ProgramSetting>("Used by (layers / objects)", UsedBy, null, 200));
 
         var layout = Ui.Layout();
         layout.Add(_grid, yscale: true);
-        layout.AddSeparateRow(Ui.Button("上移", () => Move(-1)), Ui.Button("下移", () => Move(1)), Ui.Button("取色…", PickColor), null);
-        layout.AddSeparateRow(_newLabel, Ui.Button("添加自定义 program", AddCustom), Ui.Button("删除自定义", RemoveCustom));
-        layout.AddSeparateRow(Ui.Button("为未指定 program 的图层创建", CreateFromLayers), null);
-        layout.AddSeparateRow(Ui.Button("导入方案 JSON…", Import), Ui.Button("恢复公司图例", ResetLegend), null);
+        layout.AddSeparateRow(Ui.Button("Move up", () => Move(-1)), Ui.Button("Move down", () => Move(1)), Ui.Button("Pick colour...", PickColor), null);
+        layout.AddSeparateRow(_newLabel, Ui.Button("Add custom program", AddCustom), Ui.Button("Delete custom", RemoveCustom));
+        layout.AddSeparateRow(Ui.Button("Create for layers without a program", CreateFromLayers), null);
+        layout.AddSeparateRow(Ui.Button("Import scheme JSON...", Import), Ui.Button("Reset to company legend", ResetLegend), null);
         layout.Add(new Label
         {
-            Text = "自定义 program 会出现在 ① 图层和 ④ 名称的 Program 下拉中；别名用于自动预填同名图层。\n" +
-                   "Key 一经创建不再改变（用于对象名 L03_KEY_01 和 AI 色板），显示名可以随时改。",
+            Text = "Custom programs appear in the Program lists of tab 1 Layers and tab 4 Names; aliases pre-fill layers with that name.\n" +
+                   "A key never changes once created (object names L03_KEY_01 and AI swatches); the label can change any time.",
         });
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "colors"));
@@ -55,7 +55,7 @@ internal sealed class ColorsTab : TabBase
         var layers = Session.Settings.Layers.Where(kv => kv.Value.Use && kv.Value.Role == Roles.Program && kv.Value.ProgramKey == p.Key).Select(kv => kv.Key).ToList();
         var objects = Session.Settings.ObjectPrograms.Count(kv => kv.Value == p.Key);
         var text = string.Join(", ", layers);
-        return objects > 0 ? $"{text}{(text.Length > 0 ? " + " : "")}{objects} 个体块" : text;
+        return objects > 0 ? $"{text}{(text.Length > 0 ? " + " : "")}{objects} object(s)" : text;
     }
 
     /// <summary>Grid rows may be legend copies; edits go to the stored scheme (materialised on first edit).</summary>
@@ -88,8 +88,8 @@ internal sealed class ColorsTab : TabBase
         _grid.DataStore = Session.Programs.ToList();
         var custom = Session.Programs.Count(p => p.IsCustom);
         _status.Text = Session.Settings.Programs == null
-            ? "公司图例 (styles/program_legend.json)。任何修改都会保存为本项目的方案。"
-            : $"项目方案（保存在 3dm 中），{custom} 个自定义。顺序决定图例和饼图的顺序。";
+            ? "Company legend (styles/program_legend.json). Any change is saved as this project's scheme."
+            : $"Project scheme (saved in the 3dm), {custom} custom. The order sets the legend and pie order.";
     }
 
     ProgramSetting? Selected() => _grid.SelectedItem is ProgramSetting row ? Own(row) : null;
@@ -119,7 +119,7 @@ internal sealed class ColorsTab : TabBase
     void AddCustom()
     {
         var label = _newLabel.Text?.Trim();
-        if (string.IsNullOrEmpty(label)) { MessageBox.Show(this, "请先输入 program 名称。", MessageBoxType.Information); return; }
+        if (string.IsNullOrEmpty(label)) { MessageBox.Show(this, "Type a program name first.", MessageBoxType.Information); return; }
         var p = ProgramCatalog.AddCustom(Session.EditablePrograms(), label);
         _newLabel.Text = "";
         Session.ProgramsChanged();
@@ -132,7 +132,7 @@ internal sealed class ColorsTab : TabBase
         var targets = Session.Settings.Layers.Where(kv => kv.Value.Use && kv.Value.Role == Roles.Program && string.IsNullOrEmpty(kv.Value.ProgramKey)).ToList();
         if (targets.Count == 0)
         {
-            MessageBox.Show(this, "没有「角色 = Program 但未指定 program」的图层。\n先在 ① 把图层角色设为 Program、Program 列留空。", MessageBoxType.Information);
+            MessageBox.Show(this, "No layer has Role = Program without a program.\nOn tab 1 set the layer role to Program and leave the Program column empty.", MessageBoxType.Information);
             return;
         }
         var list = Session.EditablePrograms();
@@ -148,9 +148,9 @@ internal sealed class ColorsTab : TabBase
     void RemoveCustom()
     {
         if (Selected() is not { } p) return;
-        if (!p.IsCustom) { MessageBox.Show(this, "公司图例中的 program 不能删除（可以不使用）。", MessageBoxType.Information); return; }
+        if (!p.IsCustom) { MessageBox.Show(this, "Company legend programs cannot be deleted (just leave them unused).", MessageBoxType.Information); return; }
         var used = UsedBy(p);
-        if (used.Length > 0 && MessageBox.Show(this, $"「{p.Label}」正在使用：{used}\n删除后这些体块变为 Unassigned。继续？",
+        if (used.Length > 0 && MessageBox.Show(this, $"\"{p.Label}\" is used by: {used}\nAfter deleting, these masses become Unassigned. Continue?",
                 MessageBoxButtons.YesNo, MessageBoxType.Question) != DialogResult.Yes) return;
         ProgramCatalog.RemoveCustom(Session.Settings, p.Key);
         Session.ProgramsChanged();
@@ -160,7 +160,7 @@ internal sealed class ColorsTab : TabBase
     /// <summary>Accepts the program_legend.json format (programs[]) or a saved list; unknown keys become custom programs.</summary>
     void Import()
     {
-        var dlg = new OpenFileDialog { Title = "配色方案" };
+        var dlg = new OpenFileDialog { Title = "Colour scheme" };
         dlg.Filters.Add(new FileFilter("JSON", ".json"));
         if (dlg.ShowDialog(this) != DialogResult.Ok) return;
         using var doc = JsonDocument.Parse(File.ReadAllText(dlg.FileName));
@@ -177,7 +177,7 @@ internal sealed class ColorsTab : TabBase
     void ResetLegend()
     {
         var custom = Session.Programs.Where(p => p.IsCustom).ToList();
-        if (custom.Count > 0 && MessageBox.Show(this, $"将删除 {custom.Count} 个自定义 program，使用它们的图层和体块变为 Unassigned。继续？",
+        if (custom.Count > 0 && MessageBox.Show(this, $"This deletes {custom.Count} custom program(s); layers and masses using them become Unassigned. Continue?",
                 MessageBoxButtons.YesNo, MessageBoxType.Question) != DialogResult.Yes) return;
         foreach (var p in custom) ProgramCatalog.RemoveCustom(Session.Settings, p.Key);
         Session.Settings.Programs = null;

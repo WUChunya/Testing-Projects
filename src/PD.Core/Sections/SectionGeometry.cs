@@ -70,7 +70,7 @@ public sealed class SectionGeometry
                 }
                 else if (kind == Views.ViewKind.Context)
                 {
-                    // Neighbours are often open polysurfaces: close the cut along the section line (PRD 3.5 ②);
+                    // Neighbours are often open polysurfaces: close the cut along the section line (PRD 3.5, tab 2);
                     // if it still does not close, show the building as seen rather than dropping it.
                     var cut = Clip(Polys(plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)), plane, g.Ground);
                     if (cut.Area < 1)

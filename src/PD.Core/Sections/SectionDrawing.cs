@@ -25,7 +25,7 @@ public static class SectionDrawing
         // Bottom → top: what is farther away is painted first and hidden by what is nearer.
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
         Views.ProjectedView.AddLayers(d, g.View);
-        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
+        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM_BG", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
@@ -77,6 +77,9 @@ public static class SectionDrawing
             d.Layer("PD_CONTEXT_CUT").Items.Add(map.Poly(p + "CONTEXT_CUT_" + id[..Math.Min(8, id.Length)], geom,
                 d.Swatch("PD_CUT_FILL", st.ContextCutFill), d.Gray(st.ContextCutStroke), st.ContextCutStrokePt));
 
+        // Opaque white backing behind the colour blocks: the white gaps between blocks must not show what is behind the cut.
+        if (!g.Outline.IsEmpty && st.ProgramBackground is { Length: > 0 } bg)
+            d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + "PROGRAM_BG", g.Outline, d.Swatch("PD_PROGRAM_BG", bg), null, 0));
         SectionBars.Add(d, ctx, g, map, p);
 
         // Our building: thin wall line, visual slabs (fixed weight, centred on the floor line), facade cuts.

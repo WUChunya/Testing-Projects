@@ -60,7 +60,12 @@ public sealed class FacadeRules
 
 public sealed class OutputRules
 {
+    /// <summary>Sub-folder created per export in the save location; see <see cref="Writers.OutputFolder"/>.</summary>
     public string FolderPattern { get; set; } = "";
+    /// <summary>Generate the .ai files in Illustrator right after the export (in the background).</summary>
+    public bool RunIllustrator { get; set; } = true;
+    /// <summary>Quit Illustrator after generating when the plugin started it (files are written, nothing stays open).</summary>
+    public bool QuitIllustratorWhenDone { get; set; } = true;
     public string Scheme { get; set; } = "";
     public List<string> Drawings { get; set; } = new();
     public List<string> Scales { get; set; } = new();

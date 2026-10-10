@@ -20,7 +20,7 @@ public sealed class PdSession
     readonly List<ProgramDef> _legend = LayerClassifier.LoadPrograms();
     LayerClassifier? _classifier;
 
-    /// <summary>Company legend, or the project scheme with custom programs (tab ⑤).</summary>
+    /// <summary>Company legend, or the project scheme with custom programs (tab 5).</summary>
     public List<ProgramSetting> Programs => ProgramCatalog.Effective(_legend, Settings.Programs);
 
     /// <summary>The scheme as an editable list stored in the settings (materialised from the legend on first edit).</summary>
@@ -53,7 +53,7 @@ public sealed class PdSession
         Doc?.Strings.SetString(Section, Entry, Settings.ToJson());
     }
 
-    /// <summary>Call after adding, removing or re-aliasing programs so tab ① and auto-fill see them.</summary>
+    /// <summary>Call after adding, removing or re-aliasing programs so tab 1 and auto-fill see them.</summary>
     public void ProgramsChanged()
     {
         _classifier = null;
@@ -105,7 +105,7 @@ public sealed class PdSession
         return LastError == null;
     }
 
-    /// <summary>B2 "剖切线没有穿过任何体块".</summary>
+    /// <summary>B2 "section line misses every mass".</summary>
     void AddSectionIssues(AnalysisResult r)
     {
         foreach (var sec in Settings.Sections.Where(x => x.Line.Length == 4 && !x.IsElevation))

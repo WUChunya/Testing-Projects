@@ -21,7 +21,7 @@ public static class Reports
 
     static string Csv(string s) => s.Contains(',') || s.Contains('"') ? "\"" + s.Replace("\"", "\"\"") + "\"" : s;
 
-    /// <summary>B2 "剖切线没有穿过任何体块": true when the local-feet segment crosses any level footprint.</summary>
+    /// <summary>B2 "section line misses every mass": true when the local-feet segment crosses any level footprint.</summary>
     public static bool SectionCrossesMasses(AnalysisResult r, double x0, double y0, double x1, double y1)
     {
         var line = Geometry.MeshSlicer.Factory.CreateLineString(new[]

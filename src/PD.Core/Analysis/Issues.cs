@@ -1,6 +1,6 @@
 namespace PD.Core.Analysis;
 
-/// <summary>PRD B2 uncertain items (tab ⑧).</summary>
+/// <summary>PRD B2 uncertain items (tab 9).</summary>
 public enum IssueKind
 {
     OpenMass, RepairedMass, SingleSurface, Overlap, FacadeCandidate, StrayObject, UnclassifiedLayer,

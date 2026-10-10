@@ -19,13 +19,13 @@ public static class Exporter
         if (wanted.Contains("Section"))
         {
             var secs = ctx.Settings.Sections.Where(s => s.Line.Length == 4 && !s.IsElevation).ToList();
-            if (secs.Count == 0) notes.Add("Section: no section line (tab ⑥).");
+            if (secs.Count == 0) notes.Add("Section: no section line (tab 6 Sections).");
             foreach (var s in secs) drawings.Add(SectionDrawing.Build(ctx, s));
         }
         if (wanted.Contains("Elevation"))
         {
             var els = ctx.Settings.Sections.Where(s => s.Line.Length == 4 && s.IsElevation).ToList();
-            if (els.Count == 0) notes.Add("Elevation: no elevation line (tab ⑥, type Elevation).");
+            if (els.Count == 0) notes.Add("Elevation: no elevation line (tab 7 Elevations).");
             foreach (var s in els) drawings.Add(PD.Core.Elevations.ElevationDrawing.Build(ctx, s));
         }
         foreach (var w in wanted.Where(w => w is not ("Section" or "Elevation")))

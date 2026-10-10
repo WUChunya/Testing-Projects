@@ -4,13 +4,13 @@ using PD.Rhino.Adapter;
 
 namespace PD.Rhino.UI.Tabs;
 
-/// <summary>④ Names: label per mass (object name → program name), stable ids L03_LAB_01, batch replace.</summary>
+/// <summary>Tab 4 Names: label per mass (object name → program name), stable ids L03_LAB_01, batch replace.</summary>
 internal sealed class NamesTab : TabBase
 {
     readonly GridView _grid = Ui.Grid(360);
     readonly ComboBoxCell _programCell;
-    readonly TextBox _find = new() { PlaceholderText = "查找" };
-    readonly TextBox _replace = new() { PlaceholderText = "替换为" };
+    readonly TextBox _find = new() { PlaceholderText = "Find" };
+    readonly TextBox _replace = new() { PlaceholderText = "Replace with" };
 
     public NamesTab(PdSession s) : base(s)
     {
@@ -19,13 +19,13 @@ internal sealed class NamesTab : TabBase
         var programCol = Ui.Combo<NameRow>("Program", Keys().Cast<string>(), r => r.ProgramKey, SetProgram, 120);
         _programCell = (ComboBoxCell)programCol.DataCell;
         _grid.Columns.Add(programCol);
-        _grid.Columns.Add(Ui.Text<NameRow>("标签 Label", r => r.Label, (r, v) => { s.Settings.Names[r.MassId] = v; s.Save(); }, 180));
+        _grid.Columns.Add(Ui.Text<NameRow>("Label", r => r.Label, (r, v) => { s.Settings.Names[r.MassId] = v; s.Save(); }, 180));
         _grid.CellDoubleClick += (_, e) => { if (e.Item is NameRow r) Ui.SelectAndZoom(Session, new[] { r.MassId }); };
 
         var layout = Ui.Layout();
         layout.Add(_grid, yscale: true);
-        layout.AddSeparateRow(_find, _replace, Ui.Button("全部替换", ReplaceAll), Ui.Button("清除修改", Reset));
-        layout.Add(new Label { Text = "Program 列可单独改某个体块的 program（覆盖图层设置），用于特殊情况。" });
+        layout.AddSeparateRow(_find, _replace, Ui.Button("Replace all", ReplaceAll), Ui.Button("Clear edits", Reset));
+        layout.Add(new Label { Text = "The Program column overrides the layer's program for one mass (special cases)." });
         layout.Add(Ui.Confirm(s, "names"));
         Content = layout;
     }

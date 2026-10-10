@@ -96,7 +96,7 @@ public static class Analyzer
                 new[] { o.WinnerId, o.LoserId }, levels[o.LevelIndex].Elevation));
         issues.AddRange(FacadeDetector.Candidates(live, building, rules));
         foreach (var l in input.Model.Layers.Where(l => roles[l.Path].IsFallback && input.Model.Objects.Any(o => o.LayerPath == l.Path)))
-            issues.Add(new Issue(IssueKind.UnclassifiedLayer, $"Layer '{l.Path}' has no role (set on tab ①)", Array.Empty<string>()));
+            issues.Add(new Issue(IssueKind.UnclassifiedLayer, $"Layer '{l.Path}' has no role (set on tab 1)", Array.Empty<string>()));
         var unnamed = masses.Where(m => string.IsNullOrWhiteSpace(m.Source.Name)).Select(m => m.Id).ToArray();
         if (unnamed.Length > 0)
             issues.Add(new Issue(IssueKind.UnnamedMass, $"{unnamed.Length} masses have no name: program name used", unnamed));
@@ -104,9 +104,9 @@ public static class Analyzer
         {
             var ids = g.Select(m => m.Id).ToArray();
             if (g.Key == ProgramCatalog.Unassigned)
-                issues.Add(new Issue(IssueKind.ProgramNoColor, $"{ids.Length} masses have no program (layer or tab ④): drawn as Unassigned", ids));
+                issues.Add(new Issue(IssueKind.ProgramNoColor, $"{ids.Length} masses have no program (layer or tab 4): drawn as Unassigned", ids));
             else if (input.Classifier.Programs.FirstOrDefault(d => d.Key == g.Key) is not { } def)
-                issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{g.Key}' is not in the colour scheme (tab ⑤)", ids));
+                issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{g.Key}' is not in the colour scheme (tab 5)", ids));
             else if (def.Fill == null && def.Stroke == null)
                 issues.Add(new Issue(IssueKind.ProgramNoColor, $"Program '{def.Label}' has neither fill nor outline", ids));
         }

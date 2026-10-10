@@ -18,7 +18,7 @@ public sealed class ExportContext
 
     Dictionary<string, NameRow>? _names;
 
-    /// <summary>Label and stable id per mass (tab ④).</summary>
+    /// <summary>Label and stable id per mass (tab 4).</summary>
     public IReadOnlyDictionary<string, NameRow> Names => _names ??=
         Naming.Build(Result, Settings.Names, ProgramLabel).ToDictionary(n => n.MassId);
 

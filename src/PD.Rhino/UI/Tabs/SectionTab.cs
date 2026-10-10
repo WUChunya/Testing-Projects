@@ -7,35 +7,37 @@ using PD.Rhino.Adapter;
 
 namespace PD.Rhino.UI.Tabs;
 
-/// <summary>⑥ Sections and elevations: curves on SEC::* / ELEV::* layers, or picked; type, look direction and visible depth.</summary>
+/// <summary>
+/// Tab 6 Sections / tab 7 Elevations (kept apart): lines on SEC::* (or ELEV::*) layers, or picked; look direction and
+/// visible depth. A section cuts the building; an elevation is a projected view where nothing is cut.
+/// </summary>
 internal sealed class SectionTab : TabBase
 {
     readonly GridView _grid = Ui.Grid(220);
     readonly Label _status = new();
+    readonly string _kind;
+    readonly string _prefix;
 
-    public SectionTab(PdSession s) : base(s)
+    bool IsElevation => _kind == SectionSetting.ElevationKind;
+    string Noun => IsElevation ? "elevation" : "section";
+
+    public SectionTab(PdSession s, string kind) : base(s)
     {
-        _grid.Columns.Add(Ui.Text<SectionSetting>("名称", x => x.Name, (x, v) => Edit(() => x.Name = v), 60));
-        _grid.Columns.Add(Ui.Combo<SectionSetting>("类型", new[] { SectionSetting.SectionKind, SectionSetting.ElevationKind }, x => x.Kind,
-            (x, v) =>
-            {
-                if (v != SectionSetting.SectionKind && v != SectionSetting.ElevationKind) return;
-                x.Kind = v;
-                Session.Save();
-                // Refresh after the cell edit has finished; refreshing inside it reset the combo to the old value.
-                Application.Instance.AsyncInvoke(Session.NotifyChanged);
-            }, 90));
-        _grid.Columns.Add(Ui.Check<SectionSetting>("看向左侧", x => x.LookLeft, (x, v) => Edit(() => x.LookLeft = v)));
-        _grid.Columns.Add(Ui.Text<SectionSetting>("可见进深", x => Ui.Ft(Depth(x)),
-            (x, v) => { if (PD.Core.Model.FeetInches.TryParse(v, out var f)) Edit(() => x.DepthFt = f); }, 80));
-        _grid.Columns.Add(Ui.Text<SectionSetting>("穿过体块", x => x.IsElevation ? "—" : Crosses(x) switch { true => "✓", false => "✗ 未穿过", _ => "?" }, null, 80));
+        _kind = kind;
+        _prefix = IsElevation ? "ELEV" : "SEC";
+        _grid.Columns.Add(Ui.Text<SectionSetting>("Name", x => x.Name, (x, v) => Edit(() => x.Name = v), 60));
+        _grid.Columns.Add(Ui.Check<SectionSetting>("Look left", x => x.LookLeft, (x, v) => Edit(() => x.LookLeft = v)));
+        _grid.Columns.Add(Ui.Text<SectionSetting>("Visible depth", x => Ui.Ft(Depth(x)),
+            (x, v) => { if (PD.Core.Model.FeetInches.TryParse(v, out var f)) Edit(() => x.DepthFt = f); }, 90));
+        if (!IsElevation)
+            _grid.Columns.Add(Ui.Text<SectionSetting>("Cuts masses", x => Crosses(x) switch { true => "yes", false => "NO - misses", _ => "?" }, null, 90));
         _grid.CellDoubleClick += (_, e) => { if (e.Item is SectionSetting x && x.ObjectId != null) SelectCurve(x.ObjectId); };
 
         var layout = Ui.Layout();
-        layout.AddSeparateRow(Ui.Button("读取 SEC:: / ELEV:: 图层", ReadLayers), Ui.Button("拾取线…", Pick), Ui.Button("删除选中", Remove), null);
+        layout.AddSeparateRow(Ui.Button($"Read {_prefix}:: layers", ReadLayers), Ui.Button($"Pick {Noun} line…", Pick), Ui.Button("Remove selected", Remove), null);
         layout.Add(_grid, yscale: true);
         layout.Add(_status);
-        layout.Add(Ui.Confirm(s, "section"));
+        layout.Add(Ui.Confirm(s, IsElevation ? "elevation" : "section"));
         Content = layout;
     }
 
@@ -58,37 +60,40 @@ internal sealed class SectionTab : TabBase
 
     public override void Refresh()
     {
-        _grid.DataStore = Session.Settings.Sections.ToList();
-        _status.Text = Session.Settings.Sections.Count == 0
-            ? "没有剖切线/立面线：把直线放在 SEC::A 或 ELEV::North 等图层后点「读取」，或点「拾取」后改类型。"
-            : $"{Session.Settings.Sections.Count(s => !s.IsElevation)} 条剖切线，{Session.Settings.Sections.Count(s => s.IsElevation)} 条立面线。从起点看向终点，「看向左侧」决定看的方向。";
+        var rows = Session.Settings.Sections.Where(x => x.Kind == _kind).ToList();
+        _grid.DataStore = rows;
+        _status.Text = rows.Count == 0
+            ? $"No {Noun} lines yet: draw a line on a layer such as {(IsElevation ? "ELEV::North" : "SEC::A")} and click Read, or click Pick."
+            : $"{rows.Count} {Noun} line(s). Seen from the start point towards the end point; \"Look left\" sets the viewing side.";
     }
 
     /// <summary>Every curve on a layer whose path starts with SEC (e.g. SEC::A) or ELEV (ELEV::North) becomes a section / elevation named after the sub-layer.</summary>
+    /// <remarks>This tab reads only its own prefix.</remarks>
     void ReadLayers()
     {
         var doc = Session.Doc;
         if (doc == null) return;
         var found = 0;
-        foreach (var layer in doc.Layers.Where(l => !l.IsDeleted && (l.FullPath.StartsWith("SEC", StringComparison.OrdinalIgnoreCase) || l.FullPath.StartsWith("ELEV", StringComparison.OrdinalIgnoreCase))))
+        foreach (var layer in doc.Layers.Where(l => !l.IsDeleted && l.FullPath.StartsWith(_prefix, StringComparison.OrdinalIgnoreCase)))
         foreach (var obj in doc.Objects.FindByLayer(layer) ?? Array.Empty<global::Rhino.DocObjects.RhinoObject>())
         {
             if (obj.Geometry is not Curve c || Session.Settings.Sections.Any(x => x.ObjectId == obj.Id.ToString())) continue;
             Session.Settings.Sections.Add(new SectionSetting
             {
-                Name = layer.Name.Equals("SEC", StringComparison.OrdinalIgnoreCase) || layer.Name.Equals("ELEV", StringComparison.OrdinalIgnoreCase)
-                    ? $"{(char)('A' + Session.Settings.Sections.Count % 26)}" : layer.Name,
-                Kind = layer.FullPath.StartsWith("ELEV", StringComparison.OrdinalIgnoreCase) ? SectionSetting.ElevationKind : SectionSetting.SectionKind,
+                Name = !layer.Name.Equals(_prefix, StringComparison.OrdinalIgnoreCase) ? layer.Name
+                    : IsElevation ? $"E{Session.Settings.Sections.Count(x => x.IsElevation) + 1}"
+                    : $"{(char)('A' + Session.Settings.Sections.Count(x => !x.IsElevation) % 26)}",
+                Kind = _kind,
                 ObjectId = obj.Id.ToString(),
                 Line = new[] { c.PointAtStart.X, c.PointAtStart.Y, c.PointAtEnd.X, c.PointAtEnd.Y },
             });
             found++;
         }
         Session.NotifyChanged();
-        if (found == 0) MessageBox.Show(this, "没有在 SEC:: / ELEV:: 图层上找到新的曲线。", MessageBoxType.Information);
+        if (found == 0) MessageBox.Show(this, $"No new curves found on {_prefix}:: layers.", MessageBoxType.Information);
     }
 
-    void Pick() => RhinoApp.RunScript("_ProgramDiagramPickSection", false);
+    void Pick() => RhinoApp.RunScript(IsElevation ? "_ProgramDiagramPickElevation" : "_ProgramDiagramPickSection", false);
 
     void Remove()
     {

@@ -80,6 +80,8 @@ public sealed class SectionStyle
     public double BarSlabGapPt { get; set; }
     public double BarCornerPt { get; set; }
     public double BarGapPt { get; set; }
+    /// <summary>Fill behind the cut colour blocks (hides what is seen beyond through the gaps); null/empty = none.</summary>
+    public string? ProgramBackground { get; set; }
     /// <summary>Exterior wall line of the cut building.</summary>
     public double OutlinePt { get; set; }
     /// <summary>Other buildings cut by the section: solid (filled) with a heavy outline.</summary>

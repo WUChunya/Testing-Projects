@@ -4,7 +4,7 @@ using PD.Rhino.Adapter;
 
 namespace PD.Rhino.UI.Tabs;
 
-/// <summary>② Geometry cleanup (PRD 3.5): mass status, span rule, single surfaces, stray objects.</summary>
+/// <summary>Tab 2 Geometry cleanup (PRD 3.5): mass status, span rule, single surfaces, stray objects.</summary>
 internal sealed class CleanupTab : TabBase
 {
     sealed record MassRow(Mass M, SpanDecision? Span, string Levels);
@@ -20,35 +20,35 @@ internal sealed class CleanupTab : TabBase
 
     public CleanupTab(PdSession s) : base(s)
     {
-        _masses.Columns.Add(Ui.Text<MassRow>("图层", r => r.M.Source.LayerPath, null, 90));
-        _masses.Columns.Add(Ui.Text<MassRow>("状态 Status", r => Status(r.M.Status), null, 110));
-        _masses.Columns.Add(Ui.Text<MassRow>("体积 CF", r => r.M.Volume.ToString("N0"), null, 80));
-        _masses.Columns.Add(Ui.Text<MassRow>("楼层", r => r.Levels, null, 70));
-        _masses.Columns.Add(Ui.Combo<MassRow>("跨层 Span", SpanModes, r => r.Span?.Mode.ToString() ?? "Single", SetSpan, 90));
+        _masses.Columns.Add(Ui.Text<MassRow>("Layer", r => r.M.Source.LayerPath, null, 90));
+        _masses.Columns.Add(Ui.Text<MassRow>("Status", r => Status(r.M.Status), null, 110));
+        _masses.Columns.Add(Ui.Text<MassRow>("Volume CF", r => r.M.Volume.ToString("N0"), null, 80));
+        _masses.Columns.Add(Ui.Text<MassRow>("Levels", r => r.Levels, null, 70));
+        _masses.Columns.Add(Ui.Combo<MassRow>("Span", SpanModes, r => r.Span?.Mode.ToString() ?? "Single", SetSpan, 90));
         _masses.CellDoubleClick += (_, e) => { if (e.Item is MassRow r) Ui.SelectAndZoom(Session, new[] { r.M.Id }); };
 
-        _singles.Columns.Add(Ui.Text<Mass>("单张曲面 Single surface", m => m.Source.LayerPath, null, 160));
-        _singles.Columns.Add(Ui.Combo<Mass>("处理方式", Choices, m => s.Settings.SingleSurfaces.GetValueOrDefault(m.Id).ToString(),
+        _singles.Columns.Add(Ui.Text<Mass>("Single surface", m => m.Source.LayerPath, null, 160));
+        _singles.Columns.Add(Ui.Combo<Mass>("Treat as", Choices, m => s.Settings.SingleSurfaces.GetValueOrDefault(m.Id).ToString(),
             (m, v) => { s.Settings.SingleSurfaces[m.Id] = Enum.Parse<SingleSurfaceChoice>(v); s.Save(); }, 100));
         _singles.CellDoubleClick += (_, e) => { if (e.Item is Mass m) Ui.SelectAndZoom(Session, new[] { m.Id }); };
 
-        _stray.Columns.Add(Ui.Check<StrayRow>("保留", r => s.Settings.KeepStray.Contains(r.Id), (r, v) =>
+        _stray.Columns.Add(Ui.Check<StrayRow>("Keep", r => s.Settings.KeepStray.Contains(r.Id), (r, v) =>
         {
             s.Settings.KeepStray.Remove(r.Id);
             if (v) s.Settings.KeepStray.Add(r.Id);
             s.Save();
         }));
-        _stray.Columns.Add(Ui.Text<StrayRow>("游离对象 Stray", r => $"{r.Layer} ({r.Type})", null, 200));
+        _stray.Columns.Add(Ui.Text<StrayRow>("Stray object", r => $"{r.Layer} ({r.Type})", null, 200));
         _stray.CellDoubleClick += (_, e) => { if (e.Item is StrayRow r) Ui.SelectAndZoom(Session, new[] { r.Id }); };
 
         var layout = Ui.Layout();
-        layout.AddSeparateRow(Ui.Button("重新分析 Re-analyze", Analyze), null);
+        layout.AddSeparateRow(Ui.Button("Re-analyze", Analyze), null);
         layout.Add(_summary);
-        layout.Add(new Label { Text = "体块（双击定位；重叠规则：体积小的优先）" });
+        layout.Add(new Label { Text = "Masses (double-click to locate; overlaps: smaller volume wins)" });
         layout.Add(_masses, yscale: true);
-        layout.Add(new Label { Text = "program 图层上的单张曲面：忽略 / 当作立面 / 挤出（改完点重新分析）" });
+        layout.Add(new Label { Text = "Single surfaces on program layers: ignore / facade / extrude (then Re-analyze)" });
         layout.Add(_singles);
-        layout.Add(new Label { Text = "远离建筑主体的对象（默认排除）" });
+        layout.Add(new Label { Text = "Objects far from the building (excluded by default)" });
         layout.Add(_stray);
         layout.Add(Ui.Confirm(s, "cleanup"));
         Content = layout;
@@ -63,17 +63,17 @@ internal sealed class CleanupTab : TabBase
 
     static string Status(MassStatus s) => s switch
     {
-        MassStatus.Closed => "封闭 Closed",
-        MassStatus.Capped => "已封口 Capped",
-        MassStatus.SectionClosed => "按剖切闭合 (请检查)",
-        MassStatus.SingleSurface => "单张曲面",
-        _ => "无法封口 Open",
+        MassStatus.Closed => "Closed",
+        MassStatus.Capped => "Capped",
+        MassStatus.SectionClosed => "Closed along cut (check)",
+        MassStatus.SingleSurface => "Single surface",
+        _ => "Open",
     };
 
     public override void Refresh()
     {
         var r = Session.Result;
-        if (r == null) { _summary.Text = "尚未分析。"; return; }
+        if (r == null) { _summary.Text = "Not analyzed yet."; return; }
         var spans = r.Spans.ToDictionary(x => x.MassId);
         string LevelText(SpanDecision? d) => d == null ? "—"
             : d.LevelIndices.Length == 1 ? r.Levels[d.LevelIndices[0]].Name
@@ -84,8 +84,8 @@ internal sealed class CleanupTab : TabBase
         _stray.DataStore = r.Local.Objects.Where(o => r.Stray.Contains(o.Id) || Session.Settings.KeepStray.Contains(o.Id))
             .Select(o => new StrayRow(o.Id, o.LayerPath, o.GeometryType)).ToList();
         var c = r.Masses.GroupBy(m => m.Status).ToDictionary(g => g.Key, g => g.Count());
-        _summary.Text = $"体块 {r.Masses.Count}：封闭 {c.GetValueOrDefault(MassStatus.Closed)}，封口 {c.GetValueOrDefault(MassStatus.Capped)}，" +
-            $"按剖切闭合 {c.GetValueOrDefault(MassStatus.SectionClosed)}，单张曲面 {c.GetValueOrDefault(MassStatus.SingleSurface)}，" +
-            $"无法封口 {c.GetValueOrDefault(MassStatus.Open)}；重叠 {r.Overlaps.Count} 处；游离 {r.Stray.Count}";
+        _summary.Text = $"{r.Masses.Count} masses: closed {c.GetValueOrDefault(MassStatus.Closed)}, capped {c.GetValueOrDefault(MassStatus.Capped)}, " +
+            $"closed along cut {c.GetValueOrDefault(MassStatus.SectionClosed)}, single surface {c.GetValueOrDefault(MassStatus.SingleSurface)}, " +
+            $"open {c.GetValueOrDefault(MassStatus.Open)}; overlaps {r.Overlaps.Count}; stray {r.Stray.Count}";
     }
 }

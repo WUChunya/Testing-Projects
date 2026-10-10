@@ -157,6 +157,7 @@
     "barSlabGapPt": 2.0,
     "barCornerPt": 6.0,
     "barGapPt": 1.5,
+    "programBackground": "#FFFFFF",
     "outlinePt": 0.75,
     "facadeCutPt": 0.5,
     "levelColumn": true,

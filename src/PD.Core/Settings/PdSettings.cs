@@ -14,10 +14,10 @@ public sealed class PdSettings
     public Dictionary<string, SpanMode> SpanModes { get; set; } = new();
     public Dictionary<string, SingleSurfaceChoice> SingleSurfaces { get; set; } = new();
     public List<string> KeepStray { get; set; } = new();
-    /// <summary>Null until the user edits levels on tab ③.</summary>
+    /// <summary>Null until the user edits levels on tab 3.</summary>
     public List<LevelOverride>? Levels { get; set; }
     public Dictionary<string, string> Names { get; set; } = new();
-    /// <summary>Per-object program (mass id → program key) overriding its layer's program; tab ④.</summary>
+    /// <summary>Per-object program (mass id → program key) overriding its layer's program; tab 4.</summary>
     public Dictionary<string, string> ObjectPrograms { get; set; } = new();
     /// <summary>Null means the company legend (styles/program_legend.json).</summary>
     public List<ProgramSetting>? Programs { get; set; }
@@ -59,7 +59,7 @@ public sealed class LayerSetting
     public string Mode { get; set; } = "";
 }
 
-/// <summary>One program in the project colour scheme (tab ⑤). Becomes a global swatch and legend entry in the AI output.</summary>
+/// <summary>One program in the project colour scheme (tab 5). Becomes a global swatch and legend entry in the AI output.</summary>
 public sealed class ProgramSetting
 {
     /// <summary>Stable id used in layer mapping, object names (L03_KEY_01) and swatch names. Never renamed.</summary>
@@ -67,9 +67,9 @@ public sealed class ProgramSetting
     public string Label { get; set; } = "";
     public string? Fill { get; set; }
     public int Order { get; set; }
-    /// <summary>Added by the user on tab ⑤ (not in the company legend); only these can be deleted.</summary>
+    /// <summary>Added by the user on tab 5 (not in the company legend); only these can be deleted.</summary>
     public bool IsCustom { get; set; }
-    /// <summary>Layer names that auto-fill to this program on tab ①.</summary>
+    /// <summary>Layer names that auto-fill to this program on tab 1.</summary>
     public List<string> Aliases { get; set; } = new();
     public string? Stroke { get; set; }
     public double? StrokePt { get; set; }
@@ -97,8 +97,12 @@ public sealed class SectionSetting
 
 public sealed class OutputSetting
 {
-    /// <summary>Empty values are filled from rules_default.json "output".</summary>
-    public string Folder { get; set; } = "";
+    /// <summary>Save location; empty = the Rhino model's folder. Each export makes a new timestamped sub-folder in it.</summary>
+    public string SaveIn { get; set; } = "";
+    /// <summary>Folder of the last export (for "Open folder").</summary>
+    public string LastFolder { get; set; } = "";
+    /// <summary>Generate the .ai files in Illustrator after exporting; null = rules default.</summary>
+    public bool? RunIllustrator { get; set; }
     public string Scheme { get; set; } = "";
     public List<string>? Drawings { get; set; }
     public string Scale { get; set; } = "";
@@ -106,10 +110,9 @@ public sealed class OutputSetting
     /// <summary>Also export a PNG per artboard from Illustrator; null = rules default.</summary>
     public bool? ExportPng { get; set; }
 
-    public void FillDefaults(PD.Core.Config.OutputRules r, string folder)
+    public void FillDefaults(PD.Core.Config.OutputRules r)
     {
         if (string.IsNullOrEmpty(Scheme)) Scheme = r.Scheme;
-        if (string.IsNullOrEmpty(Folder)) Folder = folder;
         Drawings ??= r.Drawings.ToList();
         if (string.IsNullOrEmpty(Scale)) Scale = r.DefaultScale;
         if (string.IsNullOrEmpty(Artboard)) Artboard = r.DefaultArtboard;

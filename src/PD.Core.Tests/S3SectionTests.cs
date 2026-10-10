@@ -36,7 +36,7 @@ public class S3SectionTests
     internal static ExportContext Context()
     {
         var settings = new PdSettings { Sections = { SectionA, ElevationSouth } };
-        settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output, "");
+        settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output);
         return new ExportContext
         {
             Result = AnalysisFixture.Result, Settings = settings,
@@ -65,6 +65,10 @@ public class S3SectionTests
         Assert.All(bars, b => Assert.StartsWith("PRG_", b.Fill));
         Assert.NotEmpty(d.Layer("PD_SLAB").Items);
         Assert.Single(d.Layer("PD_OUTLINE").Items, i => i.Name == "SEC_A_OUTLINE");
+        // White backing right under the colour blocks hides what is seen beyond through the gaps.
+        var bg = Assert.Single(d.Layer("PD_PROGRAM_BG").Items);
+        Assert.Equal("#FFFFFF", d.Swatches.Single(x => x.Name == bg.Fill).Hex);
+        Assert.Equal(d.Layers.IndexOf(d.Layer("PD_PROGRAM")) - 1, d.Layers.IndexOf(d.Layer("PD_PROGRAM_BG")));
         Assert.All(d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_LBL") && !i.Name.Contains("CONTEXT")), t => Assert.True(t.Center));
         Assert.NotEmpty(d.Layer("FACADE").Items);
         Assert.Equal(d.Layers.SelectMany(l => l.Items).Count(), d.Layers.SelectMany(l => l.Items).Select(i => i.Name).Distinct().Count());

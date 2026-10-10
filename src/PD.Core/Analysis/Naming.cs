@@ -4,7 +4,7 @@ namespace PD.Core.Analysis;
 
 public sealed record NameRow(string MassId, string Level, string ProgramKey, string Label, string StableId);
 
-/// <summary>Tab ④: label = object name, else program label; stable id = L03_LAB_01 (level, program, counter by position).</summary>
+/// <summary>Tab 4: label = object name, else program label; stable id = L03_LAB_01 (level, program, counter by position).</summary>
 public static class Naming
 {
     public static List<NameRow> Build(AnalysisResult r, IReadOnlyDictionary<string, string> userNames, Func<string, string> programLabel)

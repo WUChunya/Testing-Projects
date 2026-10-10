@@ -12,7 +12,7 @@ public static class MeshSlicer
     public static List<List<(double X, double Y)>> Slice(MeshData mesh, double z, double weldTol, double gapTol, bool closeOpen = false) =>
         Slice(mesh, z, weldTol, gapTol, closeOpen, out _);
 
-    /// <param name="closeOpen">Close chains that stay open with a straight segment (PRD 3.5 "按剖切线连接").</param>
+    /// <param name="closeOpen">Close chains that stay open with a straight segment (PRD 3.5 "close along the cut").</param>
     /// <param name="openChains">Number of chains that could not be closed within the gap tolerance.</param>
     /// <param name="openOut">When given, receives the chains that stayed open (e.g. a cut through a single surface).</param>
     public static List<List<(double X, double Y)>> Slice(MeshData mesh, double z, double weldTol, double gapTol, bool closeOpen, out int openChains,

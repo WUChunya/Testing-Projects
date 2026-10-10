@@ -59,4 +59,16 @@ public class ReportTests
         Assert.True(PD.Core.Analysis.Reports.SectionCrossesMasses(AnalysisFixture.Result, b.MinX - 10, midY, b.MaxX + 10, midY));
         Assert.False(PD.Core.Analysis.Reports.SectionCrossesMasses(AnalysisFixture.Result, b.MaxX + 100, b.MinY, b.MaxX + 100, b.MaxY));
     }
+
+    [Fact]
+    public void OutputFolder_TimestampedSubfolderOfTheModelFolder()
+    {
+        var pattern = PD.Core.Config.Rules.Default().Output.FolderPattern;
+        var now = new DateTime(2026, 10, 10, 14, 32, 5);
+        Assert.Equal("2026 1010_Conceptual Program Diagram_143205", PD.Core.Writers.OutputFolder.Name(pattern, now));
+        var model = Path.Combine("proj", "model.3dm");
+        Assert.Equal("proj", PD.Core.Writers.OutputFolder.SaveIn("", model));
+        Assert.Equal("mine", PD.Core.Writers.OutputFolder.SaveIn("mine", model));
+        Assert.Equal(Path.Combine("proj", "2026 1010_Conceptual Program Diagram_143205"), PD.Core.Writers.OutputFolder.Create("proj", pattern, now));
+    }
 }

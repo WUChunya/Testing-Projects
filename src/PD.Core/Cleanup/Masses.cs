@@ -15,7 +15,7 @@ public sealed record Mass(SourceObject Source, MassStatus Status, double Volume)
     public bool IsSolid => Status is MassStatus.Closed or MassStatus.Capped or MassStatus.SectionClosed;
 }
 
-/// <summary>PRD 3.5 "非封闭体块 / 单张曲面": closed, cappable (planar holes), single surface, or open.</summary>
+/// <summary>PRD 3.5 "open masses / single surfaces": closed, cappable (planar holes), single surface, or open.</summary>
 public static class MassClassifier
 {
     public static Mass Classify(SourceObject o, CleanupRules r)
@@ -33,7 +33,7 @@ public static class MassClassifier
     }
 
     /// <summary>
-    /// PRD 3.5 step ②: when every test slice gives exactly one open chain (a wall set missing a side),
+    /// PRD 3.5 step 2: when every test slice gives exactly one open chain (a wall set missing a side),
     /// close it along the section line. Volume ≈ mid-height area × height; 0 when not applicable.
     /// </summary>
     static double SectionCloseVolume(SourceObject o, CleanupRules r)

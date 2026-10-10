@@ -43,7 +43,7 @@ public class BasementSectionTests
         Assert.Equal(new[] { "B1", "L1", "L2", "L3" }, r.Levels.Select(l => l.Name).ToArray());
 
         var settings = new PdSettings();
-        settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output, "");
+        settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output);
         var ctx = new ExportContext { Result = r, Settings = settings, Programs = ProgramCatalog.Effective(LayerClassifier.LoadPrograms(), null) };
         var d = SectionDrawing.Build(ctx, new SectionSetting { Name = "S", Line = new double[] { -10, 30, 110, 30 } });
 

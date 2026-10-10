@@ -49,10 +49,10 @@ internal static class Ui
         return b;
     }
 
-    /// <summary>The "已确认" box at the bottom of every tab.</summary>
+    /// <summary>The "Confirmed" box at the bottom of every tab.</summary>
     public static CheckBox Confirm(PdSession s, string tab)
     {
-        var cb = new CheckBox { Text = "已确认本页 Confirmed", Checked = s.IsConfirmed(tab) };
+        var cb = new CheckBox { Text = "Confirmed", Checked = s.IsConfirmed(tab) };
         cb.CheckedChanged += (_, _) => { if (s.IsConfirmed(tab) != (cb.Checked == true)) s.SetConfirmed(tab, cb.Checked == true); };
         s.Changed += () => cb.Checked = s.IsConfirmed(tab);
         return cb;
@@ -85,7 +85,7 @@ internal static class Ui
     public static string Ft(double feet) => PD.Core.Model.FeetInches.Format(feet);
 }
 
-/// <summary>Base for the eight tabs: rebuilds its rows when the session changes.</summary>
+/// <summary>Base for the tabs: rebuilds its rows when the session changes.</summary>
 internal abstract class TabBase : Panel
 {
     protected PdSession Session { get; }
@@ -101,6 +101,6 @@ internal abstract class TabBase : Panel
     protected void Analyze()
     {
         if (!Session.Analyze())
-            MessageBox.Show(this, $"分析失败 Analysis failed:\n{Session.LastError}", MessageBoxType.Error);
+            MessageBox.Show(this, $"Analysis failed:\n{Session.LastError}", MessageBoxType.Error);
     }
 }

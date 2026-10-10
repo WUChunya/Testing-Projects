@@ -33,7 +33,10 @@
     "outlineDistanceFt": 3.0
   },
   "output": {
-    "folderPattern": "_Diagrams/{project}_{scheme}_{date}",
+    "folderPattern": "{yyyy} {MMdd}_Conceptual Program Diagram_{HHmmss}",
+    "folderComment": "Each export creates this sub-folder in the save location (default: the Rhino model's folder).",
+    "runIllustrator": true,
+    "quitIllustratorWhenDone": true,
     "scheme": "OPT-1",
     "drawings": [
       "Plan",

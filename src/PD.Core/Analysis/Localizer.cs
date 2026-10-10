@@ -17,7 +17,7 @@ public static class Localizer
 {
     /// <summary>
     /// Builds the local frame from program objects, converts every object to local feet and flags
-    /// objects far from the building (PRD 3.5 "游离对象").
+    /// objects far from the building (PRD 3.5 "stray objects").
     /// </summary>
     public static (SourceModel local, LocalFrame frame, BBox3 building, HashSet<string> outliers) Localize(
         SourceModel model, Func<SourceObject, bool> isProgram, CleanupRules rules)
