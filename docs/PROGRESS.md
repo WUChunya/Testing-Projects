@@ -13,8 +13,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   (layers per exploded plate `AXON_L*`, plane text via `DItem.Matrix`). Goldens: plan_L1, axon_stacked, axon_exploded, axon_levels_L3.
 - Axon style spec (proposal, not yet wired): `docs/AXON_STYLE.md` + `styles/axon_style.json` + sheet `docs/reference/axon_exploded_reference.svg`
   (`tools/axon_style_reference.py`). 1"=45' on ARCH D; diffs vs `style_default.json › axon` in AXON_STYLE §11 await user OK.
-  Labels: Myriad Pro Semibold 20/16 pt white 70%, front-corner anchored. Site axon / site plan / exploded B: `docs/SITE_STYLE.md`,
-  `styles/site_style.json`, sheets via `tools/site_style_reference.py` (refs 3-5, 1 px = 1.556 pt).
+  Site axon / site plan / exploded B: `docs/SITE_STYLE.md` + `styles/site_style.json` + `tools/site_style_reference.py`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade: stacked 30% veil, exploded hidden.
@@ -22,6 +21,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable (`L03_KEY_01`, swatches `PRG_<KEY>`); AI update: named items redrawn, `_MANUAL`/`OVERLAY`/unnamed kept.
 - Item names: `SEC_*`, `ELV_*`, plans `PLN_<lvl>_<id>` / overview `PLO_<lvl>_*`, axons `AXS_<lvl>_<id>_TOP|SIDEnnn`, `AXE_<lvl>_*`.
 - Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu). Stale layers purged: `PD_*`, `VIEW_*`, `BG_*`, `AXON_*`, `FACADE`.
+- Plan: all levels share one extent (building + 60'); model +Y = north; level title "Level {n}" for Ln names.
 - Axon: isometric from SW or active viewport direction (tab 8). Style = Atlanta reference; context height 8' (`contextHeightFt`, 0 = real).
 
 ## Windows test checklist (for the user)
