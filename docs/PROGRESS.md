@@ -3,11 +3,10 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 11 (v0.6.1, 129 tests): v0.6.1 fixes the export crash "Operation does not support GeometryCollection arguments":
-  a clipped projection came back as a GeometryCollection and the next overlay refused it. Every area result now goes through
-  `MeshSlicer.Polygonal` (lines through `Lineal`), the geometry guards also catch `ArgumentException`, and a drawing that
-  still fails is reported as a note instead of losing the whole export.
-- Rev 11 (v0.6.0, 128 tests): **S5 Charts + Entourage** plus S1–S4 fixes from the user's `261012_Downtown_Massing.3dm`.
+- Rev 11 (v0.6.1, 129 tests): export crash "Operation does not support GeometryCollection arguments" fixed — a clipped
+  projection came back as a GeometryCollection and the next overlay refused it; every area result now goes through
+  `MeshSlicer.Polygonal` (`Lineal` for lines), the guards also catch `ArgumentException`, and a drawing that still fails is
+  a note instead of losing the export. v0.6.0 before it: **S5 Charts + Entourage** plus S1–S4 fixes from the user's `261012_Downtown_Massing.3dm`.
   Charts (`src/PD.Core/Charts`): `ProgramTable` (model GSF or Excel ASF via ClosedXML, template writer, `program_table.csv`),
   `05_Program_Chart.ai` (PRD 5.5 dashed department boxes, sub-group rows, area-proportional rectangles, shelf packing),
   `06_Program_Pie.ai` (PRD 5.6 donut 43 %, 12 o'clock clockwise in scheme order, legend + TOTAL, stacked bar).
