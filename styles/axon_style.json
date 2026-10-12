@@ -174,20 +174,22 @@
     "font": "Myriad Pro",
     "page_text_scale": 2.118,
     "label_primary": {
-      "size": 10,
+      "size": 20,
       "weight": "Semibold",
       "case": "upper",
       "tracking": 0,
       "color": "#FFFFFF",
-      "opacity": 0.7
+      "opacity": 0.7,
+      "page_scaled": false
     },
     "label_secondary": {
-      "size": 8,
+      "size": 16,
       "weight": "Semibold",
       "case": "upper",
       "tracking": 0,
       "color": "#FFFFFF",
-      "opacity": 0.7
+      "opacity": 0.7,
+      "page_scaled": false
     },
     "label_min_size": 5,
     "label_fit_ratio": 0.6,
@@ -239,7 +241,10 @@
       "tracking": 0,
       "color": "#000000",
       "opacity": 1.0
-    }
+    },
+    "label_anchor": "front_corner",
+    "label_inset_pt": 8,
+    "_doc_label": "Program labels: sizes are final ARCH D pt (page_scaled=false). Anchored at the top face's front corner: up-right text starts there (text-local lower-left), down-right text ends there (text-local lower-right); inset by label_inset_pt from both edges."
   },
   "level_tag": {
     "marker_pt": 4,

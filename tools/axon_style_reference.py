@@ -66,10 +66,14 @@ class Sheet:
         a = f'stroke="{s["color"]}" stroke-width="{s["width"]}" stroke-linecap="{s.get("cap", "butt")}" stroke-linejoin="{s.get("join", "miter")}"'
         return a + (f' stroke-dasharray="{s["dash"][0]} {s["dash"][1]}"' if "dash" in s else "")
 
-    def text(self, x, y, s, style, anchor="middle", matrix=None, size=None, color=None):
-        """size is final page pt; default = style size (11x17 pt) x page_text_scale."""
+    def size_of(self, style):
+        """Final page pt: 11x17 sizes are scaled by page_text_scale unless the style says page_scaled=false."""
         t = self.st["text"][style]
-        size = size or t["size"] * self.ts
+        return t["size"] * (self.ts if t.get("page_scaled", True) else 1.0)
+
+    def text(self, x, y, s, style, anchor="middle", matrix=None, size=None, color=None, baseline="central"):
+        t = self.st["text"][style]
+        size = size or self.size_of(style)
         tr = (f'transform="matrix({matrix[0]:.4f} {matrix[1]:.4f} {matrix[2]:.4f} {matrix[3]:.4f} {x:.2f} {y:.2f})"'
               if matrix else f'x="{x:.2f}" y="{y:.2f}"')
         s = s.upper() if t["case"] == "upper" else s
@@ -77,7 +81,7 @@ class Sheet:
         self.out.append(f'<text {tr} font-family="{self.st["text"]["font"]}, Myriad, PT Sans, Segoe UI, sans-serif" '
                         f'font-size="{size:.1f}" font-weight="{WEIGHT[t["weight"]]}" '
                         f'letter-spacing="{t.get("tracking", 0) / 1000 * size:.2f}" fill="{color or t["color"]}" '
-                        f'fill-opacity="{op}" text-anchor="{anchor}" dominant-baseline="central">{s}</text>')
+                        f'fill-opacity="{op}" text-anchor="{anchor}" dominant-baseline="{baseline}">{s}</text>')
 
     def box(self, x0, y0, x1, y1, z0, z1, color, shade, sides=(True, True)):
         """Top + two front faces; side darkening = black overlay at N% (mirrors the AI appearance trick)."""
@@ -134,13 +138,21 @@ def label(sh, name, x0, y0, x1, y1, z):
     width = (y1 - y0 if along_x else x1 - x0) * k
     style = "label_core" if name == "CORE" else "label_primary"
     fit = min(t["label_fit_ratio"] * length / (len(name) * 0.6), 0.45 * width)
-    size = min(t[style]["size"] * ts, fit)
-    if style != "label_core" and size < t["label_primary"]["size"] * ts:
-        style, size = "label_secondary", min(t["label_secondary"]["size"] * ts, fit)
+    size = min(sh.size_of(style), fit)
+    if style != "label_core" and size < sh.size_of("label_primary"):
+        style, size = "label_secondary", min(sh.size_of("label_secondary"), fit)
     if size < t["label_min_size"] * ts:
         return
-    cx, cy = sh.p((x0 + x1) / 2, (y0 + y1) / 2, z)
-    sh.text(cx, cy, name, style, matrix=TOP_X if along_x else TOP_Y, size=size)
+    m = TOP_X if along_x else TOP_Y
+    if style == "label_core":
+        cx, cy = sh.p((x0 + x1) / 2, (y0 + y1) / 2, z)
+        sh.text(cx, cy, name, style, matrix=m, size=size)
+        return
+    # Front corner (x1, y1) is the part an upper plate never hides. Down-right text (+X) ends there,
+    # up-right text (-Y) starts there; baseline sits label_inset_pt inside the parallel front edge.
+    d = t["label_inset_pt"] / k
+    ax, ay = sh.p(x1 - d, y1 - d, z)
+    sh.text(ax, ay, name, style, anchor="end" if along_x else "start", matrix=m, size=size, baseline="alphabetic")
 
 
 def plate_z(rooms, prev_top, fh, ex):
@@ -245,7 +257,8 @@ def legend(sh, W, H):
 
     def pt(style):
         t = tx[style]
-        return f'{tx["font"].upper()} {t["weight"].upper()} {t["size"] * ts:.1f} PT ({t["size"]} PT @ 11×17)'
+        sz = sh.size_of(style)
+        return f'{tx["font"].upper()} {t["weight"].upper()} {sz:.1f} PT ({sz / ts:.1f} PT @ 11×17)'
 
     head("LEGEND")
     PROGRAM_OFFICE = PROGRAM["OFFICE"]
@@ -254,8 +267,8 @@ def legend(sh, W, H):
     mini(y)
     sh.box(0, 0, 70, 35, -3.75, 0, PROGRAM_OFFICE, "program")
     label(sh, "OFFICE", 0, 0, 70, 35, 0)
-    spec("PROGRAM LABEL", [pt("label_primary") + ", CAPS", "#FFFFFF 70% OPACITY, SSR ON TOP PLANE, ALONG LONG SIDE",
-                           f'SECONDARY {tx["label_secondary"]["size"] * ts:.1f} PT, MIN {tx["label_min_size"] * ts:.1f} PT'], y)
+    spec("PROGRAM LABEL", [pt("label_primary") + ", CAPS", "#FFFFFF 70% FILL OPACITY, SSR ON TOP PLANE, ANCHORED AT FRONT CORNER",
+                           f'SECONDARY {sh.size_of("label_secondary"):.1f} PT, MIN {tx["label_min_size"] * ts:.1f} PT'], y)
 
     y += row  # core
     mini(y)

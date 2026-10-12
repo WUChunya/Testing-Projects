@@ -80,8 +80,8 @@
 
 | 段落样式 | 字体 | 11×17 字号 | ARCH D 字号 | 颜色 / 透明度 | 其他 |
 |---|---|---|---|---|---|
-| `PD_Label_Primary` | Myriad Pro Semibold | 10 pt | 21.2 pt | #FFFFFF **70%**（正常混合） | 全大写，字距 0，居中，沿色块长边 |
-| `PD_Label_Secondary` | Myriad Pro Semibold | 8 pt | 16.9 pt | #FFFFFF 70% | 放不下 Primary 时降级 |
+| `PD_Label_Primary` | Myriad Pro Semibold | 9.4 pt | **20 pt** | #FFFFFF **70%**（正常混合） | 全大写，字距 0，沿色块长边，**前角对齐**（见下） |
+| `PD_Label_Secondary` | Myriad Pro Semibold | 7.6 pt | **16 pt** | #FFFFFF 70% | 放不下 Primary 时降级，同样前角对齐 |
 | 最小字号 | — | 5 pt | 10.6 pt | — | 再小就改为引线外标（原图 DEBRIEF 即此级） |
 | `PD_Label_Core` | Myriad Pro Semibold | 7 pt | 14.8 pt | #1A1A1A 100% | 底色 #D9D9D9 无描边 |
 | `PD_Level` | Myriad Pro Regular | 7 pt | 14.8 pt | #333333 | 「Level 7」首字母大写 |
@@ -92,6 +92,12 @@
 
 - 半透明做法：文字填色白、在「外观」里把**填色**不透明度设 70%（不是整个对象），这样色块颜色透出来，和原图一样浅色色块上的字会很淡（原图 COLLAB 即如此）。
 - 原图透明度取样：TRAINING / HEALTH / AUDITORIUM 处文字像素反算 α ≈ 0.62–0.82，取 70%。
+- program 标签字号直接定为 ARCH D 20 / 16 pt（不再乘 2.118，JSON 中 `page_scaled: false`）。
+- **对齐（不居中）**：锚点为色块顶面的**前角**（离观者最近、屏幕最低的角，不会被上一层楼板遮挡），两边各内缩 8 pt（`label_inset_pt`）：
+  - 字向右上斜（沿 −Y）：从前角**起排**，即文字自身坐标的左下角，左对齐；
+  - 字向右下斜（沿 +X）：在前角**收尾**，即文字自身坐标的右下角，右对齐；
+  - 基线贴着与文字平行的那条前边；CORE 仍居中。
+  - AI 中：段落样式设左/右对齐，SSR 变换后把文字锚点吸附到前角，再沿两条前边各移 8 pt。
 - 字号适配：字长 ≤ 色块长边 × 60%，字高 ≤ 短边 × 45%。
 
 ## 7. 爆炸轴测专项
