@@ -85,6 +85,7 @@ public static class EntouragePlacer
     static List<Figure> Scatter(NtsGeometry area, double densityPer1000Sf, double minSpacingFt, int max, int seed)
     {
         var figures = new List<Figure>();
+        area = MeshSlicer.Polygonal(area);   // Contains() does not take a GeometryCollection either
         if (area.IsEmpty || area.Area < 10 || densityPer1000Sf <= 0) return figures;
         var want = Math.Min(max, (int)Math.Round(area.Area / 1000.0 * densityPer1000Sf));
         if (want <= 0) return figures;

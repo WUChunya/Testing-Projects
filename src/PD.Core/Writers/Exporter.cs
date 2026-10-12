@@ -16,25 +16,36 @@ public static class Exporter
     {
         var drawings = new List<PD.Core.Drawing.Drawing>();
         var wanted = ctx.Settings.Output.Drawings ?? ctx.Rules.Output.Drawings;
-        if (wanted.Contains("Plan")) drawings.Add(PD.Core.Plans.PlanDrawing.Build(ctx));
+
+        // One drawing that fails must not lose the whole export: it is reported and the others are still written.
+        void Add(string what, Func<PD.Core.Drawing.Drawing> build)
+        {
+            try { drawings.Add(build()); }
+            catch (Exception e) { notes.Add($"{what}: not written ({e.GetType().Name}: {e.Message})"); }
+        }
+
+        if (wanted.Contains("Plan")) Add("Plan", () => PD.Core.Plans.PlanDrawing.Build(ctx));
         if (wanted.Contains("Section"))
         {
             var secs = ctx.Settings.Sections.Where(s => s.Line.Length == 4 && !s.IsElevation).ToList();
             if (secs.Count == 0) notes.Add("Section: no section line (tab 6 Sections).");
-            foreach (var s in secs) drawings.Add(SectionDrawing.Build(ctx, s));
+            foreach (var s in secs) Add($"Section {s.Name}", () => SectionDrawing.Build(ctx, s));
         }
         if (wanted.Contains("Elevation"))
         {
             var els = ctx.Settings.Sections.Where(s => s.Line.Length == 4 && s.IsElevation).ToList();
             if (els.Count == 0) notes.Add("Elevation: no elevation line (tab 7 Elevations).");
-            foreach (var s in els) drawings.Add(PD.Core.Elevations.ElevationDrawing.Build(ctx, s));
+            foreach (var s in els) Add($"Elevation {s.Name}", () => PD.Core.Elevations.ElevationDrawing.Build(ctx, s));
         }
-        if (wanted.Contains("AxonStacked")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Stacked));
-        if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Exploded));
-        if (wanted.Contains("AxonExplodedB")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.ExplodedB));
-        if (wanted.Contains("AxonLevels")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Levels));
-        if (wanted.Contains("ProgramChart")) drawings.Add(PD.Core.Charts.ProgramChartDrawing.Build(ctx));
-        if (wanted.Contains("Pie")) drawings.Add(PD.Core.Charts.PieDrawing.Build(ctx));
+        foreach (var (key, kind) in new[]
+                 {
+                     ("AxonStacked", PD.Core.Axons.AxonKind.Stacked), ("AxonExploded", PD.Core.Axons.AxonKind.Exploded),
+                     ("AxonExplodedB", PD.Core.Axons.AxonKind.ExplodedB), ("AxonLevels", PD.Core.Axons.AxonKind.Levels),
+                 })
+            if (wanted.Contains(key))
+                Add(key, () => PD.Core.Axons.AxonDrawing.Build(ctx, kind));
+        if (wanted.Contains("ProgramChart")) Add("ProgramChart", () => PD.Core.Charts.ProgramChartDrawing.Build(ctx));
+        if (wanted.Contains("Pie")) Add("Pie", () => PD.Core.Charts.PieDrawing.Build(ctx));
         foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded"
                      or "AxonExplodedB" or "AxonLevels" or "ProgramChart" or "Pie")))
             notes.Add($"{w}: not a known drawing.");

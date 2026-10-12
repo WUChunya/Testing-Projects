@@ -46,13 +46,13 @@ public static class PlanBackground
             {
                 if (o.Points is not { Length: >= 2 }) continue;
                 var line = MeshSlicer.Factory.CreateLineString(o.Points.Select(p => new Coordinate(p[0], p[1])).ToArray());
-                var cut = Safe(() => line.Intersection(clip));
-                if (cut is { IsEmpty: false } && o.Role == Roles.Line) items.Add(new BackgroundItem(o.Role, cut, true, o.Name));
+                var cut = MeshSlicer.Lineal(Safe(() => line.Intersection(clip)));
+                if (!cut.IsEmpty && o.Role == Roles.Line) items.Add(new BackgroundItem(o.Role, cut, true, o.Name));
                 continue;
             }
             if (o.Mesh == null) continue;
-            var g = Safe(() => MeshProjection.TopDown(o.Mesh).Intersection(clip));
-            if (g is { IsEmpty: false } && g.Area > 0.5) items.Add(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ));
+            var g = MeshSlicer.Polygonal(Safe(() => MeshProjection.TopDown(o.Mesh).Intersection(clip)));
+            if (!g.IsEmpty && g.Area > 0.5) items.Add(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ));
         }
         return items.OrderBy(i => Array.IndexOf(Order, i.Role)).ToList();
     }
@@ -88,6 +88,6 @@ public static class PlanBackground
     static NtsGeometry? Safe(Func<NtsGeometry> op)
     {
         try { return op(); }
-        catch (TopologyException) { return null; }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return null; }
     }
 }

@@ -219,8 +219,8 @@ public static class PlanDrawing
         if (Math.Abs(plan.Level.Elevation - ctx.Rules.Levels.GroundElevationFt) > ctx.Rules.Levels.MinFloorHeightFt / 2) return;
         foreach (var (b, i) in background.Where(b => b.Role is Roles.NcHardscape or Roles.Hardscape && !b.IsLine).Select((b, i) => (b, i)))
         {
-            var open = Safe(() => b.Geometry.Difference(plan.Union));
-            if (open is { IsEmpty: false }) Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, $"{p}PLAZA{i}"));
+            var open = MeshSlicer.Polygonal(Safe(() => b.Geometry.Difference(plan.Union)));
+            if (!open.IsEmpty) Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, $"{p}PLAZA{i}"));
         }
     }
 
@@ -387,6 +387,6 @@ public static class PlanDrawing
     static NtsGeometry? Safe(Func<NtsGeometry> op)
     {
         try { return op(); }
-        catch (TopologyException) { return null; }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return null; }
     }
 }

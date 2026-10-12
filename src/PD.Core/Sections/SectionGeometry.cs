@@ -180,6 +180,6 @@ public sealed class SectionGeometry
 
     /// <summary>Keeps geometry within the section line's extent (and above <paramref name="minZ"/>).</summary>
     static NtsGeometry Clip(NtsGeometry g, SectionPlane p, double minZ = -1e6) =>
-        g.IsEmpty ? g : g.Intersection(Rect(0, p.Length, minZ, 1e6));
+        g.IsEmpty ? g : MeshSlicer.Polygonal(g.Intersection(Rect(0, p.Length, minZ, 1e6)));
 
 }

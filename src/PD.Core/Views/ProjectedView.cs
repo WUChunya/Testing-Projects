@@ -140,12 +140,16 @@ public static class ProjectedView
     }
 
     public static NtsGeometry Clip(NtsGeometry g, SectionPlane p, double minZ = -1e6) =>
-        g.IsEmpty ? g : Safe(() => g.Intersection(PD.Core.Sections.SectionGeometry.Rect(0, p.Length, minZ, 1e6)), g);
+        g.IsEmpty ? g : MeshSlicer.Polygonal(Safe(() => g.Intersection(PD.Core.Sections.SectionGeometry.Rect(0, p.Length, minZ, 1e6)), g));
 
+    /// <summary>
+    /// An overlay that fails leaves the geometry as it was. Besides a topology error, NTS throws an
+    /// ArgumentException for a GeometryCollection argument, which no drawing should ever fail on.
+    /// </summary>
     static NtsGeometry Safe(Func<NtsGeometry> op, NtsGeometry fallback)
     {
-        try { return op(); }
-        catch (TopologyException) { return fallback; }
+        try { return MeshSlicer.Polygonal(op()); }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return fallback; }
     }
 
     static string Safe(string s) => new(s.Select(ch => char.IsLetterOrDigit(ch) ? char.ToUpperInvariant(ch) : '_').ToArray());

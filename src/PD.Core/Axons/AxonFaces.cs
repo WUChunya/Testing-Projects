@@ -84,10 +84,12 @@ public static class AxonFaces
     /// <summary>Overlay that falls back to snapping (OverlayNGRobust) instead of failing on near-coincident edges.</summary>
     static NtsGeometry? Robust(NtsGeometry a, NtsGeometry b, SpatialFunction op)
     {
+        // NTS refuses a GeometryCollection argument outright, so both sides are reduced to their polygons first.
+        (a, b) = (MeshSlicer.Polygonal(a), MeshSlicer.Polygonal(b));
         try { return OverlayNG.Overlay(a, b, op); }
-        catch (TopologyException) { }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { }
         try { return OverlayNGRobust.Overlay(a, b, op); }
-        catch (TopologyException) { return null; }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return null; }
     }
 
     /// <summary>
@@ -120,7 +122,7 @@ public static class AxonFaces
     public static NtsGeometry Safe(Func<NtsGeometry> op, NtsGeometry fallback)
     {
         try { return op(); }
-        catch (TopologyException) { return fallback; }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return fallback; }
         catch (ArgumentException) { return fallback; }
     }
 }

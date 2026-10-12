@@ -9,6 +9,42 @@ public static class MeshSlicer
 {
     public static readonly GeometryFactory Factory = new();
 
+    /// <summary>
+    /// Only the polygonal parts of a geometry. An overlay (Intersection / Difference) can return a
+    /// GeometryCollection when the result also has line or point pieces, and NTS refuses such a collection as an
+    /// argument to the next overlay ("Operation does not support GeometryCollection arguments"), so every result
+    /// that stands for an area goes through here.
+    /// </summary>
+    public static NtsGeometry Polygonal(NtsGeometry? g) => Keep(g, Dimension.Surface);
+
+    /// <summary>Only the lineal parts of a geometry (clipped property lines, roads).</summary>
+    public static NtsGeometry Lineal(NtsGeometry? g) => Keep(g, Dimension.Curve);
+
+    static NtsGeometry Keep(NtsGeometry? g, Dimension dim)
+    {
+        if (g == null || g.IsEmpty) return Factory.CreatePolygon();
+        if (g.Dimension == dim && g is not GeometryCollection { OgcGeometryType: OgcGeometryType.GeometryCollection }) return g;
+        var parts = new List<NtsGeometry>();
+        Collect(g, dim, parts);
+        return parts.Count switch
+        {
+            0 => Factory.CreatePolygon(),
+            1 => parts[0],
+            _ => Factory.BuildGeometry(parts),
+        };
+    }
+
+    static void Collect(NtsGeometry g, Dimension dim, List<NtsGeometry> parts)
+    {
+        if (g.IsEmpty) return;
+        if (g is GeometryCollection { OgcGeometryType: OgcGeometryType.GeometryCollection } gc)
+        {
+            for (var i = 0; i < gc.NumGeometries; i++) Collect(gc.GetGeometryN(i), dim, parts);
+            return;
+        }
+        if (g.Dimension == dim) parts.Add(g);
+    }
+
     public static List<List<(double X, double Y)>> Slice(MeshData mesh, double z, double weldTol, double gapTol, bool closeOpen = false) =>
         Slice(mesh, z, weldTol, gapTol, closeOpen, out _);
 

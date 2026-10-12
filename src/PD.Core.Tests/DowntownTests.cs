@@ -186,4 +186,27 @@ public class DowntownTests
                  })
             File.WriteAllText(Path.Combine(dir, name + ".svg"), PD.Core.Writers.SvgWriter.Write(d, Math.Min(a, d.Artboards.Count - 1)));
     }
+
+    /// <summary>
+    /// The whole export of the user's model, every drawing on: an elevation used to die with
+    /// "Operation does not support GeometryCollection arguments" because a clipped projection came back as a
+    /// GeometryCollection and the next overlay refused it.
+    /// </summary>
+    [Fact]
+    public void FullExportRunsWithSectionAndElevation()
+    {
+        var ctx = DowntownAnalysis.Context();
+        var b = ctx.Result.Building;
+        var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, (b.MinY + b.MaxY) / 2, 0);
+        var (x1, y1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, (b.MinY + b.MaxY) / 2, 0);
+        ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "DT", Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
+        ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "N", Kind = PD.Core.Settings.SectionSetting.ElevationKind, Line = new[] { x0, y0, x1, y1 }, LookLeft = false, DepthFt = 400 });
+
+        var notes = new List<string>();
+        var drawings = PD.Core.Writers.Exporter.BuildDrawings(ctx, notes);
+        Assert.DoesNotContain(notes, n => n.Contains("not written", StringComparison.Ordinal));
+        // Plan, section, elevation, 4 axons, chart, pie.
+        Assert.Equal(9, drawings.Count);
+        Assert.All(drawings, d => Assert.NotEmpty(d.Artboards));
+    }
 }

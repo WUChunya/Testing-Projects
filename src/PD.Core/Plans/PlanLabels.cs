@@ -73,8 +73,8 @@ public static class PlanLabels
             new Coordinate(c.X - Math.Cos(t) * L, c.Y - Math.Sin(t) * L), new Coordinate(c.X + Math.Cos(t) * L, c.Y + Math.Sin(t) * L),
         });
         NtsGeometry inside;
-        try { inside = poly.Intersection(line); }
-        catch (TopologyException) { return 0; }
+        try { inside = PD.Core.Geometry.MeshSlicer.Lineal(poly.Intersection(line)); }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { return 0; }
         var pt = MeshSlicer.Factory.CreatePoint(c);
         for (var i = 0; i < inside.NumGeometries; i++)
             if (inside.GetGeometryN(i) is LineString ls && ls.Distance(pt) < 1e-6)

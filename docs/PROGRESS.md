@@ -3,6 +3,10 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
+- Rev 11 (v0.6.1, 129 tests): v0.6.1 fixes the export crash "Operation does not support GeometryCollection arguments":
+  a clipped projection came back as a GeometryCollection and the next overlay refused it. Every area result now goes through
+  `MeshSlicer.Polygonal` (lines through `Lineal`), the geometry guards also catch `ArgumentException`, and a drawing that
+  still fails is reported as a note instead of losing the whole export.
 - Rev 11 (v0.6.0, 128 tests): **S5 Charts + Entourage** plus S1–S4 fixes from the user's `261012_Downtown_Massing.3dm`.
   Charts (`src/PD.Core/Charts`): `ProgramTable` (model GSF or Excel ASF via ClosedXML, template writer, `program_table.csv`),
   `05_Program_Chart.ai` (PRD 5.5 dashed department boxes, sub-group rows, area-proportional rectangles, shelf packing),
@@ -31,7 +35,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu; screenshot fullPage:false).
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.6.0.zip` over the old files (it now ships ClosedXML and its dependencies), restart Rhino.
+1. Unzip `ProgramDiagram-0.6.1.zip` over the old files (it now ships ClosedXML and its dependencies), restart Rhino.
 2. Open `261012_Downtown_Massing.3dm`, tab 1: `FLOOR PLATE` = NC.Slab, `COLUMNS` = NC.Structure, every `PROGRAM::*` = Program
    (Green Roof → Green Roof / Sky Garden, Support → Building Support, Seminar Room → Assembly), `PEOPLE / CARS` = Entourage,
    `NE ISO::…` / `1.80 [0]::…` / GRID = Ignore. Use the new "Show: NC / BG" filter and the Group column.
