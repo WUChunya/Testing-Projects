@@ -181,22 +181,22 @@
       "lecture_outline_pt": 2.5
     },
     "label_context": {
-      "font": "Gotham Book",
-      "fallback": "Montserrat",
-      "weight": "Regular",
-      "size": 25,
-      "leading": 32,
+      "font": "Arial",
+      "weight": "Bold",
+      "size": 24,
+      "leading": 29.5,
       "case": "upper",
-      "color": "#848484"
+      "color": "#6C6C6C",
+      "transform": "none"
     },
     "label_street": {
-      "font": "Gotham Book",
-      "fallback": "Montserrat",
+      "font": "Arial",
       "weight": "Regular",
       "size": 22,
-      "tracking": 100,
+      "tracking": 200,
       "case": "upper",
-      "color": "#848484"
+      "color": "#5A5A5A",
+      "transform": "rotate_along_street"
     },
     "label_room": {
       "font": "Arial",
@@ -223,7 +223,7 @@
     },
     "title_tag": {
       "fill": "#F6F0E4",
-      "font": "Gotham Book",
+      "font": "Arial",
       "size": 31,
       "color": "#333333"
     }
@@ -304,5 +304,168 @@
     },
     "clear_ratio": 0.75,
     "_doc_pitch": "Pitch = clear_ratio x projected depth of the plate footprint, so each plate is ~85% clear of the one above (ref 5). At 1\"=45' a 6-level stack needs ARCH D portrait."
+  },
+  "typography": {
+    "_doc": "One font family for every diagram (from the site axon sheet): Arial. Sizes are final ARCH D pt. Section labels scale with bar height (see program_section).",
+    "font": "Arial",
+    "fallback": "Helvetica, Liberation Sans, sans-serif",
+    "context_label": {
+      "weight": "Bold",
+      "size": 24,
+      "leading": 29.5,
+      "case": "upper",
+      "color": "#6C6C6C"
+    },
+    "street": {
+      "weight": "Regular",
+      "size": 22,
+      "tracking": 200,
+      "case": "upper",
+      "color": "#5A5A5A"
+    },
+    "program_label": {
+      "weight": "Bold",
+      "size": 20,
+      "small": 16,
+      "case": "upper",
+      "color": "#FFFFFF",
+      "opacity": 0.7,
+      "use": "exploded axon A"
+    },
+    "program_label_b": {
+      "weight": "Bold",
+      "size": 26,
+      "small": 13,
+      "case": "upper",
+      "color": "#FFFFFF",
+      "opacity": 0.9,
+      "use": "exploded axon B"
+    },
+    "room_label": {
+      "weight": "Regular",
+      "size": 19,
+      "case": "upper",
+      "color": "#333333",
+      "use": "site plan rooms, section bars (scaled)"
+    },
+    "level_tag": {
+      "weight": "Bold",
+      "size": 17,
+      "case": "upper",
+      "color": "#333333"
+    },
+    "heading": {
+      "weight": "Bold",
+      "size": 19,
+      "tracking": 100,
+      "case": "upper",
+      "color": "#8C8C8C",
+      "use": "diagram callout headings (section)"
+    },
+    "legend": {
+      "weight": "Regular",
+      "size": 11,
+      "color": "#444444"
+    }
+  },
+  "program_section": {
+    "_doc": "Program section, sampled from ref 6 (ZGF section, drawn at ~1\"=25'). At 1\"=45' text follows bar height so it still fits.",
+    "floor_ft": 15,
+    "slab": {
+      "height_ratio": 0.14,
+      "fill": "#FFFFFF",
+      "stroke": "#4A4A4A",
+      "stroke_pt": 1.0,
+      "overhang_ft": 2
+    },
+    "bar": {
+      "top_gap_ratio": 0.1,
+      "height_ratio": 0.68,
+      "corner_ratio": 0.14,
+      "opacity": 1.0
+    },
+    "colors_measured": {
+      "shared_public": "#FCD048",
+      "academic": "#C8ECB8",
+      "admin": "#98C48C",
+      "circulation": "#FCF09C",
+      "research": "#B0D0EC",
+      "simulation": "#D4C0E0",
+      "building_support": "#B4B4B4",
+      "vivarium": "#AC845C"
+    },
+    "label": {
+      "weight": "Regular",
+      "case": "upper",
+      "color": "#333333",
+      "opacity": 0.85,
+      "size_max": 20,
+      "size_ratio": 0.7,
+      "align": "right",
+      "inset_pt": 8,
+      "size_min": 10
+    },
+    "floor_number": {
+      "weight": "Regular",
+      "color": "#1A1A1A",
+      "size_ratio": 0.6,
+      "align": "left",
+      "inset_pt": 6,
+      "size_max": 16
+    },
+    "envelope": {
+      "stroke": "#BDBDBD",
+      "stroke_pt": 0.5
+    },
+    "ground": {
+      "stroke": "#000000",
+      "stroke_pt": 3.0
+    },
+    "property_line": {
+      "stroke": "#E05A6A",
+      "stroke_pt": 1.0,
+      "dash": [
+        6,
+        4
+      ]
+    },
+    "future_building": {
+      "stroke": "#555555",
+      "stroke_pt": 1.0,
+      "dash": [
+        6,
+        4
+      ]
+    },
+    "view": {
+      "stroke": "#283A8E",
+      "stroke_pt": 2.0,
+      "dot_pt": 4
+    },
+    "trees": {
+      "fills": [
+        "#9CC078",
+        "#B8D49A",
+        "#7FA866",
+        "#C4CCC0"
+      ],
+      "opacity": 0.85,
+      "trunk": "#7A7A7A",
+      "trunk_pt": 0.75
+    },
+    "people": {
+      "fill": "#9A9A9A"
+    },
+    "street_label": "street (typography) but 17 pt #8A8A8A, below grade",
+    "street": {
+      "weight": "Regular",
+      "size": 17,
+      "case": "upper",
+      "color": "#8A8A8A",
+      "tracking": 0
+    },
+    "heading": "typography.heading",
+    "pt_per_ft": 4.5,
+    "_doc_scale": "Section sheet at 1\"=16' (4.5 pt/ft): at 1\"=45' a 15' floor bar is only ~16 pt tall and the reference's 20 pt labels cannot fit. Plans/axons stay 1\"=45'."
   }
 }

@@ -78,7 +78,7 @@ class Sheet:
               if matrix else f'x="{x:.2f}" y="{y:.2f}"')
         s = s.upper() if t["case"] == "upper" else s
         op = t.get("opacity", 1.0)
-        self.out.append(f'<text {tr} font-family="{self.st["text"]["font"]}, Myriad, PT Sans, Segoe UI, sans-serif" '
+        self.out.append(f'<text {tr} font-family="{self.st["text"]["font"]}, Helvetica, Liberation Sans, sans-serif" '
                         f'font-size="{size:.1f}" font-weight="{WEIGHT[t["weight"]]}" '
                         f'letter-spacing="{t.get("tracking", 0) / 1000 * size:.2f}" fill="{color or t["color"]}" '
                         f'fill-opacity="{op}" text-anchor="{anchor}" dominant-baseline="{baseline}">{s}</text>')

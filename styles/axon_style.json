@@ -171,11 +171,11 @@
   },
   "text": {
     "_doc": "Measured from the Atlanta exploded axon (reference 1), assumed to be an 11x17 board (1 px = 0.612 pt). Sizes below are 11x17 pt; on ARCH D multiply by page_text_scale so the sheet reduced to 11x17 matches the reference exactly.",
-    "font": "Myriad Pro",
+    "font": "Arial",
     "page_text_scale": 2.118,
     "label_primary": {
       "size": 20,
-      "weight": "Semibold",
+      "weight": "Bold",
       "case": "upper",
       "tracking": 0,
       "color": "#FFFFFF",
@@ -184,7 +184,7 @@
     },
     "label_secondary": {
       "size": 16,
-      "weight": "Semibold",
+      "weight": "Bold",
       "case": "upper",
       "tracking": 0,
       "color": "#FFFFFF",
@@ -195,7 +195,7 @@
     "label_fit_ratio": 0.6,
     "label_core": {
       "size": 7,
-      "weight": "Semibold",
+      "weight": "Bold",
       "case": "upper",
       "tracking": 0,
       "color": "#1A1A1A",
@@ -244,7 +244,8 @@
     },
     "label_anchor": "front_corner",
     "label_inset_pt": 8,
-    "_doc_label": "Program labels: sizes are final ARCH D pt (page_scaled=false). Anchored at the top face's front corner: up-right text starts there (text-local lower-left), down-right text ends there (text-local lower-right); inset by label_inset_pt from both edges."
+    "_doc_label": "Program labels: sizes are final ARCH D pt (page_scaled=false). Anchored at the top face's front corner: up-right text starts there (text-local lower-left), down-right text ends there (text-local lower-right); inset by label_inset_pt from both edges.",
+    "_doc_font": "Unified diagram font: Arial (see styles/site_style.json typography). Was Myriad Pro."
   },
   "level_tag": {
     "marker_pt": 4,

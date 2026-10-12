@@ -76,19 +76,19 @@
 - 也可用「效果 › 3D（经典）› 旋转」的「等角-上方/左方/右方」预设，但 SSR 输出更干净、可被脚本精确复现，插件采用 SSR 等价的仿射矩阵。
 - 文字方向：沿色块**长边**；放置在**未被上一层遮挡**的区域（顶面前半部）。
 
-**文字完全取自原爆炸图（Atlanta，参考图 1）**：按原图 2000 px = 11×17 页面（1 px = 0.612 pt）逐字测量；字体由字形判断为 Myriad Pro（Illustrator 自带）。ARCH D 原尺寸用「× 2.118」（36/17）后的字号，**缩印到 11×17 时与原图完全一致**。
+**文字完全取自原爆炸图（Atlanta，参考图 1）**：按原图 2000 px = 11×17 页面（1 px = 0.612 pt）逐字测量；字号、颜色、透明度取自原图；**字体已统一为 Arial**（见 `docs/SITE_STYLE.md` §0.1，原图字形接近 Myriad Pro）。ARCH D 原尺寸用「× 2.118」（36/17）后的字号，**缩印到 11×17 时与原图完全一致**。
 
 | 段落样式 | 字体 | 11×17 字号 | ARCH D 字号 | 颜色 / 透明度 | 其他 |
 |---|---|---|---|---|---|
-| `PD_Label_Primary` | Myriad Pro Semibold | 9.4 pt | **20 pt** | #FFFFFF **70%**（正常混合） | 全大写，字距 0，沿色块长边，**前角对齐**（见下） |
-| `PD_Label_Secondary` | Myriad Pro Semibold | 7.6 pt | **16 pt** | #FFFFFF 70% | 放不下 Primary 时降级，同样前角对齐 |
+| `PD_Label_Primary` | Arial Bold | 9.4 pt | **20 pt** | #FFFFFF **70%**（正常混合） | 全大写，字距 0，沿色块长边，**前角对齐**（见下） |
+| `PD_Label_Secondary` | Arial Bold | 7.6 pt | **16 pt** | #FFFFFF 70% | 放不下 Primary 时降级，同样前角对齐 |
 | 最小字号 | — | 5 pt | 10.6 pt | — | 再小就改为引线外标（原图 DEBRIEF 即此级） |
-| `PD_Label_Core` | Myriad Pro Semibold | 7 pt | 14.8 pt | #1A1A1A 100% | 底色 #D9D9D9 无描边 |
-| `PD_Level` | Myriad Pro Regular | 7 pt | 14.8 pt | #333333 | 「Level 7」首字母大写 |
-| `PD_Annotation` | Myriad Pro Bold | 8 pt（行距 8） | 16.9 pt | #000000 | 全大写，贴竖直面（SWEET AUBURN 类） |
-| `PD_Street` | Myriad Pro Regular | 5.5 pt | 11.6 pt | #333333 | 全大写，贴地面沿街道方向 |
-| `PD_Legend` | Myriad Pro Regular | 7 pt | 14.8 pt | #333333 | 图例说明 |
-| `PD_StepTitle` | Myriad Pro Regular | 8 pt | 16.9 pt | #000000 | 体量推演每格标题 |
+| `PD_Label_Core` | Arial Bold | 7 pt | 14.8 pt | #1A1A1A 100% | 底色 #D9D9D9 无描边 |
+| `PD_Level` | Arial Regular | 7 pt | 14.8 pt | #333333 | 「Level 7」首字母大写 |
+| `PD_Annotation` | Arial Bold | 8 pt（行距 8） | 16.9 pt | #000000 | 全大写，贴竖直面（SWEET AUBURN 类） |
+| `PD_Street` | Arial Regular | 5.5 pt | 11.6 pt | #333333 | 全大写，贴地面沿街道方向 |
+| `PD_Legend` | Arial Regular | 7 pt | 14.8 pt | #333333 | 图例说明 |
+| `PD_StepTitle` | Arial Regular | 8 pt | 16.9 pt | #000000 | 体量推演每格标题 |
 
 - 半透明做法：文字填色白、在「外观」里把**填色**不透明度设 70%（不是整个对象），这样色块颜色透出来，和原图一样浅色色块上的字会很淡（原图 COLLAB 即如此）。
 - 原图透明度取样：TRAINING / HEALTH / AUDITORIUM 处文字像素反算 α ≈ 0.62–0.82，取 70%。
@@ -151,7 +151,7 @@
 | 外轮廓 `silhouettePt` | 1.0 pt #1A1A1A | 2.0 pt（楼板）/ 2.5 pt（体量）#000 | 与体量推演图同一线条等级；缩印 47% 后仍是最粗线 |
 | 棱线 `edgePt` | 0.35 pt #333333 | 折边 1.0 pt + 分隔 0.5 pt | 现有只有两级，体量推演需要三级 |
 | 侧面加深 `sideDarken` | 12% / 24% | 10% / 20% | PRD §5.4「侧面加深 10%」 |
-| 标签 `labelSizePt` | 9 pt Century Gothic，白/深灰 100% | Myriad Pro Semibold 21.2 / 16.9 pt，白 70%；CORE 14.8 pt | 与原爆炸图一致（缩印 11×17 后 10 / 8 / 7 pt） |
+| 标签 `labelSizePt` | 9 pt Century Gothic，白/深灰 100% | Arial Bold 21.2 / 16.9 pt，白 70%；CORE 14.8 pt | 与原爆炸图一致（缩印 11×17 后 10 / 8 / 7 pt） |
 | 核心筒颜色 | #999999 | #D9D9D9 | 原图取样 |
 | 连接体 | #E9E2CC 60%，0.35 pt #9A9A9A | #E9E4D3 60%，0.53 pt #B5AE9C | 原图取样，几乎相同 |
 | 层间距 `explodeGapPt` | 24 pt 净空（不遮挡） | 顶面露出 ≥ 70%，允许部分遮挡 | 参考图上一层压住下一层后部，更紧凑；全不遮挡在 1"=45' 下太高 |
@@ -160,6 +160,6 @@
 
 ## 12. 待确认
 1. 层间距下限 0.7（比 PRD 的 1.5×层高 大很多）是否接受？
-2. 字体按字形判断为 Myriad Pro，如果你有原 AI 文件请确认实际字体。
+2. 字体已统一为 Arial（2026-10 决定）。
 3. 原图假设为 11×17 版面；如果原图是 ARCH D 或 24×36，`page_text_scale` 改为 1.0 或 1.41。
 4. 白字 70% 在浅色（Support #D8D8D6、Lab Support #F5CB78）上很淡，与原图一致；如需加强可只对浅色改 #404040。

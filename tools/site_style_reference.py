@@ -422,7 +422,7 @@ def site_plan(cfg, W, H):
         ("icon", (e["color"], "ped"), "ENTRY", f'{e["color"]} ICON {e["icon_d_pt"]} PT + TRIANGLE {e["triangle_pt"]} PT'),
         ("circle", vm["color"], "VIEW MARKER", f'{vm["color"]} {vm["d_pt"]} PT, WHITE NUMBER, ARROW {vm["arrow_pt"]} PT'),
         ("icon", (sv["color"], "truck"), "SERVICE", f'{sv["color"]} ICON {sv["icon_d_pt"]} PT + TRIANGLE'),
-        ("text", a["label_context"], "CONTEXT LABEL", f'GOTHAM BOOK {a["label_context"]["size"]} PT {a["label_context"]["color"]}'),
+        ("text", a["label_context"], "CONTEXT LABEL", f'ARIAL BOLD {a["label_context"]["size"]} PT {a["label_context"]["color"]} (SAME AS SITE AXON)'),
         ("text", a["label_room"], "ROOM LABEL", f'ARIAL {a["label_room"]["size"]} PT {a["label_room"]["color"]}'),
     ])
     return sh.out
@@ -516,7 +516,127 @@ def exploded_b(cfg, W, H):
     return sh.out
 
 
-def legend(sh, W, H, title, rows, x0=None):
+def program_section(cfg, W, H):
+    a, ty = cfg["program_section"], cfg["typography"]
+    k, fh = a["pt_per_ft"], a["floor_ft"]
+    cm = a["colors_measured"]
+    sh = Sheet((1.0, 0.0, 0.0, 0.0), k, (72 + W - 9.0 * 72) / 2 - 130 * k, 0.62 * H)  # x along the cut, z up
+    sh.out.append(f'<rect width="{W}" height="{H}" fill="#FFFFFF"/>')
+    P = lambda x, z: sh.p(x, 0, z)
+    # (block, floor index, x0, x1, colour key, label); floor -1 = basement
+    bars = [
+        ("W", 0, 40, 100, "shared_public", "SHARED PUBLIC"), ("W", 1, 40, 110, "academic", "ACADEMIC"),
+        ("W", 2, 40, 100, "academic", ""), ("W", 3, 50, 110, "academic", ""), ("W", 4, 60, 100, "admin", "ADMIN"),
+        ("W", 1, 112, 120, "circulation", ""), ("W", 2, 100, 115, "circulation", ""), ("W", 3, 112, 120, "circulation", ""),
+        ("W", 4, 100, 115, "circulation", ""),
+        ("C", 1, 132, 152, "circulation", "COMMUNITY"), ("C", 2, 132, 152, "circulation", ""), ("C", 3, 132, 152, "circulation", ""),
+        ("E", 0, 172, 235, "building_support", "BUILDING SUPPORT"), ("E", 1, 172, 235, "simulation", "SIMULATION"),
+        ("E", 2, 166, 235, "research", "RESEARCH"), ("E", 3, 172, 235, "research", ""), ("E", 4, 172, 225, "research", ""),
+        ("E", 1, 160, 170, "circulation", ""), ("E", 2, 160, 165, "circulation", ""), ("E", 3, 160, 170, "circulation", ""),
+        ("E", 4, 160, 170, "circulation", ""), ("E", -1, 172, 235, "vivarium", "VIVARIUM"),
+    ]
+    sl, br, lb, fn = a["slab"], a["bar"], a["label"], a["floor_number"]
+    bar_h = br["height_ratio"] * fh * k
+    # envelope lines and floor lines (thin) behind everything
+    env = a["envelope"]
+    for x0, x1, top in ((40, 120, 5), (160, 235, 5), (128, 156, 4)):
+        sh.poly([P(x0, 0), P(x1, 0), P(x1, top * fh), P(x0, top * fh)], "none", env["stroke"], env["stroke_pt"])
+    for f in range(1, 5):
+        sh.line([P(20, f * fh), P(250, f * fh)], env["stroke"], env["stroke_pt"])
+    # future building beyond, property lines
+    fb = a["future_building"]
+    for f in range(0, 5):
+        sh.line([P(300, (f + 1) * fh), P(285, (f + 1) * fh), P(285, f * fh)], fb["stroke"], fb["stroke_pt"], fb["dash"])
+    pl = a["property_line"]
+    for x in (0, 262):
+        sh.line([P(x, -22), P(x, 6.2 * fh)], pl["stroke"], pl["stroke_pt"], pl["dash"])
+    # trees and people (entourage) on grade and terraces
+    tr = a["trees"]
+    rng = Rng(11)
+    for i, (x, z, h) in enumerate([(-30, 0, 30), (-12, 0, 24), (18, 0, 28), (124, 0, 32), (138, 0, 26), (146, 0, 34),
+                                   (250, 0, 26), (272, 0, 30), (140, 4 * fh + 1, 18), (113, 3 * fh + 1, 12)]):
+        c = tr["fills"][i % len(tr["fills"])]
+        sh.line([P(x, z), P(x, z + h * 0.45)], tr["trunk"], tr["trunk_pt"])
+        cx, cy = P(x, z + h * 0.68)
+        sh.out.append(f'<ellipse cx="{cx:.2f}" cy="{cy:.2f}" rx="{h * 0.28 * k:.2f}" ry="{h * 0.33 * k:.2f}" fill="{c}" fill-opacity="{tr["opacity"]}"/>')
+    for x, f in ((70, 0), (88, 1), (190, 2), (205, 0), (140, 1), (118, 3), (-40, 0), (230, 0)):
+        bx, by = P(x + rng() * 6, f * fh)
+        sh.out.append(f'<rect x="{bx:.2f}" y="{by - 5.6 * k:.2f}" width="{0.9 * k:.2f}" height="{5.6 * k:.2f}" rx="{0.45 * k:.2f}" fill="{a["people"]["fill"]}"/>')
+    # bars, then slabs over them
+    floors = {}
+    for blk, f, x0, x1, key, name in bars:
+        z0 = f * fh + (1 - sl["height_ratio"] - br["top_gap_ratio"] - br["height_ratio"]) * fh
+        xa, ya = P(x0, z0 + br["height_ratio"] * fh)
+        w = (x1 - x0) * k
+        r = br["corner_ratio"] * fh * k
+        sh.out.append(f'<rect x="{xa:.2f}" y="{ya:.2f}" width="{w:.2f}" height="{bar_h:.2f}" rx="{r:.2f}" fill="{cm[key]}"/>')
+        size = min(lb["size_max"], lb["size_ratio"] * bar_h)
+        fsz = min(fn["size_max"], fn["size_ratio"] * bar_h)
+        cy = ya + bar_h / 2
+        numbered = key != "circulation" and f >= 0 and (blk, f) not in floors
+        if numbered:
+            sh.text(xa + fn["inset_pt"], cy, f"{f + 1:02d}", dict(fn, font="Arial"), anchor="start", size=fsz)
+        if name:  # shrink to fit beside the floor number, skip if it would drop below size_min
+            room = w - lb["inset_pt"] - (fn["inset_pt"] + 1.4 * fsz + 8 if numbered else lb["inset_pt"])
+            size = min(size, room / (len(name) * 0.62))
+            if size >= lb["size_min"]:
+                sh.text(xa + w - lb["inset_pt"], cy, name, dict(lb, font="Arial"), anchor="end", size=size, op=lb["opacity"])
+        if f >= 0:
+            lo, hi = floors.get((blk, f), (x0, x1))
+            floors[(blk, f)] = (min(lo, x0), max(hi, x1))
+    sh_h = sl["height_ratio"] * fh * k
+    for (blk, f), (x0, x1) in floors.items():
+        if f == 0:
+            continue
+        xa, ya = P(x0 - sl["overhang_ft"], f * fh)
+        sh.poly([(xa, ya - sh_h / 2), (xa + (x1 - x0 + 2 * sl["overhang_ft"]) * k, ya - sh_h / 2),
+                 (xa + (x1 - x0 + 2 * sl["overhang_ft"]) * k, ya + sh_h / 2), (xa, ya + sh_h / 2)], sl["fill"], sl["stroke"], sl["stroke_pt"])
+    for x0, x1 in ((38, 122), (158, 237), (128, 156)):  # roofs
+        top = 4 if x0 == 128 else 5
+        xa, ya = P(x0, top * fh)
+        sh.poly([(xa, ya - sh_h / 2), (xa + (x1 - x0) * k, ya - sh_h / 2), (xa + (x1 - x0) * k, ya + sh_h / 2), (xa, ya + sh_h / 2)],
+                sl["fill"], sl["stroke"], sl["stroke_pt"])
+    # ground line
+    g = a["ground"]
+    sh.line([P(-60, 0), P(320, 0)], g["stroke"], g["stroke_pt"])
+    # view chevrons
+    v = a["view"]
+    for x, z, d in ((32, 3.4 * fh, -1), (125, 2.5 * fh, 1), (157, 3.4 * fh, -1)):
+        tip = P(x, z)
+        ends = [(tip[0] + d * 6 * k, tip[1] - 3.6 * k), (tip[0] + d * 6 * k, tip[1] + 3.6 * k)]
+        sh.line([ends[0], tip, ends[1]], v["stroke"], v["stroke_pt"])
+        for e in ends:
+            sh.circle(e, v["dot_pt"] / 2, v["stroke"])
+    # headings and street labels
+    hd = dict(ty["heading"], font="Arial")
+    for x, t in ((75, "Inside / outside"), (142, "Daylight"), (203, "Research stack")):
+        q = P(x, 6.0 * fh)
+        sh.text(q[0], q[1], t, hd)
+    st = dict(a["street"], font="Arial")
+    for x, t in ((-30, "Lomas"), (142, "Courtyard"), (262 + 18, "Tucker")):
+        q = P(x, -16)
+        sh.text(q[0], q[1], t, st)
+    q = P(305, -16)
+    sh.lines_text(q[0], q[1], ["FUTURE", "BUILDING"], dict(st, leading=st["size"] * 1.1))
+    legend(sh, W, H, "PROGRAM SECTION", [
+        ("swatch", cm["academic"], "PROGRAM BAR", f'ROUNDED, R = {br["corner_ratio"]} x FLOOR, HEIGHT {br["height_ratio"]} x FLOOR, NO STROKE'),
+        ("line", (sl["stroke"], sl["stroke_pt"]), "SLAB", f'WHITE BAR {sl["height_ratio"]} x FLOOR TALL, {sl["stroke_pt"]} PT {sl["stroke"]}, +{sl["overhang_ft"]} FT EACH END'),
+        ("swatch", cm["circulation"], "CIRCULATION / COMMUNITY", f'{cm["circulation"]}, EDGE ZONE AND BRIDGES'),
+        ("text", dict(lb, font="Arial", size=20, color="#333333"), "PROGRAM LABEL", f'ARIAL {lb["size_max"]} PT MAX ({lb["size_ratio"]} x BAR HEIGHT), {lb["color"]} {int(lb["opacity"] * 100)}%, RIGHT ALIGNED'),
+        ("text", dict(fn, font="Arial", size=20), "FLOOR NUMBER", f'ARIAL {fn["size_ratio"]} x BAR HEIGHT, {fn["color"]}, LEFT IN BAR, 01 02 03'),
+        ("line", (env["stroke"], env["stroke_pt"]), "ENVELOPE / FLOOR LINES", f'{env["stroke_pt"]} PT {env["stroke"]}'),
+        ("line", (g["stroke"], g["stroke_pt"]), "GROUND", f'{g["stroke_pt"]} PT BLACK'),
+        ("line", (pl["stroke"], pl["stroke_pt"]), "PROPERTY LINE", f'{pl["stroke_pt"]} PT {pl["stroke"]} DASH {pl["dash"][0]}/{pl["dash"][1]}'),
+        ("line", (fb["stroke"], fb["stroke_pt"]), "FUTURE / BEYOND", f'{fb["stroke_pt"]} PT {fb["stroke"]} DASH {fb["dash"][0]}/{fb["dash"][1]}'),
+        ("line", (v["stroke"], v["stroke_pt"]), "VIEW CHEVRON", f'{v["stroke_pt"]} PT {v["stroke"]}, DOT ENDS {v["dot_pt"]} PT'),
+        ("circle", tr["fills"][0], "TREES / PEOPLE", f'LOLLIPOP {" ".join(tr["fills"])} @ {int(tr["opacity"] * 100)}%; PEOPLE {a["people"]["fill"]}'),
+        ("text", dict(hd, size=20), "HEADING", f'ARIAL BOLD {hd["size"]} PT CAPS, TRACKING {hd["tracking"]}, {hd["color"]}'),
+        ("text", dict(st, size=20), "STREET / PLACE", f'ARIAL {st["size"]} PT CAPS {st["color"]}, BELOW GRADE'),
+    ], sub="1\" = 16'-0\" ON ARCH D 36\u00d724 (SECTION ONLY). ALL TEXT ARIAL. REF 6: PT = PX \u00d7 1.556")
+    return sh.out
+
+
+def legend(sh, W, H, title, rows, x0=None, sub=None):
     x0, y = (W - 8.6 * 72) if x0 is None else x0, 1.0 * 72
     out = sh.out
     sh.text(x0, y, title + " — STYLE REFERENCE", {"font": "Arial", "size": 20, "weight": "Bold", "color": "#000000"}, anchor="start")
@@ -548,7 +668,8 @@ def main(style_path, out_dir):
         cfg = json.load(f)
     for name, fn, ab in (("site_axon_reference.svg", site_axon, cfg["artboard"]),
                          ("site_plan_reference.svg", site_plan, cfg["artboard"]),
-                         ("axon_exploded_b_reference.svg", exploded_b, cfg["exploded_b"]["artboard"])):
+                         ("axon_exploded_b_reference.svg", exploded_b, cfg["exploded_b"]["artboard"]),
+                         ("program_section_reference.svg", program_section, cfg["artboard"])):
         W, H = ab["width_in"] * 72, ab["height_in"] * 72
         body = fn(cfg, W, H)
         svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W / 72}in" height="{H / 72}in" viewBox="0 0 {W} {H}">\n'
