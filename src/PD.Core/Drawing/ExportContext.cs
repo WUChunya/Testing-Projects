@@ -1,0 +1,99 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+using PD.Core.Analysis;
+using PD.Core.Classification;
+using PD.Core.Config;
+using PD.Core.Settings;
+
+namespace PD.Core.Drawing;
+
+/// <summary>Everything a drawing generator needs: analysis, user choices, scheme, style and page setup.</summary>
+public sealed class ExportContext
+{
+    public required AnalysisResult Result { get; init; }
+    public required PdSettings Settings { get; init; }
+    public required List<ProgramSetting> Programs { get; init; }
+    public Style Style { get; init; } = Style.Default();
+    public Rules Rules { get; init; } = Rules.Default();
+
+    Dictionary<string, NameRow>? _names;
+
+    /// <summary>Label and stable id per mass (tab 4).</summary>
+    public IReadOnlyDictionary<string, NameRow> Names => _names ??=
+        Naming.Build(Result, Settings.Names, ProgramLabel).ToDictionary(n => n.MassId);
+
+    public ProgramSetting? Program(string key) => Programs.FirstOrDefault(p => p.Key == key);
+
+    public string ProgramLabel(string key) => Program(key)?.Label ?? key;
+
+    /// <summary>Drawing scale; drawings are always at true scale (never fitted).</summary>
+    public double PtPerFt => ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 2.25;
+
+    /// <summary>Text and annotation spacing scale: drawing scale ÷ the style's reference scale (1" = 45' → 1).</summary>
+    public double TextScale => PtPerFt / (ParseScale(Style.Page.TextReferenceScale) ?? PtPerFt);
+
+    /// <summary>A size given at the reference scale, in points at the drawing scale.</summary>
+    public double Pt(double atReference) => atReference * TextScale;
+
+    /// <summary>Fixed artboard size, or null for "Fit content" (artboard grows around the drawing).</summary>
+    public (double W, double H)? ArtboardSize =>
+        Rules.Output.ArtboardSizesPt.TryGetValue(Settings.Output.Artboard, out var s) ? (s[0], s[1]) : null;
+
+    /// <summary>
+    /// Imperial "1/32\" = 1'-0\"" → 2.25 pt per foot, "1\" = 50'" → 1.44; metric ratio "1:200" → 4.32.
+    /// </summary>
+    public static double? ParseScale(string? scale)
+    {
+        if (scale == null) return null;
+        var ratio = Regex.Match(scale, "^\\s*1\\s*:\\s*(\\d+(?:\\.\\d+)?)\\s*$");
+        if (ratio.Success)
+        {
+            var n = double.Parse(ratio.Groups[1].Value, CultureInfo.InvariantCulture);
+            return n <= 0 ? null : 12.0 * 72.0 / n;
+        }
+        var m = Regex.Match(scale, "^\\s*(\\d+(?:\\.\\d+)?)(?:\\s*/\\s*(\\d+))?\\s*(?:\"|in)\\s*=\\s*(\\d+(?:\\.\\d+)?)\\s*(?:'|ft)");
+        if (!m.Success) return null;
+        var inches = double.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
+        if (m.Groups[2].Success) inches /= double.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture);
+        var feet = double.Parse(m.Groups[3].Value, CultureInfo.InvariantCulture);
+        return feet <= 0 ? null : 72.0 * inches / feet;
+    }
+
+    /// <summary>Program fill/stroke as swatches (special styles: Shell outline, Void dashed, Unassigned grey).</summary>
+    public (string? fill, string? stroke, double strokePt, double[]? dash) ProgramPaint(Drawing d, string key)
+    {
+        var p = Program(key) ?? Program(ProgramCatalog.Unassigned);
+        if (p == null) return (d.Gray("#BFBFBF"), null, 0, null);
+        var fill = d.Swatch("PRG_" + p.Key, p.Fill);
+        var stroke = p.Stroke == null ? null : d.Swatch("PRG_" + p.Key + "_LINE", p.Stroke);
+        return (fill, stroke, p.StrokePt ?? 0, p.Dash);
+    }
+
+    /// <summary>Paragraph styles shared by every file.</summary>
+    public void AddStandardStyles(Drawing d)
+    {
+        var f = Style.Fonts;
+        var color = d.Gray(Style.Page.LabelColor)!;
+        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", color, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "left", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "right", color, f.Note.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), f.Title.AllCaps, "left", color, f.Title.Weight));
+        var light = d.Gray(Style.Page.LightLabelColor)!;
+        d.ParaStyles.Add(new ParaStyle("PD Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", light, f.Label.Weight));
+        var plane = Pt(Style.Axon.LabelSizePt > 0 ? Style.Axon.LabelSizePt : f.Label.SizePt);
+        d.ParaStyles.Add(new ParaStyle("PD Plane Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", color, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Plane Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", light, f.Label.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Level", f.Level.PostScript, f.Level.FallbackPostScript, f.Level.Family, Pt(f.Level.SizePt), f.Level.AllCaps, "left", color, f.Level.Weight));
+        d.ParaStyles.Add(new ParaStyle("PD Level Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), false, "left", color, f.Title.Weight));
+    }
+
+    /// <summary>The dark or the light ("… Light") variant of a label style, whichever reads on the given fill swatch.</summary>
+    public string LabelStyle(Drawing d, string? fillSwatch, string baseStyle = "PD Label")
+    {
+        var hex = fillSwatch == null ? null : d.Swatches.FirstOrDefault(s => s.Name == fillSwatch)?.Hex;
+        if (hex is not { Length: 7 }) return baseStyle;
+        int C(int i) => Convert.ToInt32(hex.Substring(1 + 2 * i, 2), 16);
+        var luma = 0.299 * C(0) + 0.587 * C(1) + 0.114 * C(2);
+        return luma < Style.Page.LabelLightBelowLuma ? baseStyle + " Light" : baseStyle;
+    }
+}

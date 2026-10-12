@@ -1,0 +1,14 @@
+---
+name: ProgramDiagram
+version: 0.4.1
+authors:
+- Program Diagram team
+description: >
+  Turns named program masses and background layers in Rhino 8 into Plan, Section,
+  Axon, program chart and pie diagrams for Illustrator.
+url: https://github.com/wuchunya/testing-projects
+keywords:
+- architecture
+- diagram
+- program
+- illustrator

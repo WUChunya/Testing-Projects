@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "name": "Default (reference projects)",
+  "background": {
+    "block": {
+      "fill": "#EBEBEB"
+    },
+    "road": {
+      "fill": "#D9D9D9"
+    },
+    "hardscape": {
+      "fill": "#F5F5F5"
+    },
+    "landscape": {
+      "fill": "#D7DEBC"
+    },
+    "tree": {
+      "fill": "#C8E2BF",
+      "stroke": "#5A7F4F"
+    },
+    "groundBand": {
+      "fill": "#E5E5E5"
+    },
+    "propertyLine": {
+      "stroke": "#FF0000",
+      "dash": [
+        12,
+        3,
+        2,
+        3
+      ]
+    },
+    "useRhinoLayerColor": false
+  },
+  "roleModes": {
+    "comment": "mode per role per drawing: grayscale | line | color",
+    "BG.Building": {
+      "plan": "grayscale",
+      "section": "line",
+      "axon": "grayscale"
+    },
+    "BG.Road": {
+      "plan": "color",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Hardscape": {
+      "plan": "color",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Landscape": {
+      "plan": "color",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Tree": {
+      "plan": "color",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Water": {
+      "plan": "color",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Facade": {
+      "plan": "line",
+      "section": "line",
+      "axon": "color"
+    },
+    "BG.Slab": {
+      "plan": "line",
+      "section": "grayscale",
+      "axon": "grayscale"
+    },
+    "BG.Base": {
+      "plan": "line",
+      "section": "grayscale",
+      "axon": "grayscale"
+    },
+    "BG.Line": {
+      "plan": "line",
+      "section": "line",
+      "axon": "line"
+    }
+  },
+  "modes": {
+    "grayscale": {
+      "stroke": "#333333",
+      "strokePt": 0.35
+    },
+    "line": {
+      "fill": null,
+      "stroke": "#000000",
+      "strokePt": 0.35,
+      "dash": null
+    },
+    "color": {
+      "strokePt": 0.35
+    }
+  },
+  "strokes": {
+    "cutPt": 2.5,
+    "outlinePt": 2.5,
+    "roomPt": 0.5,
+    "backgroundPt": 0.35,
+    "beyond": {
+      "strokePt": 0.5,
+      "stroke": "#999999",
+      "dash": [
+        3,
+        2
+      ]
+    }
+  },
+  "fonts": {
+    "label": {
+      "family": "Century Gothic",
+      "sizePt": 7,
+      "allCaps": true,
+      "postScript": "CenturyGothic-Bold",
+      "fallbackPostScript": "Arial-BoldMT",
+      "weight": "bold"
+    },
+    "title": {
+      "family": "Century Gothic",
+      "sizePt": 14,
+      "allCaps": true,
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT",
+      "weight": "normal"
+    },
+    "chart": {
+      "family": "Helvetica",
+      "fallback": "Arial",
+      "sizePt": 7,
+      "postScript": "Helvetica",
+      "fallbackPostScript": "ArialMT"
+    },
+    "note": {
+      "family": "Century Gothic",
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT",
+      "sizePt": 7,
+      "allCaps": true,
+      "weight": "normal"
+    },
+    "level": {
+      "family": "Century Gothic",
+      "postScript": "CenturyGothic",
+      "fallbackPostScript": "ArialMT",
+      "sizePt": 8,
+      "allCaps": false,
+      "weight": "normal"
+    }
+  },
+  "facade": {
+    "stackedAxonOpacity": 0.3,
+    "explodedAxon": "hidden"
+  },
+  "section": {
+    "slabPt": 3.0,
+    "slabColor": "#000000",
+    "barSlabGapPt": 2.0,
+    "barCornerPt": 6.0,
+    "barGapPt": 1.5,
+    "programBackground": "#FFFFFF",
+    "outlinePt": 0.75,
+    "facadeCutPt": 0.5,
+    "levelColumn": true,
+    "levelLineStroke": "#999999",
+    "levelLineStrokePt": 0.25,
+    "heightDimension": true,
+    "titlePrefix": "SECTION",
+    "comment": "Cut parts of the section. What is seen behind the cut uses \"view\".",
+    "groundSlabFactor": 2.0,
+    "groundColor": "#000000",
+    "contextCutStroke": "#000000",
+    "contextCutStrokePt": 2.5,
+    "contextCutFill": "#FFFFFF"
+  },
+  "page": {
+    "marginPt": 36.0,
+    "levelColumnPt": 78.0,
+    "dimColumnPt": 46.0,
+    "titleBandPt": 44.0,
+    "labelColor": "#000000",
+    "labelMinBarWidthPt": 14.0,
+    "textReferenceScale": "1\" = 45'-0\"",
+    "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale.",
+    "lightLabelColor": "#FFFFFF",
+    "labelLightBelowLuma": 150
+  },
+  "view": {
+    "comment": "Projected (Make2D-like) view used behind section cuts and for elevations. Our building: masses = solid light-grey base; every slab/facade layer gets its own AI layer and global swatch (grey by layer order, glass white); all opaque, near hides far. Other buildings: white fill + dashed grey outline.",
+    "massFill": "#E6E6E6",
+    "massStroke": "#8C8C8C",
+    "massStrokePt": 0.35,
+    "edgeStroke": "#8C8C8C",
+    "edgeStrokePt": 0.25,
+    "glassPattern": "GLASS|GLAZ|^CW|CURTAIN|WINDOW|VISION",
+    "glassFill": "#FFFFFF",
+    "layerGrays": [
+      "#C8C8C8",
+      "#B0B0B0",
+      "#9A9A9A",
+      "#D6D6D6",
+      "#848484"
+    ],
+    "layerFills": {},
+    "contextFill": "#FFFFFF",
+    "contextStroke": "#999999",
+    "contextStrokePt": 0.5,
+    "contextDash": [
+      3,
+      2
+    ]
+  },
+  "elevation": {
+    "titlePrefix": "ELEVATION",
+    "levelMarkers": true,
+    "levelLineStroke": "#808080",
+    "levelLineStrokePt": 0.35,
+    "levelLineDash": [
+      6,
+      3
+    ],
+    "markerSizePt": 6.0
+  },
+  "plan": {
+    "comment": "PRD 5.2. Point sizes are at page.textReferenceScale and scale with the drawing; Ft values are model feet.",
+    "outlineStroke": "#000000",
+    "outlinePt": 2.5,
+    "roomStroke": "#000000",
+    "roomPt": 0.5,
+    "voidDash": [
+      4,
+      3
+    ],
+    "voidStroke": "#000000",
+    "voidPt": 0.5,
+    "openToBelowLabel": "OPEN TO BELOW",
+    "facadeStroke": "#000000",
+    "facadePt": 0.35,
+    "facadeOffsetPt": 2.0,
+    "contextMarginFt": 60.0,
+    "contextBuilding": {
+      "fill": "#E6E6E6",
+      "stroke": "#8C8C8C",
+      "strokePt": 0.35
+    },
+    "levelTitleFormat": "Level {n}",
+    "legendColumns": 3,
+    "legendSwatchPt": 8.0,
+    "legendColumnPt": 120.0,
+    "legendRowPt": 12.0,
+    "scaleBarChoicesFt": [
+      10,
+      20,
+      25,
+      40,
+      50,
+      100,
+      200,
+      400
+    ],
+    "scaleBarHeightPt": 4.0,
+    "northArrowPt": 18.0,
+    "bandPt": 24.0,
+    "overviewColumns": 3,
+    "overviewGapPt": 48.0,
+    "leaderStroke": "#808080",
+    "leaderPt": 0.35,
+    "leaderLengthPt": 18.0,
+    "titleMarker": "#F2B705",
+    "titleMarkerPt": 9.0
+  },
+  "axon": {
+    "comment": "PRD 5.4, styled after the Atlanta exploded axon. azimuthDeg = where the viewer stands (225 = south-west); elevationDeg 35.264 = isometric. Exploded plates are spaced so no plate hides another (explodeGapPt of clear page space between them).",
+    "azimuthDeg": 225.0,
+    "elevationDeg": 35.264,
+    "silhouetteStroke": "#1A1A1A",
+    "silhouettePt": 1.0,
+    "edgeStroke": "#333333",
+    "edgePt": 0.35,
+    "sideDarken": [
+      0.12,
+      0.24
+    ],
+    "contextFill": "#FFFFFF",
+    "contextStroke": "#A6A6A6",
+    "contextPt": 0.35,
+    "contextMarginFt": 120.0,
+    "contextHeightFt": 8.0,
+    "siteFill": "#F4F4F4",
+    "siteStroke": "#CCCCCC",
+    "siteMarginFt": 40.0,
+    "facadeVeil": false,
+    "facadeVeilFill": "#FFFFFF",
+    "facadeVeilStroke": "#9A9A9A",
+    "facadeVeilStrokePt": 0.25,
+    "labelSizePt": 9.0,
+    "slabThicknessFt": 3.0,
+    "explodeGapPt": 24.0,
+    "connectorPrograms": [
+      "CORE"
+    ],
+    "connectorFill": "#E9E2CC",
+    "connectorOpacity": 0.6,
+    "connectorStroke": "#9A9A9A",
+    "connectorPt": 0.35,
+    "ghostStroke": "#808080",
+    "ghostPt": 0.5,
+    "ghostDash": [
+      3,
+      2
+    ],
+    "levelColumnPt": 90.0,
+    "leaderStroke": "#9A9A9A",
+    "leaderPt": 0.35,
+    "levelMarker": "#F2B705",
+    "levelMarkerPt": 5.0,
+    "coreLabel": "CORE",
+    "titleStacked": "STACKED AXON",
+    "titleExploded": "EXPLODED AXON",
+    "titleLevels": "FLOOR KEY AXON"
+  }
+}

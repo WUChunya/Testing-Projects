@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RootNamespace>PD.Rhino</RootNamespace>
+    <AssemblyName>ProgramDiagram</AssemblyName>
+    <TargetExt>.rhp</TargetExt>
+    <Version>0.4.1</Version>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- RhinoCommon 8.0 ships net48 refs only; it loads fine in Rhino 8 (.NET 7) -->
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="RhinoCommon" Version="8.0.23304.9001" ExcludeAssets="runtime" PrivateAssets="all" />
+    <PackageReference Include="Eto.Forms" Version="2.8.2" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PD.Core\PD.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\icon.ico" LogicalName="PD.Rhino.Resources.icon.ico" />
+  </ItemGroup>
+</Project>

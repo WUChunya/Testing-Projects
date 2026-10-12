@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "programs": [
+    {
+      "key": "OFFICE",
+      "label": "Office",
+      "fill": "#7CBECD",
+      "aliases": [
+        "OFFICE"
+      ]
+    },
+    {
+      "key": "OPEN_OFFICE",
+      "label": "Open Office / Office Support",
+      "fill": "#B1D7DE",
+      "aliases": [
+        "OPEN OFFICE",
+        "OFFICE SUPPORT"
+      ]
+    },
+    {
+      "key": "LAB",
+      "label": "Lab",
+      "fill": "#F7A238",
+      "aliases": [
+        "LAB"
+      ]
+    },
+    {
+      "key": "LAB_SUPPORT",
+      "label": "Lab Support / Core Lab",
+      "fill": "#F5CB78",
+      "aliases": [
+        "LAB SUPPORT",
+        "CORE LAB"
+      ]
+    },
+    {
+      "key": "CIRCULATION",
+      "label": "Circulation",
+      "fill": "#FDF5D1",
+      "aliases": [
+        "CIRCULATION",
+        "CORRIDOR"
+      ]
+    },
+    {
+      "key": "BUILDING_SUPPORT",
+      "label": "Building Support / Mechanical / Storage",
+      "fill": "#D8D8D6",
+      "aliases": [
+        "BUILDING SUPPORT",
+        "MECHANICAL",
+        "MEP",
+        "STORAGE",
+        "UTILITY"
+      ]
+    },
+    {
+      "key": "VIVARIUM",
+      "label": "Vivarium",
+      "fill": "#AF885D",
+      "aliases": [
+        "VIVARIUM"
+      ]
+    },
+    {
+      "key": "VIVARIUM_SUPPORT",
+      "label": "Vivarium Support",
+      "fill": "#BDA78D",
+      "aliases": [
+        "VIVARIUM SUPPORT"
+      ]
+    },
+    {
+      "key": "VIVARIUM_PROCEDURE",
+      "label": "Vivarium Procedure",
+      "fill": "#EAE3C7",
+      "aliases": [
+        "VIVARIUM PROCEDURE"
+      ]
+    },
+    {
+      "key": "CONFERENCE",
+      "label": "Conference",
+      "fill": "#C97CA6",
+      "aliases": [
+        "CONFERENCE",
+        "MEETING"
+      ]
+    },
+    {
+      "key": "LOBBY",
+      "label": "Lobby / Break",
+      "fill": "#EFB7D7",
+      "aliases": [
+        "LOBBY",
+        "BREAK"
+      ]
+    },
+    {
+      "key": "INTERACTION",
+      "label": "Interaction / Collab",
+      "fill": "#DFAFBF",
+      "aliases": [
+        "INTERACTION",
+        "COLLAB",
+        "LOUNGE"
+      ]
+    },
+    {
+      "key": "ASSEMBLY",
+      "label": "Assembly / Auditorium / Boardroom",
+      "fill": "#A16C9B",
+      "aliases": [
+        "ASSEMBLY",
+        "AUDITORIUM",
+        "BOARDROOM"
+      ],
+      "note": "color to be confirmed (PRD 5.1)"
+    },
+    {
+      "key": "CLINIC",
+      "label": "Clinic",
+      "fill": "#888DB3",
+      "aliases": [
+        "CLINIC"
+      ]
+    },
+    {
+      "key": "CLINIC_SUPPORT",
+      "label": "Clinic Support",
+      "fill": "#BCC0DB",
+      "aliases": [
+        "CLINIC SUPPORT"
+      ]
+    },
+    {
+      "key": "CORE",
+      "label": "Core",
+      "fill": "#999999",
+      "aliases": [
+        "CORE"
+      ]
+    },
+    {
+      "key": "SHELL",
+      "label": "Shell / Penthouse",
+      "fill": "#FFFFFF",
+      "stroke": "#000000",
+      "strokePt": 0.75,
+      "aliases": [
+        "SHELL",
+        "PENTHOUSE"
+      ]
+    },
+    {
+      "key": "VOID",
+      "label": "Void",
+      "fill": null,
+      "stroke": "#000000",
+      "strokePt": 0.5,
+      "dash": [
+        3,
+        2
+      ],
+      "aliases": [
+        "VOID",
+        "OPEN TO BELOW"
+      ]
+    },
+    {
+      "key": "UNASSIGNED",
+      "label": "Unassigned",
+      "fill": "#BFBFBF",
+      "hatch": "diagonal",
+      "aliases": []
+    }
+  ],
+  "customPalette": [
+    "#9FC5A8",
+    "#E8D36B",
+    "#8FB3E0",
+    "#D99B82",
+    "#B6A3D6",
+    "#7FB59B",
+    "#E3A0A0",
+    "#A9C46C",
+    "#6FA8B8",
+    "#D6B98C"
+  ],
+  "customComment": "Fills offered, in order, to programs added on tab 5 (custom programs)."
+}
