@@ -3,25 +3,23 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 11 (v0.6.1, 129 tests): export crash "Operation does not support GeometryCollection arguments" fixed — a clipped
-  projection came back as a GeometryCollection and the next overlay refused it; every area result now goes through
-  `MeshSlicer.Polygonal` (`Lineal` for lines), the guards also catch `ArgumentException`, and a drawing that still fails is
-  a note instead of losing the export. v0.6.0 before it: **S5 Charts + Entourage** plus S1–S4 fixes from the user's `261012_Downtown_Massing.3dm`.
-  Charts (`src/PD.Core/Charts`): `ProgramTable` (model GSF or Excel ASF via ClosedXML, template, `program_table.csv`),
-  `05_Program_Chart.ai` (5.5 dashed department boxes, area-proportional rectangles, shelf packing), `06_Program_Pie.ai`
-  (5.6 donut 43 %, 12 o'clock clockwise in scheme order, legend + TOTAL, bar). Entourage (`src/PD.Core/Entourage`): seeded
-  Poisson disk, density per program (`style.entourage`), `ENTOURAGE` layer in plans / sections / elevations / axons,
-  people #9A9A9A, modelled people (role `Entourage`) reused; section trees (SITE_STYLE §4).
+- Rev 11 (v0.6.1, 129 tests). v0.6.1: export crash "Operation does not support GeometryCollection arguments" fixed — a clipped
+  projection came back as a GeometryCollection and the next overlay refused it; area results now go through
+  `MeshSlicer.Polygonal` (`Lineal` for lines), guards also catch `ArgumentException`, a failing drawing is a note not a crash.
+- v0.6.0 = **S5 Charts + Entourage** + S1–S4 fixes from `261012_Downtown_Massing.3dm`. Charts (`src/PD.Core/Charts`):
+  `ProgramTable` (model GSF or Excel ASF via ClosedXML, template, `program_table.csv`), `05_Program_Chart.ai` (5.5 dashed
+  department boxes, area-proportional rectangles, shelf packing), `06_Program_Pie.ai` (5.6 donut 43 %, clockwise from 12,
+  legend + TOTAL, bar). Entourage (`src/PD.Core/Entourage`): seeded Poisson disk, density per program (`style.entourage`),
+  `ENTOURAGE` layer in plans / sections / elevations / axons, people #9A9A9A, modelled people reused, section trees.
 - Downtown fixes: `FLOOR PLATE` → NC.Slab (levels were missing); layers under `PROGRAM::` stay programs even when the name
-  matches nothing (Seminar Room, Support, Green Roof); new program `GREEN_ROOF`; Make2D / clipping-plane layers ignored by path;
-  new roles `NC.Roof` and `Entourage`; GRID / OUTLINE are drafting layers (Ignore); CADMAPPER / walkway / lot keywords.
-  Flat masses (≤ 2 ft: roof gardens, terraces) join the level under their top instead of being dropped; mass bottoms snap up to
-  6" below a slab top (`slabSnapBelowFt`); only our own objects can be stray (context spreads over the whole site).
-  Plans: one leader label per program per level, leader labels clamped to the sheet, legend columns sized to the longest name.
-- Fixture tool: coordinates are always integer mm (`units` = Millimeters, `sourceUnits` keeps the model's), extrusions without
-  a render mesh fall back to the Brep / bbox, big fixtures drop 2D layers first. `tests/fixtures/downtown.json` added.
-- Next: S6 acceptance + docs (`docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, T1–T7). PRD v0.8; history
-  `docs/CHANGELOG.md`; goldens: section_A, elevation_S, plan_L1, axon_*, program_chart / pie, downtown_* (5).
+  matches nothing; new program `GREEN_ROOF`; Make2D / clipping-plane layers ignored by path; new roles `NC.Roof` and
+  `Entourage`; GRID / OUTLINE = Ignore; CADMAPPER / walkway / lot keywords; flat masses (≤ 2 ft) join the level under their
+  top; mass bottoms snap up to 6" below a slab top; only our own objects can be stray; plans: one leader label per program
+  per level, labels clamped to the sheet, legend columns sized to the longest name.
+- Fixture tool: coordinates always integer mm (`units` = Millimeters, `sourceUnits` keeps the model's), extrusions without a
+  render mesh fall back to Brep / bbox, big fixtures drop 2D layers first. `tests/fixtures/downtown.json` added.
+- Next: S6 acceptance + docs. PRD v0.8; history `docs/CHANGELOG.md`; goldens: section_A, elevation_S, plan_L1, axon_*,
+  program_chart / pie, downtown_* (5).
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off by default (`axon.facadeVeil`).
