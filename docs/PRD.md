@@ -1,6 +1,14 @@
 # PRD：Program Diagram Rhino 8 插件
 
-v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修订过程见 `docs/CHANGELOG.md`）
+v0.9 · 2026-10-12 · 状态：开发中（S0–S5 完成，插件 v0.7.0；修订过程见 `docs/CHANGELOG.md`）
+
+**v0.9 主要变化（依据 Downtown 模型试用反馈）**
+- 新增两张场地图（风格按 `docs/SITE_STYLE.md` §1 / §2）：`00_Site_Plan.ai` 总平面（首层放在真实场地上）和 `03_Site_Axon.ai` 场地轴测（本楼体量 + 真实高度的白色周边建筑 + 场地、树、人；`ANNOTATION` 图层留给流线 / 视线 / 卸货图标，插件永不清空）。
+- 平面不再用灰色方框做底：首层画真实场地，**非首层垫同一张场地图再盖白色蒙版**（`plan.upperVeilOpacity`），地下层用剖到的土（灰色）。配景只出现在 site plan 的室外。房间名放不下先缩小字号（19 → 13 → 最小 8 pt），仍放不下才用引线；同层同 program 只标一次。
+- 剖面：色条按楼层带居中在上下楼板之间；全图楼板同一厚度、每层一条（模型楼板有洞才断开）；全图统一字号；左侧 ▼ 标高符号 + 层名 + 标高（与立面相同）。
+- 轴测：按两面重叠处的真实深度消隐（不再只比较面中心），核心筒不再穿出楼板；树和人被建筑遮挡的部分裁掉；爆炸轴测斜向标签从该 program 最左侧角点开始。
+- 贴地的薄 program 体块（≤ 2 ft，如 `PROGRAM::Circulation` 的广场板、`PROGRAM::Green Roof` 的草坪）按场地铺装 / 种植画，不计面积；架空的（屋顶花园）仍是 program。
+- 第 ① / ④ 页表格支持 Ctrl / Shift 多选，改一格即改全部选中行；立面自动朝向本楼。
 
 **v0.8 主要变化**
 - 风格统一：全部图用 Arial（`docs/SITE_STYLE.md` §0.1）；剖面按 §4（单独比例 1" = 16'-0"）；平面按 §2；叠合式轴测按 §1；爆炸轴测 A 按 `docs/AXON_STYLE.md`，新增爆炸轴测 B（§3，30/60 平面斜轴测）。
@@ -192,15 +200,18 @@ v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修�
 ### 5.0 输出文件夹
 ```
 <3dm 所在文件夹>/<YYYY MMDD>_Conceptual Program Diagram_<HHMMSS>/
+  00_Site_Plan.ai           总平面：首层放在真实场地上（SITE_STYLE §2），室外配景
   01_Plans.ai               每层一个画板，另加一个总排版画板（B1 / L1 / … / TOWER 网格）
   02_Section_A.ai           每条剖切线一个文件
   02_Section_B.ai
   07_Elevation_North.ai     每条立面线一个文件（第 5.7 节）
+  03_Site_Axon.ai           场地轴测（SITE_STYLE §1）：本楼 + 周边建筑 + 场地、树、人
   03_Axon_Stacked.ai        叠合式
   04_Axon_Exploded.ai       爆炸式
-  05_Program_Diagram.ai     Program 分类图
+  05_Program_Chart.ai       Program 分类图
   06_Program_Pie.ai         饼图
   program_areas.csv         面积统计
+  program_table.csv         图表用的程序表（模型 GSF 或 Excel ASF）
   diagram.json              所有几何和设置，用于重新导出和排查问题
   export_log.txt            不确定项和警告
   ProgramDiagram.jsx        总控脚本（可在 Illustrator 中手动运行）
@@ -263,6 +274,10 @@ v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修�
 所有项都可以在 Style Profile 中修改，并保存为 JSON（`styles/style_default.json`、`styles/rules_default.json`）。
 
 ### 5.2 Plan（参考：Research Building Level 1，以及 Downtown Concept Plans）
+- **v0.9（场地底图）**：
+  - `00_Site_Plan.ai`：首层（离地坪标高最近的主楼层）放在真实场地上，范围 = 首层外扩 `plan.siteMarginFt`（160'）；道路在下、街区 / 人行道在上（CADMAPPER 类模型的整块道路板不会盖住街区）；周边建筑白色 + 右下硬投影 + 屋顶名称（纯数字的 GIS 编号不显示）；站在本楼地块上的旧建筑不画；配景人物只放在本项目广场和周边人行道（室外）。
+  - `01_Plans.ai`：首层画真实场地；**非首层垫同一张场地图，上面盖白色蒙版**（`plan.upperVeilOpacity` 70%）；地下层画剖到的土（`plan.basementEarthFill`）。不再出现灰色方框底，不放配景。
+  - 房间名：19 pt → 13 pt → 每次减 1 pt 到 `plan.labelMinPt`（8 pt），仍放不下才用引线（引线文字用 13 pt，且不出画板）；同层同 program 只在最大的色块上标一次（`plan.labelOncePerProgram`）；图例列宽按最长名称。
 - **实现（v0.4.0）**：所有楼层共用同一范围（建筑外扩 60'），上下层对齐；文件 `01_Plans.ai`，每层一个画板 + `PLANS OVERVIEW`；通高空间上层画虚线 + 对角线 + `OPEN TO BELOW`；玻璃线在外轮廓外 2 pt；比例尺长度自动取不超过图宽 1/3 的整数值。
 - 每层在"标高 + 4'-0""处水平剖切，得到 program 色块。
 - 建筑外轮廓用 2.5 pt 黑线；体块之间的分隔线用 0.5 pt。
@@ -274,6 +289,7 @@ v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修�
   - 总排版画板：网格排列，可设置列数；每张图左上角标粗体层名（`B1`、`L1` … `TOWER`）。
 
 ### 5.3 Section（参考：Research Building Section A/B，以及 Downtown Concept Sections；已按试用反馈定稿）
+- **v0.9**：色条吸附到楼层带（体块比楼板短一点也算满层），居中在本层楼板顶面和上层楼板底面之间；**全图楼板同一厚度**（0.14 × 典型层高），**每层一条**（只有模型楼板本身开洞处才断开；相差 1–2 ft 的屋顶边合成一条）；≤ 2 ft 的薄 program（走廊板、屋顶花园）在剖面里不画色条；全图标签同一字号，太长才缩小；左侧为 ▼ + 层名 + 标高 + 虚线（与立面相同）；树在剖切色条后面；人站在楼板顶面。
 - **剖到的 program**：圆角色条（圆角 6 pt，色条之间 1.5 pt 白缝），由解决重叠后的每层平面与剖切线相交得到（与面积统计一致）。
   - 标签：粗体全大写，**放在色块正中心**（Illustrator 中按文字轮廓测量后居中），长名称自动换行；放不下时不写。
   - 通高空间（跨层保留）画成一整条，中间不画楼板。
@@ -290,6 +306,10 @@ v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修�
 - 待做：街道名（地坪下方）、楼名（顶部灰色大字）、右上角 key plan、楼梯纹样、Unassigned 斜线、配景人物和树。
 
 ### 5.4 Axon（参考：Atlanta 爆炸轴测，以及 Research Building 体量轴测）
+- **v0.9**：
+  - 新增 `03_Site_Axon.ai`（SITE_STYLE §1，参考图 Question 4）：本楼体量（楼层线、program 色）+ 周边建筑白色体块（真实高度，最高 `axon.site.maxContextHeightFt`）+ 场地（街区、道路、绿地、本项目广场）+ 棒棒糖树 + 人（只在本项目广场及周边）；屋顶写建筑名称；`ANNOTATION` 图层留空给人行流线、视线、卸货图标，插件永不清空。
+  - 消隐：两个面在画面上重叠时，在重叠处比较两个平面的真实深度决定前后（`AxonProjection.DepthOnPlane`），再按此关系排序、由近到远裁剪；不会出现漏洞，核心筒不再穿出楼板，内部棱线不再透出。树、人被建筑挡住的部分裁掉。
+  - 爆炸式：沿「左上 → 右下」边书写的标签从该 program 最左侧角点开始（左对齐）；右侧层标互相挤在一起时自动错开一行。
 - **v0.4.1 定稿（参考 Atlanta 爆炸轴测）**：细线层级（面边 0.35 pt、整体轮廓 1.0 pt）；标签粗体全大写贴在顶面（深色色块用白字）；周边建筑为白色矮体块 + 灰细线；楼层名在右侧：黄色小方块 + `Level 3` + 灰色引线。叠合式默认不画立面罩面（`axon.facadeVeil`）。
   - 爆炸式 `04_Axon_Exploded.ai`：层间距自动加大到上下楼板互不遮挡（另留 `explodeGapPt`）；CORE（`axon.connectorPrograms`）在相邻层之间用半透明体块连接；通高空间拉长到上一层楼板底面。
   - 楼层定位式 `04_Axon_Levels.ai`：每层一个画板，该层彩色楼板放在真实标高，外面整栋体量画虚线（消隐后的可见边，下部在楼板下、上部在楼板上）。

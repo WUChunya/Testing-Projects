@@ -71,4 +71,16 @@ public class ReportTests
         Assert.Equal("mine", PD.Core.Writers.OutputFolder.SaveIn("mine", model));
         Assert.Equal(Path.Combine("proj", "2026 1010_Conceptual Program Diagram_143205"), PD.Core.Writers.OutputFolder.Create("proj", pattern, now));
     }
+
+    [Fact]
+    public void OldSavesGetTheSiteDrawingsOnce()
+    {
+        var old = PdSettings.FromJson("{\"version\":1,\"output\":{\"drawings\":[\"Plan\",\"Section\"]}}");
+        Assert.Contains("SitePlan", old.Output.Drawings!);
+        Assert.Contains("SiteAxon", old.Output.Drawings!);
+        Assert.Equal(PdSettings.CurrentVersion, old.Version);
+        // A current save that left them out keeps that choice.
+        var now = PdSettings.FromJson("{\"version\":2,\"output\":{\"drawings\":[\"Plan\"]}}");
+        Assert.DoesNotContain("SitePlan", now.Output.Drawings!);
+    }
 }

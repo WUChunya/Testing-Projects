@@ -3,46 +3,37 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 11 (v0.6.1, 129 tests). v0.6.1: export crash "Operation does not support GeometryCollection arguments" fixed — a clipped
-  projection came back as a GeometryCollection and the next overlay refused it; area results now go through
-  `MeshSlicer.Polygonal` (`Lineal` for lines), guards also catch `ArgumentException`, a failing drawing is a note not a crash.
-- v0.6.0 = **S5 Charts + Entourage** + S1–S4 fixes from `261012_Downtown_Massing.3dm`. Charts (`src/PD.Core/Charts`):
-  `ProgramTable` (model GSF or Excel ASF via ClosedXML, template, `program_table.csv`), `05_Program_Chart.ai` (5.5 dashed
-  department boxes, area-proportional rectangles, shelf packing), `06_Program_Pie.ai` (5.6 donut 43 %, clockwise from 12,
-  legend + TOTAL, bar). Entourage (`src/PD.Core/Entourage`): seeded Poisson disk, density per program (`style.entourage`),
-  `ENTOURAGE` layer in plans / sections / elevations / axons, people #9A9A9A, modelled people reused, section trees.
-- Downtown fixes: `FLOOR PLATE` → NC.Slab (levels were missing); layers under `PROGRAM::` stay programs even when the name
-  matches nothing; new program `GREEN_ROOF`; Make2D / clipping-plane layers ignored by path; new roles `NC.Roof` and
-  `Entourage`; GRID / OUTLINE = Ignore; CADMAPPER / walkway / lot keywords; flat masses (≤ 2 ft) join the level under their
-  top; mass bottoms snap up to 6" below a slab top; only our own objects can be stray; plans: one leader label per program
-  per level, labels clamped to the sheet, legend columns sized to the longest name.
-- Fixture tool: coordinates always integer mm (`units` = Millimeters, `sourceUnits` keeps the model's), extrusions without a
-  render mesh fall back to Brep / bbox, big fixtures drop 2D layers first. `tests/fixtures/downtown.json` added.
-- Next: S6 acceptance + docs. PRD v0.8; history `docs/CHANGELOG.md`; goldens: section_A, elevation_S, plan_L1, axon_*,
-  program_chart / pie, downtown_* (5).
+- Rev 12 (v0.7.0, 133 tests), from the user's Downtown export (details in `docs/CHANGELOG.md`, PRD v0.9):
+  Illustrator: swatch names ≤ 31 chars (cut names collided → "name was not found"), swatch / style failures fall back
+  and WARN, transient COM faults retried once; elevations look towards our building (`AutoSide`). Tabs 1 / 4: Ctrl /
+  Shift multi-select (`MultiSelect<T>`). New `00_Site_Plan.ai` (`PlanDrawing.BuildSite`) and `03_Site_Axon.ai`
+  (`AxonKind.Site`, `axon.site`). Plans: `LevelKind` ground / upper (site + white veil) / basement (earth); label
+  shrink to `plan.labelMinPt`, once per program. Sections: bars snapped to bands and centred, one slab thickness
+  (`TypicalStory`), one slab per level (`SlabRanges`), `LevelMarkers` shared with elevations. Axons: pairwise hidden
+  faces (`DepthOnPlane`, topological order) + `AxonFaces.Hide` for trees / people. Thin at-grade program = site paving.
+- v0.6: S5 charts (`src/PD.Core/Charts`), entourage (`src/PD.Core/Entourage`), NetTopologySuite GeometryCollection fix.
+- Fixtures: `template.json`, `downtown.json` (user model, mm). Goldens incl. site_plan / site_axon and downtown_*.
+- Next: S6 acceptance + docs (`docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, T1–T7).
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
-- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off by default (`axon.facadeVeil`).
-- Flat mass ≤ 2 ft = slab-like (roof garden, paving): one level, by its top face. Stray detection applies to NC / Program only.
-- Defaults live in `styles/` (`rules_default.json`, `style_default.json` incl. `charts` and `entourage`, `layer_keywords.json` v3).
-- Scales: plans/axons 1" = 45'-0", sections 1" = 16'-0"; charts are absolute points (`ctx.ForChart()`).
-- Entourage seed is saved with the project (tab 8 "Re-randomize"); density 0 for Core / Stair / Shell / Mechanical.
-- Program keys immutable (`L03_KEY_01`, swatches `PRG_<KEY>`); AI update: named items redrawn, `_MANUAL`/`OVERLAY`/unnamed kept.
-- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu; screenshot fullPage:false).
+- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off.
+- Flat mass ≤ 2 ft: raised = program on the level under its top; at grade = site paving / planting. Stray = NC only.
+- Defaults live in `styles/` (`rules_default.json`, `style_default.json` incl. plan site/veil, axon.site, charts,
+  entourage; `layer_keywords.json` v3). Scales: plans/axons 1" = 45', sections 1" = 16', charts absolute pt.
+- Entourage only outdoors on the site plan / site axon (plus sections / elevations); seed saved with the project.
+- Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` (site axon) / unnamed.
+- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu).
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.6.1.zip` over the old files (it now ships ClosedXML and its dependencies), restart Rhino.
-2. Open `261012_Downtown_Massing.3dm`, tab 1: `FLOOR PLATE` = NC.Slab, `COLUMNS` = NC.Structure, every `PROGRAM::*` = Program
-   (Green Roof → Sky Garden, Support → Building Support, Seminar Room → Assembly), `PEOPLE / CARS` = Entourage,
-   `NE ISO::…` / `1.80 [0]::…` / GRID = Ignore; try the new "Show: NC / BG" filter and Group column.
-3. Tab 3: 13 levels (B1 −21'-11", L1 0'-2", L12 194'-0"), no mezzanine. Tab 9: the roof garden at 212 ft is a stray program
-   mass (4,000 ft from the tower in the model) — keep it on tab 2 and it lands on L12 (28,800 SF); check the other 8 strays.
-4. Tab 8: "Program Excel" + "Save Excel template…", "Draw entourage", "Re-randomize"; tick ProgramChart and Pie, then export
-   with a section AND an elevation (this is what used to fail with the GeometryCollection error).
-5. Charts: `05_Program_Chart.ai` (dashed boxes, totals), `06_Program_Pie.ai` (donut, legend, bar) — VERIFY-WIN text sizes.
-6. `export_log.txt` / `illustrator_log.txt`: send any NOTE "not written" or WARN lines.
+1. Unzip `ProgramDiagram-0.7.0.zip` over the old folder (whole folder: ClosedXML DLLs), restart Rhino.
+2. Tab 1 / 4: Ctrl- or Shift-select rows, untick Use (or change Role / Program) on one → all selected follow
+   (VERIFY-WIN: Eto grid keeps the selection while a cell is edited; else use the "Selected rows" buttons).
+3. Tab 7: elevations with "Auto side" ticked look at the building whichever way the line was drawn.
+4. Export all: `illustrator_log.txt` has no ERROR (03_Axon_Stacked fixed); `export_log.txt` no "not written".
+5. `00_Site_Plan.ai` and `03_Site_Axon.ai` exist; upper plans show the veiled site, basements grey earth.
+6. Section: equal slabs, one per level, bars centred, ▼ markers left. Exploded axon: labels from the left corner.
 
 ## Known issues
-- Not yet: street names/arrows, flow/view/service icons, plaza stipple / lawn hatch, key plan, Unassigned hatch.
-- Entourage symbols are built-in placeholders (company `entourage.ai` not read); plan people are dots at 1" = 45'.
-- Context buildings modelled as one merged mesh cannot be extruded per building; section-closed volume ≈ mid area × height.
+- Not yet: street names / arrows, flow / view / service icons (draw on `ANNOTATION`), key plan, Unassigned hatch.
+- Entourage symbols are placeholders (company `entourage.ai` not read); plan people are dots at 1" = 45'.
+- Site axon context at real height can hide a low building (template model); lower `axon.site.maxContextHeightFt`.

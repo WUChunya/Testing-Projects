@@ -4,6 +4,7 @@
 
 | 版本 | 用户反馈 / 起因 | 结果 |
 |---|---|---|
+| v0.7.0 | 清理后的 Downtown 模型整套导出：`03_Axon_Stacked` 报 `the name was not found`、首次 `RPC_E_SERVERFAULT`；要多选图层；按 SITE_STYLE / AXON_STYLE 出 site plan 和 site axon、非首层平面垫场地底图加白色蒙版；平面不要灰框、配景只在首层 site plan、字放不下先缩小；剖面楼板统一厚度、每层一条、色条居中、字号统一、层标放左侧；爆炸轴测标签从最左角点开始、遮挡关系错误 | **报错**：叠合轴测的派生色板名超过 31 字符，被 Illustrator 截断后重名 → 名称限长并加哈希后缀；色板 / 段落样式建不出来时退回普通颜色并记 WARN，不再整份失败；COM 偶发故障自动重试一次；立面自动朝向本楼。**界面**：① / ④ 页 Ctrl / Shift 多选，改一格即改全部选中行，另有 Selected rows 批量按钮。**新图**：`00_Site_Plan.ai`（首层在真实场地上、周边建筑投影与名称、室外配景）、`03_Site_Axon.ai`（真实高度的白色周边建筑、场地、树、人，`ANNOTATION` 图层留给流线图标）。**平面**：首层真实场地、非首层场地 + 70% 白色蒙版、地下层灰色土；道路板放在街区下面；本楼地块上的旧建筑不画；房间名 19 → 13 → 8 pt 逐级缩小后才用引线，同层同 program 只标一次；贴地薄 program（广场板、草坪）按场地铺装画。**剖面**：色条吸附楼层带、居中在楼板之间；全图楼板同一厚度、每层一条（模型楼板开洞才断开）；统一字号；左侧 ▼ 标高符号（与立面同一套）；树在色条后、人站在楼板顶面。**轴测**：按重叠处真实深度消隐（核心筒不再穿出楼板），树和人被建筑遮挡的部分裁掉；爆炸式标签从最左角点开始，层标自动错开 |
 | v0.6.1 | 导出时报 `Operation does not support GeometryCollection arguments` | 投影视图（立面、剖面的看线）把被裁切的轮廓交回 GeometryCollection（面 + 线碎片），NTS 的下一步布尔运算拒绝这种参数。现在所有求面的运算结果统一只保留多边形部分（`MeshSlicer.Polygonal` / `Lineal`），几何容错同时捕获 `ArgumentException`；另外单张图出错只记一条 note，其余图照常导出，不再整份失败 |
 | v0.6.0 | 用 `261012_Downtown_Massing.3dm` 实测：读不到楼层高度、空中花园在 program 里消失、第①页 NC 元素分得不够细；随后继续做 S5 | **S1–S4 修复**：`FLOOR PLATE` 等同 `SLAB`（楼层线恢复，13 层）；`PROGRAM::` 下的子图层一律算 program（Seminar Room → Assembly、Support → Building Support、Green Roof → 新增 `GREEN_ROOF` 空中花园色），新增角色 `NC.Roof` 与 `Entourage`，Make2D / 剖切面 / 网格 / OUTLINE 图层按路径忽略，CADMAPPER、人行道、LOT FILL 等关键词补齐，第①页加 NC/BG 分组列和筛选；薄板体块（≤2 ft，屋顶花园、露台）按顶面归层而不再被丢弃；体块底面可低于楼板顶面 6" 仍吸附；只有本项目的对象会被判为游离（周边建筑不再被排除）；平面同一 program 只引一次标签、标签不再跑出画板、图例按最长名排列。**S5**：`05_Program_Chart.ai`（PRD 5.5 虚线部门框、按面积等比矩形、shelf packing）、`06_Program_Pie.ai`（环形图 43%、12 点顺时针、图例 + TOTAL、堆叠条）、Excel 程序表模板与读取（ClosedXML）、`program_table.csv`；配景人物（泊松盘、按 program 密度、种子存项目、`ENTOURAGE` 图层，平面/剖面/立面/轴测）、剖面棒棒糖树、模型自带的人（`Entourage` 角色）直接使用 |
 | v0.5.0 | 风格统一到 SITE_STYLE / AXON_STYLE；图层角色细分为 NC（新建）与 BG（背景） | 全部文字 Arial（§0.1 字体表）；剖面按 §4 改写（1"=16'、色条 0.68×层高、白色楼板条、右对齐标签 + 层号、3 pt 地坪线、红色虚线用地线）；平面按 §2（底色、建筑投影、3 pt 外轮廓、白色房间线、19/13 pt 房间名、右下角标题框）；叠合轴测按 §1（楼层线、0.75 折边、2.5 外轮廓、白色周边建筑、棒棒糖树）；爆炸 A 按 AXON_STYLE（线条等级、顶面露出 70%、前角对齐标签、CORE #D9D9D9、黄方块层标沿轴测方向引线）；新增爆炸 B `04_Axon_Exploded_B.ai`（30/60 平面斜轴测、85% 半透明块、中庭、竖井、场地板）；图层角色新增 NC.Core / Stair / Structure / Green / Hardscape / Tree / Water，旧 BG.Facade / BG.Slab 自动改名 |
@@ -26,4 +27,4 @@
 ## 仍待做
 - 剖面：街道名、楼名、key plan、楼梯纹样、Unassigned 斜线。
 - 平面：Unassigned 斜线、街道名；轴测：街道箭头、立面分格线。
-- S6 验收与用户手册；配景改用公司 `entourage.ai` 符号；街道名/箭头、流线与视线图标、key plan。
+- S6 验收与用户手册；配景改用公司 `entourage.ai` 符号；街道名/箭头、流线与视线图标（site axon 的 `ANNOTATION` 层）、key plan。

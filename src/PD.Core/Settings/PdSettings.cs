@@ -9,7 +9,10 @@ namespace PD.Core.Settings;
 /// <summary>Everything the user confirmed in the panel; stored as JSON in the 3dm DocumentUserText.</summary>
 public sealed class PdSettings
 {
-    public int Version { get; set; } = 1;
+    /// <summary>2 = v0.7.0 (site plan / site axon outputs exist).</summary>
+    public int Version { get; set; } = CurrentVersion;
+
+    public const int CurrentVersion = 2;
     public Dictionary<string, LayerSetting> Layers { get; set; } = new();
     public Dictionary<string, SpanMode> SpanModes { get; set; } = new();
     public Dictionary<string, SingleSurfaceChoice> SingleSurfaces { get; set; } = new();
@@ -43,6 +46,11 @@ public sealed class PdSettings
         {
             var s = JsonSerializer.Deserialize<PdSettings>(json, Json) ?? new PdSettings();
             foreach (var l in s.Layers.Values) l.Role = Roles.Normalize(l.Role);
+            // Saves from before v0.7.0 list their drawings without the new site plan / site axon: tick them once.
+            if (s.Version < 2 && s.Output.Drawings != null)
+                foreach (var add in new[] { "SitePlan", "SiteAxon" })
+                    if (!s.Output.Drawings.Contains(add)) s.Output.Drawings.Add(add);
+            s.Version = CurrentVersion;
             return s;
         }
         catch (JsonException) { return new PdSettings(); }
