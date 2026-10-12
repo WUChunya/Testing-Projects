@@ -14,19 +14,23 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: start of S5, after v0.4.0)
+## Next-session message (current: start of S5, after v0.5.0)
 
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.8; S0–S4 are done (plugin v0.5.0, 89 tests green); styles per docs/SITE_STYLE.md and docs/AXON_STYLE.md.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.8; S0–S4 are done (plugin v0.5.0, 89 tests green).
+Style source of truth: docs/SITE_STYLE.md (§0.1 fonts, §1 site axon, §2 plan, §3 exploded B, §4 section) and docs/AXON_STYLE.md,
+already merged into styles/style_default.json (fonts, section, plan, axon.stacked/exploded/explodedB, roles, view);
+styles/site_style.json and styles/axon_style.json only feed the reference sheets (tools/*_reference.py) — read them by key, not whole.
 Do stage S5 (Charts + Entourage) from docs/DEV_PROMPT.md, reusing what exists — do not rebuild it:
-- Drawing model + ExportContext (true scale, ctx.Pt() text scaling, Fit-content artboard), SvgWriter/JsxWriter/Exporter, runtime.jsx.
-- Views/ProjectedView (opaque, near-hides-far, one AI layer + global swatch per source layer, glass white) for anything "seen".
-- ProgramBlocks (resolved footprints × level bands), PlanLabels (MIC + long direction), PlanDrawing legend helpers, AxonProjection.
+- Drawing model + ExportContext (true scale, ctx.Pt() text scaling at 1" = 45'; sections via ctx.ForSection() at 1" = 16'),
+  ParaStyle (opacity/tracking/leading), DItem (Matrix, SizePt, GlyphAnchor), SvgWriter/JsxWriter/Exporter, runtime.jsx.
+- PlanBackground + style "roles" (plan/axon/view paints per NC.*/BG.* role), ProgramBlocks, PlanLabels, AxonFaces, AxonProjection.
+- Entourage follows SITE_STYLE: lollipop trees (axon.trees, section §4 trees), people #9A9A9A; trees already drawn for NC/BG.Tree.
+- Charts use the unified Arial typography (fonts.*) and the colour scheme order (tab 5).
 - UI is English; tabs 1–9 (6 Sections, 7 Elevations, 8 Output, 9 Check); output = model folder/"YYYY MMDD_Conceptual Program Diagram_HHMMSS".
-- Section style lessons from the user: never fit-to-page; slabs/ground are fixed visual weights; labels bold caps centred
-  (Center=true); our building vs other buildings are drawn differently; generated layers must keep stable item names.
+- Lessons: true scale only (never fit-to-page); generated layers keep stable item names; our building (NC) vs context (BG) drawn differently.
 Defaults: PRD §9 (listed in PROGRESS.md); ask me only if blocked. Talk to me in Chinese; code/commits in English.
 At the end: run tests, one screenshot per new golden SVG, update PROGRESS.md (≤40 lines) and CHANGELOG.md,
 bump the version, run tools/package.sh, commit, push, send me the zip, reply in Chinese in ≤10 lines.

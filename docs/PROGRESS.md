@@ -11,7 +11,9 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   labels, connectors (CORE/STAIR + tall). Exploded B (`AxonKind.ExplodedB`, planometric): translucent blocks, atria, shafts, site plane.
 - Roles: NC.Core/Stair (masses, program CORE/STAIR), NC.Slab/Facade (were BG.*, renamed on load), NC.Structure/Green/Hardscape/
   Tree/Water, BG.*; NC by path segment NC/NEW/PROJECT/PROPOSED (`layer_keywords.json` v2, `first` rules before program match).
-- Next session: **S5 Charts + Entourage** — `docs/DEV_PROMPT.md`. PRD v0.8; history `docs/CHANGELOG.md`.
+- Next session: **S5 Charts + Entourage** — paste the "Next-session message" from `docs/DEV_PROMPT.md` (updated for v0.5.0).
+  PRD v0.8; history `docs/CHANGELOG.md`; goldens: section_A, elevation_S, plan_L1, axon_stacked/exploded/exploded_B/levels_L3.
+- Style sources: SITE_STYLE / AXON_STYLE merged into `style_default.json`; `site_style.json` / `axon_style.json` = reference-sheet inputs only.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off by default (`axon.facadeVeil`).
