@@ -26,6 +26,8 @@ internal sealed class SectionTab : TabBase
         _kind = kind;
         _prefix = IsElevation ? "ELEV" : "SEC";
         _grid.Columns.Add(Ui.Text<SectionSetting>("Name", x => x.Name, (x, v) => Edit(() => x.Name = v), 60));
+        if (IsElevation)
+            _grid.Columns.Add(Ui.Check<SectionSetting>("Auto side", x => x.AutoSide, (x, v) => Edit(() => x.AutoSide = v)));
         _grid.Columns.Add(Ui.Check<SectionSetting>("Look left", x => x.LookLeft, (x, v) => Edit(() => x.LookLeft = v)));
         _grid.Columns.Add(Ui.Text<SectionSetting>("Visible depth", x => Ui.Ft(Depth(x)),
             (x, v) => { if (PD.Core.Model.FeetInches.TryParse(v, out var f)) Edit(() => x.DepthFt = f); }, 90));
@@ -64,7 +66,7 @@ internal sealed class SectionTab : TabBase
         _grid.DataStore = rows;
         _status.Text = rows.Count == 0
             ? $"No {Noun} lines yet: draw a line on a layer such as {(IsElevation ? "ELEV::North" : "SEC::A")} and click Read, or click Pick."
-            : $"{rows.Count} {Noun} line(s). Seen from the start point towards the end point; \"Look left\" sets the viewing side.";
+            : $"{rows.Count} {Noun} line(s). Seen from the start point towards the end point; \"Look left\" sets the viewing side{(IsElevation ? " (elevations with \"Auto side\" look towards the building)" : "")}.";
     }
 
     /// <summary>Every curve on a layer whose path starts with SEC (e.g. SEC::A) or ELEV (ELEV::North) becomes a section / elevation named after the sub-layer.</summary>

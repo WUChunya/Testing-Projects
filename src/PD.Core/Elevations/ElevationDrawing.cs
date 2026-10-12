@@ -19,7 +19,7 @@ public static class ElevationDrawing
         var r = ctx.Result;
         var (ax, ay, _) = r.Frame.ToLocal(el.Line[0], el.Line[1], 0);
         var (bx, by, _) = r.Frame.ToLocal(el.Line[2], el.Line[3], 0);
-        var plane = new SectionPlane(ax, ay, bx, by, el.LookLeft);
+        var plane = new SectionPlane(ax, ay, bx, by, LooksLeft(r, el, ax, ay, bx, by));
         var depth = el.DepthFt > 0 ? el.DepthFt : ctx.Rules.Output.SectionDepthFt;
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var items = ProjectedView.Collect(r, plane, depth, ProjectedView.GlassRegex(ctx.Style.View), ground);
@@ -61,7 +61,7 @@ public static class ElevationDrawing
 
         ProjectedView.Draw(d, ctx, map, p, items);
         if (!items.Any(i => i.Kind != ViewKind.Context))
-            d.Notes.Add($"Elevation {el.Name}: none of our building is in view; untick or tick \"Look left\" on tab 7, or move the line.");
+            d.Notes.Add($"Elevation {el.Name}: none of our building is in view; move the line or deepen its depth on tab 7.");
 
         // Level markers: ▼, level name and elevation, dashed line to our building.
         var own = items.Where(i => i.Kind != ViewKind.Context).Select(i => i.Geometry.EnvelopeInternal).ToList();
@@ -104,5 +104,23 @@ public static class ElevationDrawing
         d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "TITLE", x0, ty, $"{es.TitlePrefix} {el.Name}", "PD Title", "left"));
         d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "SCALE", x0, ty + ctx.Pt(18), $"SCALE {ctx.ScaleText}", "PD Note", "left"));
         return d;
+    }
+
+    /// <summary>
+    /// Viewing side: with <see cref="SectionSetting.AutoSide"/> (default) the elevation looks towards our building —
+    /// the side of the line holding most of its footprint — so a line drawn in either direction works.
+    /// </summary>
+    public static bool LooksLeft(PD.Core.Analysis.AnalysisResult r, SectionSetting el, double ax, double ay, double bx, double by)
+    {
+        if (!el.AutoSide) return el.LookLeft;
+        var left = new SectionPlane(ax, ay, bx, by, true);
+        double sum = 0;
+        foreach (var p in r.Plans)
+            foreach (var f in p.Footprints.Where(f => !f.Resolved.IsEmpty))
+            {
+                var c = f.Resolved.Centroid;
+                sum += left.W(c.X, c.Y) * f.Resolved.Area;
+            }
+        return sum == 0 ? el.LookLeft : sum > 0;
     }
 }

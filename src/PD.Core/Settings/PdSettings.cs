@@ -97,6 +97,8 @@ public sealed class SectionSetting
     public double[] Line { get; set; } = Array.Empty<double>();
     /// <summary>Look to the left (+) or right (−) of the line direction.</summary>
     public bool LookLeft { get; set; } = true;
+    /// <summary>Elevations: look towards our building whichever side of the line it is on (ignores <see cref="LookLeft"/>).</summary>
+    public bool AutoSide { get; set; } = true;
     public double DepthFt { get; set; }
 }
 

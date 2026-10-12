@@ -106,8 +106,23 @@ public sealed class Drawing
     {
         if (string.IsNullOrEmpty(hex)) return null;
         hex = hex.ToUpperInvariant();
+        name = SwatchName(name);
         if (Swatches.All(s => s.Name != name)) Swatches.Add(new Swatch(name, hex));
         return name;
+    }
+
+    /// <summary>Longest swatch name we hand to Illustrator. Longer names are cut there, and two cut names can
+    /// collide (".._SIDE1_6_14" vs ".._SIDE1_6_14_FLOOR"), which stopped a whole file with "the name was not found".</summary>
+    public const int MaxSwatchName = 31;
+
+    /// <summary>The name unchanged when short enough, else a stable 31-character form: head + "_" + 6-hex hash.</summary>
+    public static string SwatchName(string name)
+    {
+        if (name.Length <= MaxSwatchName) return name;
+        uint h = 2166136261;
+        foreach (var ch in name) h = unchecked((h ^ ch) * 16777619);
+        var tail = "_" + (h & 0xFFFFFF).ToString("X6");
+        return name[..(MaxSwatchName - tail.Length)] + tail;
     }
 
     /// <summary>Swatch named after its colour, for neutral greys and annotation colours.</summary>

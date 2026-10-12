@@ -43,13 +43,22 @@ PD.drawFile = function (dw, opts, warnings) {
     var doc = file.exists ? app.open(file)
         : app.documents.add(DocumentColorSpace.RGB, dw.artboards[0].w, dw.artboards[0].h);
     PD.setupArtboards(doc, dw.artboards);
+    // A swatch or style that cannot be made must not stop the file: fall back to a plain colour and log it.
     var sw = {};
-    for (var s = 0; s < dw.swatches.length; s++) sw[dw.swatches[s].name] = PD.swatch(doc, dw.swatches[s].name, dw.swatches[s].hex);
+    for (var s = 0; s < dw.swatches.length; s++) {
+        var sn = dw.swatches[s].name;
+        try { sw[sn] = PD.swatch(doc, sn, dw.swatches[s].hex); } catch (es) {
+            sw[sn] = PD.hexToRgb(dw.swatches[s].hex);
+            warnings.push("WARN " + dw.fileName + " swatch " + sn + ": " + es + " (plain colour used)");
+        }
+    }
     var ps = {};
     PD.specs = {};
     for (var p = 0; p < dw.paraStyles.length; p++) {
-        ps[dw.paraStyles[p].name] = PD.paraStyle(doc, dw.paraStyles[p], sw);
         PD.specs[dw.paraStyles[p].name] = dw.paraStyles[p];
+        try { ps[dw.paraStyles[p].name] = PD.paraStyle(doc, dw.paraStyles[p], sw); } catch (ep) {
+            warnings.push("WARN " + dw.fileName + " paragraph style " + dw.paraStyles[p].name + ": " + ep);
+        }
     }
 
     var rects = [];
