@@ -434,11 +434,14 @@ public static class AxonDrawing
                     // The text's "up" must point into the block.
                     var (ux, uy) = (-ry, rx);
                     if ((other.X - corner.X) * ux + (other.Y - corner.Y) * uy <= 0) continue;
-                    var ax0 = corner.X + vx * inset + ux * inset;
-                    var ay0 = corner.Y + vy * inset + uy * inset;
+                    // Text always starts at the left end of its edge: from the front corner when the edge runs up to the
+                    // right, from the block's leftmost corner (the far end of the edge) when it runs down to the right.
+                    var start = sx >= 0 ? corner : along;
+                    var ax0 = start.X + rx * inset + ux * inset;
+                    var ay0 = start.Y + ry * inset + uy * inset;
                     var angle = Math.Atan2(ry, rx) * 180 / Math.PI;
                     sheet.Paint.Add((layer, new Spec(p.Name + "_LBL", MeshSlicer.Factory.CreatePolygon(), null, null, 0, Text: text,
-                        TextAt: proj.Project(ax0, ay0, p.Z1), Matrix: proj.PlaneTextMatrix(angle), Style: style, Align: sx >= 0 ? "left" : "right")));
+                        TextAt: proj.Project(ax0, ay0, p.Z1), Matrix: proj.PlaneTextMatrix(angle), Style: style, Align: "left")));
                     placed = true;
                 }
                 if (placed) break;
@@ -667,16 +670,25 @@ public static class AxonDrawing
         var sq = ctx.Pt(isA ? ex.LevelMarkerPt : eb.LevelMarkerPt);
         var gap = ctx.Pt(isA ? ex.LevelMarkerGapPt : eb.LevelGapPt);
         var font = isA ? ctx.Style.Fonts.Level : ctx.Style.Fonts.LevelTag;
+        // Leader from each plate's rightmost point along (dx, dy) (page y up) to the column; tags that would land on
+        // top of each other are pushed apart by a line height and their leaders follow.
+        var rows = new List<(int I, double X, double Y, double End, double Ey)>();
         foreach (var (i, z) in s.Tags)
         {
-            var lvl = ctx.Result.Levels[i];
             var plate = ctx.Result.Plans[i].Union;
             if (plate.IsEmpty) continue;
             var right = plate.Coordinates.Select(c => proj.Project(c.X, c.Y, z)).OrderByDescending(q => q.X).First();
             double x = map.X(right.X), y = map.Y(right.Y);
-            // Run along (dx, dy) (page y up) until the column.
             var end = Math.Max(x, colX);
-            var ey = y - dy * (end - x) / Math.Max(1e-6, dx);
+            rows.Add((i, x, y, end, y - dy * (end - x) / Math.Max(1e-6, dx)));
+        }
+        var minGap = Math.Max(sq, ctx.Pt(font.SizePt)) * 1.4;
+        rows = rows.OrderBy(r => r.Ey).ToList();
+        for (var k = 1; k < rows.Count; k++)
+            if (rows[k].Ey < rows[k - 1].Ey + minGap) rows[k] = rows[k] with { Ey = rows[k - 1].Ey + minGap };
+        foreach (var (i, x, y, end, ey) in rows)
+        {
+            var lvl = ctx.Result.Levels[i];
             var n = SectionDrawing.Safe(lvl.Name);
             layer.Items.Add(At(new DItem
             {
