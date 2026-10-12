@@ -79,6 +79,20 @@ public sealed class AxonProjection
 
     public double Depth(double x, double y, double z) => Dot(_c, x, y, z);
 
+    /// <summary>
+    /// Depth (larger = nearer) of the point of the plane n·P = d0 that projects to screen (sx, sy). The screen rows r, u
+    /// and the view direction c are mutually perpendicular, so that point is A + λ·c with A = sx·r/|r|² + sy·u/|u|²;
+    /// NaN for a plane seen edge-on.
+    /// </summary>
+    public double DepthOnPlane(double sx, double sy, (double X, double Y, double Z) n, double d0)
+    {
+        double rr = Dot(_r, _r.X, _r.Y, _r.Z), uu = Dot(_u, _u.X, _u.Y, _u.Z);
+        double ax = sx * _r.X / rr + sy * _u.X / uu, ay = sx * _r.Y / rr + sy * _u.Y / uu, az = sx * _r.Z / rr + sy * _u.Z / uu;
+        var nc = n.X * _c.X + n.Y * _c.Y + n.Z * _c.Z;
+        if (Math.Abs(nc) < 1e-9) return double.NaN;
+        return (d0 - (n.X * ax + n.Y * ay + n.Z * az)) / nc;
+    }
+
     /// <summary>True when a face with this outward normal faces the viewer.</summary>
     public bool Faces((double X, double Y, double Z) n) => n.X * _c.X + n.Y * _c.Y + n.Z * _c.Z > 1e-9;
 

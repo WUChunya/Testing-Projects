@@ -40,6 +40,7 @@ public static class Exporter
         }
         foreach (var (key, kind) in new[]
                  {
+                     ("SiteAxon", PD.Core.Axons.AxonKind.Site),
                      ("AxonStacked", PD.Core.Axons.AxonKind.Stacked), ("AxonExploded", PD.Core.Axons.AxonKind.Exploded),
                      ("AxonExplodedB", PD.Core.Axons.AxonKind.ExplodedB), ("AxonLevels", PD.Core.Axons.AxonKind.Levels),
                  })

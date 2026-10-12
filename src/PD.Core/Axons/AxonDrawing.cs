@@ -9,7 +9,7 @@ using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 
 namespace PD.Core.Axons;
 
-public enum AxonKind { Stacked, Exploded, ExplodedB, Levels }
+public enum AxonKind { Stacked, Exploded, ExplodedB, Levels, Site }
 
 /// <summary>
 /// PRD 5.4 axons, styled per docs/AXON_STYLE.md and docs/SITE_STYLE.md:
@@ -25,7 +25,8 @@ public static class AxonDrawing
 {
     /// <summary>A path (or plane text) waiting for the page mapping; geometry in screen feet.</summary>
     sealed record Spec(string Name, NtsGeometry Geometry, string? Fill, string? Stroke, double StrokePt, double[]? Dash = null, bool Closed = true,
-        double Opacity = 1, string? Text = null, (double X, double Y)? TextAt = null, double[]? Matrix = null, string? Style = null, string Align = "center");
+        double Opacity = 1, string? Text = null, (double X, double Y)? TextAt = null, double[]? Matrix = null, string? Style = null, string Align = "center",
+        double? Depth = null);
 
     enum TagStyle { A, B }
 
@@ -43,6 +44,7 @@ public static class AxonDrawing
     public static string FileName(AxonKind kind) => kind switch
     {
         AxonKind.Stacked => "03_Axon_Stacked.ai",
+        AxonKind.Site => "03_Site_Axon.ai",
         AxonKind.Exploded => "04_Axon_Exploded.ai",
         AxonKind.ExplodedB => "04_Axon_Exploded_B.ai",
         _ => "04_Axon_Levels.ai",
@@ -65,25 +67,35 @@ public static class AxonDrawing
         var sheets = kind switch
         {
             AxonKind.Stacked => new List<Sheet> { Stacked(d, ctx, proj, blocks) },
+            AxonKind.Site => new List<Sheet> { Stacked(d, ctx, proj, blocks, site: true) },
             AxonKind.Exploded => new List<Sheet> { ExplodedA(d, ctx, proj, blocks) },
             AxonKind.ExplodedB => new List<Sheet> { ExplodedB(d, ctx, proj, blocks) },
             _ => Levels(d, ctx, proj, blocks),
         };
         Page(d, ctx, proj, sheets, kind);
+        if (kind == AxonKind.Site && ax.Site.AnnotationLayer.Length > 0 && !d.ProtectedLayers.Contains(ax.Site.AnnotationLayer))
+            d.ProtectedLayers.Add(ax.Site.AnnotationLayer);
         return d;
     }
 
     // ---------------------------------------------------------------- stacked (site program axon)
 
-    static Sheet Stacked(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
+    /// <summary>Stacked axon; with <paramref name="site"/> the site axon (wider site, real-height context, people).</summary>
+    static Sheet Stacked(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, bool site = false)
     {
         var ax = ctx.Style.Axon;
         var st = ax.Stacked;
-        var sheet = new Sheet { Name = "AXON STACKED", Prefix = "AXS_", Title = ax.TitleStacked };
+        var sheet = site
+            ? new Sheet { Name = "SITE AXON", Prefix = "AXT_", Title = ax.Site.Title }
+            : new Sheet { Name = "AXON STACKED", Prefix = "AXS_", Title = ax.TitleStacked };
         var ground = ctx.Rules.Levels.GroundElevationFt;
-        var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1);
+        var reach = site
+            ? new SiteReach(ax.Site.SiteMarginFt, ax.Site.ContextMarginFt, ax.Site.ContextHeightFt, ax.Site.MaxContextHeightFt, ax.Site.People)
+            : SiteReach.Of(ax);
+        var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach);
         var program = ProgramPrisms(d, ctx, blocks, b => (b.Z0, b.Z1), st.SideDarken, coreOverride: false).ToList();
         var faces = AxonFaces.Render(proj, context.Concat(program));
+        HideBehind(sheet, proj, faces);
         var line = d.Gray(ax.LineColor);
         var ctxPaint = PlanBackground.PaintOf(ctx.Style, Roles.Building, "axon");
         foreach (var f in faces)
@@ -449,20 +461,27 @@ public static class AxonDrawing
     /// Site plate and site background at <paramref name="z"/>, other buildings (white prisms for hidden-face removal
     /// with our masses, or flat footprints), and lollipop trees. Returns the context prisms.
     /// </summary>
+    /// <summary>How far the site and the context reach around our building, how tall context is drawn, and people.</summary>
+    sealed record SiteReach(double SiteMarginFt, double ContextMarginFt, double ContextHeightFt, double MaxContextHeightFt, bool People)
+    {
+        public static SiteReach Of(Config.AxonStyle ax) => new(ax.SiteMarginFt, ax.ContextMarginFt, ax.ContextHeightFt, double.PositiveInfinity, false);
+    }
+
     static List<Prism> Site(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, Sheet sheet, double z,
-        bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null)
+        bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null, SiteReach? reach = null)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
+        reach ??= SiteReach.Of(ax);
         var own = new Envelope();
         foreach (var b in blocks) own.ExpandToInclude(b.Geometry.EnvelopeInternal);
         var site = new Envelope(own);
-        site.ExpandBy(ax.SiteMarginFt);
+        site.ExpandBy(reach.SiteMarginFt);
         var siteGeom = MeshSlicer.Factory.ToGeometry(site);
         var (pf, ps, pp) = plane ?? (ax.SiteFill, ax.SiteStroke ?? "", ax.SiteStroke == null ? 0 : ax.ContextPt);
         sheet.Paint.Add(("AXON_SITE", new Spec("SITE", proj.Plane(siteGeom, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
         var near = new Envelope(own);
-        near.ExpandBy(ax.ContextMarginFt);
+        near.ExpandBy(reach.ContextMarginFt);
         var items = PlanBackground.Collect(r, near, ctx.Style.Plan.TreeDiameterFt);
         foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)).Select((b, n) => (b, n)))
         {
@@ -488,7 +507,7 @@ public static class AxonDrawing
                 continue;
             }
             var z0 = Math.Max(z, bg.Z0);
-            var z1 = ax.ContextHeightFt > 0 ? Math.Min(bg.Z, z0 + ax.ContextHeightFt) : bg.Z;
+            var z1 = reach.ContextHeightFt > 0 ? Math.Min(bg.Z, z0 + reach.ContextHeightFt) : Math.Min(bg.Z, z0 + reach.MaxContextHeightFt);
             if (z1 > z0 + 0.1) context.Add(new Prism(name, foot, z0, z1, white, white, white, "CTX", bg.Name));
         }
 
@@ -503,16 +522,17 @@ public static class AxonDrawing
             var (tx, ty) = proj.Project(c.X, c.Y, trunkTop + tr.CanopyHFt / 2);
             var canopy = tr.Canopies.Count > 0 ? tr.Canopies[rng.Next(tr.Canopies.Count)] : "#C4ECBC";
             var swatch = d.Swatch("AXON_TREE_" + canopy.TrimStart('#'), canopy);
-            sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}_TRUNK", Seg(proj, c.X, c.Y, z, trunkTop), null, d.Gray(tr.Trunk), tr.TrunkPt, Closed: false)));
+            var treeDepth = proj.Depth(c.X, c.Y, z);
+            sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}_TRUNK", Seg(proj, c.X, c.Y, z, trunkTop), null, d.Gray(tr.Trunk), tr.TrunkPt, Closed: false, Depth: treeDepth)));
             var ellipse = MeshSlicer.Factory.CreatePolygon(Enumerable.Range(0, 25).Select(j =>
             {
                 var a = 2 * Math.PI * (j % 24) / 24;
                 return new Coordinate(tx + tr.CanopyWFt / 2 * Math.Cos(a), ty + tr.CanopyHFt / 2 * Math.Sin(a));
             }).ToArray());
             sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}", ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
-                tr.StrokePt, Opacity: tr.Opacity)));
+                tr.StrokePt, Opacity: tr.Opacity, Depth: treeDepth)));
         }
-        People(d, ctx, sheet, proj, siteGeom, ours, z);
+        if (reach.People) People(d, ctx, sheet, proj, siteGeom, ours, z);
         return context;
     }
 
@@ -521,7 +541,9 @@ public static class AxonDrawing
     {
         if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
         var e = ctx.Style.Entourage;
-        var open = AxonFaces.Safe(() => site.Difference(ours), site);
+        // Our plaza and the ground right around it, never on top of a building.
+        var near = AxonFaces.Safe(() => ours.Buffer(ctx.Style.Plan.ContextMarginFt).Intersection(site), site);
+        var open = MeshSlicer.Polygonal(AxonFaces.Safe(() => near.Difference(ours), near));
         var n = 0;
         foreach (var f in PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, sheet.Prefix + "SITE")
                      .OrderBy(f => proj.Depth(f.X, f.Y, z)))
@@ -530,10 +552,24 @@ public static class AxonDrawing
             var (hx, hy) = proj.Project(f.X, f.Y, z + e.HeightFt);
             var pts = PD.Core.Entourage.EntourageSymbols.Projected(px, py, (hx - px, hy - py), f.Variant, f.Mirror);
             if (pts.Length == 0) continue;
-            var ring = MeshSlicer.Factory.CreatePolygon(pts.Select(q => new Coordinate(q[0], q[1]))
+            NtsGeometry ring = MeshSlicer.Factory.CreatePolygon(pts.Select(q => new Coordinate(q[0], q[1]))
                 .Append(new Coordinate(pts[0][0], pts[0][1])).ToArray());
+            if (!ring.IsValid) ring = ring.Buffer(0); // the silhouette's legs cross: make it a clean shape for the overlays
             sheet.Paint.Add((PD.Core.Entourage.EntouragePlacer.Layer,
-                new Spec($"PERSON_{++n:000}", ring, d.Swatch("ENTOURAGE", e.Color), null, 0, Opacity: e.Opacity)));
+                new Spec($"PERSON_{++n:000}", ring, d.Swatch("ENTOURAGE", e.Color), null, 0, Opacity: e.Opacity, Depth: proj.Depth(f.X, f.Y, z))));
+        }
+    }
+
+    /// <summary>Trees and people standing behind a building lose the part the building hides.</summary>
+    static void HideBehind(Sheet sheet, AxonProjection proj, List<VisibleFace> faces)
+    {
+        for (var i = sheet.Paint.Count - 1; i >= 0; i--)
+        {
+            var (layer, spec) = sheet.Paint[i];
+            if (spec.Depth is not { } depth || spec.Geometry.IsEmpty) continue;
+            var left = AxonFaces.Hide(proj, spec.Geometry, depth, faces);
+            if (left == null) sheet.Paint.RemoveAt(i);
+            else if (!ReferenceEquals(left, spec.Geometry)) sheet.Paint[i] = (layer, spec with { Geometry = left });
         }
     }
 

@@ -323,10 +323,26 @@ public sealed class AxonStyle
     public StackedAxonStyle Stacked { get; set; } = new();
     public ExplodedAxonStyle Exploded { get; set; } = new();
     public ExplodedBAxonStyle ExplodedB { get; set; } = new();
+    public SiteAxonStyle Site { get; set; } = new();
     public string TitleStacked { get; set; } = "";
     public string TitleExploded { get; set; } = "";
     public string TitleExplodedB { get; set; } = "";
     public string TitleLevels { get; set; } = "";
+}
+
+/// <summary>03_Site_Axon.ai (SITE_STYLE §1): wider site, context at real height, people, an ANNOTATION layer kept for the user.</summary>
+public sealed class SiteAxonStyle
+{
+    public double SiteMarginFt { get; set; } = 220;
+    public double ContextMarginFt { get; set; } = 240;
+    /// <summary>0 = real height.</summary>
+    public double ContextHeightFt { get; set; }
+    /// <summary>Taller context (a merged mesh, a tower far away) is cut at this height.</summary>
+    public double MaxContextHeightFt { get; set; } = 400;
+    public bool People { get; set; } = true;
+    public string Title { get; set; } = "SITE AXON";
+    /// <summary>Layer for flows, view lines and service icons: created empty, never cleared by the plugin.</summary>
+    public string AnnotationLayer { get; set; } = "ANNOTATION";
 }
 
 /// <summary>Lollipop trees (SITE_STYLE §1).</summary>

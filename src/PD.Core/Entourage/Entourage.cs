@@ -174,35 +174,36 @@ public static class EntourageSymbols
         }).ToArray();
     }
 
-    /// <summary>Silhouette outline in figure units: x across (± 0.13), y up (0 feet … 1 head top).</summary>
+    /// <summary>
+    /// Silhouette outline in figure units (x across, y up: 0 = feet … 1 = head top), a simple polygon (legs as an
+    /// inverted V, arms along the body) so it fills cleanly; four poses (stride, arms), optionally mirrored.
+    /// </summary>
     static List<double[]> Points(int variant, bool mirror)
     {
-        var w = 0.26;                           // shoulder width / height
-        var stride = variant % 2 == 0 ? 0.07 : 0.13;
-        var arm = variant >= 2 ? 0.10 : 0.05;
+        var stride = variant % 2 == 0 ? 0.03 : 0.07;
+        var arm = variant >= 2 ? 0.035 : 0.0;
         var sx = mirror ? -1 : 1;
-        double[] P(double u, double v) => new[] { sx * u * w, v };
+        double[] P(double x, double y) => new[] { sx * x, y };
         return new List<double[]>
         {
-            P(-0.5 - stride / w * 0.26, 0),     // left foot
-            P(-0.18, 0.46),                     // left hip
-            P(0.18, 0.46),                      // right hip
-            P(0.5 + stride / w * 0.26, 0),      // right foot
-            P(0.28, 0.02),
-            P(0.14, 0.46),
-            P(0.30 + arm, 0.52),                // right hand
-            P(0.46, 0.76),                      // right shoulder
-            P(0.20, 0.84),
-            P(0.16, 0.90),                      // neck
-            P(0.16, 0.95),
-            P(0.00, 1.00),                      // head top
-            P(-0.16, 0.95),
-            P(-0.16, 0.90),
-            P(-0.20, 0.84),
-            P(-0.46, 0.76),                     // left shoulder
-            P(-0.30 - arm, 0.52),               // left hand
-            P(-0.14, 0.46),
-            P(-0.28, 0.02),
+            P(-0.11 - stride, 0.0),   // left foot, outer
+            P(-0.045 - stride, 0.0),  // left foot, inner
+            P(0.0, 0.40),             // crotch
+            P(0.045 + stride, 0.0),   // right foot, inner
+            P(0.11 + stride, 0.0),    // right foot, outer
+            P(0.075, 0.47),           // right hip
+            P(0.095 + arm, 0.49),     // right hand
+            P(0.125, 0.76),           // right shoulder
+            P(0.055, 0.83),
+            P(0.04, 0.87),            // neck
+            P(0.055, 0.94),
+            P(0.0, 1.0),              // head top
+            P(-0.055, 0.94),
+            P(-0.04, 0.87),
+            P(-0.055, 0.83),
+            P(-0.125, 0.76),          // left shoulder
+            P(-0.095 - arm, 0.49),    // left hand
+            P(-0.075, 0.47),          // left hip
         };
     }
 

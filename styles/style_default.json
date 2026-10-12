@@ -627,7 +627,18 @@
     "titleStacked": "STACKED AXON",
     "titleExploded": "EXPLODED AXON",
     "titleExplodedB": "EXPLODED AXON B",
-    "titleLevels": "FLOOR KEY AXON"
+    "titleLevels": "FLOOR KEY AXON",
+    "site": {
+      "comment": "03_Site_Axon.ai (SITE_STYLE §1, reference 'Question 4'): our massing with floor lines among white context at real height, the whole surrounding site (ground, roads, landscape, trees, people). Flow / view / service graphics go on the ANNOTATION layer, which the plugin never clears.",
+      "siteMarginFt": 220.0,
+      "contextMarginFt": 240.0,
+      "contextHeightFt": 0.0,
+      "maxContextHeightFt": 400.0,
+      "people": true,
+      "title": "SITE AXON",
+      "annotationLayer": "ANNOTATION"
+    },
+    "titleSite": "SITE AXON"
   },
   "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
   "roles": {

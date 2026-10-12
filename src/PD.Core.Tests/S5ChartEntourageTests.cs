@@ -179,4 +179,19 @@ public class S5ChartEntourageTests
         Assert.Equal(155, EntouragePlacer.Modelled(ctx, env).Count);
         Assert.Equal(155, r.Local.Objects.Count(o => o.Role == PD.Core.Classification.Roles.Entourage && o.Mesh != null));
     }
+
+    /// <summary>Every silhouette is a simple polygon (Illustrator fills it cleanly, overlays accept it).</summary>
+    [Fact]
+    public void Entourage_SilhouettesAreSimple()
+    {
+        var d = new PD.Core.Drawing.Drawing();
+        var e = new PD.Core.Config.EntourageStyle();
+        for (var v = 0; v < EntourageSymbols.Variants; v++)
+            foreach (var mirror in new[] { false, true })
+            {
+                var it = EntourageSymbols.Standing(d, e, "P", 0, 0, 10, v, mirror);
+                var ring = it.Paths![0].Append(it.Paths[0][0]).Select(q => new NetTopologySuite.Geometries.Coordinate(q[0], q[1])).ToArray();
+                Assert.True(new NetTopologySuite.Geometries.GeometryFactory().CreatePolygon(ring).IsValid, $"variant {v} mirror {mirror}");
+            }
+    }
 }
