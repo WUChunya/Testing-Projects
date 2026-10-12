@@ -8,7 +8,7 @@ namespace PD.Rhino.UI;
 /// <summary>Small Eto helpers so each tab stays short.</summary>
 internal static class Ui
 {
-    public static GridView Grid(int height = 220) => new() { ShowHeader = true, AllowMultipleSelection = false, Height = height };
+    public static GridView Grid(int height = 220, bool multi = false) => new() { ShowHeader = true, AllowMultipleSelection = multi, Height = height };
 
     public static GridColumn Text<T>(string header, Func<T, string> get, Action<T, string>? set = null, int width = 0)
     {
@@ -83,6 +83,40 @@ internal static class Ui
     }
 
     public static string Ft(double feet) => PD.Core.Model.FeetInches.Format(feet);
+}
+
+/// <summary>
+/// Ctrl / Shift multi-selection that behaves like Rhino's layer panel: changing a cell of a selected row changes every
+/// selected row. Clicking a cell can collapse the selection to that one row before the edit arrives, so the selection
+/// just before the click is remembered too. VERIFY-WIN: Eto WPF grid selection order around cell edits.
+/// </summary>
+internal sealed class MultiSelect<T> where T : class
+{
+    readonly GridView _grid;
+    List<T> _current = new(), _previous = new();
+
+    public MultiSelect(GridView grid)
+    {
+        _grid = grid;
+        grid.SelectedItemsChanged += (_, _) =>
+        {
+            _previous = _current;
+            _current = grid.SelectedItems.OfType<T>().ToList();
+        };
+    }
+
+    /// <summary>Rows an edit on <paramref name="row"/> applies to: the (previous) multi-selection holding it, else the row.</summary>
+    public List<T> Targets(T row)
+    {
+        if (_current.Count > 1 && _current.Contains(row)) return _current.ToList();
+        if (_previous.Count > 1 && _previous.Contains(row)) return _previous.ToList();
+        return new List<T> { row };
+    }
+
+    public List<T> Selected => _grid.SelectedItems.OfType<T>().ToList();
+
+    /// <summary>Forget the selection when the rows are rebuilt (the old row objects are gone).</summary>
+    public void Reset() => _current = _previous = new List<T>();
 }
 
 /// <summary>Base for the tabs: rebuilds its rows when the session changes.</summary>

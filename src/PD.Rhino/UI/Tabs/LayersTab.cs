@@ -15,22 +15,28 @@ internal sealed class LayersTab : TabBase
     static readonly string[] Modes = { "", "grayscale", "line", "color" };
     static readonly string[] Groups = { "All", "NC (new construction)", "BG (context)", "Entourage", "Unclassified" };
 
-    readonly GridView _grid = Ui.Grid(320);
+    readonly GridView _grid = Ui.Grid(320, multi: true);
+    readonly MultiSelect<Row> _sel;
+    readonly DropDown _bulkRole = new() { Width = 120 };
+    readonly DropDown _bulkProgram = new() { Width = 130 };
     readonly ComboBoxCell _programCell;
     readonly DropDown _group = new() { Width = 170 };
     readonly Label _status = new();
 
     public LayersTab(PdSession s) : base(s)
     {
-        _grid.Columns.Add(Ui.Check<Row>("Use", r => r.S.Use, (r, v) => Edit(() => r.S.Use = v)));
+        _sel = new MultiSelect<Row>(_grid);
+        // Ctrl / Shift-select rows, then change any cell of a selected row: every selected layer follows.
+        _grid.Columns.Add(Ui.Check<Row>("Use", r => r.S.Use, (r, v) => EditAll(r, x => x.S.Use = v)));
         _grid.Columns.Add(Ui.Text<Row>("Layer", r => r.Path, null, 170));
         _grid.Columns.Add(Ui.Text<Row>("Objects", r => r.Count.ToString(), null, 44));
         _grid.Columns.Add(Ui.Text<Row>("Group", r => Group(r.S.Role), null, 46));
-        _grid.Columns.Add(Ui.Combo<Row>("Role", Roles, r => r.S.Role, (r, v) => Edit(() => { r.S.Role = v; r.S.Mode = PdSession.DefaultMode(v); }), 110));
-        var programCol = Ui.Combo<Row>("Program", ProgramKeys().Cast<string>(), r => r.S.ProgramKey, (r, v) => Edit(() => r.S.ProgramKey = v), 120);
+        _grid.Columns.Add(Ui.Combo<Row>("Role", Roles, r => r.S.Role, (r, v) => EditAll(r, x => { x.S.Role = v; x.S.Mode = PdSession.DefaultMode(v); }), 110));
+        var programCol = Ui.Combo<Row>("Program", ProgramKeys().Cast<string>(), r => r.S.ProgramKey, (r, v) => EditAll(r, x => x.S.ProgramKey = v), 120);
         _programCell = (ComboBoxCell)programCol.DataCell;
         _grid.Columns.Add(programCol);
-        _grid.Columns.Add(Ui.Combo<Row>("Mode", Modes, r => r.S.Mode, (r, v) => Edit(() => r.S.Mode = v), 90));
+        _grid.Columns.Add(Ui.Combo<Row>("Mode", Modes, r => r.S.Mode, (r, v) => EditAll(r, x => x.S.Mode = v), 90));
+        foreach (var r in Roles) _bulkRole.Items.Add(r);
 
         foreach (var g in Groups) _group.Items.Add(g);
         _group.SelectedIndex = 0;
@@ -40,6 +46,10 @@ internal sealed class LayersTab : TabBase
         layout.AddSeparateRow(Ui.Button("Analyze model", Analyze), Ui.Button("Re-fill from keywords", Refill),
             new Label { Text = "Show:" }, _group, null);
         layout.Add(_grid, yscale: true);
+        layout.AddSeparateRow(new Label { Text = "Selected rows:" }, Ui.Button("Use", () => Bulk(x => x.S.Use = true)),
+            Ui.Button("Don't use", () => Bulk(x => x.S.Use = false)), _bulkRole,
+            Ui.Button("Set role", () => { if (_bulkRole.SelectedValue is IListItem i) Bulk(x => { x.S.Role = i.Text; x.S.Mode = PdSession.DefaultMode(i.Text); }); }),
+            _bulkProgram, Ui.Button("Set program", () => Bulk(x => x.S.ProgramKey = _bulkProgram.SelectedKey ?? "")), null);
         layout.AddSeparateRow(Ui.Button("Save mapping template...", SaveTemplate), Ui.Button("Load mapping template...", LoadTemplate), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "layers"));
@@ -52,12 +62,33 @@ internal sealed class LayersTab : TabBase
         Session.Save();
     }
 
+    /// <summary>A cell edit on a selected row applies to the whole selection (Rhino layer panel behaviour).</summary>
+    void EditAll(Row row, Action<Row> change)
+    {
+        var rows = _sel.Targets(row);
+        foreach (var r in rows) change(r);
+        Session.Save();
+        if (rows.Count > 1) _grid.Invalidate();
+    }
+
+    void Bulk(Action<Row> change)
+    {
+        var rows = _sel.Selected;
+        if (rows.Count == 0) return;
+        foreach (var r in rows) change(r);
+        Session.Save();
+        _grid.Invalidate();
+    }
+
     /// <summary>Keys of the current scheme, custom programs included (refreshed when tab 5 changes).</summary>
     List<object> ProgramKeys() => new object[] { "" }.Concat(Session.Programs.Select(p => (object)p.Key)).ToList();
 
     public override void Refresh()
     {
         _programCell.DataStore = ProgramKeys();
+        _bulkProgram.Items.Clear();
+        foreach (var k in ProgramKeys()) _bulkProgram.Items.Add((string)k, (string)k);
+        _sel.Reset();
         var ex = Session.Extraction;
         if (ex == null)
         {
