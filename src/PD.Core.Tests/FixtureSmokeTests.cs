@@ -60,7 +60,7 @@ public class FixtureSmokeTests
     public void EmbeddedStyles_Parse(string file)
     {
         using var doc = StyleResources.Read(file);
-        Assert.Equal(1, doc.RootElement.GetProperty("version").GetInt32());
+        Assert.True(doc.RootElement.GetProperty("version").GetInt32() >= 1);
     }
 
     [Fact]

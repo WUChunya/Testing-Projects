@@ -44,11 +44,14 @@
       "Elevation",
       "AxonStacked",
       "AxonExploded",
+      "AxonExplodedB",
       "AxonLevels",
       "ProgramChart",
       "Pie"
     ],
     "scales": [
+      "1\" = 45'-0\"",
+      "1\" = 16'-0\"",
       "1/8\" = 1'-0\"",
       "3/32\" = 1'-0\"",
       "1/16\" = 1'-0\"",
@@ -62,14 +65,17 @@
       "1:200",
       "1:500"
     ],
-    "defaultScale": "1/32\" = 1'-0\"",
+    "defaultScale": "1\" = 45'-0\"",
+    "defaultSectionScale": "1\" = 16'-0\"",
     "artboards": [
       "Fit content",
       "11x17 Landscape",
       "8.5x11 Landscape",
       "24x36 Landscape",
       "A3 Landscape",
-      "A1 Landscape"
+      "A1 Landscape",
+      "ARCH D Landscape",
+      "ARCH D Portrait"
     ],
     "defaultArtboard": "Fit content",
     "sectionDepthFt": 100.0,
@@ -89,6 +95,14 @@
       "A3 Landscape": [
         1190.55,
         841.89
+      ],
+      "ARCH D Landscape": [
+        2592,
+        1728
+      ],
+      "ARCH D Portrait": [
+        1728,
+        2592
       ],
       "A1 Landscape": [
         2383.94,

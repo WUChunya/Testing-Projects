@@ -31,8 +31,9 @@ public static class Exporter
         }
         if (wanted.Contains("AxonStacked")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Stacked));
         if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Exploded));
+        if (wanted.Contains("AxonExplodedB")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.ExplodedB));
         if (wanted.Contains("AxonLevels")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Levels));
-        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded" or "AxonLevels")))
+        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded" or "AxonExplodedB" or "AxonLevels")))
             notes.Add($"{w}: not implemented yet (charts in S5).");
         foreach (var d in drawings) notes.AddRange(d.Notes);
         return drawings;

@@ -3,38 +3,35 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 9 (v0.4.1, 72 tests): artboards laid out in rows centred on the canvas (`Drawing.LayoutArtboards`; plans .ai failed: off-canvas);
-  runtime logs per-item WARN instead of failing the file. Axons rewritten on `AxonFaces` (prism faces, near→far trimming with
-  OverlayNGRobust): stacked thin lines + plane labels + low white context; exploded plates spaced until clear, CORE connectors,
-  tall spaces stretched; new `AxonLevels` (04_Axon_Levels.ai, plate + dashed ghost). Plan title = marker + "Level 1"; light labels on dark fills.
-- Next session: **S5 Charts + Entourage** — entry prompt in `docs/DEV_PROMPT.md`. PRD v0.7; history `docs/CHANGELOG.md`.
-- S4 (v0.4.0): `Plans/PlanDrawing` (01_Plans.ai: artboard per level + PLANS OVERVIEW; shared extent; legend, scale bar, north,
-  background via `PlanBackground`, glass line, open-to-below void, `PlanLabels` MIC/long-side or leader); `Axons/AxonDrawing`
-  (layers per exploded plate `AXON_L*`, plane text via `DItem.Matrix`). Goldens: plan_L1, axon_stacked, axon_exploded, axon_levels_L3.
-- Axon style spec (proposal, not yet wired): `docs/AXON_STYLE.md` + `styles/axon_style.json` + sheet `docs/reference/axon_exploded_reference.svg`
-  (`tools/axon_style_reference.py`). 1"=45' on ARCH D; diffs vs `style_default.json › axon` in AXON_STYLE §11 await user OK.
-  Site axon / site plan / exploded B / program section (1"=16'): `docs/SITE_STYLE.md`, `styles/site_style.json`; all text Arial.
+- Rev 10 (v0.5.0, 89 tests): styles unified to `docs/SITE_STYLE.md` / `docs/AXON_STYLE.md` (now merged into `style_default.json`).
+  Fonts: all Arial (`fonts.*` incl. opacity / tracking / leading; `ParaStyle` carries them; `DItem.SizePt`, `GlyphAnchor`).
+  Section §4: `ExportContext.ForSection()` (1" = 16', text scale 1), bars 0.68×floor, white slab strips, right labels + "01" numbers.
+  Plan §2: roles paints, building shadows, 3 pt outline, white room lines, 19/13 pt names, title tag. Stacked §1: floor lines,
+  folds (`AxonFaces.Folds`), 2.5 silhouette, trees. Exploded A (AXON_STYLE): pitch max(1.5×floor, 0.7×top depth), front-corner
+  labels, connectors (CORE/STAIR + tall). Exploded B (`AxonKind.ExplodedB`, planometric): translucent blocks, atria, shafts, site plane.
+- Roles: NC.Core/Stair (masses, program CORE/STAIR), NC.Slab/Facade (were BG.*, renamed on load), NC.Structure/Green/Hardscape/
+  Tree/Water, BG.*; NC by path segment NC/NEW/PROJECT/PROPOSED (`layer_keywords.json` v2, `first` rules before program match).
+- Next session: **S5 Charts + Entourage** — `docs/DEV_PROMPT.md`. PRD v0.8; history `docs/CHANGELOG.md`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
-- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade: stacked 30% veil, exploded hidden.
-- Defaults live in `styles/` (`rules_default.json` output/folder/Illustrator flags; `style_default.json` section/plan/axon/page/fonts).
+- Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off by default (`axon.facadeVeil`).
+- Defaults live in `styles/` (`rules_default.json` output/scales; `style_default.json` fonts/section/plan/axon/roles/view).
+- Scales: plans/axons 1" = 45'-0" (new default), sections 1" = 16'-0" (tab 8 "Section scale"). Old saves keep their stored scale.
 - Program keys immutable (`L03_KEY_01`, swatches `PRG_<KEY>`); AI update: named items redrawn, `_MANUAL`/`OVERLAY`/unnamed kept.
-- Item names: `SEC_*`, `ELV_*`, plans `PLN_<lvl>_<id>` / overview `PLO_<lvl>_*`, axons `AXS_<lvl>_<id>_TOP|SIDEnnn`, `AXE_<lvl>_*`.
-- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu). Stale layers purged: `PD_*`, `VIEW_*`, `BG_*`, `AXON_*`, `FACADE`.
-- Plan: all levels share one extent (building + 60'); model +Y = north; level title "Level {n}" for Ln names.
-- Axon: isometric from SW or active viewport direction (tab 8). Style = Atlanta reference; context height 8' (`contextHeightFt`, 0 = real).
+- Item names: `SEC_*`, `ELV_*`, `PLN_<lvl>_*`/`PLO_*`, `AXS_*`, `AXE_*`, `AXB_*`, `AXK_<lvl>_*`. Stale layers purged: `PD_*`, `VIEW_*`, `BG_*`, `AXON_*`, `FACADE`.
+- Axon context = low white blocks (`axon.contextHeightFt` 8; 0 = real height but merged context meshes become huge boxes).
+- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu; screenshot fullPage:false).
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.4.1.zip` over the old files, restart Rhino; panel shows tabs 1–9 in English.
-2. Tab 6: Read SEC:: layers / Pick section line. Tab 7: Read ELEV:: layers / Pick elevation line (VERIFY-WIN both pick commands).
-3. Tab 8: tick Plan, Section, Elevation, AxonStacked, AxonExploded, AxonLevels (new; old saves must tick it).
-4. Export with Illustrator closed: Illustrator runs, saves all .ai, then quits; no file left open (VERIFY-WIN Quit). With Illustrator open: it stays open.
-5. 02_Section_*.ai: no grey view lines in the white gaps between colour blocks (layer PD_PROGRAM_BG).
-6. 01_Plans.ai now exists (artboards in rows); illustrator_log.txt shows OK (any WARN lines: send them to me).
-7. 04_Axon_Exploded.ai: labels lie on the plates and stay editable text (VERIFY-WIN `PD.planeText` matrix transform).
-8. Tick "Axons: use the active viewport's view direction", set a Rhino parallel view, export → axon matches the viewport.
+1. Unzip `ProgramDiagram-0.5.0.zip` over the old files, restart Rhino.
+2. Tab 1: Role list shows NC.* and BG.*; CORE / STAIR / COLUMN / GREEN ROOF / NC::TREE layers pre-fill; old BG.Facade/BG.Slab show as NC.*.
+3. Tab 8: set Scale 1" = 45'-0" (old saves keep 1/32"), Section scale 1" = 16'-0"; tick AxonExplodedB (new).
+4. Fonts: every text in Arial (ArialMT / Arial-BoldMT); white axon labels at 70 % (B 90 %) opacity (VERIFY-WIN text opacity).
+5. Section: labels right-aligned and floor numbers left in bars (VERIFY-WIN `PD.anchorOnGlyphs`), slabs white strips.
+6. Exploded A: labels start/end at the front corner (VERIFY-WIN left/right justification in `PD.planeText`).
+7. illustrator_log.txt: all OK; send any WARN lines.
 
 ## Known issues
-- Not yet: Unassigned hatch, street names/arrows, trees/people, key plan, stair hatch; axon context buildings, mullion lines, vertical connectors.
-- Fixture has no CORE program, so exploded plates are not connected (log note). Street arrows/names not yet (no road layer).
+- Not yet: street names/arrows, people, flow/view/service icons, plaza stipple / lawn hatch, key plan, Unassigned hatch.
+- Context buildings modelled as one merged mesh cannot be extruded per building; NC.Green etc. only flat in axons (roof gardens not lifted).
 - Section-closed volume ≈ mid area × height; layer-priority overlap rule not implemented.

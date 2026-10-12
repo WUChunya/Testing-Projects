@@ -14,13 +14,12 @@ public static class SectionAnnotation
         var black = d.Gray("#000000");
         var thin = ctx.Style.Strokes.BackgroundPt;
 
-        var prop = ctx.Style.Background.GetValueOrDefault("propertyLine");
+        var st = ctx.Style.Section;
         foreach (var (u, i) in g.PropertyLines.Select((u, i) => (u, i)))
         {
-            var line = map.Line(p + $"PROPERTY_{i}", new[] { (u, zMin), (u, zMax) }, d.Swatch("BG_PROPERTY_LINE", prop?.Stroke ?? "#FF0000"), ctx.Style.Strokes.RoomPt);
-            line.Dash = prop?.Dash;
+            var line = map.Line(p + $"PROPERTY_{i}", new[] { (u, zMin), (u, zMax) }, d.Swatch("BG_PROPERTY_LINE", st.PropertyStroke), st.PropertyPt);
+            line.Dash = st.PropertyDash;
             anno.Items.Add(line);
-            anno.Items.Add(SectionDrawing.Text(p + $"PROPERTY_{i}_TXT", map.X(u) - ctx.Pt(3), map.Y(g.Ground) - ctx.Pt(6), "PROPERTY LINE", "PD Note", "left", 90));
         }
 
         var env = g.Outline.EnvelopeInternal;
@@ -36,7 +35,7 @@ public static class SectionAnnotation
         }
 
         anno.Items.Add(SectionDrawing.Text(p + "TITLE", titleX, titleY, $"{ctx.Style.Section.TitlePrefix} {sec.Name}", "PD Title", "left"));
-        anno.Items.Add(SectionDrawing.Text(p + "SCALE", titleX, titleY + ctx.Pt(12), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
+        anno.Items.Add(SectionDrawing.Text(p + "SCALE", titleX, titleY + ctx.Pt(18), $"SCALE {ctx.ScaleText}", "PD Note", "left"));
     }
 
     static DItem Seg(string name, double x0, double y0, double x1, double y1, string? stroke, double pt) => new()

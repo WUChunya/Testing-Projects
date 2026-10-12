@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using NetTopologySuite.Geometries;
 using PD.Core.Analysis;
+using PD.Core.Classification;
 using PD.Core.Drawing;
 using PD.Core.Geometry;
 using PD.Core.Sections;
@@ -23,9 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        var f = ctx.Style.Fonts.Label;
-        d.ParaStyles.Add(new ParaStyle("PD Heading", f.PostScript, f.FallbackPostScript, f.Family, ctx.Pt(ctx.Style.Fonts.Title.SizePt), true, "left", d.Gray(pg.LabelColor)!, f.Weight));
-        foreach (var n in new[] { "BG_SITE", "BG_CONTEXT", "PD_PROGRAM", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -37,7 +36,7 @@ public static class PlanDrawing
         var env = new Envelope();
         foreach (var i in levels) env.ExpandToInclude(r.Plans[i].Union.EnvelopeInternal);
         env.ExpandBy(ps.ContextMarginFt);
-        var background = PlanBackground.Collect(r, env);
+        var background = PlanBackground.Collect(r, env, ps.TreeDiameterFt);
         double w = env.Width * k, h = env.Height * k, m = pg.MarginPt;
 
         // One artboard per level.
@@ -52,7 +51,8 @@ public static class PlanDrawing
             var legendH = rows * ctx.Pt(ps.LegendRowPt);
             var bar = ScaleBar(ps, w, k);
             var tools = bar * k + ctx.Pt(ps.NorthArrowPt) * 2.5;
-            var bottom = band + Math.Max(legendH, ctx.Pt(ps.NorthArrowPt) * 1.8);
+            var tag = ctx.Style.Fonts.Title.SizePt * 1.2 + 2 * ps.TitleTagPadPt;
+            var bottom = band + Math.Max(legendH, ctx.Pt(tag));
             double abW, abH, x0, y0;
             if (ctx.ArtboardSize is { } fixedSize)
             {
@@ -60,11 +60,11 @@ public static class PlanDrawing
                 x0 = (abW - w) / 2;
                 y0 = m + titleH + (abH - 2 * m - titleH - bottom - h) / 2;
                 if (x0 < m - 0.5 || y0 < m + titleH - 0.5)
-                    d.Notes.Add($"Plan {lvl.Name} at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+                    d.Notes.Add($"Plan {lvl.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
             }
             else
             {
-                abW = 2 * m + Math.Max(w, legendW + tools + ctx.Pt(24));
+                abW = 2 * m + Math.Max(Math.Max(w, legendW + ctx.Pt(260)), tools);
                 abH = 2 * m + titleH + h + bottom;
                 x0 = m + (abW - 2 * m - w) / 2;
                 y0 = m + titleH;
@@ -74,22 +74,13 @@ public static class PlanDrawing
             var p = $"PLN_{SectionDrawing.Safe(lvl.Name)}_";
             DrawLevel(d, ctx, a, map, i, p, background);
 
-            var anno = d.Layer("PD_ANNOTATION");
-            // Title: yellow square + "Level 1" (reference: Atlanta level labels).
-            var sq = ctx.Pt(ps.TitleMarkerPt);
-            var ty = m + ctx.Pt(16);
-            if (sq > 0)
-                anno.Items.Add(At(new DItem
-                {
-                    Kind = ItemKind.Path, Name = p + "TITLE_MARK", Fill = d.Swatch("PD_LEVEL_MARKER", ps.TitleMarker),
-                    Paths = new() { new[] { new[] { m, ty - sq }, new[] { m + sq, ty - sq }, new[] { m + sq, ty }, new[] { m, ty } } },
-                }, a));
-            anno.Items.Add(At(SectionDrawing.Text(p + "TITLE", m + (sq > 0 ? sq * 1.8 : 0), ty, Title(ps.LevelTitleFormat, lvl.Name), "PD Level Title", "left"), a));
+            // Scale bar and north arrow top right; legend bottom left; title tag ("Level 1") bottom right (site plan §2).
+            var xr = abW - m;
+            North(d, ctx, a, p, xr - ctx.Pt(ps.NorthArrowPt) * 0.5, m);
+            Bar(d, ctx, a, p, bar, xr - ctx.Pt(ps.NorthArrowPt) * 2 - bar * k, m + ctx.Pt(ps.NorthArrowPt) * 0.6);
             var yb = abH - m - bottom + band;
             Legend(d, ctx, a, p, keys, m, yb);
-            var xr = abW - m;
-            North(d, ctx, a, p, xr - ctx.Pt(ps.NorthArrowPt) * 0.5, yb);
-            Bar(d, ctx, a, p, bar, xr - ctx.Pt(ps.NorthArrowPt) * 2 - bar * k, yb + ctx.Pt(ps.NorthArrowPt) * 0.6);
+            TitleTag(d, ctx, a, p, Title(ps.LevelTitleFormat, lvl.Name), xr, abH - m);
         }
 
         // Overview: all levels in a grid (lowest first), same scale, bold level names.
@@ -119,10 +110,30 @@ public static class PlanDrawing
 
         foreach (var (b, n) in background.Select((b, n) => (b, n)))
         {
-            var (fill, stroke, pt, dash) = PlanBackground.Paint(d, ctx.Style, b);
+            var (fill, stroke, pt, dash, opacity) = PlanBackground.Paint(d, ctx.Style, b);
             var item = map.Geom($"{p}BG_{n:000}", b.Geometry, fill, stroke, pt, !b.IsLine);
             item.Dash = dash;
+            item.Opacity = opacity;
             d.Layer(PlanBackground.LayerName(b)).Items.Add(At(item, a));
+            // Other buildings cast a hard shadow to the lower right (a copy on the layer below).
+            var paint = PlanBackground.PaintOf(ctx.Style, b.Role, "plan");
+            if (paint.Shadow != null && paint.ShadowOffsetPt is { Length: 2 } off && !b.IsLine)
+            {
+                var shadow = map.Geom($"{p}BG_{n:000}_SHADOW", b.Geometry, d.Swatch(PlanBackground.SwatchName(b.Role) + "_SHADOW", paint.Shadow), null, 0, true);
+                foreach (var ring in shadow.Paths!) foreach (var q in ring) { q[0] += ctx.Pt(off[0]); q[1] += ctx.Pt(off[1]); }
+                d.Layer("BG_CONTEXT_SHADOW").Items.Add(At(shadow, a));
+            }
+        }
+
+        // Our structure (columns, walls) cut at the plan height: solid dark.
+        var cutAt = plan.Level.Elevation + ctx.Rules.Cleanup.PlanCutHeightFt;
+        var sPaint = PlanBackground.PaintOf(ctx.Style, Roles.Structure, "plan");
+        foreach (var (o, n) in r.Local.Objects.Where(o => o.Role == Roles.Structure && o.Mesh != null && !r.Stray.Contains(o.Id)
+                     && o.BBox.MinZ <= cutAt && o.BBox.MaxZ >= cutAt).Select((o, n) => (o, n)))
+        {
+            var cut = MeshSlicer.SliceToPolygon(o.Mesh!, cutAt, ctx.Rules.Cleanup.WeldToleranceFt, ctx.Rules.Cleanup.GapCloseToleranceFt, closeOpen: true);
+            if (cut.IsEmpty) cut = MeshProjection.TopDown(o.Mesh!);
+            d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STRUCTURE_{n:000}", cut, d.Swatch("NC_STRUCTURE", sPaint.Fill), null, 0), a));
         }
 
         var count = new Dictionary<string, int>();
@@ -185,10 +196,16 @@ public static class PlanDrawing
     {
         if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
         var layer = d.Layer("PD_LABELS");
+        // Room names: 19 pt, long names 13 pt (site plan §2); otherwise a leader.
+        var small = ctx.Pt(ctx.Style.Plan.LabelSmallPt);
         var spot = PlanLabels.Fit(block, text, sizeFt);
+        double? size = null;
+        if (spot == null && small > 0 && (spot = PlanLabels.Fit(block, text, small / map.K)) != null) size = small;
         if (spot != null)
         {
-            layer.Items.Add(At(SectionDrawing.Text(name + "_LBL", map.X(spot.X), map.Y(spot.Y), spot.Text, inside, "center", spot.AngleDeg, center: true), a));
+            var t = SectionDrawing.Text(name + "_LBL", map.X(spot.X), map.Y(spot.Y), spot.Text, inside, "center", spot.AngleDeg, center: true);
+            t.SizePt = size;
+            layer.Items.Add(At(t, a));
             return;
         }
         var anchor = PlanLabels.Anchor(block);
@@ -207,6 +224,25 @@ public static class PlanDrawing
         layer.Items.Add(At(map.Line(name + "_LDR", new[] { (anchor.X, anchor.Y), (end.X, end.Y) }, d.Gray(ps.LeaderStroke), ps.LeaderPt), a));
         var right = dx >= 0;
         layer.Items.Add(At(SectionDrawing.Text(name + "_LBL", map.X(end.X) + (right ? 2 : -2), map.Y(end.Y) + ctx.Pt(2.5), text, "PD Label", right ? "left" : "right"), a));
+    }
+
+    /// <summary>Level name in a tinted box, right-aligned at (right, bottom).</summary>
+    static void TitleTag(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, string p, string text, double right, double bottom)
+    {
+        var ps = ctx.Style.Plan;
+        var size = ctx.Pt(ctx.Style.Fonts.Title.SizePt);
+        var pad = ctx.Pt(ps.TitleTagPadPt);
+        var w = TextFit.Width(text, size) * 0.85 + 2 * pad;
+        var h = size * 1.2 + 2 * pad;
+        var anno = d.Layer("PD_ANNOTATION");
+        if (!string.IsNullOrEmpty(ps.TitleTagFill))
+            anno.Items.Add(At(new DItem
+            {
+                Kind = ItemKind.Path, Name = p + "TITLE_TAG", Fill = d.Swatch("PD_TITLE_TAG", ps.TitleTagFill),
+                Paths = new() { new[] { new[] { right - w, bottom - h }, new[] { right, bottom - h }, new[] { right, bottom }, new[] { right - w, bottom } } },
+            }, a));
+        var t = SectionDrawing.Text(p + "TITLE", right - w / 2, bottom - h / 2, text, "PD Title", "center", center: true);
+        anno.Items.Add(At(t, a));
     }
 
     /// <summary>Programs drawn on this level, in colour-scheme order.</summary>
@@ -261,7 +297,7 @@ public static class PlanDrawing
         var ty = y0 + hgt + ctx.Pt(8);
         layer.Items.Add(At(SectionDrawing.Text($"{p}SCALEBAR_0", x0, ty, "0", "PD Note", "center"), a));
         layer.Items.Add(At(SectionDrawing.Text($"{p}SCALEBAR_END", x0 + 4 * seg, ty, $"{lengthFt:0}'", "PD Note", "center"), a));
-        layer.Items.Add(At(SectionDrawing.Text($"{p}SCALE", x0, y0 - ctx.Pt(4), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"), a));
+        layer.Items.Add(At(SectionDrawing.Text($"{p}SCALE", x0, y0 - ctx.Pt(4), $"SCALE {ctx.ScaleText}", "PD Note", "left"), a));
     }
 
     /// <summary>North arrow (model +Y is north): filled triangle with an N above, centred on x.</summary>

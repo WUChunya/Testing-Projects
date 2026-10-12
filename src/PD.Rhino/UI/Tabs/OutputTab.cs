@@ -18,6 +18,8 @@ internal sealed class OutputTab : TabBase
     readonly TextBox _scheme = new();
     /// <summary>Free text like Bluebeam (3/64" = 1'-0", 1" = 30', 1:250) with presets in the list.</summary>
     readonly ComboBox _scale = new() { AutoComplete = true };
+    /// <summary>Program sections have their own scale (SITE_STYLE §4, default 1" = 16'-0").</summary>
+    readonly ComboBox _sectionScale = new() { AutoComplete = true };
     readonly Label _scaleInfo = new();
     readonly CheckBox _png = new() { Text = "Also export a PNG per artboard" };
     readonly DropDown _artboard = new();
@@ -32,6 +34,7 @@ internal sealed class OutputTab : TabBase
     {
         var o = s.Rules.Output;
         _scale.DataStore = o.Scales;
+        _sectionScale.DataStore = o.Scales;
         _artboard.DataStore = o.Artboards;
         foreach (var d in o.Drawings)
         {
@@ -42,6 +45,7 @@ internal sealed class OutputTab : TabBase
         _folder.LostFocus += (_, _) => { Store(); ShowFolder(); };
         _scheme.LostFocus += (_, _) => Store();
         _scale.TextChanged += (_, _) => { if (!_loading) { ShowScale(); Store(); } };
+        _sectionScale.TextChanged += (_, _) => { if (!_loading) Store(); };
         _png.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _launch.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _axonView.CheckedChanged += (_, _) => { if (!_loading) Store(); };
@@ -53,6 +57,7 @@ internal sealed class OutputTab : TabBase
         layout.AddRow(null, _folderInfo);
         layout.AddRow(new Label { Text = "Scheme" }, _scheme);
         layout.AddRow(new Label { Text = "Scale (type any)" }, _scale);
+        layout.AddRow(new Label { Text = "Section scale" }, _sectionScale);
         layout.AddRow(null, _scaleInfo);
         layout.AddRow(new Label { Text = "Artboard" }, _artboard);
         layout.AddRow(null, new Label { Text = "Drawings are always at true scale; \"Fit content\" sizes the artboard to the drawing." });
@@ -84,6 +89,7 @@ internal sealed class OutputTab : TabBase
         _launch.Checked = o.RunIllustrator ?? Session.Rules.Output.RunIllustrator;
         _scheme.Text = o.Scheme;
         _scale.Text = o.Scale;
+        _sectionScale.Text = o.SectionScale;
         _png.Checked = o.ExportPng ?? Session.Rules.Output.ExportPng;
         _axonView.Checked = o.AxonFromViewport;
         ShowScale();
@@ -105,6 +111,7 @@ internal sealed class OutputTab : TabBase
         o.RunIllustrator = _launch.Checked == true;
         o.Scheme = _scheme.Text;
         if (ExportContext.ParseScale(_scale.Text) != null) o.Scale = _scale.Text.Trim();
+        if (ExportContext.ParseScale(_sectionScale.Text) != null) o.SectionScale = _sectionScale.Text.Trim();
         o.ExportPng = _png.Checked == true;
         o.AxonFromViewport = _axonView.Checked == true;
         o.Artboard = _artboard.SelectedValue as string ?? o.Artboard;

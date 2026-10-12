@@ -48,11 +48,11 @@ public class BasementSectionTests
         var d = SectionDrawing.Build(ctx, new SectionSetting { Name = "S", Line = new double[] { -10, 30, 110, 30 } });
 
         var ground = d.Layer("PD_GROUND").Items.Single();
-        var groundMid = (ground.Paths![0][0][1] + ground.Paths[0][2][1]) / 2;
+        var groundMid = ground.Paths![0][0][1];
         var bars = d.Layer("PD_PROGRAM").Items;
         Assert.Contains(bars, b => b.Y > groundMid && b.Fill == "PRG_BUILDING_SUPPORT"); // parking bar below grade
         Assert.Contains(bars, b => b.Y + b.H < groundMid && b.Fill == "PRG_OFFICE");
-        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_S_LVL_B1_TXT");
+        Assert.Contains(d.Layer("PD_LABELS").Items, i => i.Name.EndsWith("_NUM") && i.Text == "B1");
         // The whole basement is on the artboard.
         Assert.All(bars, b => Assert.InRange(b.Y + b.H, 0, d.Artboards[0].H));
     }

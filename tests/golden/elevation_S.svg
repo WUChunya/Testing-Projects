@@ -1,149 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="542" height="478" viewBox="0 0 542 478">
+<svg xmlns="http://www.w3.org/2000/svg" width="406" height="396" viewBox="0 0 406 396">
 <title>ELEVATION S</title>
 <rect width="100%" height="100%" fill="#FFFFFF"/>
 <g id="VIEW_MASS">
-<path id="ELV_S_MASS_036" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M224.356,376.822 L224.356,340.975 L254.253,340.975 L359.725,340.975 L389.622,340.975 L389.622,376.822 Z"/>
-<path id="ELV_S_MASS_029" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M378.084,343.411 L270.493,343.411 L270.493,309.661 L378.084,309.661 Z"/>
-<path id="ELV_S_MASS_028" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M270.493,376.822 L270.493,343.411 L378.084,343.411 L378.084,376.822 Z"/>
-<path id="ELV_S_MASS_027" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M453.232,36.081 L453.232,82.72 L404.327,82.72 L404.327,36.081 Z"/>
-<path id="ELV_S_MASS_025" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M396.251,339.322 L288.66,339.322 L288.66,298.566 L396.251,298.566 Z"/>
-<path id="ELV_S_MASS_024" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M288.66,376.822 L288.66,309.861 L396.251,309.861 L396.251,376.822 Z"/>
-<path id="ELV_S_MASS_022" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M414.735,376.637 L303.357,376.637 L303.357,348.564 L414.735,348.564 Z"/>
-<path id="ELV_S_MASS_021" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M448.057,376.822 L334.472,376.822 L334.472,306.768 L448.057,306.768 Z"/>
-<path id="ELV_S_MASS_020" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M238.47,52.823 L404.666,52.823 L404.666,109.073 L238.47,109.073 Z"/>
-<path id="ELV_S_MASS_019" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M451.364,84.654 L451.364,375.611 L371.994,375.611 L371.994,84.654 Z"/>
-<path id="ELV_S_MASS_018" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M405.05,255.323 L405.065,255.323 L449.319,255.323 L449.342,255.323 L449.342,281.832 L449.319,281.832 L405.065,281.832 L405.05,281.832 Z"/>
-<path id="ELV_S_MASS_017" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,114.698 L449.888,114.698 L449.888,141.694 L404.674,141.694 Z"/>
-<path id="ELV_S_MASS_016" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,142.823 L449.888,142.823 L449.888,169.819 L404.674,169.819 Z"/>
-<path id="ELV_S_MASS_015" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,114.698 L404.674,324.558 L190.688,324.558 L190.688,114.698 Z"/>
-<path id="ELV_S_MASS_014" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M451.364,84.654 L451.364,311.197 L371.994,311.197 L371.994,84.654 Z"/>
-<path id="ELV_S_MASS_013" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,170.948 L449.888,170.948 L449.888,197.944 L404.674,197.944 Z"/>
-<path id="ELV_S_MASS_012" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,199.073 L449.888,199.073 L449.888,226.069 L404.674,226.069 Z"/>
-<path id="ELV_S_MASS_011" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M404.674,227.198 L449.888,227.198 L449.888,254.194 L404.674,254.194 Z"/>
-<path id="ELV_S_MASS_008" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M448.057,341.573 L415.281,341.573 L415.281,311.197 L448.057,311.197 Z"/>
+<path id="ELV_S_MASS_036" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M169.942,278.362 L169.942,252.871 L191.202,252.871 L266.205,252.871 L287.465,252.871 L287.465,278.362 Z"/>
+<path id="ELV_S_MASS_029" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M279.26,254.604 L202.751,254.604 L202.751,230.604 L279.26,230.604 Z"/>
+<path id="ELV_S_MASS_028" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M202.751,278.362 L202.751,254.604 L279.26,254.604 L279.26,278.362 Z"/>
+<path id="ELV_S_MASS_027" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M332.698,36.058 L332.698,69.223 L297.921,69.223 L297.921,36.058 Z"/>
+<path id="ELV_S_MASS_025" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M292.178,251.696 L215.669,251.696 L215.669,222.714 L292.178,222.714 Z"/>
+<path id="ELV_S_MASS_024" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M215.669,278.362 L215.669,230.745 L292.178,230.745 L292.178,278.362 Z"/>
+<path id="ELV_S_MASS_022" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M305.323,278.231 L226.121,278.231 L226.121,258.268 L305.323,258.268 Z"/>
+<path id="ELV_S_MASS_021" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M329.018,278.362 L248.247,278.362 L248.247,228.546 L329.018,228.546 Z"/>
+<path id="ELV_S_MASS_020" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M179.979,47.963 L298.163,47.963 L298.163,87.963 L179.979,87.963 Z"/>
+<path id="ELV_S_MASS_019" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M331.37,70.598 L331.37,277.501 L274.929,277.501 L274.929,70.598 Z"/>
+<path id="ELV_S_MASS_018" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.436,191.963 L298.446,191.963 L329.916,191.963 L329.932,191.963 L329.932,210.814 L329.916,210.814 L298.446,210.814 L298.436,210.814 Z"/>
+<path id="ELV_S_MASS_017" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,91.963 L330.32,91.963 L330.32,111.16 L298.168,111.16 Z"/>
+<path id="ELV_S_MASS_016" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,111.963 L330.32,111.963 L330.32,131.16 L298.168,131.16 Z"/>
+<path id="ELV_S_MASS_015" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,91.963 L298.168,241.197 L146,241.197 L146,91.963 Z"/>
+<path id="ELV_S_MASS_014" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M331.37,70.598 L331.37,231.696 L274.929,231.696 L274.929,70.598 Z"/>
+<path id="ELV_S_MASS_013" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,131.963 L330.32,131.963 L330.32,151.16 L298.168,151.16 Z"/>
+<path id="ELV_S_MASS_012" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,151.963 L330.32,151.963 L330.32,171.16 L298.168,171.16 Z"/>
+<path id="ELV_S_MASS_011" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M298.168,171.963 L330.32,171.963 L330.32,191.16 L298.168,191.16 Z"/>
+<path id="ELV_S_MASS_008" fill="#E6E6E6" stroke="#8C8C8C" stroke-width="0.35" fill-rule="evenodd" d="M329.018,253.297 L305.711,253.297 L305.711,231.696 L329.018,231.696 Z"/>
 </g>
 <g id="VIEW_SLAB">
-<path id="ELV_S_ELEMENT_111" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M232.919,324.558 L232.919,340.975 L229.863,340.975 L229.863,324.558 Z"/>
-<path id="ELV_S_ELEMENT_110" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M230.336,324.558 L230.336,340.975 L226.268,340.975 L226.268,324.558 Z"/>
-<path id="ELV_S_ELEMENT_109" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M225.803,324.558 L225.803,340.975 L224.356,340.975 L224.356,376.822 L222.754,376.822 L222.754,324.558 Z"/>
-<path id="ELV_S_ELEMENT_108" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M235.783,324.558 L235.783,340.975 L232.919,340.975 L232.919,324.558 Z"/>
-<path id="ELV_S_ELEMENT_107" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M232.262,324.558 L232.262,340.975 L230.336,340.975 L230.336,324.558 Z"/>
-<path id="ELV_S_ELEMENT_106" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M229.863,340.975 L229.863,324.558 L232.735,324.558 L232.735,340.975 Z"/>
-<path id="ELV_S_ELEMENT_105" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M232.735,340.975 L232.735,324.558 L235.783,324.558 L235.783,340.975 Z"/>
-<path id="ELV_S_ELEMENT_104" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M228.195,340.975 L228.195,324.558 L232.262,324.558 L232.262,340.975 Z"/>
-<path id="ELV_S_ELEMENT_103" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M226.268,340.975 L226.268,324.558 L228.195,324.558 L228.195,340.975 Z"/>
-<path id="ELV_S_ELEMENT_102" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M228.667,324.558 L228.667,340.975 L225.803,340.975 L225.803,324.558 Z"/>
-<path id="ELV_S_ELEMENT_101" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M225.619,340.975 L225.619,324.558 L228.667,324.558 L228.667,340.975 Z"/>
-<path id="ELV_S_ELEMENT_100" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M222.754,376.822 L222.754,324.558 L225.619,324.558 L225.619,340.975 L224.356,340.975 L224.356,376.822 Z"/>
-<path id="ELV_S_ELEMENT_081" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M185.616,321.118 L185.616,311.308 L187.543,311.308 L187.543,321.118 Z"/>
-<path id="ELV_S_ELEMENT_080" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M181.549,311.308 L183.475,311.308 L183.475,321.118 L181.549,321.118 Z"/>
-<path id="ELV_S_ELEMENT_073" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M167.235,369.89 L167.235,376.497 L162.12,376.497 L162.12,369.89 L181.549,321.118 L181.549,311.308 L185.616,311.308 L185.616,321.118 Z"/>
-<path id="ELV_S_ELEMENT_069" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M161.581,371.042 L162.481,371.042 L162.481,376.497 L161.581,376.497 Z"/>
-<path id="ELV_S_ELEMENT_068" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M160.68,371.042 L161.581,371.042 L161.581,376.497 L160.68,376.497 Z"/>
-<path id="ELV_S_ELEMENT_067" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M167.235,369.89 L185.616,321.118 L187.543,321.118 L169.169,369.89 Z"/>
-<path id="ELV_S_ELEMENT_066" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M167.235,376.497 L167.235,369.89 L169.169,369.89 L169.169,376.497 Z"/>
-<path id="ELV_S_ELEMENT_065" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M162.481,371.042 L163.721,371.042 L163.721,376.497 L162.481,376.497 Z"/>
-<path id="ELV_S_ELEMENT_064" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M161.581,371.042 L162.821,371.042 L162.821,376.497 L161.581,376.497 Z"/>
-<path id="ELV_S_ELEMENT_063" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M162.821,371.042 L162.821,376.497 L161.581,376.497 L161.581,371.042 Z"/>
-<path id="ELV_S_ELEMENT_062" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M163.721,371.042 L163.721,376.497 L162.821,376.497 L162.821,371.042 Z"/>
-<path id="ELV_S_ELEMENT_061" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M162.12,369.89 L164.046,369.89 L164.046,376.497 L162.12,376.497 Z"/>
-<path id="ELV_S_ELEMENT_060" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M173.761,345.5 L164.046,369.89 L162.12,369.89 L171.834,345.5 L181.549,321.118 L183.475,321.118 Z"/>
-<path id="ELV_S_ELEMENT_059" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M169.169,369.89 L169.169,376.497 L164.046,376.497 L164.046,369.89 L183.475,321.118 L183.475,311.308 L187.543,311.308 L187.543,321.118 Z"/>
-<path id="ELV_S_ELEMENT_058" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M162.821,371.042 L162.821,376.497 L161.92,376.497 L161.92,371.042 Z"/>
-<path id="ELV_S_ELEMENT_057" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M161.92,371.042 L161.92,376.497 L160.68,376.497 L160.68,371.042 Z"/>
-<path id="ELV_S_ELEMENT_056" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M160.318,376.497 L160.318,369.89 L162.245,369.89 L162.245,376.497 Z"/>
-<path id="ELV_S_ELEMENT_055" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M155.203,369.89 L157.137,369.89 L157.137,376.497 L155.203,376.497 Z"/>
-<path id="ELV_S_ELEMENT_054" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M160.318,369.89 L160.318,376.497 L155.203,376.497 L155.203,369.89 L145.688,344.632 L145.688,333.149 Z"/>
-<path id="ELV_S_ELEMENT_053" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M160.318,369.89 L150.604,345.5 L145.688,333.152 L145.688,328.312 L152.531,345.5 L162.245,369.89 Z"/>
-<path id="ELV_S_ELEMENT_052" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,339.51 L157.137,369.89 L155.203,369.89 L145.688,344.632 Z"/>
-<path id="ELV_S_ELEMENT_051" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M162.245,369.89 L162.245,376.497 L157.137,376.497 L157.137,369.89 L145.688,339.51 L145.688,328.311 Z"/>
-<path id="ELV_S_ELEMENT_049" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M263.783,324.558 L263.783,340.975 L260.734,340.975 L260.734,324.558 Z"/>
-<path id="ELV_S_ELEMENT_048" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M261.199,324.558 L261.199,340.975 L257.132,340.975 L257.132,324.558 Z"/>
-<path id="ELV_S_ELEMENT_047" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M256.667,324.558 L256.667,340.975 L254.253,340.975 L253.618,340.975 L253.618,324.558 Z"/>
-<path id="ELV_S_ELEMENT_046" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M266.647,324.558 L266.647,340.975 L263.783,340.975 L263.783,324.558 Z"/>
-<path id="ELV_S_ELEMENT_045" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M263.126,324.558 L263.126,340.975 L261.199,340.975 L261.199,324.558 Z"/>
-<path id="ELV_S_ELEMENT_044" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M260.734,340.975 L260.734,324.558 L263.598,324.558 L263.598,340.975 Z"/>
-<path id="ELV_S_ELEMENT_043" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M263.598,340.975 L263.598,324.558 L266.647,324.558 L266.647,340.975 Z"/>
-<path id="ELV_S_ELEMENT_042" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M259.066,340.975 L259.066,324.558 L263.126,324.558 L263.126,340.975 Z"/>
-<path id="ELV_S_ELEMENT_041" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M257.132,340.975 L257.132,324.558 L259.066,324.558 L259.066,340.975 Z"/>
-<path id="ELV_S_ELEMENT_040" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M259.531,324.558 L259.531,340.975 L256.667,340.975 L256.667,324.558 Z"/>
-<path id="ELV_S_ELEMENT_039" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M256.482,340.975 L256.482,324.558 L259.531,324.558 L259.531,340.975 Z"/>
-<path id="ELV_S_ELEMENT_038" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M253.618,340.975 L253.618,324.558 L256.482,324.558 L256.482,340.975 L254.253,340.975 Z"/>
-<path id="ELV_S_ELEMENT_010" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M238.47,116.573 L145.688,116.573 L145.688,114.322 L238.47,114.322 L360.921,114.322 L406.519,114.322 L447.024,114.322 L447.024,116.573 L406.519,116.573 L360.921,116.573 Z"/>
-<path id="ELV_S_ELEMENT_009" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M412.388,86.197 L244.339,86.197 L244.339,83.945 L412.388,83.945 L448.832,83.945 L452.892,83.945 L452.892,86.197 L448.832,86.197 Z"/>
-<path id="ELV_S_ELEMENT_007" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,254.947 L238.47,254.947 L360.921,254.947 L406.519,254.947 L447.024,254.947 L447.024,257.198 L406.519,257.198 L360.921,257.198 L238.47,257.198 L145.688,257.198 Z"/>
-<path id="ELV_S_ELEMENT_006" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,229.073 L157.978,229.073 L164.164,229.073 L182.737,229.073 L192.038,229.073 L201.317,229.073 L219.898,229.073 L226.106,229.073 L238.47,229.073 L259.812,229.073 L264.543,229.073 L290.609,229.073 L293.51,229.073 L316.674,229.073 L327.216,229.073 L342.747,229.073 L360.921,229.073 L368.82,229.073 L371.684,229.073 L382.447,229.073 L393.21,229.073 L394.885,229.073 L403.972,229.073 L414.735,229.073 L420.951,229.073 L425.498,229.073 L436.261,229.073 L447.024,229.073 L447.024,231.325 L436.261,231.325 L425.498,231.325 L420.951,231.325 L414.735,231.325 L403.972,231.325 L394.885,231.325 L393.21,231.325 L382.447,231.325 L371.684,231.325 L368.82,231.325 L360.921,231.325 L342.747,231.325 L327.216,231.325 L316.674,231.325 L293.51,231.325 L290.609,231.325 L264.543,231.325 L259.812,231.325 L238.47,231.325 L226.106,231.325 L219.898,231.325 L201.317,231.325 L192.038,231.325 L182.737,231.325 L164.164,231.325 L157.978,231.325 L145.688,231.325 Z"/>
-<path id="ELV_S_ELEMENT_005" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M238.47,144.698 L145.688,144.698 L145.688,142.447 L238.47,142.447 L244.339,142.447 L360.921,142.447 L406.519,142.447 L447.024,142.447 L447.024,144.698 L406.519,144.698 L360.921,144.698 L244.339,144.698 Z"/>
-<path id="ELV_S_ELEMENT_004" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,226.822 L238.47,226.822 L360.921,226.822 L406.519,226.822 L447.024,226.822 L447.024,229.073 L406.519,229.073 L360.921,229.073 L238.47,229.073 L145.688,229.073 Z"/>
-<path id="ELV_S_ELEMENT_003" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,308.945 L238.47,308.945 L360.921,308.945 L406.519,308.945 L447.024,308.945 L447.024,311.197 L406.519,311.197 L360.921,311.197 L238.47,311.197 L145.688,311.197 Z"/>
-<path id="ELV_S_ELEMENT_002" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,283.072 L238.47,283.072 L360.921,283.072 L406.519,283.072 L447.024,283.072 L447.024,285.323 L406.519,285.323 L360.921,285.323 L238.47,285.323 L145.688,285.323 Z"/>
-<path id="ELV_S_ELEMENT_001" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,170.572 L238.47,170.572 L360.921,170.572 L406.519,170.572 L447.024,170.572 L447.024,172.823 L406.519,172.823 L360.921,172.823 L238.47,172.823 L145.688,172.823 Z"/>
-<path id="ELV_S_ELEMENT_000" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M145.688,198.697 L238.47,198.697 L360.921,198.697 L406.519,198.697 L447.024,198.697 L447.024,200.948 L406.519,200.948 L360.921,200.948 L238.47,200.948 L145.688,200.948 Z"/>
+<path id="ELV_S_ELEMENT_111" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M176.031,241.197 L176.031,252.871 L173.858,252.871 L173.858,241.197 Z"/>
+<path id="ELV_S_ELEMENT_110" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M174.194,241.197 L174.194,252.871 L171.302,252.871 L171.302,241.197 Z"/>
+<path id="ELV_S_ELEMENT_109" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M170.971,241.197 L170.971,252.871 L169.942,252.871 L169.942,278.362 L168.803,278.362 L168.803,241.197 Z"/>
+<path id="ELV_S_ELEMENT_108" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M178.068,241.197 L178.068,252.871 L176.031,252.871 L176.031,241.197 Z"/>
+<path id="ELV_S_ELEMENT_107" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M175.564,241.197 L175.564,252.871 L174.194,252.871 L174.194,241.197 Z"/>
+<path id="ELV_S_ELEMENT_106" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M173.858,252.871 L173.858,241.197 L175.9,241.197 L175.9,252.871 Z"/>
+<path id="ELV_S_ELEMENT_105" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M175.9,252.871 L175.9,241.197 L178.068,241.197 L178.068,252.871 Z"/>
+<path id="ELV_S_ELEMENT_104" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M172.672,252.871 L172.672,241.197 L175.564,241.197 L175.564,252.871 Z"/>
+<path id="ELV_S_ELEMENT_103" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M171.302,252.871 L171.302,241.197 L172.672,241.197 L172.672,252.871 Z"/>
+<path id="ELV_S_ELEMENT_102" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M173.008,241.197 L173.008,252.871 L170.971,252.871 L170.971,241.197 Z"/>
+<path id="ELV_S_ELEMENT_101" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M170.84,252.871 L170.84,241.197 L173.008,241.197 L173.008,252.871 Z"/>
+<path id="ELV_S_ELEMENT_100" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M168.803,278.362 L168.803,241.197 L170.84,241.197 L170.84,252.871 L169.942,252.871 L169.942,278.362 Z"/>
+<path id="ELV_S_ELEMENT_081" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M142.394,238.751 L142.394,231.774 L143.764,231.774 L143.764,238.751 Z"/>
+<path id="ELV_S_ELEMENT_080" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M139.501,231.774 L140.871,231.774 L140.871,238.751 L139.501,238.751 Z"/>
+<path id="ELV_S_ELEMENT_073" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M129.323,273.433 L129.323,278.131 L125.685,278.131 L125.685,273.433 L139.501,238.751 L139.501,231.774 L142.394,231.774 L142.394,238.751 Z"/>
+<path id="ELV_S_ELEMENT_069" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.302,274.252 L125.942,274.252 L125.942,278.131 L125.302,278.131 Z"/>
+<path id="ELV_S_ELEMENT_068" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M124.661,274.252 L125.302,274.252 L125.302,278.131 L124.661,278.131 Z"/>
+<path id="ELV_S_ELEMENT_067" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M129.323,273.433 L142.394,238.751 L143.764,238.751 L130.698,273.433 Z"/>
+<path id="ELV_S_ELEMENT_066" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M129.323,278.131 L129.323,273.433 L130.698,273.433 L130.698,278.131 Z"/>
+<path id="ELV_S_ELEMENT_065" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.942,274.252 L126.824,274.252 L126.824,278.131 L125.942,278.131 Z"/>
+<path id="ELV_S_ELEMENT_064" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.302,274.252 L126.184,274.252 L126.184,278.131 L125.302,278.131 Z"/>
+<path id="ELV_S_ELEMENT_063" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M126.184,274.252 L126.184,278.131 L125.302,278.131 L125.302,274.252 Z"/>
+<path id="ELV_S_ELEMENT_062" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M126.824,274.252 L126.824,278.131 L126.184,278.131 L126.184,274.252 Z"/>
+<path id="ELV_S_ELEMENT_061" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.685,273.433 L127.055,273.433 L127.055,278.131 L125.685,278.131 Z"/>
+<path id="ELV_S_ELEMENT_060" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M133.963,256.089 L127.055,273.433 L125.685,273.433 L132.593,256.089 L139.501,238.751 L140.871,238.751 Z"/>
+<path id="ELV_S_ELEMENT_059" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M130.698,273.433 L130.698,278.131 L127.055,278.131 L127.055,273.433 L140.871,238.751 L140.871,231.774 L143.764,231.774 L143.764,238.751 Z"/>
+<path id="ELV_S_ELEMENT_058" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M126.184,274.252 L126.184,278.131 L125.543,278.131 L125.543,274.252 Z"/>
+<path id="ELV_S_ELEMENT_057" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.543,274.252 L125.543,278.131 L124.661,278.131 L124.661,274.252 Z"/>
+<path id="ELV_S_ELEMENT_056" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M124.404,278.131 L124.404,273.433 L125.774,273.433 L125.774,278.131 Z"/>
+<path id="ELV_S_ELEMENT_055" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M120.766,273.433 L122.142,273.433 L122.142,278.131 L120.766,278.131 Z"/>
+<path id="ELV_S_ELEMENT_054" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M124.404,273.433 L124.404,278.131 L120.766,278.131 L120.766,273.433 L114,255.472 L114,247.306 Z"/>
+<path id="ELV_S_ELEMENT_053" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M124.404,273.433 L117.496,256.089 L114,247.308 L114,243.867 L118.866,256.089 L125.774,273.433 Z"/>
+<path id="ELV_S_ELEMENT_052" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,251.83 L122.142,273.433 L120.766,273.433 L114,255.472 Z"/>
+<path id="ELV_S_ELEMENT_051" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M125.774,273.433 L125.774,278.131 L122.142,278.131 L122.142,273.433 L114,251.83 L114,243.865 Z"/>
+<path id="ELV_S_ELEMENT_049" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M197.979,241.197 L197.979,252.871 L195.811,252.871 L195.811,241.197 Z"/>
+<path id="ELV_S_ELEMENT_048" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M196.142,241.197 L196.142,252.871 L193.249,252.871 L193.249,241.197 Z"/>
+<path id="ELV_S_ELEMENT_047" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M192.919,241.197 L192.919,252.871 L191.202,252.871 L190.751,252.871 L190.751,241.197 Z"/>
+<path id="ELV_S_ELEMENT_046" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M200.016,241.197 L200.016,252.871 L197.979,252.871 L197.979,241.197 Z"/>
+<path id="ELV_S_ELEMENT_045" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M197.512,241.197 L197.512,252.871 L196.142,252.871 L196.142,241.197 Z"/>
+<path id="ELV_S_ELEMENT_044" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M195.811,252.871 L195.811,241.197 L197.848,241.197 L197.848,252.871 Z"/>
+<path id="ELV_S_ELEMENT_043" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M197.848,252.871 L197.848,241.197 L200.016,241.197 L200.016,252.871 Z"/>
+<path id="ELV_S_ELEMENT_042" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M194.625,252.871 L194.625,241.197 L197.512,241.197 L197.512,252.871 Z"/>
+<path id="ELV_S_ELEMENT_041" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M193.249,252.871 L193.249,241.197 L194.625,241.197 L194.625,252.871 Z"/>
+<path id="ELV_S_ELEMENT_040" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M194.955,241.197 L194.955,252.871 L192.919,252.871 L192.919,241.197 Z"/>
+<path id="ELV_S_ELEMENT_039" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M192.787,252.871 L192.787,241.197 L194.955,241.197 L194.955,252.871 Z"/>
+<path id="ELV_S_ELEMENT_038" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M190.751,252.871 L190.751,241.197 L192.787,241.197 L192.787,252.871 L191.202,252.871 Z"/>
+<path id="ELV_S_ELEMENT_010" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M179.979,93.297 L114,93.297 L114,91.696 L179.979,91.696 L267.055,91.696 L299.48,91.696 L328.283,91.696 L328.283,93.297 L299.48,93.297 L267.055,93.297 Z"/>
+<path id="ELV_S_ELEMENT_009" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M303.654,71.696 L184.152,71.696 L184.152,70.094 L303.654,70.094 L329.57,70.094 L332.457,70.094 L332.457,71.696 L329.57,71.696 Z"/>
+<path id="ELV_S_ELEMENT_007" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,191.696 L179.979,191.696 L267.055,191.696 L299.48,191.696 L328.283,191.696 L328.283,193.297 L299.48,193.297 L267.055,193.297 L179.979,193.297 L114,193.297 Z"/>
+<path id="ELV_S_ELEMENT_006" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,173.297 L122.74,173.297 L127.139,173.297 L140.346,173.297 L146.961,173.297 L153.559,173.297 L166.772,173.297 L171.186,173.297 L179.979,173.297 L195.155,173.297 L198.52,173.297 L217.055,173.297 L219.118,173.297 L235.591,173.297 L243.087,173.297 L254.131,173.297 L267.055,173.297 L272.672,173.297 L274.709,173.297 L282.362,173.297 L290.016,173.297 L291.207,173.297 L297.669,173.297 L305.323,173.297 L309.743,173.297 L312.976,173.297 L320.63,173.297 L328.283,173.297 L328.283,174.898 L320.63,174.898 L312.976,174.898 L309.743,174.898 L305.323,174.898 L297.669,174.898 L291.207,174.898 L290.016,174.898 L282.362,174.898 L274.709,174.898 L272.672,174.898 L267.055,174.898 L254.131,174.898 L243.087,174.898 L235.591,174.898 L219.118,174.898 L217.055,174.898 L198.52,174.898 L195.155,174.898 L179.979,174.898 L171.186,174.898 L166.772,174.898 L153.559,174.898 L146.961,174.898 L140.346,174.898 L127.139,174.898 L122.74,174.898 L114,174.898 Z"/>
+<path id="ELV_S_ELEMENT_005" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M179.979,113.297 L114,113.297 L114,111.696 L179.979,111.696 L184.152,111.696 L267.055,111.696 L299.48,111.696 L328.283,111.696 L328.283,113.297 L299.48,113.297 L267.055,113.297 L184.152,113.297 Z"/>
+<path id="ELV_S_ELEMENT_004" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,171.696 L179.979,171.696 L267.055,171.696 L299.48,171.696 L328.283,171.696 L328.283,173.297 L299.48,173.297 L267.055,173.297 L179.979,173.297 L114,173.297 Z"/>
+<path id="ELV_S_ELEMENT_003" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,230.094 L179.979,230.094 L267.055,230.094 L299.48,230.094 L328.283,230.094 L328.283,231.696 L299.48,231.696 L267.055,231.696 L179.979,231.696 L114,231.696 Z"/>
+<path id="ELV_S_ELEMENT_002" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,211.696 L179.979,211.696 L267.055,211.696 L299.48,211.696 L328.283,211.696 L328.283,213.297 L299.48,213.297 L267.055,213.297 L179.979,213.297 L114,213.297 Z"/>
+<path id="ELV_S_ELEMENT_001" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,131.696 L179.979,131.696 L267.055,131.696 L299.48,131.696 L328.283,131.696 L328.283,133.297 L299.48,133.297 L267.055,133.297 L179.979,133.297 L114,133.297 Z"/>
+<path id="ELV_S_ELEMENT_000" fill="#C8C8C8" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M114,151.696 L179.979,151.696 L267.055,151.696 L299.48,151.696 L328.283,151.696 L328.283,153.297 L299.48,153.297 L267.055,153.297 L179.979,153.297 L114,153.297 Z"/>
 </g>
 <g id="VIEW_GLASS">
-<path id="ELV_S_GLASS_209" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M416.153,82.72 L416.153,83.945 L412.388,83.945 L409.981,83.945 L409.981,82.72 Z"/>
-<path id="ELV_S_GLASS_187" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M409.59,82.72 L409.59,83.945 L404.666,83.945 L404.666,82.72 Z"/>
-<path id="ELV_S_GLASS_184" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M371.994,113.067 L370.695,113.067 L370.695,109.073 L371.994,109.073 Z"/>
-<path id="ELV_S_GLASS_183" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M370.355,109.073 L370.355,113.067 L364.184,113.067 L364.184,109.073 Z"/>
-<path id="ELV_S_GLASS_177" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M370.695,109.228 L371.994,109.228 L371.994,114.322 L370.695,114.322 Z"/>
-<path id="ELV_S_GLASS_176" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M364.184,109.228 L370.355,109.228 L370.355,114.322 L364.184,114.322 Z"/>
-<path id="ELV_S_GLASS_050" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M190.688,308.945 L145.688,308.945 L145.688,285.323 L190.688,285.323 Z M145.688,283.072 L145.688,257.198 L190.688,257.198 L190.688,283.072 Z M145.688,254.947 L145.688,231.325 L157.978,231.325 L164.164,231.325 L182.737,231.325 L190.688,231.325 L190.688,254.947 Z M145.688,226.822 L145.688,200.948 L190.688,200.948 L190.688,226.822 Z M145.688,198.697 L145.688,172.823 L190.688,172.823 L190.688,198.697 Z M145.688,170.572 L145.688,144.698 L190.688,144.698 L190.688,170.572 Z M145.688,142.447 L145.688,116.573 L190.688,116.573 L190.688,142.447 Z M145.688,114.322 L145.688,96.642 L238.47,96.642 L238.47,109.073 L371.994,109.073 L371.994,114.322 L360.921,114.322 L238.47,114.322 Z"/>
-<path id="ELV_S_GLASS_037" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M240.722,109.073 L240.722,114.322 L238.47,114.322 L145.688,114.322 L145.688,96.642 L238.47,96.642 L238.47,109.073 Z M190.688,116.573 L190.688,142.447 L145.688,142.447 L145.688,116.573 Z M190.688,144.698 L190.688,170.572 L145.688,170.572 L145.688,144.698 Z M190.688,172.823 L190.688,198.697 L145.688,198.697 L145.688,172.823 Z M190.688,200.948 L190.688,226.822 L145.688,226.822 L145.688,200.948 Z M190.688,231.325 L190.688,254.947 L145.688,254.947 L145.688,231.325 L157.978,231.325 L164.164,231.325 L182.737,231.325 Z M190.688,257.198 L190.688,283.072 L145.688,283.072 L145.688,257.198 Z M190.688,285.323 L190.688,308.945 L145.688,308.945 L145.688,285.323 Z"/>
-<path id="ELV_S_GLASS_026" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M454.007,36 L454.007,83.406 L447.836,83.406 L447.836,36 Z"/>
+<path id="ELV_S_GLASS_209" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M306.331,69.223 L306.331,70.094 L303.654,70.094 L301.942,70.094 L301.942,69.223 Z"/>
+<path id="ELV_S_GLASS_187" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M301.664,69.223 L301.664,70.094 L298.163,70.094 L298.163,69.223 Z"/>
+<path id="ELV_S_GLASS_184" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M274.929,90.803 L274.005,90.803 L274.005,87.963 L274.929,87.963 Z"/>
+<path id="ELV_S_GLASS_183" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M273.764,87.963 L273.764,90.803 L269.375,90.803 L269.375,87.963 Z"/>
+<path id="ELV_S_GLASS_177" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M274.005,88.073 L274.929,88.073 L274.929,91.696 L274.005,91.696 Z"/>
+<path id="ELV_S_GLASS_176" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M269.375,88.073 L273.764,88.073 L273.764,91.696 L269.375,91.696 Z"/>
+<path id="ELV_S_GLASS_050" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M146,230.094 L114,230.094 L114,213.297 L146,213.297 Z M114,211.696 L114,193.297 L146,193.297 L146,211.696 Z M114,191.696 L114,174.898 L122.74,174.898 L127.139,174.898 L140.346,174.898 L146,174.898 L146,191.696 Z M114,171.696 L114,153.297 L146,153.297 L146,171.696 Z M114,151.696 L114,133.297 L146,133.297 L146,151.696 Z M114,131.696 L114,113.297 L146,113.297 L146,131.696 Z M114,111.696 L114,93.297 L146,93.297 L146,111.696 Z M114,91.696 L114,79.123 L179.979,79.123 L179.979,87.963 L274.929,87.963 L274.929,91.696 L267.055,91.696 L179.979,91.696 Z"/>
+<path id="ELV_S_GLASS_037" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M181.58,87.963 L181.58,91.696 L179.979,91.696 L114,91.696 L114,79.123 L179.979,79.123 L179.979,87.963 Z M146,93.297 L146,111.696 L114,111.696 L114,93.297 Z M146,113.297 L146,131.696 L114,131.696 L114,113.297 Z M146,133.297 L146,151.696 L114,151.696 L114,133.297 Z M146,153.297 L146,171.696 L114,171.696 L114,153.297 Z M146,174.898 L146,191.696 L114,191.696 L114,174.898 L122.74,174.898 L127.139,174.898 L140.346,174.898 Z M146,193.297 L146,211.696 L114,211.696 L114,193.297 Z M146,213.297 L146,230.094 L114,230.094 L114,213.297 Z"/>
+<path id="ELV_S_GLASS_026" fill="#FFFFFF" stroke="#8C8C8C" stroke-width="0.25" fill-rule="evenodd" d="M333.249,36 L333.249,69.711 L328.861,69.711 L328.861,36 Z"/>
 </g>
 <g id="PD_LEVELS">
-<path id="ELV_S_LVL_L1_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,371.759 L50.063,371.759 L45.844,376.822 Z"/>
-<path id="ELV_S_LVL_L1" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,376.822 L145.688,376.822"/>
-<path id="ELV_S_LVL_L2_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,340.062 L50.063,340.062 L45.844,345.124 Z"/>
-<path id="ELV_S_LVL_L2" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,345.124 L145.688,345.124"/>
-<path id="ELV_S_LVL_L3_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,305.928 L50.063,305.928 L45.844,310.99 Z"/>
-<path id="ELV_S_LVL_L3" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,310.99 L145.688,310.99"/>
-<path id="ELV_S_LVL_L4_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,278.009 L50.063,278.009 L45.844,283.072 Z"/>
-<path id="ELV_S_LVL_L4" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,283.072 L145.688,283.072"/>
-<path id="ELV_S_LVL_L5_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,249.884 L50.063,249.884 L45.844,254.947 Z"/>
-<path id="ELV_S_LVL_L5" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,254.947 L145.688,254.947"/>
-<path id="ELV_S_LVL_L6_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,221.759 L50.063,221.759 L45.844,226.822 Z"/>
-<path id="ELV_S_LVL_L6" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,226.822 L145.688,226.822"/>
-<path id="ELV_S_LVL_L7_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,193.634 L50.063,193.634 L45.844,198.697 Z"/>
-<path id="ELV_S_LVL_L7" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,198.697 L145.688,198.697"/>
-<path id="ELV_S_LVL_L8_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,165.509 L50.063,165.509 L45.844,170.572 Z"/>
-<path id="ELV_S_LVL_L8" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,170.572 L145.688,170.572"/>
-<path id="ELV_S_LVL_L9_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,137.163 L50.063,137.163 L45.844,142.225 Z"/>
-<path id="ELV_S_LVL_L9" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,142.225 L145.688,142.225"/>
-<path id="ELV_S_LVL_L10_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,109.038 L50.063,109.038 L45.844,114.1 Z"/>
-<path id="ELV_S_LVL_L10" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,114.1 L145.688,114.1"/>
-<path id="ELV_S_LVL_L11_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M41.625,78.661 L50.063,78.661 L45.844,83.724 Z"/>
-<path id="ELV_S_LVL_L11" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M52.594,83.724 L145.688,83.724"/>
+<path id="ELV_S_LVL_L1_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,274.762 L46,274.762 L43,278.362 Z"/>
+<path id="ELV_S_LVL_L1" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,278.362 L114,278.362"/>
+<path id="ELV_S_LVL_L2_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,252.222 L46,252.222 L43,255.822 Z"/>
+<path id="ELV_S_LVL_L2" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,255.822 L114,255.822"/>
+<path id="ELV_S_LVL_L3_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,227.949 L46,227.949 L43,231.549 Z"/>
+<path id="ELV_S_LVL_L3" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,231.549 L114,231.549"/>
+<path id="ELV_S_LVL_L4_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,208.096 L46,208.096 L43,211.696 Z"/>
+<path id="ELV_S_LVL_L4" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,211.696 L114,211.696"/>
+<path id="ELV_S_LVL_L5_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,188.096 L46,188.096 L43,191.696 Z"/>
+<path id="ELV_S_LVL_L5" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,191.696 L114,191.696"/>
+<path id="ELV_S_LVL_L6_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,168.096 L46,168.096 L43,171.696 Z"/>
+<path id="ELV_S_LVL_L6" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,171.696 L114,171.696"/>
+<path id="ELV_S_LVL_L7_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,148.096 L46,148.096 L43,151.696 Z"/>
+<path id="ELV_S_LVL_L7" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,151.696 L114,151.696"/>
+<path id="ELV_S_LVL_L8_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,128.096 L46,128.096 L43,131.696 Z"/>
+<path id="ELV_S_LVL_L8" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,131.696 L114,131.696"/>
+<path id="ELV_S_LVL_L9_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,107.938 L46,107.938 L43,111.538 Z"/>
+<path id="ELV_S_LVL_L9" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,111.538 L114,111.538"/>
+<path id="ELV_S_LVL_L10_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,87.938 L46,87.938 L43,91.538 Z"/>
+<path id="ELV_S_LVL_L10" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,91.538 L114,91.538"/>
+<path id="ELV_S_LVL_L11_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,66.337 L46,66.337 L43,69.937 Z"/>
+<path id="ELV_S_LVL_L11" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,69.937 L114,69.937"/>
 </g>
 <g id="PD_GROUND">
-<path id="ELV_S_GROUND" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M145.688,373.822 L505.688,373.822 L505.688,379.822 L145.688,379.822 Z"/>
+<path id="ELV_S_GROUND" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M114,278.362 L370,278.362"/>
 </g>
 <g id="PD_LABELS">
 </g>
 <g id="PD_ANNOTATION">
-<text id="ELV_S_LVL_L1_TXT" x="54.281" y="373.306" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L1</tspan></text>
-<text id="ELV_S_LVL_L1_EL" x="54.281" y="386.666" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">0&apos;-0&quot;</tspan></text>
-<text id="ELV_S_LVL_L2_TXT" x="54.281" y="341.608" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L2</tspan></text>
-<text id="ELV_S_LVL_L2_EL" x="54.281" y="354.968" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">14&apos;-1&quot;</tspan></text>
-<text id="ELV_S_LVL_L3_TXT" x="54.281" y="307.475" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L3</tspan></text>
-<text id="ELV_S_LVL_L3_EL" x="54.281" y="320.834" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">29&apos;-3&quot;</tspan></text>
-<text id="ELV_S_LVL_L4_TXT" x="54.281" y="279.556" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L4</tspan></text>
-<text id="ELV_S_LVL_L4_EL" x="54.281" y="292.916" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">41&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L5_TXT" x="54.281" y="251.431" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L5</tspan></text>
-<text id="ELV_S_LVL_L5_EL" x="54.281" y="264.791" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">54&apos;-2&quot;</tspan></text>
-<text id="ELV_S_LVL_L6_TXT" x="54.281" y="223.306" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L6</tspan></text>
-<text id="ELV_S_LVL_L6_EL" x="54.281" y="236.666" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">66&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L7_TXT" x="54.281" y="195.181" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L7</tspan></text>
-<text id="ELV_S_LVL_L7_EL" x="54.281" y="208.541" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">79&apos;-2&quot;</tspan></text>
-<text id="ELV_S_LVL_L8_TXT" x="54.281" y="167.056" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L8</tspan></text>
-<text id="ELV_S_LVL_L8_EL" x="54.281" y="180.416" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">91&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L9_TXT" x="54.281" y="138.71" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L9</tspan></text>
-<text id="ELV_S_LVL_L9_EL" x="54.281" y="152.069" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">104&apos;-3&quot;</tspan></text>
-<text id="ELV_S_LVL_L10_TXT" x="54.281" y="110.585" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L10</tspan></text>
-<text id="ELV_S_LVL_L10_EL" x="54.281" y="123.944" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">116&apos;-9&quot;</tspan></text>
-<text id="ELV_S_LVL_L11_TXT" x="54.281" y="80.208" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">L11 ROOF</tspan></text>
-<text id="ELV_S_LVL_L11_EL" x="54.281" y="93.568" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="54.281" dy="0">130&apos;-3&quot;</tspan></text>
-<text id="ELV_S_TITLE" x="145.688" y="416.384" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="19.688" text-anchor="start" fill="#000000"><tspan x="145.688" dy="0">ELEVATION S</tspan></text>
-<text id="ELV_S_SCALE" x="145.688" y="433.259" font-family="Century Gothic, Arial, sans-serif" font-weight="normal" font-size="9.844" text-anchor="start" fill="#000000"><tspan x="145.688" dy="0">SCALE 1/32&quot; = 1&apos;-0&quot;</tspan></text>
+<text id="ELV_S_LVL_L1_TXT" x="49" y="275.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L1</tspan></text>
+<text id="ELV_S_LVL_L1_EL" x="49" y="285.362" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">0&apos;-0&quot;</tspan></text>
+<text id="ELV_S_LVL_L2_TXT" x="49" y="253.322" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L2</tspan></text>
+<text id="ELV_S_LVL_L2_EL" x="49" y="262.822" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">14&apos;-1&quot;</tspan></text>
+<text id="ELV_S_LVL_L3_TXT" x="49" y="229.049" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L3</tspan></text>
+<text id="ELV_S_LVL_L3_EL" x="49" y="238.549" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">29&apos;-3&quot;</tspan></text>
+<text id="ELV_S_LVL_L4_TXT" x="49" y="209.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L4</tspan></text>
+<text id="ELV_S_LVL_L4_EL" x="49" y="218.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">41&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L5_TXT" x="49" y="189.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L5</tspan></text>
+<text id="ELV_S_LVL_L5_EL" x="49" y="198.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">54&apos;-2&quot;</tspan></text>
+<text id="ELV_S_LVL_L6_TXT" x="49" y="169.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L6</tspan></text>
+<text id="ELV_S_LVL_L6_EL" x="49" y="178.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">66&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L7_TXT" x="49" y="149.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L7</tspan></text>
+<text id="ELV_S_LVL_L7_EL" x="49" y="158.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">79&apos;-2&quot;</tspan></text>
+<text id="ELV_S_LVL_L8_TXT" x="49" y="129.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L8</tspan></text>
+<text id="ELV_S_LVL_L8_EL" x="49" y="138.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">91&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L9_TXT" x="49" y="109.038" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L9</tspan></text>
+<text id="ELV_S_LVL_L9_EL" x="49" y="118.538" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">104&apos;-3&quot;</tspan></text>
+<text id="ELV_S_LVL_L10_TXT" x="49" y="89.038" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L10</tspan></text>
+<text id="ELV_S_LVL_L10_EL" x="49" y="98.538" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">116&apos;-9&quot;</tspan></text>
+<text id="ELV_S_LVL_L11_TXT" x="49" y="67.437" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L11 ROOF</tspan></text>
+<text id="ELV_S_LVL_L11_EL" x="49" y="76.937" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">130&apos;-3&quot;</tspan></text>
+<text id="ELV_S_TITLE" x="114" y="319.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="start" fill="#333333"><tspan x="114" dy="0">ELEVATION S</tspan></text>
+<text id="ELV_S_SCALE" x="114" y="337.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="114" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 </g>
 </svg>

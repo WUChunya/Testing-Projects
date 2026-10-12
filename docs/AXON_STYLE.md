@@ -143,9 +143,9 @@
 - 对象命名：`L03_LAB_01`、`L03_LAB_01_TXT`、`L03_SLAB`、`L03_TAG`，重新导出时按名字原位更新。
 
 ## 10. 与插件现有设置的关系
-插件 v0.4.1 目前读取 `styles/style_default.json › axon`；`styles/axon_style.json` 是本规范的提案，**确认后再合并进 `axon` 段**，不另开一套默认值。
+**v0.5.0 已合并**：插件读取 `styles/style_default.json › axon`（共用值 + `stacked` / `exploded` / `explodedB` 三段），数值取自本规范和 `styles/axon_style.json`、`styles/site_style.json`；后两者保留为参考图生成器的输入。
 
-## 11. 与现有 `axon` 段的差异（待确认后修改）
+## 11. 与 v0.4.1 `axon` 段的差异（v0.5.0 已按本规范修改）
 | 项目 | 现有 `axon` | 本规范 | 原因 |
 |---|---|---|---|
 | 外轮廓 `silhouettePt` | 1.0 pt #1A1A1A | 2.0 pt（楼板）/ 2.5 pt（体量）#000 | 与体量推演图同一线条等级；缩印 47% 后仍是最粗线 |

@@ -70,6 +70,8 @@ public sealed class OutputRules
     public List<string> Drawings { get; set; } = new();
     public List<string> Scales { get; set; } = new();
     public string DefaultScale { get; set; } = "";
+    /// <summary>Program sections have their own scale (docs/SITE_STYLE.md §4).</summary>
+    public string DefaultSectionScale { get; set; } = "1\" = 16'-0\"";
     public List<string> Artboards { get; set; } = new();
     public string DefaultArtboard { get; set; } = "";
     public double SectionDepthFt { get; set; }

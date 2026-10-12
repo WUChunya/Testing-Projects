@@ -48,8 +48,11 @@ public static class SvgWriter
 
     static string Text(DItem it, ParaStyle? ps, Func<string?, string> paint)
     {
-        var size = ps?.SizePt ?? 7;
-        var anchor = it.Align switch { "center" => "middle", "right" => "end", _ => "start" };
+        var size = it.SizePt ?? ps?.SizePt ?? 7;
+        var align = it.GlyphAnchor ?? it.Align;
+        var anchor = align switch { "center" => "middle", "right" => "end", _ => "start" };
+        var opacity = it.Opacity < 1 ? it.Opacity : ps?.Opacity ?? 1;
+        var extra = (opacity < 1 ? $" fill-opacity=\"{F(opacity)}\"" : "") + (ps is { Tracking: not 0 } ? $" letter-spacing=\"{F(ps.Tracking / 1000 * size)}\"" : "");
         var text = ps?.AllCaps == true ? it.Text!.ToUpperInvariant() : it.Text!;
         var lines = text.Split('\n');
         // Plane text draws in its own space at the origin; the matrix carries it onto the page.
@@ -58,9 +61,9 @@ public static class SvgWriter
         var rot = m != null ? $" transform=\"matrix({F(m[0])} {F(m[1])} {F(m[2])} {F(m[3])} {F(it.X)} {F(it.Y)})\""
             : it.Rotation != 0 ? $" transform=\"rotate({F(-it.Rotation)} {F(it.X)} {F(it.Y)})\"" : "";
         // Centred labels: (X,Y) is the visual centre; cap height ≈ 0.7 × size.
-        var y = it.Center ? ay - (lines.Length - 1) * size * 1.2 / 2 + size * 0.35 : ay;
+        var y = it.Center || it.GlyphAnchor != null ? ay - (lines.Length - 1) * size * 1.2 / 2 + size * 0.35 : ay;
         var sb = new StringBuilder($"<text id=\"{Esc(it.Name)}\" x=\"{F(ax)}\" y=\"{F(y)}\" font-family=\"{Esc(ps?.Family ?? "Arial")}, Arial, sans-serif\" " +
-            $"font-weight=\"{ps?.Weight ?? "normal"}\" font-size=\"{F(size)}\" text-anchor=\"{anchor}\" fill=\"{paint(ps?.Color)}\"{rot}>");
+            $"font-weight=\"{ps?.Weight ?? "normal"}\" font-size=\"{F(size)}\" text-anchor=\"{anchor}\" fill=\"{paint(ps?.Color)}\"{extra}{rot}>");
         for (var i = 0; i < lines.Length; i++)
             sb.Append($"<tspan x=\"{F(ax)}\" dy=\"{(i == 0 ? "0" : F(size * 1.2))}\">{Esc(lines[i])}</tspan>");
         return sb.Append("</text>\n").ToString();

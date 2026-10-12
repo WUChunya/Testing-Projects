@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.4.1";
+PD.version = "0.5.0";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -46,7 +46,11 @@ PD.drawFile = function (dw, opts, warnings) {
     var sw = {};
     for (var s = 0; s < dw.swatches.length; s++) sw[dw.swatches[s].name] = PD.swatch(doc, dw.swatches[s].name, dw.swatches[s].hex);
     var ps = {};
-    for (var p = 0; p < dw.paraStyles.length; p++) ps[dw.paraStyles[p].name] = PD.paraStyle(doc, dw.paraStyles[p], sw);
+    PD.specs = {};
+    for (var p = 0; p < dw.paraStyles.length; p++) {
+        ps[dw.paraStyles[p].name] = PD.paraStyle(doc, dw.paraStyles[p], sw);
+        PD.specs[dw.paraStyles[p].name] = dw.paraStyles[p];
+    }
 
     var rects = [];
     for (var a = 0; a < doc.artboards.length; a++) rects.push(doc.artboards[a].artboardRect);
@@ -191,6 +195,8 @@ PD.paraStyle = function (doc, st, sw) {
         try { ca.textFont = app.textFonts.getByName(st.fallbackFont); } catch (e2) { }
     }
     ca.capitalization = st.allCaps ? FontCapsOption.ALLCAPS : FontCapsOption.NORMALCAPS;
+    ca.tracking = st.tracking || 0;
+    if (st.leadingPt > 0) { ca.autoLeading = false; ca.leading = st.leadingPt; } else ca.autoLeading = true;
     if (sw[st.color]) ca.fillColor = sw[st.color];
     ps.paragraphAttributes.justification = st.align === "center" ? Justification.CENTER
         : st.align === "right" ? Justification.RIGHT : Justification.LEFT;
@@ -232,9 +238,13 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
             item = layer.textFrames.pointText(PD.pt(rect, it.x, it.y));
             item.contents = it.text.replace(/\n/g, "\r");
             if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(item.textRange, true);
+            if (it.sizePt) item.textRange.characterAttributes.size = it.sizePt;
             if (it.rotation) item.rotate(it.rotation); // VERIFY-WIN: rotates about the frame centre
-            if (it.center) PD.centerOnGlyphs(item, PD.pt(rect, it.x, it.y));
+            if (it.glyphAnchor) PD.anchorOnGlyphs(item, PD.pt(rect, it.x, it.y), it.glyphAnchor);
+            else if (it.center) PD.centerOnGlyphs(item, PD.pt(rect, it.x, it.y));
         }
+        var spec = PD.specs[it.paraStyle];
+        if (spec && spec.opacity !== undefined && spec.opacity < 1 && !(it.opacity < 1)) item.opacity = spec.opacity * 100;
     } else {
         return;
     }
@@ -249,6 +259,10 @@ PD.planeText = function (layer, it, rect, ps) {
     var tf = layer.textFrames.pointText([0, 0]);
     tf.contents = it.text.replace(/\n/g, "\r");
     if (ps[it.paraStyle]) ps[it.paraStyle].applyTo(tf.textRange, true);
+    if (it.sizePt) tf.textRange.characterAttributes.size = it.sizePt;
+    // Front-corner labels: left / right aligned on the anchor (the paragraph style is centred).
+    tf.textRange.paragraphAttributes.justification = it.align === "right" ? Justification.RIGHT
+        : it.align === "left" ? Justification.LEFT : Justification.CENTER;
     if (it.center) PD.centerOnGlyphs(tf, [0, 0]);
     var m = app.getIdentityMatrix();
     m.mValueA = it.matrix[0];
@@ -261,6 +275,16 @@ PD.planeText = function (layer, it, rect, ps) {
     var target = PD.pt(rect, it.x, it.y);
     tf.translate(target[0], target[1]);
     return tf;
+};
+
+// Places a text frame by its outlined glyph box: right (or left) edge on target x, vertical centre on target y.
+PD.anchorOnGlyphs = function (tf, target, mode) {
+    var dup = tf.duplicate();
+    var outlined = dup.createOutline();
+    var b = outlined.geometricBounds; // [left, top, right, bottom]
+    outlined.remove();
+    var x = mode === "right" ? b[2] : mode === "left" ? b[0] : (b[0] + b[2]) / 2;
+    tf.translate(target[0] - x, target[1] - (b[1] + b[3]) / 2);
 };
 
 // Moves a text frame so the centre of its outlined glyphs lands on target (exact centring in a colour block).

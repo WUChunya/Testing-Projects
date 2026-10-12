@@ -39,7 +39,12 @@ public sealed class PdSettings
     public static PdSettings FromJson(string? json)
     {
         if (string.IsNullOrWhiteSpace(json)) return new PdSettings();
-        try { return JsonSerializer.Deserialize<PdSettings>(json, Json) ?? new PdSettings(); }
+        try
+        {
+            var s = JsonSerializer.Deserialize<PdSettings>(json, Json) ?? new PdSettings();
+            foreach (var l in s.Layers.Values) l.Role = Roles.Normalize(l.Role);
+            return s;
+        }
         catch (JsonException) { return new PdSettings(); }
     }
 
@@ -106,6 +111,8 @@ public sealed class OutputSetting
     public string Scheme { get; set; } = "";
     public List<string>? Drawings { get; set; }
     public string Scale { get; set; } = "";
+    /// <summary>Section scale; empty = rules default (1" = 16'-0").</summary>
+    public string SectionScale { get; set; } = "";
     public string Artboard { get; set; } = "";
     /// <summary>Also export a PNG per artboard from Illustrator; null = rules default.</summary>
     public bool? ExportPng { get; set; }
@@ -119,6 +126,7 @@ public sealed class OutputSetting
         if (string.IsNullOrEmpty(Scheme)) Scheme = r.Scheme;
         Drawings ??= r.Drawings.ToList();
         if (string.IsNullOrEmpty(Scale)) Scale = r.DefaultScale;
+        if (string.IsNullOrEmpty(SectionScale)) SectionScale = r.DefaultSectionScale;
         if (string.IsNullOrEmpty(Artboard)) Artboard = r.DefaultArtboard;
     }
 }

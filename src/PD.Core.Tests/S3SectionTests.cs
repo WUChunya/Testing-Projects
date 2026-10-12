@@ -68,8 +68,8 @@ public class S3SectionTests
         // White backing right under the colour blocks hides what is seen beyond through the gaps.
         var bg = Assert.Single(d.Layer("PD_PROGRAM_BG").Items);
         Assert.Equal("#FFFFFF", d.Swatches.Single(x => x.Name == bg.Fill).Hex);
-        Assert.Equal(d.Layers.IndexOf(d.Layer("PD_PROGRAM")) - 1, d.Layers.IndexOf(d.Layer("PD_PROGRAM_BG")));
-        Assert.All(d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_LBL") && !i.Name.Contains("CONTEXT")), t => Assert.True(t.Center));
+        Assert.True(d.Layers.IndexOf(d.Layer("PD_PROGRAM_BG")) < d.Layers.IndexOf(d.Layer("PD_PROGRAM")));
+        Assert.True(d.Layers.IndexOf(d.Layer("PD_BEYOND")) < d.Layers.IndexOf(d.Layer("PD_PROGRAM_BG")));
         Assert.NotEmpty(d.Layer("FACADE").Items);
         Assert.Equal(d.Layers.SelectMany(l => l.Items).Count(), d.Layers.SelectMany(l => l.Items).Select(i => i.Name).Distinct().Count());
         // Every item inside the artboard.
@@ -79,61 +79,67 @@ public class S3SectionTests
     }
 
     [Fact]
-    public void SectionA_TrueScaleVisualSlabsAndContextStyles()
+    public void SectionA_ProgramSectionStyle()
     {
         var ctx = Context();
         var d = SectionDrawing.Build(ctx, SectionA);
         var st = ctx.Style.Section;
-        Assert.Equal(2.25, ctx.PtPerFt);
-        // Fit content: artboard = drawing at true scale + margins (never fitted).
+        // Sections have their own scale (1" = 16'-0") and absolute text sizes, whatever the plan scale.
+        Assert.Equal(4.5, ctx.ForSection().PtPerFt, 6);
         Assert.Equal("Fit content", ctx.Settings.Output.Artboard);
-        // Slabs have the fixed visual weight; consecutive tower slabs are 12'-6" apart at true scale.
-        var slabs = d.Layer("PD_SLAB").Items.Select(i => (top: i.Paths![0][0][1], h: i.Paths[0][2][1] - i.Paths[0][0][1])).ToList();
-        Assert.All(slabs, s => Assert.Equal(st.SlabPt, s.h, 3));
-        var ys = slabs.Select(s => Math.Round(s.top, 2)).Distinct().OrderBy(y => y).ToList();
-        Assert.Contains(ys.Zip(ys.Skip(1), (a, b) => b - a), dy => Math.Abs(dy - 12.5 * 2.25) < 0.05);
-        // No slab runs through a block (tall spaces stay open; roof slabs only cap their own block).
-        foreach (var bar in d.Layer("PD_PROGRAM").Items)
-            Assert.DoesNotContain(d.Layer("PD_SLAB").Items, sl =>
-                sl.Paths![0][0][1] > bar.Y + 0.5 && sl.Paths[0][2][1] < bar.Y + bar.H - 0.5 &&
-                sl.Paths[0][0][0] < bar.X + bar.W - 0.5 && sl.Paths[0][1][0] > bar.X + 0.5);
-        // Bars clear the slab by half its weight plus the gap.
-        Assert.All(d.Layer("PD_PROGRAM").Items, b => Assert.True(b.H > 0));
-        // Behind the cut: other buildings white + dashed; our building as an opaque grey elevation (masses = solid base).
-        Assert.NotEmpty(d.Layer("PD_BEYOND").Items);
-        Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("VIEW_CONTEXT", i.Fill); Assert.NotNull(i.Dash); });
+        // Slabs: white strips 0.14 × floor with a 1 pt dark outline; tower floors 12'-6" apart at true scale.
+        var slabs = d.Layer("PD_SLAB").Items;
+        Assert.All(slabs, i => { Assert.Equal("PD_SLAB", i.Fill); Assert.Equal(st.SlabStrokePt, i.StrokePt); });
+        Assert.Contains(slabs, i => Math.Abs(i.Paths![0][2][1] - i.Paths[0][0][1] - 0.14 * 12.5 * 4.5) < 0.05);
+        var ys = slabs.Select(i => Math.Round((i.Paths![0][0][1] + i.Paths[0][2][1]) / 2, 2)).Distinct().OrderBy(y => y).ToList();
+        Assert.Contains(ys.Zip(ys.Skip(1), (a, b) => b - a), dy => Math.Abs(dy - 12.5 * 4.5) < 0.05);
+        // Bars: 0.68 × floor tall, no stroke, corner 0.14 × floor; tower bars 38.25 pt tall.
+        var bars = d.Layer("PD_PROGRAM").Items;
+        Assert.Contains(bars, b => Math.Abs(b.H - 0.68 * 12.5 * 4.5) < 0.05 && Math.Abs(b.R - 0.14 * 12.5 * 4.5) < 0.05);
+        Assert.All(bars, b => Assert.Null(b.Stroke));
+        // Labels right-aligned on the glyph box, ≤ 20 pt and ≥ 10 pt; one floor number per level, left in the bar.
+        var labels = d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_LBL") && !i.Name.Contains("CONTEXT")).ToList();
+        Assert.NotEmpty(labels);
+        Assert.All(labels, t => { Assert.Equal("right", t.GlyphAnchor); Assert.InRange(t.SizePt!.Value, st.LabelSizeMin, st.LabelSizeMax); });
+        var numbers = d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_NUM")).ToList();
+        Assert.Equal(numbers.Count, numbers.Select(n => n.Text).Distinct().Count());
+        Assert.Contains(numbers, n => n.Text == "03" && n.GlyphAnchor == "left");
+        var font = d.ParaStyles.Single(x => x.Name == "PD Section Label");
+        Assert.Equal("ArialMT", font.Font);
+        Assert.Equal(0.85, font.Opacity);
+        // Behind the cut: other buildings white, 1 pt #555555 dashed; our building as an opaque grey elevation.
+        Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("VIEW_CONTEXT", i.Fill); Assert.Equal(new[] { 6.0, 4.0 }, i.Dash); });
         Assert.NotEmpty(d.Layer("VIEW_MASS").Items);
-        Assert.All(d.Layers.Where(l => l.Name.StartsWith("VIEW_")).SelectMany(l => l.Items), i => Assert.NotNull(i.Fill));
         Assert.All(d.Layer("PD_CONTEXT_CUT").Items, i => { Assert.Equal("PD_CUT_FILL", i.Fill); Assert.Equal(st.ContextCutStrokePt, i.StrokePt); });
-        Assert.All(d.Layer("FACADE").Items, i => Assert.Null(i.Fill));
-        // Painter's order: layers bottom → top put what is behind under what is cut.
+        // Layer order: what is behind < level lines (visible in the gaps) < bars < slabs.
         var order = d.Layers.Select(l => l.Name).ToList();
-        Assert.True(order.IndexOf("PD_BEYOND") < order.IndexOf("PD_CONTEXT_CUT") && order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_PROGRAM"));
-        Assert.True(order.IndexOf("PD_CONTEXT_CUT") < order.IndexOf("PD_LEVELS") && order.IndexOf("PD_LEVELS") < order.IndexOf("PD_PROGRAM"));
-        // Ground line = 2 × slab weight, centred on grade; nothing seen beyond the cut goes below grade.
+        Assert.True(order.IndexOf("PD_BEYOND") < order.IndexOf("PD_CONTEXT_CUT") && order.IndexOf("PD_PROGRAM_BG") < order.IndexOf("PD_LEVELS"));
+        Assert.True(order.IndexOf("PD_LEVELS") < order.IndexOf("PD_PROGRAM") && order.IndexOf("PD_PROGRAM") < order.IndexOf("PD_SLAB"));
+        Assert.All(d.Layer("PD_LEVELS").Items, i => Assert.Equal(st.LevelLineStrokePt, i.StrokePt));
+        // Ground = 3 pt black line at grade; nothing seen beyond goes below it.
         var ground = d.Layer("PD_GROUND").Items.Single();
-        var gradeY = (ground.Paths![0][0][1] + ground.Paths[0][2][1]) / 2;
+        Assert.Equal(st.GroundPt, ground.StrokePt);
+        Assert.False(ground.Closed);
+        var gradeY = ground.Paths![0][0][1];
         Assert.All(d.Layers.Where(l => l.Name.StartsWith("VIEW_") || l.Name == "PD_BEYOND").SelectMany(l => l.Items).SelectMany(i => i.Paths!).SelectMany(p => p),
             q => Assert.True(q[1] <= gradeY + 0.01, $"beyond point at y={q[1]:0.0} below grade y={gradeY:0.0}"));
-        Assert.Equal(st.SlabPt * st.GroundSlabFactor, ground.Paths![0][2][1] - ground.Paths[0][0][1], 3);
-        // Level column and height dimension are back.
-        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_LVL_L1_TXT");
-        Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_DIM_HEIGHT_TXT");
-        _out.WriteLine($"artboard {d.Artboards[0].W}x{d.Artboards[0].H}, beyond {d.Layer("PD_BEYOND").Items.Count}, cut ctx {d.Layer("PD_CONTEXT_CUT").Items.Count}");
+        Assert.DoesNotContain(d.Layer("PD_ANNOTATION").Items, i => i.Name == "SEC_A_LVL_L1_TXT");
+        _out.WriteLine($"artboard {d.Artboards[0].W}x{d.Artboards[0].H}");
     }
 
     [Theory]
     [InlineData("1\" = 45'-0\"", 1.0)]
     [InlineData("1/32\" = 1'-0\"", 1.40625)]
     [InlineData("1\" = 90'-0\"", 0.5)]
-    public void TextScalesWithDrawingScale(string scale, double factor)
+    public void PlanTextScalesWithDrawingScale(string scale, double factor)
     {
         var ctx = Context();
         ctx.Settings.Output.Scale = scale;
-        var d = SectionDrawing.Build(ctx, SectionA);
+        var d = PD.Core.Plans.PlanDrawing.Build(ctx);
         var label = d.ParaStyles.Single(s => s.Name == "PD Label");
         Assert.Equal(ctx.Style.Fonts.Label.SizePt * factor, label.SizePt, 6);
         Assert.Equal(factor, ctx.TextScale, 6);
+        Assert.Equal(1, ctx.ForSection().TextScale);
     }
 
     [Fact]
@@ -141,7 +147,7 @@ public class S3SectionTests
     {
         var ctx = Context();
         ctx.Settings.Output.Artboard = "8.5x11 Landscape";
-        ctx.Settings.Output.Scale = "1/8\" = 1'-0\"";
+        ctx.Settings.Output.SectionScale = "1/8\" = 1'-0\"";
         var d = SectionDrawing.Build(ctx, SectionA);
         Assert.Equal(792, d.Artboards[0].W);
         Assert.Contains(d.Notes, n => n.Contains("larger than"));
@@ -155,7 +161,7 @@ public class S3SectionTests
         foreach (var f in new[] { "program_areas.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx", "_preview/02_Section_A.svg", "_preview/07_Elevation_S.svg" })
             Assert.True(File.Exists(Path.Combine(dir, f)), f);
         Assert.Contains(res.Notes, n => n.StartsWith("ProgramChart"));
-        foreach (var f in new[] { "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked.svg", "04_Axon_Exploded.svg", "04_Axon_Levels_AXON_L3.svg" })
+        foreach (var f in new[] { "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked.svg", "04_Axon_Exploded.svg", "04_Axon_Exploded_B.svg", "04_Axon_Levels_AXON_L3.svg" })
             Assert.True(File.Exists(Path.Combine(dir, "_preview", f)), f);
 
         // Golden preview for review (checked in).
@@ -165,6 +171,7 @@ public class S3SectionTests
         File.Copy(Path.Combine(dir, "_preview", "03_Axon_Stacked.svg"), Path.Combine(Golden(), "axon_stacked.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded.svg"), Path.Combine(Golden(), "axon_exploded.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "04_Axon_Levels_AXON_L3.svg"), Path.Combine(Golden(), "axon_levels_L3.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded_B.svg"), Path.Combine(Golden(), "axon_exploded_B.svg"), true);
 
         // node --check after stripping the #target directive (ExtendScript-only).
         var js = Path.Combine(dir, "check.js");

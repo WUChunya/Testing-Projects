@@ -1,6 +1,10 @@
 # PRD：Program Diagram Rhino 8 插件
 
-v0.7 · 2026-10-10 · 状态：开发中（S0–S4 完成，插件 v0.4.0；修订过程见 `docs/CHANGELOG.md`）
+v0.8 · 2026-10-12 · 状态：开发中（S0–S4 完成，插件 v0.5.0；修订过程见 `docs/CHANGELOG.md`）
+
+**v0.8 主要变化**
+- 风格统一：全部图用 Arial（`docs/SITE_STYLE.md` §0.1）；剖面按 §4（单独比例 1" = 16'-0"）；平面按 §2；叠合式轴测按 §1；爆炸轴测 A 按 `docs/AXON_STYLE.md`，新增爆炸轴测 B（§3，30/60 平面斜轴测）。
+- 图层角色细分：新建部分（NC）有 Program、NC.Core、NC.Stair、NC.Slab、NC.Facade、NC.Structure、NC.Green、NC.Hardscape、NC.Tree、NC.Water；背景（BG）有 Building、Road、Hardscape、Landscape、Tree、Water、Base、Line。每个角色在平面 / 轴测 / 看线中各有画法（`style_default.json › roles`）。
 
 **v0.7 主要变化**
 - 插件界面全英文（方便和同事共用）；面板改为 9 页：剖切（6 Sections）与立面（7 Elevations）分成两页。
@@ -48,19 +52,23 @@ v0.7 · 2026-10-10 · 状态：开发中（S0–S4 完成，插件 v0.4.0；修�
 ### A1 背景分类与风格
 面板第 1 页"图层分类"列出模型中所有**有对象的图层**（隐藏图层默认不勾选）。用户为每个图层指定一个角色：
 
-| 角色 | 举例 |
-|---|---|
-| `Program` | 由插件读取的 program 体块（见 A2） |
-| `BG·Building` | 周边建筑、本项目的其他楼栋 |
-| `BG·Road` | 道路 |
-| `BG·Hardscape` | 人行道、广场 |
-| `BG·Landscape` | 绿地、种植池 |
-| `BG·Tree` | 树（可以是图块） |
-| `BG·Water` | 水体 |
-| `BG·Facade` | 立面：玻璃、竖梃、遮阳等（见 A3） |
-| `BG·Slab` | 楼板：独立建模的楼板层，用于校核楼层，并画剖面中的楼板 |
-| `BG·Base` | 场地底板、图框底座：作为地坪参考，不参与剖切 |
-| `BG·Line` | 用地红线、轴网等线性要素 |
+角色分两组：**NC（New Construction，本项目新建）**和 **BG（Background，现状背景）**。场地类角色（树、水、绿地、硬质）两组都有；图层路径中含 `NC::` / `NEW::` / `PROJECT::` / `PROPOSED::` 时自动归入 NC。
+
+| 角色 | 组 | 举例 / 用途 |
+|---|---|---|
+| `Program` | NC | 由插件读取的 program 体块（见 A2） |
+| `NC.Core` | NC | 核心筒：作为 program `CORE` 的体块，计入面积；爆炸轴测中连接上下层 |
+| `NC.Stair` | NC | 楼梯、电梯、交通：program `STAIR`；爆炸轴测 A 为连接体、B 为竖向粗线 |
+| `NC.Slab` | NC | 楼板：校核楼层，剖面 / 立面中的楼板（原 `BG·Slab`） |
+| `NC.Facade` | NC | 立面：玻璃、竖梃、遮阳等（原 `BG·Facade`，见 A3） |
+| `NC.Structure` | NC | 柱、墙、梁：平面中剖到画深灰实心，看线中单独成层 |
+| `NC.Green` | NC | 本项目绿地：屋顶花园、露台种植、场地草坪 |
+| `NC.Hardscape` | NC | 本项目广场、铺装 |
+| `NC.Tree` / `NC.Water` | NC | 本项目的树、水景 |
+| `BG.Building` | BG | 周边建筑 |
+| `BG.Road` / `BG.Hardscape` / `BG.Landscape` / `BG.Tree` / `BG.Water` | BG | 道路、街区与人行道、绿地、树、水体 |
+| `BG.Base` | BG | 场地底板、图框底座：地坪参考，不参与剖切 |
+| `BG.Line` | BG | 用地红线、轴网等线性要素 |
 | `Ignore` | 幕墙、竖梃、材质、渲染辅助等 |
 
 每个背景角色选一种**风格模式**，默认值来自公司配色方案：
@@ -74,8 +82,9 @@ v0.7 · 2026-10-10 · 状态：开发中（S0–S4 完成，插件 v0.4.0；修�
 - 同一个角色在不同的图里可以用不同的模式。例如 `BG·Building` 在 Plan 中是灰色填充，在 Section 中剖到的画黑色粗线、未剖到的画浅灰虚线。
 - 分类结果可以保存为"图层映射模板"，按公司或项目复用。系统按图层名关键词自动预填，例如：
   - `Tree` → `BG·Tree`，`Road` → `BG·Road`
-  - `GLASS`、`CW-*`、`MULLION` → `BG·Facade`
-  - `slab` → `BG·Slab`
+  - `GLASS`、`CW-*`、`MULLION` → `NC.Facade`；`slab` → `NC.Slab`
+  - `CORE` → `NC.Core`；`STAIR`、`ELEVATOR`、`SHAFT` → `NC.Stair`；`COLUMN`、`STRUCT` → `NC.Structure`；`GREEN ROOF`、`TERRACE` → `NC.Green`
+  - 每个角色在各图中的画法见 `styles/style_default.json › roles`（plan / axon / view）
   - `CONTEXT` → `BG·Building`，`SITE` → `BG·Hardscape`，`FRAME` → `BG·Base`
 - **子图层单独判断角色，不继承父图层。** 测试模型中 `BACKGROUND FRAME::GLASS` 实际是立面玻璃，而它的父图层是场地底板。
 - 可以选择"使用 Rhino 图层颜色"作为彩色模式的颜色来源。测试模型中 `CONTEXT BUILDINGS` 已设为 `#E6E6E6`。

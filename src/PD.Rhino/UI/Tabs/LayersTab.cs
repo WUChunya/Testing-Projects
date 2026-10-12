@@ -10,7 +10,8 @@ internal sealed class LayersTab : TabBase
 {
     sealed record Row(string Path, int Count, LayerSetting S);
 
-    static readonly string[] Roles = { "Program", "BG.Building", "BG.Road", "BG.Hardscape", "BG.Landscape", "BG.Tree", "BG.Water", "BG.Facade", "BG.Slab", "BG.Base", "BG.Line", "Ignore" };
+    /// <summary>Program and NC.* = our new construction; BG.* = existing context.</summary>
+    static readonly string[] Roles = PD.Core.Classification.Roles.All;
     static readonly string[] Modes = { "", "grayscale", "line", "color" };
 
     readonly GridView _grid = Ui.Grid(320);

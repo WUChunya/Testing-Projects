@@ -22,10 +22,48 @@ public sealed class AxonProjection
         _u = Cross(_r, (-c.X, -c.Y, -c.Z));
     }
 
-    public static AxonProjection FromAngles(double azimuthDeg, double elevationDeg, double[]? viewDirection = null)
+    /// <summary>Raw affine rows (screen x, screen y-up) with the direction towards the viewer derived from them.</summary>
+    AxonProjection((double X, double Y, double Z) r, (double X, double Y, double Z) u)
+    {
+        _r = r;
+        _u = u;
+        var c = (r.Y * u.Z - r.Z * u.Y, r.Z * u.X - r.X * u.Z, r.X * u.Y - r.Y * u.X);
+        _c = Norm(c.Item3 < 0 ? (-c.Item1, -c.Item2, -c.Item3) : c);
+    }
+
+    /// <param name="trueLength">Isometric drawing (AXON_STYLE §2): no foreshortening, every axis at the drawing scale.</param>
+    public static AxonProjection FromAngles(double azimuthDeg, double elevationDeg, double[]? viewDirection = null, bool trueLength = false)
     {
         if (viewDirection is { Length: 3 } v) return new AxonProjection((-v[0], -v[1], -v[2]));
-        return new AxonProjection(FromAngles(azimuthDeg, elevationDeg));
+        var p = new AxonProjection(FromAngles(azimuthDeg, elevationDeg));
+        if (!trueLength) return p;
+        // Scale so a horizontal axis keeps its true length on the page (isometric: × 1.22474).
+        var (ax, ay) = p.Project(1, 0, 0);
+        var f = 1 / Math.Sqrt(ax * ax + ay * ay);
+        return new AxonProjection((p._r.X * f, p._r.Y * f, p._r.Z * f), (p._u.X * f, p._u.Y * f, p._u.Z * f));
+    }
+
+    /// <summary>Planometric 30°/60° (SITE_STYLE §3): plan undistorted, plan +Y up-right 30°, plan +X down-right 60°, height true.</summary>
+    public static AxonProjection Planometric(double yAxisDeg = 30)
+    {
+        double t = yAxisDeg * Math.PI / 180;
+        // Screen x = sin t·x + cos t·y; screen y-up = −cos t·x + sin t·y + z.
+        return new AxonProjection((Math.Sin(t), Math.Cos(t), 0), (-Math.Cos(t), Math.Sin(t), 1));
+    }
+
+    /// <summary>The page direction (unit, y up) of a plan axis that runs to the lower right — for leaders along the drawing.</summary>
+    public (double X, double Y) DownRightAxis()
+    {
+        foreach (var (x, y) in new[] { (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0) })
+        {
+            var (sx, sy) = Project(x, y, 0);
+            if (sx > 1e-6 && sy < -1e-6)
+            {
+                var l = Math.Sqrt(sx * sx + sy * sy);
+                return (sx / l, sy / l);
+            }
+        }
+        return (Math.Cos(Math.PI / 6), -0.5);
     }
 
     static (double, double, double) FromAngles(double az, double el)

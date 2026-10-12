@@ -47,6 +47,13 @@ public sealed class DItem
     /// page = (X, Y) + (a·x + c·y, b·x + d·y). Replaces <see cref="Rotation"/>; the text stays editable.
     /// </summary>
     public double[]? Matrix { get; set; }
+    /// <summary>Text size override (pt), e.g. section labels sized to their bar.</summary>
+    public double? SizePt { get; set; }
+    /// <summary>
+    /// Text placed by its glyph box: "right" puts the glyphs' right edge at X, "left" their left edge, both centred
+    /// vertically on Y (section bar labels and floor numbers). Null = <see cref="Center"/> / baseline placement.
+    /// </summary>
+    public string? GlyphAnchor { get; set; }
 }
 
 public sealed class DLayer
@@ -68,8 +75,11 @@ public sealed record Swatch(string Name, string Hex);
 /// <param name="Family">CSS family for the SVG preview.</param>
 /// <param name="Color">Swatch name.</param>
 /// <param name="Weight">CSS weight for the SVG preview.</param>
+/// <param name="Opacity">Text opacity 0–1 (applied to each text item).</param>
+/// <param name="Tracking">Illustrator tracking (1/1000 em).</param>
+/// <param name="LeadingPt">0 = auto.</param>
 public sealed record ParaStyle(string Name, string Font, string FallbackFont, string Family, double SizePt, bool AllCaps, string Align, string Color,
-    string Weight = "normal");
+    string Weight = "normal", double Opacity = 1, double Tracking = 0, double LeadingPt = 0);
 
 /// <summary>A whole .ai file: artboards, layers (bottom → top), global swatches and paragraph styles.</summary>
 public sealed class Drawing

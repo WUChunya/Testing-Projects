@@ -131,9 +131,9 @@ public sealed class PdSession
 
     public static string DefaultMode(string role) => role switch
     {
-        Roles.Program or Roles.Ignore => "",
-        Roles.Building or Roles.Slab or Roles.Base => "grayscale",
-        Roles.Facade or "BG.Line" => "line",
+        Roles.Program or Roles.Core or Roles.Stair or Roles.Ignore => "",
+        Roles.Building or Roles.Slab or Roles.Base or Roles.Structure => "grayscale",
+        Roles.Facade or Roles.Line => "line",
         _ => "color",
     };
 

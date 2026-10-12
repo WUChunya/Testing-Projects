@@ -27,10 +27,27 @@ public sealed class ExportContext
     public string ProgramLabel(string key) => Program(key)?.Label ?? key;
 
     /// <summary>Drawing scale; drawings are always at true scale (never fitted).</summary>
-    public double PtPerFt => ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 2.25;
+    public double PtPerFt => ParseScale(ScaleOverride) ?? ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 1.6;
+
+    /// <summary>Scale of this drawing as typed (sections have their own).</summary>
+    public string ScaleText => ParseScale(ScaleOverride) != null ? ScaleOverride! : Settings.Output.Scale;
+
+    /// <summary>A drawing-specific scale (sections: 1" = 16'-0").</summary>
+    public string? ScaleOverride { get; init; }
+
+    /// <summary>Fixed text scale (sections give absolute pt sizes).</summary>
+    public double? TextScaleOverride { get; init; }
 
     /// <summary>Text and annotation spacing scale: drawing scale ÷ the style's reference scale (1" = 45' → 1).</summary>
-    public double TextScale => PtPerFt / (ParseScale(Style.Page.TextReferenceScale) ?? PtPerFt);
+    public double TextScale => TextScaleOverride ?? PtPerFt / (ParseScale(Style.Page.TextReferenceScale) ?? PtPerFt);
+
+    /// <summary>Context for program sections (docs/SITE_STYLE.md §4): own scale, absolute text sizes.</summary>
+    public ExportContext ForSection() => new()
+    {
+        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules,
+        ScaleOverride = string.IsNullOrWhiteSpace(Settings.Output.SectionScale) ? Rules.Output.DefaultSectionScale : Settings.Output.SectionScale,
+        TextScaleOverride = 1,
+    };
 
     /// <summary>A size given at the reference scale, in points at the drawing scale.</summary>
     public double Pt(double atReference) => atReference * TextScale;
@@ -69,22 +86,30 @@ public sealed class ExportContext
         return (fill, stroke, p.StrokePt ?? 0, p.Dash);
     }
 
-    /// <summary>Paragraph styles shared by every file.</summary>
+    /// <summary>Paragraph styles shared by every file (unified Arial typography).</summary>
     public void AddStandardStyles(Drawing d)
     {
         var f = Style.Fonts;
-        var color = d.Gray(Style.Page.LabelColor)!;
-        d.ParaStyles.Add(new ParaStyle("PD Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", color, f.Label.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Note", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "left", color, f.Note.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Note Right", f.Note.PostScript, f.Note.FallbackPostScript, f.Note.Family, Pt(f.Note.SizePt), f.Note.AllCaps, "right", color, f.Note.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), f.Title.AllCaps, "left", color, f.Title.Weight));
-        var light = d.Gray(Style.Page.LightLabelColor)!;
-        d.ParaStyles.Add(new ParaStyle("PD Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, Pt(f.Label.SizePt), f.Label.AllCaps, "center", light, f.Label.Weight));
-        var plane = Pt(Style.Axon.LabelSizePt > 0 ? Style.Axon.LabelSizePt : f.Label.SizePt);
-        d.ParaStyles.Add(new ParaStyle("PD Plane Label", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", color, f.Label.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Plane Label Light", f.Label.PostScript, f.Label.FallbackPostScript, f.Label.Family, plane, f.Label.AllCaps, "center", light, f.Label.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Level", f.Level.PostScript, f.Level.FallbackPostScript, f.Level.Family, Pt(f.Level.SizePt), f.Level.AllCaps, "left", color, f.Level.Weight));
-        d.ParaStyles.Add(new ParaStyle("PD Level Title", f.Title.PostScript, f.Title.FallbackPostScript, f.Title.Family, Pt(f.Title.SizePt), false, "left", color, f.Title.Weight));
+        void Add(string name, Config.Font font, string align, string? color = null) =>
+            d.ParaStyles.Add(new ParaStyle(name, font.PostScript, font.FallbackPostScript, font.Family, Pt(font.SizePt), font.AllCaps, align,
+                d.Gray(color ?? font.Color)!, font.Weight, font.Opacity, font.Tracking, Pt(font.LeadingPt)));
+        Add("PD Label", f.Label, "center");
+        Add("PD Label Light", f.Label, "center", Style.Page.LightLabelColor);
+        Add("PD Note", f.Note, "left");
+        Add("PD Note Right", f.Note, "right");
+        Add("PD Title", f.Title, "left");
+        Add("PD Level", f.Level, "left");
+        Add("PD Level Tag", f.LevelTag, "left");
+        Add("PD Plane Label", f.PlaneLabel, "center");
+        Add("PD Plane Label Small", f.PlaneLabelSmall, "center");
+        Add("PD Plane Label B", f.PlaneLabelB, "center");
+        Add("PD Plane Label B Small", f.PlaneLabelBSmall, "center");
+        Add("PD Core Label", f.CoreLabel, "center");
+        Add("PD Context Label", f.ContextLabel, "center");
+        Add("PD Street", f.Street, "center");
+        Add("PD Heading", f.Heading, "left");
+        Add("PD Section Label", f.SectionLabel, "right");
+        Add("PD Floor Number", f.FloorNumber, "left");
     }
 
     /// <summary>The dark or the light ("… Light") variant of a label style, whichever reads on the given fill swatch.</summary>

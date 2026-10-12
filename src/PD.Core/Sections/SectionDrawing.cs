@@ -11,6 +11,8 @@ public static class SectionDrawing
 {
     public static PD.Core.Drawing.Drawing Build(ExportContext ctx, SectionSetting sec)
     {
+        // Program sections have their own scale and absolute text sizes (docs/SITE_STYLE.md §4).
+        if (ctx.TextScaleOverride == null) ctx = ctx.ForSection();
         var r = ctx.Result;
         var (ax, ay, _) = r.Frame.ToLocal(sec.Line[0], sec.Line[1], 0);
         var (bx, by, _) = r.Frame.ToLocal(sec.Line[2], sec.Line[3], 0);
@@ -25,12 +27,12 @@ public static class SectionDrawing
         // Bottom → top: what is farther away is painted first and hidden by what is nearer.
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
         Views.ProjectedView.AddLayers(d, g.View);
-        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_LEVELS", "PD_PROGRAM_BG", "PD_PROGRAM", "PD_OUTLINE", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
+        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
         var k = ctx.PtPerFt;
-        var groundT = st.SlabPt * st.GroundSlabFactor;
+        var groundT = st.GroundPt;
         var geoms = new[] { g.Outline }.Concat(g.View.Select(b => b.Geometry)).Concat(g.BuildingCuts.Select(b => b.Geometry)).Where(x => !x.IsEmpty).ToList();
         var zMax = geoms.Select(x => x.EnvelopeInternal.MaxY).DefaultIfEmpty(g.Ground + 30).Max();
         var zMin = Math.Min(g.Ground, geoms.Select(x => x.EnvelopeInternal.MinY).DefaultIfEmpty(g.Ground).Min());
@@ -45,7 +47,7 @@ public static class SectionDrawing
             x0 = m + colL + (abW - 2 * m - colL - colR - w) / 2;
             y0 = m + (abH - 2 * m - titleBand - h) / 2;
             if (x0 < m + colL - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"Section {sec.Name} at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+                d.Notes.Add($"Section {sec.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
         }
         else
         {
@@ -82,28 +84,44 @@ public static class SectionDrawing
             d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + "PROGRAM_BG", g.Outline, d.Swatch("PD_PROGRAM_BG", bg), null, 0));
         SectionBars.Add(d, ctx, g, map, p);
 
-        // Our building: thin wall line, visual slabs (fixed weight, centred on the floor line), facade cuts.
+        // Envelope: thin light-grey line under the bars; slabs: white strips 0.14 × floor with a dark outline, 2 ft past the bars.
         if (!g.Outline.IsEmpty)
-            d.Layer("PD_OUTLINE").Items.Add(map.Poly(p + "OUTLINE", g.Outline, null, d.Gray("#000000"), st.OutlinePt));
+            d.Layer("PD_OUTLINE").Items.Add(map.Poly(p + "OUTLINE", g.Outline, null, d.Gray(st.EnvelopeStroke), st.EnvelopePt));
         foreach (var (c, i) in g.FacadeCut.Select((c, i) => (c, i)))
             d.Layer("FACADE").Items.Add(map.Line(p + $"FACADE_CUT_{i:000}", c, d.Gray("#000000"), st.FacadeCutPt));
-        var slab = d.Swatch("PD_SLAB", st.SlabColor);
-        foreach (var (u0, u1, z) in g.SlabLines)
+        var slab = d.Swatch("PD_SLAB", st.SlabFill);
+        var slabLine = d.Gray(st.SlabStroke);
+        var slabNames = new HashSet<string>();
+        foreach (var (u0, u1, z) in g.SlabLines.OrderBy(x => x.Z).ThenBy(x => x.U0))
+        {
+            if (Math.Abs(z - g.Ground) < 0.5) continue; // the ground line is the ground floor's slab
+            var half = st.SlabHeightRatio * Story(g, z) * k / 2;
+            var xa = Math.Min(map.X(u0), map.X(u1)) - st.SlabOverhangFt * k;
+            var xb = Math.Max(map.X(u0), map.X(u1)) + st.SlabOverhangFt * k;
+            var name = p + $"SLAB_{FeetInches.Format(z)}_{u0:0}";
+            for (var n = 2; !slabNames.Add(name); n++) name = p + $"SLAB_{FeetInches.Format(z)}_{u0:0}_{n}";
             d.Layer("PD_SLAB").Items.Add(new DItem
             {
-                Kind = ItemKind.Path, Name = p + $"SLAB_{FeetInches.Format(z)}_{u0:0}", Fill = slab,
-                Paths = new() { RectPts(Math.Min(map.X(u0), map.X(u1)), map.Y(z) - st.SlabPt / 2, Math.Max(map.X(u0), map.X(u1)), map.Y(z) + st.SlabPt / 2) },
+                Kind = ItemKind.Path, Name = name, Fill = slab, Stroke = slabLine, StrokePt = st.SlabStrokePt,
+                Paths = new() { RectPts(xa, map.Y(z) - half, xb, map.Y(z) + half) },
             });
+        }
 
-        // Ground line: slab weight × factor, centred on grade; basement levels below it draw like any other level.
-        d.Layer("PD_GROUND").Items.Add(new DItem
-        {
-            Kind = ItemKind.Path, Name = p + "GROUND", Fill = d.Swatch("BG_GROUND", st.GroundColor),
-            Paths = new() { RectPts(map.X(0), map.Y(g.Ground) - groundT / 2, map.X(plane.Length), map.Y(g.Ground) + groundT / 2) },
-        });
+        // Ground: a 3 pt black line at grade (no fill); basement bars sit below it.
+        d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, g.Ground), (plane.Length, g.Ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
-        SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(26));
+        SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(40));
         return d;
+    }
+
+    /// <summary>Floor height of the level band just below z (the slab belongs to it); 15 ft when unknown.</summary>
+    static double Story(SectionGeometry g, double z)
+    {
+        var main = g.Levels.Where(l => !l.IsMezzanine).Select(l => l.Elevation).OrderBy(e => e).ToList();
+        var below = main.LastOrDefault(e => e < z - 0.5, double.NaN);
+        var above = main.FirstOrDefault(e => e > z + 0.5, double.NaN);
+        var h = !double.IsNaN(below) ? z - below : !double.IsNaN(above) ? above - z : 15;
+        return Math.Clamp(h, 8, 30);
     }
 
     static double[][] RectPts(double x0, double y0, double x1, double y1) =>

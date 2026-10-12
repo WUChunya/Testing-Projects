@@ -115,44 +115,198 @@
     }
   },
   "fonts": {
+    "comment": "Unified typography, docs/SITE_STYLE.md §0.1 (styles/site_style.json › typography). All Arial; sizes in pt at page.textReferenceScale (1\" = 45'-0\").",
     "label": {
-      "family": "Century Gothic",
-      "sizePt": 7,
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 19,
       "allCaps": true,
-      "postScript": "CenturyGothic-Bold",
-      "fallbackPostScript": "Arial-BoldMT",
-      "weight": "bold"
+      "weight": "normal",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
     },
     "title": {
-      "family": "Century Gothic",
-      "sizePt": 14,
-      "allCaps": true,
-      "postScript": "CenturyGothic",
-      "fallbackPostScript": "ArialMT",
-      "weight": "normal"
-    },
-    "chart": {
-      "family": "Helvetica",
-      "fallback": "Arial",
-      "sizePt": 7,
-      "postScript": "Helvetica",
-      "fallbackPostScript": "ArialMT"
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 31,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
     },
     "note": {
-      "family": "Century Gothic",
-      "postScript": "CenturyGothic",
-      "fallbackPostScript": "ArialMT",
-      "sizePt": 7,
-      "allCaps": true,
-      "weight": "normal"
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 11,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#444444",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "chart": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 11,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#444444",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
     },
     "level": {
-      "family": "Century Gothic",
-      "postScript": "CenturyGothic",
-      "fallbackPostScript": "ArialMT",
-      "sizePt": 8,
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 14.8,
       "allCaps": false,
-      "weight": "normal"
+      "weight": "normal",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "levelTag": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 17,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "planeLabel": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 20,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#FFFFFF",
+      "opacity": 0.7,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "planeLabelSmall": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 16,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#FFFFFF",
+      "opacity": 0.7,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "planeLabelB": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 26,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#FFFFFF",
+      "opacity": 0.9,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "planeLabelBSmall": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 13,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#FFFFFF",
+      "opacity": 0.9,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "coreLabel": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 14.8,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#1A1A1A",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "contextLabel": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 24,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#6C6C6C",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 29.5
+    },
+    "street": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 22,
+      "allCaps": true,
+      "weight": "normal",
+      "color": "#5A5A5A",
+      "opacity": 1.0,
+      "tracking": 200,
+      "leadingPt": 0
+    },
+    "heading": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 19,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#8C8C8C",
+      "opacity": 1.0,
+      "tracking": 100,
+      "leadingPt": 0
+    },
+    "sectionLabel": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 20,
+      "allCaps": true,
+      "weight": "normal",
+      "color": "#333333",
+      "opacity": 0.85,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "floorNumber": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 16,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#1A1A1A",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
     }
   },
   "facade": {
@@ -160,32 +314,53 @@
     "explodedAxon": "hidden"
   },
   "section": {
-    "slabPt": 3.0,
-    "slabColor": "#000000",
-    "barSlabGapPt": 2.0,
-    "barCornerPt": 6.0,
-    "barGapPt": 1.5,
+    "comment": "Program section, docs/SITE_STYLE.md §4 (styles/site_style.json › program_section). Drawn at output.defaultSectionScale (1\" = 16'-0\"); sizes are absolute pt; *Ratio = × floor height. What is seen behind the cut uses \"view\".",
+    "barHeightRatio": 0.68,
+    "barTopGapRatio": 0.1,
+    "barCornerRatio": 0.14,
     "programBackground": "#FFFFFF",
-    "outlinePt": 0.75,
+    "slabHeightRatio": 0.14,
+    "slabFill": "#FFFFFF",
+    "slabStroke": "#4A4A4A",
+    "slabStrokePt": 1.0,
+    "slabOverhangFt": 2.0,
+    "labelSizeMax": 20,
+    "labelSizeRatio": 0.7,
+    "labelSizeMin": 10,
+    "labelInsetPt": 8,
+    "floorNumberSizeMax": 16,
+    "floorNumberSizeRatio": 0.6,
+    "floorNumberInsetPt": 6,
+    "unnumberedPrograms": [
+      "CIRCULATION",
+      "STAIR"
+    ],
+    "envelopeStroke": "#BDBDBD",
+    "envelopePt": 0.5,
+    "levelLineStroke": "#BDBDBD",
+    "levelLineStrokePt": 0.5,
+    "groundStroke": "#000000",
+    "groundPt": 3.0,
+    "propertyStroke": "#E05A6A",
+    "propertyPt": 1.0,
+    "propertyDash": [
+      6,
+      4
+    ],
+    "contextCutStroke": "#555555",
+    "contextCutStrokePt": 1.0,
+    "contextCutFill": "#FFFFFF",
     "facadeCutPt": 0.5,
-    "levelColumn": true,
-    "levelLineStroke": "#999999",
-    "levelLineStrokePt": 0.25,
-    "heightDimension": true,
-    "titlePrefix": "SECTION",
-    "comment": "Cut parts of the section. What is seen behind the cut uses \"view\".",
-    "groundSlabFactor": 2.0,
-    "groundColor": "#000000",
-    "contextCutStroke": "#000000",
-    "contextCutStrokePt": 2.5,
-    "contextCutFill": "#FFFFFF"
+    "levelColumn": false,
+    "heightDimension": false,
+    "titlePrefix": "SECTION"
   },
   "page": {
     "marginPt": 36.0,
     "levelColumnPt": 78.0,
     "dimColumnPt": 46.0,
-    "titleBandPt": 44.0,
-    "labelColor": "#000000",
+    "titleBandPt": 80,
+    "labelColor": "#333333",
     "labelMinBarWidthPt": 14.0,
     "textReferenceScale": "1\" = 45'-0\"",
     "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale.",
@@ -210,11 +385,11 @@
     ],
     "layerFills": {},
     "contextFill": "#FFFFFF",
-    "contextStroke": "#999999",
-    "contextStrokePt": 0.5,
+    "contextStroke": "#555555",
+    "contextStrokePt": 1.0,
     "contextDash": [
-      3,
-      2
+      6,
+      4
     ]
   },
   "elevation": {
@@ -229,11 +404,11 @@
     "markerSizePt": 6.0
   },
   "plan": {
-    "comment": "PRD 5.2. Point sizes are at page.textReferenceScale and scale with the drawing; Ft values are model feet.",
+    "comment": "PRD 5.2 styled per docs/SITE_STYLE.md §2 (site plan). Point sizes are at page.textReferenceScale (1\" = 45'); Ft values are model feet. Background paints are in \"roles\".",
     "outlineStroke": "#000000",
-    "outlinePt": 2.5,
-    "roomStroke": "#000000",
-    "roomPt": 0.5,
+    "outlinePt": 3.0,
+    "roomStroke": "#FFFFFF",
+    "roomPt": 1.0,
     "voidDash": [
       4,
       3
@@ -273,57 +448,271 @@
     "leaderStroke": "#808080",
     "leaderPt": 0.35,
     "leaderLengthPt": 18.0,
-    "titleMarker": "#F2B705",
-    "titleMarkerPt": 9.0
+    "titleTagFill": "#F6F0E4",
+    "titleTagPadPt": 10.0,
+    "treeDiameterFt": [
+      14,
+      22
+    ],
+    "labelSmallPt": 13
   },
   "axon": {
-    "comment": "PRD 5.4, styled after the Atlanta exploded axon. azimuthDeg = where the viewer stands (225 = south-west); elevationDeg 35.264 = isometric. Exploded plates are spaced so no plate hides another (explodeGapPt of clear page space between them).",
+    "comment": "PRD 5.4. Shared values from docs/AXON_STYLE.md (styles/axon_style.json); stacked = docs/SITE_STYLE.md §1 site program axon; exploded = AXON_STYLE §7 (A, Atlanta); explodedB = SITE_STYLE §3 (planometric). azimuthDeg = where the viewer stands (225 = south-west).",
     "azimuthDeg": 225.0,
     "elevationDeg": 35.264,
-    "silhouetteStroke": "#1A1A1A",
-    "silhouettePt": 1.0,
-    "edgeStroke": "#333333",
-    "edgePt": 0.35,
-    "sideDarken": [
-      0.12,
-      0.24
-    ],
-    "contextFill": "#FFFFFF",
+    "foreshorten": false,
+    "lineColor": "#000000",
+    "silhouettePt": 2.5,
+    "slabSilhouettePt": 2.0,
+    "foldPt": 1.0,
+    "divisionPt": 0.5,
+    "divisionColor": "#FFFFFF",
     "contextStroke": "#A6A6A6",
     "contextPt": 0.35,
+    "hiddenStroke": "#808080",
+    "hiddenPt": 0.5,
+    "hiddenDash": [
+      3,
+      2
+    ],
+    "sideDarken": [
+      0.1,
+      0.2
+    ],
+    "coreFill": "#D9D9D9",
+    "siteFill": "#F5F5F5",
+    "siteStroke": null,
+    "siteMarginFt": 40.0,
     "contextMarginFt": 120.0,
     "contextHeightFt": 8.0,
-    "siteFill": "#F4F4F4",
-    "siteStroke": "#CCCCCC",
-    "siteMarginFt": 40.0,
     "facadeVeil": false,
     "facadeVeilFill": "#FFFFFF",
     "facadeVeilStroke": "#9A9A9A",
     "facadeVeilStrokePt": 0.25,
-    "labelSizePt": 9.0,
-    "slabThicknessFt": 3.0,
-    "explodeGapPt": 24.0,
     "connectorPrograms": [
-      "CORE"
+      "CORE",
+      "STAIR"
     ],
-    "connectorFill": "#E9E2CC",
+    "connectorFill": "#E9E4D3",
     "connectorOpacity": 0.6,
-    "connectorStroke": "#9A9A9A",
-    "connectorPt": 0.35,
-    "ghostStroke": "#808080",
-    "ghostPt": 0.5,
-    "ghostDash": [
-      3,
-      2
-    ],
-    "levelColumnPt": 90.0,
-    "leaderStroke": "#9A9A9A",
-    "leaderPt": 0.35,
-    "levelMarker": "#F2B705",
-    "levelMarkerPt": 5.0,
+    "connectorStroke": "#B5AE9C",
+    "connectorPt": 0.53,
     "coreLabel": "CORE",
+    "levelColumnPt": 200.0,
+    "trees": {
+      "canopies": [
+        "#E4FCB4",
+        "#C4ECBC",
+        "#BACCC0",
+        "#CCECDC"
+      ],
+      "opacity": 0.85,
+      "strokePt": 0.35,
+      "strokeDarken": 0.25,
+      "trunk": "#8A8A8A",
+      "trunkPt": 0.75,
+      "canopyWFt": 16,
+      "canopyHFt": 26,
+      "trunkHFt": 10
+    },
+    "stacked": {
+      "silhouettePt": 2.5,
+      "edgePt": 0.75,
+      "floorLinePt": 0.5,
+      "floorLineDarken": 0.35,
+      "sideDarken": [
+        0.06,
+        0.14
+      ],
+      "labels": true
+    },
+    "exploded": {
+      "slabThicknessFt": 3.75,
+      "gapFactor": 1.5,
+      "minTopVisible": 0.7,
+      "labelInsetPt": 8,
+      "labelFitRatio": 0.6,
+      "levelMarkerPt": 8.5,
+      "levelMarker": "#FBBC10",
+      "levelMarkerStroke": "#C99600",
+      "levelMarkerStrokePt": 0.25,
+      "levelMarkerGapPt": 8.5,
+      "leaderStroke": "#B8B8B8",
+      "leaderPt": 0.35,
+      "columnOffsetPt": 108
+    },
+    "explodedB": {
+      "yAxisDeg": 30,
+      "blockThicknessFt": 6,
+      "plateOpacity": 0.85,
+      "sideDarken": [
+        0.15,
+        0.3
+      ],
+      "edgeStroke": "#FFFFFF",
+      "edgePt": 0.75,
+      "clearRatio": 0.75,
+      "atriumFill": "#F6F6C6",
+      "atriumOpacity": 0.6,
+      "atriumEnvelope": "#E0E0B0",
+      "atriumEnvelopePt": 0.75,
+      "shaftStroke": "#E4BA3C",
+      "shaftPt": 3.0,
+      "levelMarkerPt": 14,
+      "levelMarker": "#E49C30",
+      "leaderStroke": "#666666",
+      "leaderPt": 0.75,
+      "levelGapPt": 10,
+      "sitePlaneFill": "#FFFFFF",
+      "sitePlaneStroke": "#9A9A9A",
+      "sitePlaneStrokePt": 1.0,
+      "sitePlanOpacity": 0.55
+    },
     "titleStacked": "STACKED AXON",
     "titleExploded": "EXPLODED AXON",
+    "titleExplodedB": "EXPLODED AXON B",
     "titleLevels": "FLOOR KEY AXON"
+  },
+  "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
+  "roles": {
+    "BG.Hardscape": {
+      "plan": {
+        "fill": "#F0F0F0"
+      },
+      "axon": {
+        "fill": "#F6F6F6"
+      }
+    },
+    "BG.Road": {
+      "plan": {
+        "fill": "#D2D2D2"
+      },
+      "axon": {
+        "fill": "#FFFFFF"
+      }
+    },
+    "BG.Landscape": {
+      "plan": {
+        "fill": "#DCECE4"
+      },
+      "axon": {
+        "fill": "#D2EAD2",
+        "stroke": "#A8CFA8",
+        "strokePt": 0.5
+      }
+    },
+    "BG.Water": {
+      "plan": {
+        "fill": "#CFE3EE"
+      },
+      "axon": {
+        "fill": "#CFE3EE",
+        "stroke": "#A6C8DA",
+        "strokePt": 0.5
+      }
+    },
+    "BG.Tree": {
+      "plan": {
+        "fill": "#90C696",
+        "opacity": 0.6
+      },
+      "axon": {
+        "fill": "#C4ECBC",
+        "opacity": 0.85
+      }
+    },
+    "BG.Building": {
+      "plan": {
+        "fill": "#FFFFFF",
+        "shadow": "#AEAEAE",
+        "shadowOffsetPt": [
+          12,
+          12
+        ]
+      },
+      "axon": {
+        "fill": "#FFFFFF",
+        "stroke": "#5A5A5A",
+        "strokePt": 0.75
+      }
+    },
+    "BG.Line": {
+      "plan": {
+        "stroke": "#E05A6A",
+        "strokePt": 1.0,
+        "dash": [
+          6,
+          4
+        ]
+      },
+      "axon": {
+        "stroke": "#E05A6A",
+        "strokePt": 1.0,
+        "dash": [
+          6,
+          4
+        ]
+      }
+    },
+    "NC.Hardscape": {
+      "plan": {
+        "fill": "#FCECCC"
+      },
+      "axon": {
+        "fill": "#FCECCC",
+        "stroke": "#C8B8A0",
+        "strokePt": 0.5
+      },
+      "view": {
+        "fill": "#FCECCC"
+      }
+    },
+    "NC.Green": {
+      "plan": {
+        "fill": "#DCECE4"
+      },
+      "axon": {
+        "fill": "#CCECDC",
+        "stroke": "#9CC4B4",
+        "strokePt": 0.5
+      },
+      "view": {
+        "fill": "#CCECDC"
+      }
+    },
+    "NC.Water": {
+      "plan": {
+        "fill": "#BFDCEB"
+      },
+      "axon": {
+        "fill": "#BFDCEB",
+        "stroke": "#8FB8CC",
+        "strokePt": 0.5
+      },
+      "view": {
+        "fill": "#BFDCEB"
+      }
+    },
+    "NC.Tree": {
+      "plan": {
+        "fill": "#90C696",
+        "opacity": 0.6
+      },
+      "axon": {
+        "fill": "#C4ECBC",
+        "opacity": 0.85
+      }
+    },
+    "NC.Structure": {
+      "plan": {
+        "fill": "#4A4A4A"
+      },
+      "axon": {
+        "fill": "#4A4A4A"
+      },
+      "view": {
+        "fill": "#6E6E6E"
+      }
+    }
   }
 }

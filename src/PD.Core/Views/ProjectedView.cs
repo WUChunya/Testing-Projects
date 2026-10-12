@@ -31,7 +31,7 @@ public static class ProjectedView
         if (o.Role == Roles.Building) return ViewKind.Context;
         if (massIds.Contains(o.Id)) return ViewKind.Mass;
         if (facadeIds.Contains(o.Id)) return glass.IsMatch(OwnName(o.LayerPath)) ? ViewKind.Glass : ViewKind.Facade;
-        if (o.Role == Roles.Slab) return ViewKind.Element;
+        if (o.Role is Roles.Slab or Roles.Structure or Roles.Green or Roles.NcHardscape or Roles.NcWater) return ViewKind.Element;
         return null;
     }
 

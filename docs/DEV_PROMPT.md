@@ -19,7 +19,7 @@ At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chine
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.7; S0–S4 are done (plugin v0.4.0, 68 tests green).
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.8; S0–S4 are done (plugin v0.5.0, 89 tests green); styles per docs/SITE_STYLE.md and docs/AXON_STYLE.md.
 Do stage S5 (Charts + Entourage) from docs/DEV_PROMPT.md, reusing what exists — do not rebuild it:
 - Drawing model + ExportContext (true scale, ctx.Pt() text scaling, Fit-content artboard), SvgWriter/JsxWriter/Exporter, runtime.jsx.
 - Views/ProjectedView (opaque, near-hides-far, one AI layer + global swatch per source layer, glass white) for anything "seen".

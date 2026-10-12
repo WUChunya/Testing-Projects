@@ -52,8 +52,11 @@ public static class Analyzer
             l => input.RoleOverrides.TryGetValue(l.Path, out var o) ? o : input.Classifier.Guess(l));
         foreach (var o in input.Model.Objects)
         {
-            if (roles.TryGetValue(o.LayerPath, out var g)) { o.Role = g.Role; o.ProgramKey = g.ProgramKey; }
-            if (o.Role != Roles.Program) continue;
+            if (roles.TryGetValue(o.LayerPath, out var g)) { o.Role = Roles.Normalize(g.Role); o.ProgramKey = g.ProgramKey; }
+            // Cores and stairs are masses with their own program (unless the layer names one).
+            if (Roles.MassProgram(o.Role) is not { } implied) continue;
+            o.Role = Roles.Program;
+            if (string.IsNullOrEmpty(o.ProgramKey)) o.ProgramKey = implied;
             if (input.ProgramOverrides.TryGetValue(o.Id, out var key) && !string.IsNullOrEmpty(key)) o.ProgramKey = key;
             if (string.IsNullOrEmpty(o.ProgramKey)) o.ProgramKey = ProgramCatalog.Unassigned;
         }

@@ -144,6 +144,16 @@
       ]
     },
     {
+      "key": "STAIR",
+      "label": "Stair / Transportation",
+      "fill": "#E4BA3C",
+      "aliases": [
+        "STAIR",
+        "ELEVATOR",
+        "TRANSPORTATION"
+      ]
+    },
+    {
       "key": "SHELL",
       "label": "Shell / Penthouse",
       "fill": "#FFFFFF",

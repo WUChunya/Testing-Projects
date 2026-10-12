@@ -34,7 +34,7 @@ public static class ElevationDrawing
         foreach (var n in new[] { "PD_LEVELS", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" }) d.Layer(n);
 
         var k = ctx.PtPerFt;
-        var groundT = st.SlabPt * st.GroundSlabFactor;
+        var groundT = st.GroundPt;
         var zMax = items.Select(i => i.Geometry.EnvelopeInternal.MaxY).DefaultIfEmpty(ground + 30).Max();
         double w = plane.Length * k, h = (zMax - ground) * k + groundT / 2, m = pg.MarginPt;
         var colL = es.LevelMarkers ? ctx.Pt(pg.LevelColumnPt) : 0;
@@ -46,7 +46,7 @@ public static class ElevationDrawing
             x0 = m + colL + (abW - 2 * m - colL - w) / 2;
             y0 = m + (abH - 2 * m - titleBand - h) / 2;
             if (x0 < m + colL - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"Elevation {el.Name} at {ctx.Settings.Output.Scale} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+                d.Notes.Add($"Elevation {el.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
         }
         else
         {
@@ -60,6 +60,8 @@ public static class ElevationDrawing
         var p = $"ELV_{name}_";
 
         ProjectedView.Draw(d, ctx, map, p, items);
+        if (!items.Any(i => i.Kind != ViewKind.Context))
+            d.Notes.Add($"Elevation {el.Name}: none of our building is in view; untick or tick \"Look left\" on tab 7, or move the line.");
 
         // Level markers: ▼, level name and elevation, dashed line to our building.
         var own = items.Where(i => i.Kind != ViewKind.Context).Select(i => i.Geometry.EnvelopeInternal).ToList();
@@ -86,16 +88,11 @@ public static class ElevationDrawing
             }
         }
 
-        d.Layer("PD_GROUND").Items.Add(new DItem
-        {
-            Kind = ItemKind.Path, Name = p + "GROUND", Fill = d.Swatch("BG_GROUND", st.GroundColor),
-            Paths = new() { new[] { new[] { map.X(0), map.Y(ground) - groundT / 2 }, new[] { map.X(plane.Length), map.Y(ground) - groundT / 2 },
-                new[] { map.X(plane.Length), map.Y(ground) + groundT / 2 }, new[] { map.X(0), map.Y(ground) + groundT / 2 } } },
-        });
+        d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, ground), (plane.Length, ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
-        var ty = map.Y(ground) + groundT / 2 + ctx.Pt(26);
+        var ty = map.Y(ground) + groundT / 2 + ctx.Pt(40);
         d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "TITLE", x0, ty, $"{es.TitlePrefix} {el.Name}", "PD Title", "left"));
-        d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "SCALE", x0, ty + ctx.Pt(12), $"SCALE {ctx.Settings.Output.Scale}", "PD Note", "left"));
+        d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "SCALE", x0, ty + ctx.Pt(18), $"SCALE {ctx.ScaleText}", "PD Note", "left"));
         return d;
     }
 }
