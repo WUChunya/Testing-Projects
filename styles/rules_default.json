@@ -41,9 +41,11 @@
     "quitIllustratorWhenDone": true,
     "scheme": "OPT-1",
     "drawings": [
+      "SitePlan",
       "Plan",
       "Section",
       "Elevation",
+      "SiteAxon",
       "AxonStacked",
       "AxonExploded",
       "AxonExplodedB",

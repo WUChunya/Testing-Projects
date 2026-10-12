@@ -97,8 +97,8 @@ public class S5ChartEntourageTests
     public void Entourage_SameSeedSameLayoutAndNoneInCores()
     {
         var ctx = S3SectionTests.Context();
-        var a = PlanDrawing.Build(ctx);
-        var b = PlanDrawing.Build(ctx);
+        var a = PlanDrawing.BuildSite(ctx);
+        var b = PlanDrawing.BuildSite(ctx);
         var pa = a.Layer(EntouragePlacer.Layer).Items;
         var pb = b.Layer(EntouragePlacer.Layer).Items;
         Assert.NotEmpty(pa);
@@ -108,7 +108,7 @@ public class S5ChartEntourageTests
 
         // A different seed moves them.
         ctx.Settings.Output.EntourageSeed = EntouragePlacer.Seed(ctx) + 1;
-        var moved = PlanDrawing.Build(ctx).Layer(EntouragePlacer.Layer).Items;
+        var moved = PlanDrawing.BuildSite(ctx).Layer(EntouragePlacer.Layer).Items;
         Assert.NotEqual(pa[0].Paths![0][0], moved[0].Paths![0][0]);
         ctx.Settings.Output.EntourageSeed = null;
 
@@ -142,7 +142,7 @@ public class S5ChartEntourageTests
     {
         var ctx = S3SectionTests.Context();
         ctx.Settings.Output.Entourage = false;
-        Assert.Empty(PlanDrawing.Build(ctx).Layer(EntouragePlacer.Layer).Items);
+        Assert.Empty(PlanDrawing.BuildSite(ctx).Layer(EntouragePlacer.Layer).Items);
         Assert.Empty(SectionDrawing.Build(ctx, S3SectionTests.SectionA).Layer(EntouragePlacer.Layer).Items);
         ctx.Settings.Output.Entourage = null;
     }

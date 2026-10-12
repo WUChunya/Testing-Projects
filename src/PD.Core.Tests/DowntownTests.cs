@@ -55,7 +55,7 @@ public class DowntownTests
     [InlineData("CADMAPPER::CADMAPPER PARK", Roles.Landscape)]
     [InlineData("CADMAPPER::ROAD LINES", Roles.Road)]
     [InlineData("Pedestrian Walkway 2", Roles.Hardscape)]
-    [InlineData("LOT FILL", Roles.Base)]
+    [InlineData("LOT FILL", Roles.Hardscape)]                    // city blocks: 街区 ground
     [InlineData("PEOPLE / CARS", Roles.Entourage)]
     [InlineData("GRID (12x12')", Roles.Ignore)]            // drafting grid, not a property line
     [InlineData("PROPERTY LINE", Roles.Line)]
@@ -135,7 +135,10 @@ public class DowntownTests
         Assert.Contains("CORE", keys);
         Assert.Contains("ASSEMBLY", keys);
         Assert.Contains("BUILDING_SUPPORT", keys);
-        Assert.Contains("GREEN_ROOF", keys);
+        // The plaza slab (PROGRAM::Circulation) and the lawns (PROGRAM::Green Roof) lie at grade: site, not program.
+        Assert.Contains(r.Issues, i => i.Kind == IssueKind.SitePaving && i.Message.Contains("PROGRAM::Circulation"));
+        Assert.Contains(r.Issues, i => i.Kind == IssueKind.SitePaving && i.Message.Contains("planting"));
+        Assert.DoesNotContain(r.Masses, m => m.Source.BBox.SizeZ <= 2 && Math.Abs(m.Source.BBox.MaxZ) <= 2);
         Assert.True(r.Plans.Sum(p => p.AreaByProgram.Values.Sum()) > 250000,
             $"GSF {r.Plans.Sum(p => p.AreaByProgram.Values.Sum()):0}");
     }
@@ -163,11 +166,11 @@ public class DowntownTests
         var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, (b.MinY + b.MaxY) / 2, 0);
         var (x1, y1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, (b.MinY + b.MaxY) / 2, 0);
         ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "DT", Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
-        ctx.Settings.Output.Drawings = new List<string> { "Plan", "Section", "AxonStacked", "ProgramChart", "Pie" };
+        ctx.Settings.Output.Drawings = new List<string> { "SitePlan", "Plan", "Section", "AxonStacked", "ProgramChart", "Pie", "AxonExploded" };
 
         var notes = new List<string>();
         var drawings = PD.Core.Writers.Exporter.BuildDrawings(ctx, notes);
-        Assert.Equal(5, drawings.Count);
+        Assert.Equal(7, drawings.Count);
         foreach (var d in drawings)
         {
             Assert.NotEmpty(d.Artboards);
@@ -178,11 +181,16 @@ public class DowntownTests
             }
         }
         var dir = Path.Combine(Path.GetDirectoryName(FixtureSmokeTests.FixturePath("x"))!, "..", "golden");
+        PD.Core.Drawing.Drawing By(string f) => drawings.Single(x => x.FileName == f);
+        var plans = By("01_Plans.ai");
+        int Ab(string n) => plans.Artboards.FindIndex(x => x.Name == n);
         foreach (var (d, a, name) in new[]
                  {
-                     (drawings[0], 1, "downtown_plan_L1"), (drawings[1], 0, "downtown_section_DT"),
-                     (drawings[2], 0, "downtown_axon_stacked"), (drawings[3], 0, "downtown_program_chart"),
-                     (drawings[4], 0, "downtown_program_pie"),
+                     (By("00_Site_Plan.ai"), 0, "downtown_site_plan"), (plans, Ab("PLAN L1"), "downtown_plan_L1"),
+                     (plans, Ab("PLAN L5"), "downtown_plan_L5"), (plans, Ab("PLAN B1"), "downtown_plan_B1"),
+                     (By("02_Section_DT.ai"), 0, "downtown_section_DT"), (By("03_Axon_Stacked.ai"), 0, "downtown_axon_stacked"),
+                     (By("04_Axon_Exploded.ai"), 0, "downtown_axon_exploded"),
+                     (By("05_Program_Chart.ai"), 0, "downtown_program_chart"), (By("06_Program_Pie.ai"), 0, "downtown_program_pie"),
                  })
             File.WriteAllText(Path.Combine(dir, name + ".svg"), PD.Core.Writers.SvgWriter.Write(d, Math.Min(a, d.Artboards.Count - 1)));
     }
@@ -205,8 +213,10 @@ public class DowntownTests
         var notes = new List<string>();
         var drawings = PD.Core.Writers.Exporter.BuildDrawings(ctx, notes);
         Assert.DoesNotContain(notes, n => n.Contains("not written", StringComparison.Ordinal));
-        // Plan, section, elevation, 4 axons, chart, pie.
-        Assert.Equal(9, drawings.Count);
+        // Site plan, plans, section, elevation, 4 axons, chart, pie (+ site axon when built).
+        foreach (var f in new[] { "00_Site_Plan.ai", "01_Plans.ai", "02_Section_DT.ai", "07_Elevation_N.ai", "03_Axon_Stacked.ai",
+                     "04_Axon_Exploded.ai", "04_Axon_Exploded_B.ai", "04_Axon_Levels.ai", "05_Program_Chart.ai", "06_Program_Pie.ai" })
+            Assert.Contains(drawings, d => d.FileName == f);
         Assert.All(drawings, d => Assert.NotEmpty(d.Artboards));
     }
 }

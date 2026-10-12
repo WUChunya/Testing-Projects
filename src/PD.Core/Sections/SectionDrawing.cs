@@ -200,6 +200,12 @@ public static class SectionDrawing
         Kind = ItemKind.Text, Name = name, X = x, Y = y, Text = text, ParaStyle = style, Align = align, Rotation = rotation, Center = center,
     };
 
+    /// <summary>
+    /// A name worth printing: not empty and not a bare GIS / object id (CADMAPPER writes OSM ids such as 492879470).
+    /// </summary>
+    public static bool IsDisplayName(string? name) =>
+        !string.IsNullOrWhiteSpace(name) && !System.Text.RegularExpressions.Regex.IsMatch(name.Trim(), "^[0-9 _.:#-]+$");
+
     public static string Safe(string s) => new(s.Select(ch => char.IsLetterOrDigit(ch) ? ch : '_').ToArray());
 }
 

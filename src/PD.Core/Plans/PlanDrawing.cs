@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -39,50 +39,12 @@ public static class PlanDrawing
         var background = PlanBackground.Collect(r, env, ps.TreeDiameterFt);
         double w = env.Width * k, h = env.Height * k, m = pg.MarginPt;
 
-        // One artboard per level.
-        var titleH = ctx.Pt(pg.TitleBandPt);
-        var band = ctx.Pt(ps.BandPt);
-        foreach (var (i, a) in levels.Select((i, a) => (i, a)))
+        // One artboard per level: basements on cut earth, the ground floor on the site, upper floors on the veiled site.
+        foreach (var i in levels)
         {
             var lvl = r.Plans[i].Level;
-            var keys = Keys(ctx, r.Plans[i]);
-            var rows = (int)Math.Ceiling(keys.Count / (double)Math.Max(1, ps.LegendColumns));
-            var legendW = Math.Min(keys.Count, ps.LegendColumns) * Math.Max(ctx.Pt(ps.LegendColumnPt),
-                keys.Select(key => TextFit.Width(ctx.ProgramLabel(key), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max()
-                + ctx.Pt(ps.LegendSwatchPt) + ctx.Pt(14));
-            var legendH = rows * ctx.Pt(ps.LegendRowPt);
-            var bar = ScaleBar(ps, w, k);
-            var tools = bar * k + ctx.Pt(ps.NorthArrowPt) * 2.5;
-            var tag = ctx.Style.Fonts.Title.SizePt * 1.2 + 2 * ps.TitleTagPadPt;
-            var bottom = band + Math.Max(legendH, ctx.Pt(tag));
-            double abW, abH, x0, y0;
-            if (ctx.ArtboardSize is { } fixedSize)
-            {
-                (abW, abH) = fixedSize;
-                x0 = (abW - w) / 2;
-                y0 = m + titleH + (abH - 2 * m - titleH - bottom - h) / 2;
-                if (x0 < m - 0.5 || y0 < m + titleH - 0.5)
-                    d.Notes.Add($"Plan {lvl.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
-            }
-            else
-            {
-                abW = 2 * m + Math.Max(Math.Max(w, legendW + ctx.Pt(260)), tools);
-                abH = 2 * m + titleH + h + bottom;
-                x0 = m + (abW - 2 * m - w) / 2;
-                y0 = m + titleH;
-            }
-            d.Artboards.Add(new Artboard($"PLAN {lvl.Name}", Math.Ceiling(abW), Math.Ceiling(abH)));
-            var map = new PageMap(x0 - env.MinX * k, y0, k, env.MaxY, env.Width, flip: false);
-            var p = $"PLN_{SectionDrawing.Safe(lvl.Name)}_";
-            DrawLevel(d, ctx, a, map, i, p, background);
-
-            // Scale bar and north arrow top right; legend bottom left; title tag ("Level 1") bottom right (site plan §2).
-            var xr = abW - m;
-            North(d, ctx, a, p, xr - ctx.Pt(ps.NorthArrowPt) * 0.5, m);
-            Bar(d, ctx, a, p, bar, xr - ctx.Pt(ps.NorthArrowPt) * 2 - bar * k, m + ctx.Pt(ps.NorthArrowPt) * 0.6);
-            var yb = abH - m - bottom + band;
-            Legend(d, ctx, a, p, keys, m, yb);
-            TitleTag(d, ctx, a, p, Title(ps.LevelTitleFormat, lvl.Name), xr, abH - m);
+            Sheet(d, ctx, i, env, background, $"PLAN {lvl.Name}", $"PLN_{SectionDrawing.Safe(lvl.Name)}_",
+                Title(ps.LevelTitleFormat, lvl.Name), KindOf(ctx, i));
         }
 
         // Overview: all levels in a grid (lowest first), same scale, bold level names.
@@ -97,20 +59,119 @@ public static class PlanDrawing
             double cx = m + n % cols * (w + gap), cy = m + n / cols * (h + nameBand + gap);
             var lvl = r.Plans[i].Level;
             var p = $"PLO_{SectionDrawing.Safe(lvl.Name)}_";
-            DrawLevel(d, ctx, ov, new PageMap(cx - env.MinX * k, cy + nameBand, k, env.MaxY, env.Width, flip: false), i, p, background);
+            DrawLevel(d, ctx, ov, new PageMap(cx - env.MinX * k, cy + nameBand, k, env.MaxY, env.Width, flip: false), i, p, background, env, KindOf(ctx, i));
             d.Layer("PD_ANNOTATION").Items.Add(At(SectionDrawing.Text(p + "NAME", cx, cy + ctx.Pt(14), lvl.Name, "PD Heading", "left"), ov));
         }
         return d;
     }
 
+    /// <summary>How a level sits on the site: under grade (cut earth), at grade, above it (veiled site), or the site plan.</summary>
+    public enum LevelKind { Basement, Ground, Upper, Site }
+
+    /// <summary>The ground floor is the main level nearest the ground elevation; below it basements, above it upper floors.</summary>
+    public static int GroundIndex(ExportContext ctx)
+    {
+        var plans = ctx.Result.Plans;
+        var g = ctx.Rules.Levels.GroundElevationFt;
+        return Enumerable.Range(0, plans.Count).Where(i => plans[i].Footprints.Count > 0 && !plans[i].Level.IsMezzanine)
+            .OrderBy(i => Math.Abs(plans[i].Level.Elevation - g)).DefaultIfEmpty(0).First();
+    }
+
+    static LevelKind KindOf(ExportContext ctx, int i)
+    {
+        var ground = GroundIndex(ctx);
+        return i == ground ? LevelKind.Ground : i < ground ? LevelKind.Basement : LevelKind.Upper;
+    }
+
+    /// <summary>
+    /// 00_Site_Plan.ai (SITE_STYLE §2): the ground floor on the real site — blocks, roads, landscape, trees, other buildings
+    /// with their shadow and name — cropped around the building, with people outdoors. True scale.
+    /// </summary>
+    public static PD.Core.Drawing.Drawing BuildSite(ExportContext ctx)
+    {
+        var r = ctx.Result;
+        var ps = ctx.Style.Plan;
+        var d = new PD.Core.Drawing.Drawing { FileName = "00_Site_Plan.ai" };
+        ctx.AddStandardStyles(d);
+        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE",
+                     "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+            d.Layer(n);
+        var i = GroundIndex(ctx);
+        if (r.Plans.Count == 0 || r.Plans[i].Union.IsEmpty)
+        {
+            d.Notes.Add("Site plan: no ground floor footprint.");
+            return d;
+        }
+        var env = new Envelope(r.Plans[i].Union.EnvelopeInternal);
+        env.ExpandBy(ps.SiteMarginFt);
+        Sheet(d, ctx, i, env, PlanBackground.Collect(r, env, ps.TreeDiameterFt), "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
+        return d;
+    }
+
+    /// <summary>One plan artboard: drawing, scale bar and north arrow top right, legend bottom left, title tag bottom right.</summary>
+    static void Sheet(PD.Core.Drawing.Drawing d, ExportContext ctx, int i, Envelope env, List<BackgroundItem> background,
+        string name, string p, string title, LevelKind kind)
+    {
+        var r = ctx.Result;
+        var ps = ctx.Style.Plan;
+        var pg = ctx.Style.Page;
+        var k = ctx.PtPerFt;
+        double w = env.Width * k, h = env.Height * k, m = pg.MarginPt;
+        var titleH = ctx.Pt(pg.TitleBandPt);
+        var band = ctx.Pt(ps.BandPt);
+        var lvl = r.Plans[i].Level;
+        var keys = Keys(ctx, r.Plans[i]);
+        var rows = (int)Math.Ceiling(keys.Count / (double)Math.Max(1, ps.LegendColumns));
+        var legendW = Math.Min(keys.Count, ps.LegendColumns) * Math.Max(ctx.Pt(ps.LegendColumnPt),
+            keys.Select(key => TextFit.Width(ctx.ProgramLabel(key), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max()
+            + ctx.Pt(ps.LegendSwatchPt) + ctx.Pt(14));
+        var legendH = rows * ctx.Pt(ps.LegendRowPt);
+        var bar = ScaleBar(ps, w, k);
+        var tools = bar * k + ctx.Pt(ps.NorthArrowPt) * 2.5;
+        var tag = ctx.Style.Fonts.Title.SizePt * 1.2 + 2 * ps.TitleTagPadPt;
+        var bottom = band + Math.Max(legendH, ctx.Pt(tag));
+        double abW, abH, x0, y0;
+        if (ctx.ArtboardSize is { } fixedSize)
+        {
+            (abW, abH) = fixedSize;
+            x0 = (abW - w) / 2;
+            y0 = m + titleH + (abH - 2 * m - titleH - bottom - h) / 2;
+            if (x0 < m - 0.5 || y0 < m + titleH - 0.5)
+                d.Notes.Add($"Plan {lvl.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+        }
+        else
+        {
+            abW = 2 * m + Math.Max(Math.Max(w, legendW + ctx.Pt(260)), tools);
+            abH = 2 * m + titleH + h + bottom;
+            x0 = m + (abW - 2 * m - w) / 2;
+            y0 = m + titleH;
+        }
+        var a = d.Artboards.Count;
+        d.Artboards.Add(new Artboard(name, Math.Ceiling(abW), Math.Ceiling(abH)));
+        var map = new PageMap(x0 - env.MinX * k, y0, k, env.MaxY, env.Width, flip: false);
+        DrawLevel(d, ctx, a, map, i, p, background, env, kind);
+
+        var xr = abW - m;
+        North(d, ctx, a, p, xr - ctx.Pt(ps.NorthArrowPt) * 0.5, m);
+        Bar(d, ctx, a, p, bar, xr - ctx.Pt(ps.NorthArrowPt) * 2 - bar * k, m + ctx.Pt(ps.NorthArrowPt) * 0.6);
+        var yb = abH - m - bottom + band;
+        Legend(d, ctx, a, p, keys, m, yb);
+        TitleTag(d, ctx, a, p, title, xr, abH - m);
+    }
+
     /// <summary>Background, program blocks, open-to-below voids, outline, facade line and labels of one level.</summary>
-    static void DrawLevel(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, int i, string p, List<BackgroundItem> background)
+    static void DrawLevel(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, int i, string p, List<BackgroundItem> background,
+        Envelope env, LevelKind kind)
     {
         var r = ctx.Result;
         var ps = ctx.Style.Plan;
         var plan = r.Plans[i];
+        var sheet = MeshSlicer.Factory.ToGeometry(env);
 
-        foreach (var (b, n) in background.Select((b, n) => (b, n)))
+        // Basements are cut into the ground: grey earth, no site. Everything else sits on the real site.
+        if (kind == LevelKind.Basement)
+            d.Layer("BG_EARTH").Items.Add(At(map.Poly(p + "EARTH", sheet, d.Swatch("PD_EARTH", ps.BasementEarthFill), null, 0), a));
+        foreach (var (b, n) in background.Select((b, n) => (b, n)).Where(_ => kind != LevelKind.Basement))
         {
             var (fill, stroke, pt, dash, opacity) = PlanBackground.Paint(d, ctx.Style, b);
             var item = map.Geom($"{p}BG_{n:000}", b.Geometry, fill, stroke, pt, !b.IsLine);
@@ -127,6 +188,15 @@ public static class PlanDrawing
             }
         }
 
+        // Upper floors: the same site under a white veil, so the floor reads first (Typical Floor reference).
+        if (kind == LevelKind.Upper && ps.UpperVeilOpacity > 0)
+        {
+            var veil = At(map.Poly(p + "VEIL", sheet, d.Swatch("PD_VEIL", ps.UpperVeilFill), null, 0), a);
+            veil.Opacity = ps.UpperVeilOpacity;
+            d.Layer("BG_VEIL").Items.Add(veil);
+        }
+        if (kind == LevelKind.Site && ps.ContextNames) ContextNames(d, ctx, a, map, p, background);
+
         // Our structure (columns, walls) cut at the plan height: solid dark.
         var cutAt = plan.Level.Elevation + ctx.Rules.Cleanup.PlanCutHeightFt;
         var sPaint = PlanBackground.PaintOf(ctx.Style, Roles.Structure, "plan");
@@ -142,9 +212,13 @@ public static class PlanDrawing
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
         var outline = plan.Union;
         var centre = outline.IsEmpty ? null : outline.Centroid.Coordinate;
-        // Blocks whose name does not fit inside would each pull a leader outside the plan; keep one per program
-        // (the biggest), so the sheet does not fill up with the same name over and over.
-        var leaders = plan.Footprints.Where(f => !f.Resolved.IsEmpty && !Fits(ctx, map, f, sizeFt))
+        // One name per program (per label text) and level: the largest block carries it, the legend covers the rest.
+        var named = ps.LabelOncePerProgram
+            ? plan.Footprints.Where(f => !f.Resolved.IsEmpty).GroupBy(f => LabelText(ctx, f))
+                .Select(g => g.OrderByDescending(f => f.Resolved.Area).First().Mass.Id).ToHashSet()
+            : plan.Footprints.Select(f => f.Mass.Id).ToHashSet();
+        // A name that does not fit even at the smallest size gets a leader, once per program.
+        var leaders = plan.Footprints.Where(f => !f.Resolved.IsEmpty && named.Contains(f.Mass.Id) && !Fits(ctx, map, f, sizeFt))
             .GroupBy(f => f.OpenToBelow ? "#VOID" : f.Mass.ProgramKey)
             .Select(g => g.OrderByDescending(f => f.Resolved.Area).First().Mass.Id)
             .ToHashSet();
@@ -168,18 +242,19 @@ public static class PlanDrawing
                     var cut = Safe(() => f.Resolved.Intersection(diag));
                     if (cut is { IsEmpty: false }) v.Items.Add(At(map.Geom($"{name}_X{j + 1}", cut, null, stroke, ps.VoidPt, false), a));
                 }
-                Label(d, ctx, a, map, name, f.Resolved, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: leaders.Contains(f.Mass.Id));
+                if (named.Contains(f.Mass.Id))
+                    Label(d, ctx, a, map, name, f.Resolved, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: leaders.Contains(f.Mass.Id));
                 continue;
             }
             var (fill, pStroke, pPt, pDash) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
             var block = At(map.Poly(name, f.Resolved, fill, pStroke ?? d.Gray(ps.RoomStroke), pStroke != null ? pPt : ps.RoomPt), a);
             block.Dash = pDash;
             d.Layer("PD_PROGRAM").Items.Add(block);
-            var text = row?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
-            Label(d, ctx, a, map, name, f.Resolved, text, sizeFt, centre, outline, ctx.LabelStyle(d, fill), leaders.Contains(f.Mass.Id));
+            if (named.Contains(f.Mass.Id))
+                Label(d, ctx, a, map, name, f.Resolved, LabelText(ctx, f), sizeFt, centre, outline, ctx.LabelStyle(d, fill), leaders.Contains(f.Mass.Id));
         }
 
-        People(d, ctx, a, map, p, plan, background);
+        if (kind == LevelKind.Site) People(d, ctx, a, map, p, plan, background);
 
         if (!outline.IsEmpty)
         {
@@ -200,6 +275,21 @@ public static class PlanDrawing
         }
     }
 
+    /// <summary>Other buildings' names on their roofs (SITE_STYLE §2: Arial Bold caps, #6C6C6C, horizontal).</summary>
+    static void ContextNames(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background)
+    {
+        var n = 0;
+        var size = ctx.Pt(ctx.Style.Fonts.ContextLabel.SizePt);
+        foreach (var b in background.Where(b => b.Role == Roles.Building && !b.IsLine && SectionDrawing.IsDisplayName(b.Name)))
+        {
+            var e = b.Geometry.EnvelopeInternal;
+            if (TextFit.Width(b.Name, size) > e.Width * map.K * 1.2) continue;
+            var c = b.Geometry.InteriorPoint.Coordinate;
+            var t = SectionDrawing.Text($"{p}CONTEXT_{++n:000}_LBL", map.X(c.X), map.Y(c.Y), b.Name.ToUpperInvariant(), "PD Context Label", "center", center: true);
+            d.Layer("BG_CONTEXT_LABELS").Items.Add(At(t, a));
+        }
+    }
+
     /// <summary>PRD 4: people in the program footprints (density per program) and on our own plaza outside.</summary>
     static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, PD.Core.Cleanup.LevelPlan plan,
         List<BackgroundItem> background)
@@ -213,25 +303,42 @@ public static class PlanDrawing
             foreach (var f in people)
                 layer.Items.Add(At(PD.Core.Entourage.EntourageSymbols.Plan(d, e, $"{p}PERSON_{++n:000}", map.X(f.X), map.Y(f.Y), map.K, f.Variant), a));
         }
-        foreach (var f in plan.Footprints.Where(x => !x.OpenToBelow && !x.Resolved.IsEmpty))
-            Draw(PD.Core.Entourage.EntouragePlacer.InProgram(ctx, f.Resolved, f.Mass.ProgramKey, $"{p}{f.Mass.Id}"));
-        // Ground floor only: our plaza outside the building (the background items are already clipped to the sheet).
-        if (Math.Abs(plan.Level.Elevation - ctx.Rules.Levels.GroundElevationFt) > ctx.Rules.Levels.MinFloorHeightFt / 2) return;
+        // Outdoors only: program blocks stay solid colour.
+        // Our plaza, and the sidewalks / blocks right around it (not the whole neighbourhood).
+        var near = MeshSlicer.Polygonal(Safe(() => PlanBackground.Footprint(ctx.Result).Buffer(ctx.Style.Plan.ContextMarginFt)));
         foreach (var (b, i) in background.Where(b => b.Role is Roles.NcHardscape or Roles.Hardscape && !b.IsLine).Select((b, i) => (b, i)))
         {
-            var open = MeshSlicer.Polygonal(Safe(() => b.Geometry.Difference(plan.Union)));
+            var area = b.Role == Roles.Hardscape ? Safe(() => b.Geometry.Intersection(near)) : b.Geometry;
+            var open = MeshSlicer.Polygonal(Safe(() => area!.Difference(plan.Union)));
             if (!open.IsEmpty) Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, $"{p}PLAZA{i}"));
         }
     }
 
-    /// <summary>True when the block's own name fits inside it at either label size.</summary>
+    static string LabelText(ExportContext ctx, PD.Core.Cleanup.Footprint f) => f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel
+        : ctx.Names.GetValueOrDefault(f.Mass.Id)?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
+
+    /// <summary>True when the block's own name fits inside it at some size down to the minimum.</summary>
     static bool Fits(ExportContext ctx, PageMap map, PD.Core.Cleanup.Footprint f, double sizeFt)
     {
-        var text = f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel
-            : ctx.Names.GetValueOrDefault(f.Mass.Id)?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
+        var text = LabelText(ctx, f);
         if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
-        var small = ctx.Pt(ctx.Style.Plan.LabelSmallPt);
-        return PlanLabels.Fit(f.Resolved, text, sizeFt) != null || (small > 0 && PlanLabels.Fit(f.Resolved, text, small / map.K) != null);
+        return FitShrinking(ctx, map, f.Resolved, text, sizeFt).Spot != null;
+    }
+
+    /// <summary>Label size, then the small size, then 1 pt steps down to labelMinPt; size null = the paragraph style's own.</summary>
+    static (LabelSpot? Spot, double? SizePt) FitShrinking(ExportContext ctx, PageMap map, NtsGeometry block, string text, double sizeFt)
+    {
+        var spot = PlanLabels.Fit(block, text, sizeFt);
+        if (spot != null) return (spot, null);
+        var ps = ctx.Style.Plan;
+        var full = ctx.Pt(ctx.Style.Fonts.Label.SizePt);
+        var sizes = new List<double>();
+        if (ps.LabelSmallPt > 0) sizes.Add(ctx.Pt(ps.LabelSmallPt));
+        for (var pt = Math.Floor(ps.LabelSmallPt > 0 ? ps.LabelSmallPt : ctx.Style.Fonts.Label.SizePt) - 1; pt >= ps.LabelMinPt; pt--)
+            sizes.Add(ctx.Pt(pt));
+        foreach (var size in sizes.Where(x => x < full))
+            if (PlanLabels.Fit(block, text, size / map.K) is { } s) return (s, size);
+        return (null, null);
     }
 
     /// <summary>Inside the block when it fits (widest spot, long direction); otherwise a leader to a label outside the building.</summary>
@@ -240,11 +347,9 @@ public static class PlanDrawing
     {
         if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
         var layer = d.Layer("PD_LABELS");
-        // Room names: 19 pt, long names 13 pt (site plan §2); otherwise a leader.
+        // Room names: 19 pt, long names 13 pt (site plan §2), then smaller down to the minimum; a leader only after that.
         var small = ctx.Pt(ctx.Style.Plan.LabelSmallPt);
-        var spot = PlanLabels.Fit(block, text, sizeFt);
-        double? size = null;
-        if (spot == null && small > 0 && (spot = PlanLabels.Fit(block, text, small / map.K)) != null) size = small;
+        var (spot, size) = FitShrinking(ctx, map, block, text, sizeFt);
         if (spot != null)
         {
             var t = SectionDrawing.Text(name + "_LBL", map.X(spot.X), map.Y(spot.Y), spot.Text, inside, "center", spot.AngleDeg, center: true);

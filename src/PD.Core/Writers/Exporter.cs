@@ -24,6 +24,7 @@ public static class Exporter
             catch (Exception e) { notes.Add($"{what}: not written ({e.GetType().Name}: {e.Message})"); }
         }
 
+        if (wanted.Contains("SitePlan")) Add("SitePlan", () => PD.Core.Plans.PlanDrawing.BuildSite(ctx));
         if (wanted.Contains("Plan")) Add("Plan", () => PD.Core.Plans.PlanDrawing.Build(ctx));
         if (wanted.Contains("Section"))
         {
@@ -46,7 +47,7 @@ public static class Exporter
                 Add(key, () => PD.Core.Axons.AxonDrawing.Build(ctx, kind));
         if (wanted.Contains("ProgramChart")) Add("ProgramChart", () => PD.Core.Charts.ProgramChartDrawing.Build(ctx));
         if (wanted.Contains("Pie")) Add("Pie", () => PD.Core.Charts.PieDrawing.Build(ctx));
-        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded"
+        foreach (var w in wanted.Where(w => w is not ("SitePlan" or "SiteAxon" or "Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded"
                      or "AxonExplodedB" or "AxonLevels" or "ProgramChart" or "Pie")))
             notes.Add($"{w}: not a known drawing.");
         foreach (var d in drawings) notes.AddRange(d.Notes);

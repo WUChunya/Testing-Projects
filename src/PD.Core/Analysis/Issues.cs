@@ -5,7 +5,7 @@ public enum IssueKind
 {
     OpenMass, RepairedMass, SingleSurface, Overlap, FacadeCandidate, StrayObject, UnclassifiedLayer,
     UnnamedMass, Mezzanine, LevelUnsupported, LevelScattered, LevelSingleSource, LevelNoSlab,
-    SectionMissesMasses, ProgramNoColor,
+    SectionMissesMasses, ProgramNoColor, SitePaving,
 }
 
 public sealed record Issue(IssueKind Kind, string Message, string[] ObjectIds, double? Elevation = null)

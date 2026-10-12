@@ -102,7 +102,7 @@ public static class AxonDrawing
         if (st.Labels) CentredLabels(ctx, proj, mine, sheet, "PD_LABELS", "PD Plane Label", "PD Plane Label Small");
 
         // Building names on the roofs, horizontal (not sheared).
-        foreach (var c in context.Where(c => !string.IsNullOrWhiteSpace(c.Label)))
+        foreach (var c in context.Where(c => SectionDrawing.IsDisplayName(c.Label)))
         {
             var pt = c.Plan.InteriorPoint.Coordinate;
             sheet.Paint.Add(("PD_LABELS", new Spec(c.Name + "_NAME", MeshSlicer.Factory.CreatePolygon(), null, null, 0,

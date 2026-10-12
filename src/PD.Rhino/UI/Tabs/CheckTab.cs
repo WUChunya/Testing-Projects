@@ -59,6 +59,7 @@ internal sealed class CheckTab : TabBase
         IssueKind.LevelNoSlab => "Level without slab",
         IssueKind.SectionMissesMasses => "Section misses masses",
         IssueKind.ProgramNoColor => "Missing colour",
+        IssueKind.SitePaving => "Drawn as site paving",
         _ => k.ToString(),
     };
 }

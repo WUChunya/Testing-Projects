@@ -2,9 +2,9 @@
 <title>PROGRAM CHART</title>
 <rect width="100%" height="100%" fill="#FFFFFF"/>
 <g id="PD_CHART_BOX">
-<path id="CHT_01_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,93 L584.582,93 L584.582,387 L36,387 Z"/>
-<path id="CHT_02_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M604.582,93 L932.582,93 L932.582,1590.652 L604.582,1590.652 Z"/>
-<path id="CHT_03_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M952.582,93 L1280.582,93 L1280.582,1227 L952.582,1227 Z"/>
+<path id="CHT_01_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,93 L519.582,93 L519.582,387 L36,387 Z"/>
+<path id="CHT_02_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M539.582,93 L867.582,93 L867.582,1590.652 L539.582,1590.652 Z"/>
+<path id="CHT_03_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M887.582,93 L1215.582,93 L1215.582,1227 L887.582,1227 Z"/>
 <path id="CHT_04_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,1631.652 L364,1631.652 L364,2045.652 L36,2045.652 Z"/>
 <path id="CHT_05_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M384,1631.652 L712,1631.652 L712,1925.652 L384,1925.652 Z"/>
 <path id="CHT_06_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M732,1631.652 L1128.084,1631.652 L1128.084,2045.652 L732,2045.652 Z"/>
@@ -18,144 +18,143 @@
 <path id="CHT_01_R02_02" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M115,137 L179,137 L179,201 L115,201 Z"/>
 <path id="CHT_01_R04_01" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,257 L114,257 L114,321 L50,321 Z"/>
 <path id="CHT_01_R04_02" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M115,257 L179,257 L179,321 L115,321 Z"/>
-<path id="CHT_01_R04_03" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M180,257 L244,257 L244,321 L180,321 Z"/>
-<path id="CHT_01_R04_04" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M245,263.448 L302.552,263.448 L302.552,321 L245,321 Z"/>
-<path id="CHT_01_R04_05" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M303.552,257 L367.552,257 L367.552,321 L303.552,321 Z"/>
-<path id="CHT_01_R04_06" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M368.552,273.97 L415.582,273.97 L415.582,321 L368.552,321 Z"/>
+<path id="CHT_01_R04_03" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M180,263.448 L237.552,263.448 L237.552,321 L180,321 Z"/>
+<path id="CHT_01_R04_04" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M238.552,257 L302.552,257 L302.552,321 L238.552,321 Z"/>
+<path id="CHT_01_R04_05" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M303.552,273.97 L350.582,273.97 L350.582,321 L303.552,321 Z"/>
+<path id="CHT_01_R04_06" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M351.582,257 L415.582,257 L415.582,321 L351.582,321 Z"/>
 <path id="CHT_01_R04_07" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M416.582,257 L480.582,257 L480.582,321 L416.582,321 Z"/>
-<path id="CHT_01_R04_08" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M481.582,257 L545.582,257 L545.582,321 L481.582,321 Z"/>
-<path id="CHT_01_R04_09" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M546.582,317 L550.582,317 L550.582,321 L546.582,321 Z"/>
-<path id="CHT_01_R04_10" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M551.582,317 L555.582,317 L555.582,321 L551.582,321 Z"/>
-<path id="CHT_01_R04_11" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M556.582,317 L560.582,317 L560.582,321 L556.582,321 Z"/>
-<path id="CHT_01_R04_12" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M561.582,317 L565.582,317 L565.582,321 L561.582,321 Z"/>
-<path id="CHT_01_R04_13" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M566.582,317 L570.582,317 L570.582,321 L566.582,321 Z"/>
-<path id="CHT_02_R02_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,175.627 L634.259,175.627 L634.259,191.304 L618.582,191.304 Z"/>
-<path id="CHT_02_R02_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,175.63 L650.934,175.63 L650.934,191.304 L635.259,191.304 Z"/>
-<path id="CHT_02_R02_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,175.627 L667.611,175.627 L667.611,191.304 L651.934,191.304 Z"/>
-<path id="CHT_02_R02_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,175.63 L684.285,175.63 L684.285,191.304 L668.611,191.304 Z"/>
-<path id="CHT_02_R02_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,175.627 L700.962,175.627 L700.962,191.304 L685.285,191.304 Z"/>
-<path id="CHT_02_R02_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,175.63 L717.637,175.63 L717.637,191.304 L701.962,191.304 Z"/>
-<path id="CHT_02_R02_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,158.048 L751.893,158.048 L751.893,191.304 L718.637,191.304 Z"/>
-<path id="CHT_02_R02_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M752.893,172.105 L772.092,172.105 L772.092,191.304 L752.893,191.304 Z"/>
-<path id="CHT_02_R02_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M773.092,137 L827.396,137 L827.396,191.304 L773.092,191.304 Z"/>
-<path id="CHT_02_R04_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,285.931 L634.259,285.931 L634.259,301.609 L618.582,301.609 Z"/>
-<path id="CHT_02_R04_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,285.934 L650.934,285.934 L650.934,301.609 L635.259,301.609 Z"/>
-<path id="CHT_02_R04_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,285.931 L667.611,285.931 L667.611,301.609 L651.934,301.609 Z"/>
-<path id="CHT_02_R04_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,285.934 L684.285,285.934 L684.285,301.609 L668.611,301.609 Z"/>
-<path id="CHT_02_R04_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,285.931 L700.962,285.931 L700.962,301.609 L685.285,301.609 Z"/>
-<path id="CHT_02_R04_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,285.934 L717.637,285.934 L717.637,301.609 L701.962,301.609 Z"/>
-<path id="CHT_02_R04_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,268.353 L751.893,268.353 L751.893,301.609 L718.637,301.609 Z"/>
-<path id="CHT_02_R04_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M752.893,282.409 L772.092,282.409 L772.092,301.609 L752.893,301.609 Z"/>
-<path id="CHT_02_R04_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M773.092,247.304 L827.396,247.304 L827.396,301.609 L773.092,301.609 Z"/>
-<path id="CHT_02_R06_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,396.236 L634.259,396.236 L634.259,411.913 L618.582,411.913 Z"/>
-<path id="CHT_02_R06_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,396.239 L650.934,396.239 L650.934,411.913 L635.259,411.913 Z"/>
-<path id="CHT_02_R06_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,396.236 L667.611,396.236 L667.611,411.913 L651.934,411.913 Z"/>
-<path id="CHT_02_R06_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,396.239 L684.285,396.239 L684.285,411.913 L668.611,411.913 Z"/>
-<path id="CHT_02_R06_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,396.236 L700.962,396.236 L700.962,411.913 L685.285,411.913 Z"/>
-<path id="CHT_02_R06_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,396.239 L717.637,396.239 L717.637,411.913 L701.962,411.913 Z"/>
-<path id="CHT_02_R06_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,364.885 L765.665,364.885 L765.665,411.913 L718.637,411.913 Z"/>
-<path id="CHT_02_R06_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,392.713 L785.864,392.713 L785.864,411.913 L766.665,411.913 Z"/>
-<path id="CHT_02_R06_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,357.609 L841.168,357.609 L841.168,411.913 L786.864,411.913 Z"/>
-<path id="CHT_02_R08_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,506.54 L634.259,506.54 L634.259,522.217 L618.582,522.217 Z"/>
-<path id="CHT_02_R08_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,506.543 L650.934,506.543 L650.934,522.217 L635.259,522.217 Z"/>
-<path id="CHT_02_R08_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,506.54 L667.611,506.54 L667.611,522.217 L651.934,522.217 Z"/>
-<path id="CHT_02_R08_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,506.543 L684.285,506.543 L684.285,522.217 L668.611,522.217 Z"/>
-<path id="CHT_02_R08_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,506.54 L700.962,506.54 L700.962,522.217 L685.285,522.217 Z"/>
-<path id="CHT_02_R08_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,506.543 L717.637,506.543 L717.637,522.217 L701.962,522.217 Z"/>
-<path id="CHT_02_R08_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,475.189 L765.665,475.189 L765.665,522.217 L718.637,522.217 Z"/>
-<path id="CHT_02_R08_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,503.018 L785.864,503.018 L785.864,522.217 L766.665,522.217 Z"/>
-<path id="CHT_02_R08_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,467.913 L841.168,467.913 L841.168,522.217 L786.864,522.217 Z"/>
-<path id="CHT_02_R10_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,616.844 L634.259,616.844 L634.259,632.522 L618.582,632.522 Z"/>
-<path id="CHT_02_R10_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,616.847 L650.934,616.847 L650.934,632.522 L635.259,632.522 Z"/>
-<path id="CHT_02_R10_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,616.844 L667.611,616.844 L667.611,632.522 L651.934,632.522 Z"/>
-<path id="CHT_02_R10_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,616.847 L684.285,616.847 L684.285,632.522 L668.611,632.522 Z"/>
-<path id="CHT_02_R10_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,616.844 L700.962,616.844 L700.962,632.522 L685.285,632.522 Z"/>
-<path id="CHT_02_R10_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,616.847 L717.637,616.847 L717.637,632.522 L701.962,632.522 Z"/>
-<path id="CHT_02_R10_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,585.494 L765.665,585.494 L765.665,632.522 L718.637,632.522 Z"/>
-<path id="CHT_02_R10_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,613.322 L785.864,613.322 L785.864,632.522 L766.665,632.522 Z"/>
-<path id="CHT_02_R10_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,578.217 L841.168,578.217 L841.168,632.522 L786.864,632.522 Z"/>
-<path id="CHT_02_R12_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,727.149 L634.259,727.149 L634.259,742.826 L618.582,742.826 Z"/>
-<path id="CHT_02_R12_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,727.152 L650.934,727.152 L650.934,742.826 L635.259,742.826 Z"/>
-<path id="CHT_02_R12_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,727.149 L667.611,727.149 L667.611,742.826 L651.934,742.826 Z"/>
-<path id="CHT_02_R12_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,727.152 L684.285,727.152 L684.285,742.826 L668.611,742.826 Z"/>
-<path id="CHT_02_R12_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,727.149 L700.962,727.149 L700.962,742.826 L685.285,742.826 Z"/>
-<path id="CHT_02_R12_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,727.152 L717.637,727.152 L717.637,742.826 L701.962,742.826 Z"/>
-<path id="CHT_02_R12_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,695.798 L765.665,695.798 L765.665,742.826 L718.637,742.826 Z"/>
-<path id="CHT_02_R12_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,723.626 L785.864,723.626 L785.864,742.826 L766.665,742.826 Z"/>
-<path id="CHT_02_R12_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,688.522 L841.168,688.522 L841.168,742.826 L786.864,742.826 Z"/>
-<path id="CHT_02_R14_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,837.453 L634.259,837.453 L634.259,853.13 L618.582,853.13 Z"/>
-<path id="CHT_02_R14_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,837.456 L650.934,837.456 L650.934,853.13 L635.259,853.13 Z"/>
-<path id="CHT_02_R14_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,837.453 L667.611,837.453 L667.611,853.13 L651.934,853.13 Z"/>
-<path id="CHT_02_R14_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,837.456 L684.285,837.456 L684.285,853.13 L668.611,853.13 Z"/>
-<path id="CHT_02_R14_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,837.453 L700.962,837.453 L700.962,853.13 L685.285,853.13 Z"/>
-<path id="CHT_02_R14_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,837.456 L717.637,837.456 L717.637,853.13 L701.962,853.13 Z"/>
-<path id="CHT_02_R14_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,806.102 L765.665,806.102 L765.665,853.13 L718.637,853.13 Z"/>
-<path id="CHT_02_R14_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,833.931 L785.864,833.931 L785.864,853.13 L766.665,853.13 Z"/>
-<path id="CHT_02_R14_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,798.826 L841.168,798.826 L841.168,853.13 L786.864,853.13 Z"/>
-<path id="CHT_02_R16_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,947.757 L634.259,947.757 L634.259,963.435 L618.582,963.435 Z"/>
-<path id="CHT_02_R16_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,947.76 L650.934,947.76 L650.934,963.435 L635.259,963.435 Z"/>
-<path id="CHT_02_R16_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,947.757 L667.611,947.757 L667.611,963.435 L651.934,963.435 Z"/>
-<path id="CHT_02_R16_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,947.76 L684.285,947.76 L684.285,963.435 L668.611,963.435 Z"/>
-<path id="CHT_02_R16_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,947.757 L700.962,947.757 L700.962,963.435 L685.285,963.435 Z"/>
-<path id="CHT_02_R16_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,947.76 L717.637,947.76 L717.637,963.435 L701.962,963.435 Z"/>
-<path id="CHT_02_R16_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,916.407 L765.665,916.407 L765.665,963.435 L718.637,963.435 Z"/>
-<path id="CHT_02_R16_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,944.235 L785.864,944.235 L785.864,963.435 L766.665,963.435 Z"/>
-<path id="CHT_02_R16_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,909.13 L841.168,909.13 L841.168,963.435 L786.864,963.435 Z"/>
-<path id="CHT_02_R18_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1058.061 L634.259,1058.061 L634.259,1073.739 L618.582,1073.739 Z"/>
-<path id="CHT_02_R18_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,1058.065 L650.934,1058.065 L650.934,1073.739 L635.259,1073.739 Z"/>
-<path id="CHT_02_R18_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,1058.061 L667.611,1058.061 L667.611,1073.739 L651.934,1073.739 Z"/>
-<path id="CHT_02_R18_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,1058.065 L684.285,1058.065 L684.285,1073.739 L668.611,1073.739 Z"/>
-<path id="CHT_02_R18_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,1058.061 L700.962,1058.061 L700.962,1073.739 L685.285,1073.739 Z"/>
-<path id="CHT_02_R18_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,1058.065 L717.637,1058.065 L717.637,1073.739 L701.962,1073.739 Z"/>
-<path id="CHT_02_R18_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,1026.711 L765.665,1026.711 L765.665,1073.739 L718.637,1073.739 Z"/>
-<path id="CHT_02_R18_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,1054.539 L785.864,1054.539 L785.864,1073.739 L766.665,1073.739 Z"/>
-<path id="CHT_02_R18_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,1019.435 L841.168,1019.435 L841.168,1073.739 L786.864,1073.739 Z"/>
-<path id="CHT_02_R20_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1168.366 L634.259,1168.366 L634.259,1184.043 L618.582,1184.043 Z"/>
-<path id="CHT_02_R20_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,1168.369 L650.934,1168.369 L650.934,1184.043 L635.259,1184.043 Z"/>
-<path id="CHT_02_R20_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,1168.366 L667.611,1168.366 L667.611,1184.043 L651.934,1184.043 Z"/>
-<path id="CHT_02_R20_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,1168.369 L684.285,1168.369 L684.285,1184.043 L668.611,1184.043 Z"/>
-<path id="CHT_02_R20_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,1168.366 L700.962,1168.366 L700.962,1184.043 L685.285,1184.043 Z"/>
-<path id="CHT_02_R20_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,1168.369 L717.637,1168.369 L717.637,1184.043 L701.962,1184.043 Z"/>
-<path id="CHT_02_R20_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,1137.015 L765.665,1137.015 L765.665,1184.043 L718.637,1184.043 Z"/>
-<path id="CHT_02_R20_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,1164.844 L785.864,1164.844 L785.864,1184.043 L766.665,1184.043 Z"/>
-<path id="CHT_02_R20_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,1129.739 L841.168,1129.739 L841.168,1184.043 L786.864,1184.043 Z"/>
-<path id="CHT_02_R22_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1278.67 L634.259,1278.67 L634.259,1294.347 L618.582,1294.347 Z"/>
-<path id="CHT_02_R22_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,1278.673 L650.934,1278.673 L650.934,1294.347 L635.259,1294.347 Z"/>
-<path id="CHT_02_R22_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,1278.67 L667.611,1278.67 L667.611,1294.347 L651.934,1294.347 Z"/>
-<path id="CHT_02_R22_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,1278.673 L684.285,1278.673 L684.285,1294.347 L668.611,1294.347 Z"/>
-<path id="CHT_02_R22_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,1278.67 L700.962,1278.67 L700.962,1294.347 L685.285,1294.347 Z"/>
-<path id="CHT_02_R22_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,1278.673 L717.637,1278.673 L717.637,1294.347 L701.962,1294.347 Z"/>
-<path id="CHT_02_R22_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,1247.32 L765.665,1247.32 L765.665,1294.347 L718.637,1294.347 Z"/>
-<path id="CHT_02_R22_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,1275.148 L785.864,1275.148 L785.864,1294.347 L766.665,1294.347 Z"/>
-<path id="CHT_02_R22_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,1240.043 L841.168,1240.043 L841.168,1294.347 L786.864,1294.347 Z"/>
-<path id="CHT_02_R24_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1388.974 L634.259,1388.974 L634.259,1404.652 L618.582,1404.652 Z"/>
-<path id="CHT_02_R24_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,1388.978 L650.934,1388.978 L650.934,1404.652 L635.259,1404.652 Z"/>
-<path id="CHT_02_R24_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,1388.974 L667.611,1388.974 L667.611,1404.652 L651.934,1404.652 Z"/>
-<path id="CHT_02_R24_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,1388.978 L684.285,1388.978 L684.285,1404.652 L668.611,1404.652 Z"/>
-<path id="CHT_02_R24_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,1388.974 L700.962,1388.974 L700.962,1404.652 L685.285,1404.652 Z"/>
-<path id="CHT_02_R24_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,1388.978 L717.637,1388.978 L717.637,1404.652 L701.962,1404.652 Z"/>
-<path id="CHT_02_R24_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,1357.624 L765.665,1357.624 L765.665,1404.652 L718.637,1404.652 Z"/>
-<path id="CHT_02_R24_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,1385.452 L785.864,1385.452 L785.864,1404.652 L766.665,1404.652 Z"/>
-<path id="CHT_02_R24_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,1350.347 L841.168,1350.347 L841.168,1404.652 L786.864,1404.652 Z"/>
-<path id="CHT_02_R26_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1460.652 L682.582,1460.652 L682.582,1524.652 L618.582,1524.652 Z"/>
-<path id="CHT_02_R26_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M683.582,1508.974 L699.259,1508.974 L699.259,1524.652 L683.582,1524.652 Z"/>
-<path id="CHT_02_R26_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M700.259,1508.978 L715.934,1508.978 L715.934,1524.652 L700.259,1524.652 Z"/>
-<path id="CHT_02_R26_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M716.934,1508.974 L732.611,1508.974 L732.611,1524.652 L716.934,1524.652 Z"/>
-<path id="CHT_02_R26_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M733.611,1508.978 L749.285,1508.978 L749.285,1524.652 L733.611,1524.652 Z"/>
-<path id="CHT_02_R26_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M750.285,1508.974 L765.962,1508.974 L765.962,1524.652 L750.285,1524.652 Z"/>
-<path id="CHT_02_R26_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.962,1508.978 L782.637,1508.978 L782.637,1524.652 L766.962,1524.652 Z"/>
-<path id="CHT_02_R26_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M783.637,1477.624 L830.665,1477.624 L830.665,1524.652 L783.637,1524.652 Z"/>
-<path id="CHT_02_R26_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M831.665,1505.452 L850.864,1505.452 L850.864,1524.652 L831.665,1524.652 Z"/>
-<path id="CHT_02_R26_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M851.864,1470.347 L906.168,1470.347 L906.168,1524.652 L851.864,1524.652 Z"/>
-<path id="CHT_03_R02_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,137 L1030.582,137 L1030.582,201 L966.582,201 Z"/>
-<path id="CHT_03_R04_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,257 L1030.582,257 L1030.582,321 L966.582,321 Z"/>
-<path id="CHT_03_R06_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,377 L1030.582,377 L1030.582,441 L966.582,441 Z"/>
-<path id="CHT_03_R08_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,497 L1030.582,497 L1030.582,561 L966.582,561 Z"/>
-<path id="CHT_03_R10_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,617 L1030.582,617 L1030.582,681 L966.582,681 Z"/>
-<path id="CHT_03_R12_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,737 L1030.582,737 L1030.582,801 L966.582,801 Z"/>
-<path id="CHT_03_R14_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,857 L1030.582,857 L1030.582,921 L966.582,921 Z"/>
-<path id="CHT_03_R16_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,977 L1030.582,977 L1030.582,1041 L966.582,1041 Z"/>
-<path id="CHT_03_R18_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M966.582,1097 L1030.582,1097 L1030.582,1161 L966.582,1161 Z"/>
+<path id="CHT_01_R04_08" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M481.582,317 L485.582,317 L485.582,321 L481.582,321 Z"/>
+<path id="CHT_01_R04_09" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M486.582,317 L490.582,317 L490.582,321 L486.582,321 Z"/>
+<path id="CHT_01_R04_10" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M491.582,317 L495.582,317 L495.582,321 L491.582,321 Z"/>
+<path id="CHT_01_R04_11" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M496.582,317 L500.582,317 L500.582,321 L496.582,321 Z"/>
+<path id="CHT_01_R04_12" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M501.582,317 L505.582,317 L505.582,321 L501.582,321 Z"/>
+<path id="CHT_02_R02_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,175.627 L569.259,175.627 L569.259,191.304 L553.582,191.304 Z"/>
+<path id="CHT_02_R02_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,175.63 L585.934,175.63 L585.934,191.304 L570.259,191.304 Z"/>
+<path id="CHT_02_R02_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,175.627 L602.611,175.627 L602.611,191.304 L586.934,191.304 Z"/>
+<path id="CHT_02_R02_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,175.63 L619.285,175.63 L619.285,191.304 L603.611,191.304 Z"/>
+<path id="CHT_02_R02_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,175.627 L635.962,175.627 L635.962,191.304 L620.285,191.304 Z"/>
+<path id="CHT_02_R02_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,175.63 L652.637,175.63 L652.637,191.304 L636.962,191.304 Z"/>
+<path id="CHT_02_R02_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,158.048 L686.893,158.048 L686.893,191.304 L653.637,191.304 Z"/>
+<path id="CHT_02_R02_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M687.893,172.105 L707.092,172.105 L707.092,191.304 L687.893,191.304 Z"/>
+<path id="CHT_02_R02_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M708.092,137 L762.396,137 L762.396,191.304 L708.092,191.304 Z"/>
+<path id="CHT_02_R04_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,285.931 L569.259,285.931 L569.259,301.609 L553.582,301.609 Z"/>
+<path id="CHT_02_R04_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,285.934 L585.934,285.934 L585.934,301.609 L570.259,301.609 Z"/>
+<path id="CHT_02_R04_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,285.931 L602.611,285.931 L602.611,301.609 L586.934,301.609 Z"/>
+<path id="CHT_02_R04_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,285.934 L619.285,285.934 L619.285,301.609 L603.611,301.609 Z"/>
+<path id="CHT_02_R04_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,285.931 L635.962,285.931 L635.962,301.609 L620.285,301.609 Z"/>
+<path id="CHT_02_R04_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,285.934 L652.637,285.934 L652.637,301.609 L636.962,301.609 Z"/>
+<path id="CHT_02_R04_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,268.353 L686.893,268.353 L686.893,301.609 L653.637,301.609 Z"/>
+<path id="CHT_02_R04_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M687.893,282.409 L707.092,282.409 L707.092,301.609 L687.893,301.609 Z"/>
+<path id="CHT_02_R04_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M708.092,247.304 L762.396,247.304 L762.396,301.609 L708.092,301.609 Z"/>
+<path id="CHT_02_R06_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,396.236 L569.259,396.236 L569.259,411.913 L553.582,411.913 Z"/>
+<path id="CHT_02_R06_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,396.239 L585.934,396.239 L585.934,411.913 L570.259,411.913 Z"/>
+<path id="CHT_02_R06_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,396.236 L602.611,396.236 L602.611,411.913 L586.934,411.913 Z"/>
+<path id="CHT_02_R06_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,396.239 L619.285,396.239 L619.285,411.913 L603.611,411.913 Z"/>
+<path id="CHT_02_R06_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,396.236 L635.962,396.236 L635.962,411.913 L620.285,411.913 Z"/>
+<path id="CHT_02_R06_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,396.239 L652.637,396.239 L652.637,411.913 L636.962,411.913 Z"/>
+<path id="CHT_02_R06_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,364.885 L700.665,364.885 L700.665,411.913 L653.637,411.913 Z"/>
+<path id="CHT_02_R06_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,392.713 L720.864,392.713 L720.864,411.913 L701.665,411.913 Z"/>
+<path id="CHT_02_R06_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,357.609 L776.168,357.609 L776.168,411.913 L721.864,411.913 Z"/>
+<path id="CHT_02_R08_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,506.54 L569.259,506.54 L569.259,522.217 L553.582,522.217 Z"/>
+<path id="CHT_02_R08_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,506.543 L585.934,506.543 L585.934,522.217 L570.259,522.217 Z"/>
+<path id="CHT_02_R08_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,506.54 L602.611,506.54 L602.611,522.217 L586.934,522.217 Z"/>
+<path id="CHT_02_R08_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,506.543 L619.285,506.543 L619.285,522.217 L603.611,522.217 Z"/>
+<path id="CHT_02_R08_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,506.54 L635.962,506.54 L635.962,522.217 L620.285,522.217 Z"/>
+<path id="CHT_02_R08_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,506.543 L652.637,506.543 L652.637,522.217 L636.962,522.217 Z"/>
+<path id="CHT_02_R08_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,475.189 L700.665,475.189 L700.665,522.217 L653.637,522.217 Z"/>
+<path id="CHT_02_R08_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,503.018 L720.864,503.018 L720.864,522.217 L701.665,522.217 Z"/>
+<path id="CHT_02_R08_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,467.913 L776.168,467.913 L776.168,522.217 L721.864,522.217 Z"/>
+<path id="CHT_02_R10_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,616.844 L569.259,616.844 L569.259,632.522 L553.582,632.522 Z"/>
+<path id="CHT_02_R10_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,616.847 L585.934,616.847 L585.934,632.522 L570.259,632.522 Z"/>
+<path id="CHT_02_R10_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,616.844 L602.611,616.844 L602.611,632.522 L586.934,632.522 Z"/>
+<path id="CHT_02_R10_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,616.847 L619.285,616.847 L619.285,632.522 L603.611,632.522 Z"/>
+<path id="CHT_02_R10_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,616.844 L635.962,616.844 L635.962,632.522 L620.285,632.522 Z"/>
+<path id="CHT_02_R10_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,616.847 L652.637,616.847 L652.637,632.522 L636.962,632.522 Z"/>
+<path id="CHT_02_R10_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,585.494 L700.665,585.494 L700.665,632.522 L653.637,632.522 Z"/>
+<path id="CHT_02_R10_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,613.322 L720.864,613.322 L720.864,632.522 L701.665,632.522 Z"/>
+<path id="CHT_02_R10_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,578.217 L776.168,578.217 L776.168,632.522 L721.864,632.522 Z"/>
+<path id="CHT_02_R12_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,727.149 L569.259,727.149 L569.259,742.826 L553.582,742.826 Z"/>
+<path id="CHT_02_R12_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,727.152 L585.934,727.152 L585.934,742.826 L570.259,742.826 Z"/>
+<path id="CHT_02_R12_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,727.149 L602.611,727.149 L602.611,742.826 L586.934,742.826 Z"/>
+<path id="CHT_02_R12_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,727.152 L619.285,727.152 L619.285,742.826 L603.611,742.826 Z"/>
+<path id="CHT_02_R12_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,727.149 L635.962,727.149 L635.962,742.826 L620.285,742.826 Z"/>
+<path id="CHT_02_R12_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,727.152 L652.637,727.152 L652.637,742.826 L636.962,742.826 Z"/>
+<path id="CHT_02_R12_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,695.798 L700.665,695.798 L700.665,742.826 L653.637,742.826 Z"/>
+<path id="CHT_02_R12_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,723.626 L720.864,723.626 L720.864,742.826 L701.665,742.826 Z"/>
+<path id="CHT_02_R12_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,688.522 L776.168,688.522 L776.168,742.826 L721.864,742.826 Z"/>
+<path id="CHT_02_R14_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,837.453 L569.259,837.453 L569.259,853.13 L553.582,853.13 Z"/>
+<path id="CHT_02_R14_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,837.456 L585.934,837.456 L585.934,853.13 L570.259,853.13 Z"/>
+<path id="CHT_02_R14_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,837.453 L602.611,837.453 L602.611,853.13 L586.934,853.13 Z"/>
+<path id="CHT_02_R14_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,837.456 L619.285,837.456 L619.285,853.13 L603.611,853.13 Z"/>
+<path id="CHT_02_R14_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,837.453 L635.962,837.453 L635.962,853.13 L620.285,853.13 Z"/>
+<path id="CHT_02_R14_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,837.456 L652.637,837.456 L652.637,853.13 L636.962,853.13 Z"/>
+<path id="CHT_02_R14_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,806.102 L700.665,806.102 L700.665,853.13 L653.637,853.13 Z"/>
+<path id="CHT_02_R14_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,833.931 L720.864,833.931 L720.864,853.13 L701.665,853.13 Z"/>
+<path id="CHT_02_R14_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,798.826 L776.168,798.826 L776.168,853.13 L721.864,853.13 Z"/>
+<path id="CHT_02_R16_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,947.757 L569.259,947.757 L569.259,963.435 L553.582,963.435 Z"/>
+<path id="CHT_02_R16_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,947.76 L585.934,947.76 L585.934,963.435 L570.259,963.435 Z"/>
+<path id="CHT_02_R16_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,947.757 L602.611,947.757 L602.611,963.435 L586.934,963.435 Z"/>
+<path id="CHT_02_R16_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,947.76 L619.285,947.76 L619.285,963.435 L603.611,963.435 Z"/>
+<path id="CHT_02_R16_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,947.757 L635.962,947.757 L635.962,963.435 L620.285,963.435 Z"/>
+<path id="CHT_02_R16_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,947.76 L652.637,947.76 L652.637,963.435 L636.962,963.435 Z"/>
+<path id="CHT_02_R16_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,916.407 L700.665,916.407 L700.665,963.435 L653.637,963.435 Z"/>
+<path id="CHT_02_R16_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,944.235 L720.864,944.235 L720.864,963.435 L701.665,963.435 Z"/>
+<path id="CHT_02_R16_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,909.13 L776.168,909.13 L776.168,963.435 L721.864,963.435 Z"/>
+<path id="CHT_02_R18_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,1058.061 L569.259,1058.061 L569.259,1073.739 L553.582,1073.739 Z"/>
+<path id="CHT_02_R18_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,1058.065 L585.934,1058.065 L585.934,1073.739 L570.259,1073.739 Z"/>
+<path id="CHT_02_R18_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,1058.061 L602.611,1058.061 L602.611,1073.739 L586.934,1073.739 Z"/>
+<path id="CHT_02_R18_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,1058.065 L619.285,1058.065 L619.285,1073.739 L603.611,1073.739 Z"/>
+<path id="CHT_02_R18_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,1058.061 L635.962,1058.061 L635.962,1073.739 L620.285,1073.739 Z"/>
+<path id="CHT_02_R18_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,1058.065 L652.637,1058.065 L652.637,1073.739 L636.962,1073.739 Z"/>
+<path id="CHT_02_R18_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,1026.711 L700.665,1026.711 L700.665,1073.739 L653.637,1073.739 Z"/>
+<path id="CHT_02_R18_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,1054.539 L720.864,1054.539 L720.864,1073.739 L701.665,1073.739 Z"/>
+<path id="CHT_02_R18_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,1019.435 L776.168,1019.435 L776.168,1073.739 L721.864,1073.739 Z"/>
+<path id="CHT_02_R20_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,1168.366 L569.259,1168.366 L569.259,1184.043 L553.582,1184.043 Z"/>
+<path id="CHT_02_R20_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,1168.369 L585.934,1168.369 L585.934,1184.043 L570.259,1184.043 Z"/>
+<path id="CHT_02_R20_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,1168.366 L602.611,1168.366 L602.611,1184.043 L586.934,1184.043 Z"/>
+<path id="CHT_02_R20_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,1168.369 L619.285,1168.369 L619.285,1184.043 L603.611,1184.043 Z"/>
+<path id="CHT_02_R20_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,1168.366 L635.962,1168.366 L635.962,1184.043 L620.285,1184.043 Z"/>
+<path id="CHT_02_R20_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,1168.369 L652.637,1168.369 L652.637,1184.043 L636.962,1184.043 Z"/>
+<path id="CHT_02_R20_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,1137.015 L700.665,1137.015 L700.665,1184.043 L653.637,1184.043 Z"/>
+<path id="CHT_02_R20_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,1164.844 L720.864,1164.844 L720.864,1184.043 L701.665,1184.043 Z"/>
+<path id="CHT_02_R20_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,1129.739 L776.168,1129.739 L776.168,1184.043 L721.864,1184.043 Z"/>
+<path id="CHT_02_R22_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,1278.67 L569.259,1278.67 L569.259,1294.347 L553.582,1294.347 Z"/>
+<path id="CHT_02_R22_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,1278.673 L585.934,1278.673 L585.934,1294.347 L570.259,1294.347 Z"/>
+<path id="CHT_02_R22_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,1278.67 L602.611,1278.67 L602.611,1294.347 L586.934,1294.347 Z"/>
+<path id="CHT_02_R22_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,1278.673 L619.285,1278.673 L619.285,1294.347 L603.611,1294.347 Z"/>
+<path id="CHT_02_R22_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,1278.67 L635.962,1278.67 L635.962,1294.347 L620.285,1294.347 Z"/>
+<path id="CHT_02_R22_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,1278.673 L652.637,1278.673 L652.637,1294.347 L636.962,1294.347 Z"/>
+<path id="CHT_02_R22_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,1247.32 L700.665,1247.32 L700.665,1294.347 L653.637,1294.347 Z"/>
+<path id="CHT_02_R22_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,1275.148 L720.864,1275.148 L720.864,1294.347 L701.665,1294.347 Z"/>
+<path id="CHT_02_R22_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,1240.043 L776.168,1240.043 L776.168,1294.347 L721.864,1294.347 Z"/>
+<path id="CHT_02_R24_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,1388.974 L569.259,1388.974 L569.259,1404.652 L553.582,1404.652 Z"/>
+<path id="CHT_02_R24_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M570.259,1388.978 L585.934,1388.978 L585.934,1404.652 L570.259,1404.652 Z"/>
+<path id="CHT_02_R24_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.934,1388.974 L602.611,1388.974 L602.611,1404.652 L586.934,1404.652 Z"/>
+<path id="CHT_02_R24_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M603.611,1388.978 L619.285,1388.978 L619.285,1404.652 L603.611,1404.652 Z"/>
+<path id="CHT_02_R24_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M620.285,1388.974 L635.962,1388.974 L635.962,1404.652 L620.285,1404.652 Z"/>
+<path id="CHT_02_R24_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M636.962,1388.978 L652.637,1388.978 L652.637,1404.652 L636.962,1404.652 Z"/>
+<path id="CHT_02_R24_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.637,1357.624 L700.665,1357.624 L700.665,1404.652 L653.637,1404.652 Z"/>
+<path id="CHT_02_R24_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.665,1385.452 L720.864,1385.452 L720.864,1404.652 L701.665,1404.652 Z"/>
+<path id="CHT_02_R24_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M721.864,1350.347 L776.168,1350.347 L776.168,1404.652 L721.864,1404.652 Z"/>
+<path id="CHT_02_R26_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M553.582,1460.652 L617.582,1460.652 L617.582,1524.652 L553.582,1524.652 Z"/>
+<path id="CHT_02_R26_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.582,1508.974 L634.259,1508.974 L634.259,1524.652 L618.582,1524.652 Z"/>
+<path id="CHT_02_R26_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.259,1508.978 L650.934,1508.978 L650.934,1524.652 L635.259,1524.652 Z"/>
+<path id="CHT_02_R26_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.934,1508.974 L667.611,1508.974 L667.611,1524.652 L651.934,1524.652 Z"/>
+<path id="CHT_02_R26_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M668.611,1508.978 L684.285,1508.978 L684.285,1524.652 L668.611,1524.652 Z"/>
+<path id="CHT_02_R26_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M685.285,1508.974 L700.962,1508.974 L700.962,1524.652 L685.285,1524.652 Z"/>
+<path id="CHT_02_R26_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M701.962,1508.978 L717.637,1508.978 L717.637,1524.652 L701.962,1524.652 Z"/>
+<path id="CHT_02_R26_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M718.637,1477.624 L765.665,1477.624 L765.665,1524.652 L718.637,1524.652 Z"/>
+<path id="CHT_02_R26_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M766.665,1505.452 L785.864,1505.452 L785.864,1524.652 L766.665,1524.652 Z"/>
+<path id="CHT_02_R26_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M786.864,1470.347 L841.168,1470.347 L841.168,1524.652 L786.864,1524.652 Z"/>
+<path id="CHT_03_R02_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,137 L965.582,137 L965.582,201 L901.582,201 Z"/>
+<path id="CHT_03_R04_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,257 L965.582,257 L965.582,321 L901.582,321 Z"/>
+<path id="CHT_03_R06_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,377 L965.582,377 L965.582,441 L901.582,441 Z"/>
+<path id="CHT_03_R08_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,497 L965.582,497 L965.582,561 L901.582,561 Z"/>
+<path id="CHT_03_R10_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,617 L965.582,617 L965.582,681 L901.582,681 Z"/>
+<path id="CHT_03_R12_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,737 L965.582,737 L965.582,801 L901.582,801 Z"/>
+<path id="CHT_03_R14_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,857 L965.582,857 L965.582,921 L901.582,921 Z"/>
+<path id="CHT_03_R16_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,977 L965.582,977 L965.582,1041 L901.582,1041 Z"/>
+<path id="CHT_03_R18_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M901.582,1097 L965.582,1097 L965.582,1161 L901.582,1161 Z"/>
 <path id="CHT_04_R02_01" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1678.942 L110.71,1678.942 L110.71,1739.652 L50,1739.652 Z"/>
 <path id="CHT_04_R02_02" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M111.71,1675.652 L175.71,1675.652 L175.71,1739.652 L111.71,1739.652 Z"/>
 <path id="CHT_04_R02_03" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M176.71,1696.72 L219.641,1696.72 L219.641,1739.652 L176.71,1739.652 Z"/>
@@ -199,55 +198,55 @@
 <text id="CHT_01_R02_LBL" x="50" y="133" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
 <text id="CHT_01_G03" x="50" y="238" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L1</tspan></text>
 <text id="CHT_01_R04_LBL" x="50" y="253" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
-<text id="CHT_01_TOTAL" x="570.582" y="373" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="570.582" dy="0">41,343 GSF</tspan></text>
-<text id="CHT_02_TITLE" x="604.582" y="85" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="604.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G01" x="618.582" y="118" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">B1</tspan></text>
-<text id="CHT_02_R02_LBL" x="618.582" y="133" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G03" x="618.582" y="228.304" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L1</tspan></text>
-<text id="CHT_02_R04_LBL" x="618.582" y="243.304" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G05" x="618.582" y="338.609" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L2</tspan></text>
-<text id="CHT_02_R06_LBL" x="618.582" y="353.609" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G07" x="618.582" y="448.913" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L3</tspan></text>
-<text id="CHT_02_R08_LBL" x="618.582" y="463.913" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G09" x="618.582" y="559.217" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L4</tspan></text>
-<text id="CHT_02_R10_LBL" x="618.582" y="574.217" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G11" x="618.582" y="669.522" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L5</tspan></text>
-<text id="CHT_02_R12_LBL" x="618.582" y="684.522" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G13" x="618.582" y="779.826" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L6</tspan></text>
-<text id="CHT_02_R14_LBL" x="618.582" y="794.826" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G15" x="618.582" y="890.13" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L7</tspan></text>
-<text id="CHT_02_R16_LBL" x="618.582" y="905.13" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G17" x="618.582" y="1000.435" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L8</tspan></text>
-<text id="CHT_02_R18_LBL" x="618.582" y="1015.435" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G19" x="618.582" y="1110.739" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L9</tspan></text>
-<text id="CHT_02_R20_LBL" x="618.582" y="1125.739" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G21" x="618.582" y="1221.043" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L10</tspan></text>
-<text id="CHT_02_R22_LBL" x="618.582" y="1236.043" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G23" x="618.582" y="1331.347" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L11</tspan></text>
-<text id="CHT_02_R24_LBL" x="618.582" y="1346.347" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_G25" x="618.582" y="1441.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="618.582" dy="0">L12</tspan></text>
-<text id="CHT_02_R26_LBL" x="618.582" y="1456.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="618.582" dy="0">CORE</tspan></text>
-<text id="CHT_02_TOTAL" x="918.582" y="1576.652" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="918.582" dy="0">37,725 GSF</tspan></text>
-<text id="CHT_03_TITLE" x="952.582" y="85" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="952.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G01" x="966.582" y="118" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">B1</tspan></text>
-<text id="CHT_03_R02_LBL" x="966.582" y="133" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G03" x="966.582" y="238" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L2</tspan></text>
-<text id="CHT_03_R04_LBL" x="966.582" y="253" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G05" x="966.582" y="358" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L4</tspan></text>
-<text id="CHT_03_R06_LBL" x="966.582" y="373" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G07" x="966.582" y="478" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L5</tspan></text>
-<text id="CHT_03_R08_LBL" x="966.582" y="493" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G09" x="966.582" y="598" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L6</tspan></text>
-<text id="CHT_03_R10_LBL" x="966.582" y="613" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G11" x="966.582" y="718" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L7</tspan></text>
-<text id="CHT_03_R12_LBL" x="966.582" y="733" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G13" x="966.582" y="838" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L8</tspan></text>
-<text id="CHT_03_R14_LBL" x="966.582" y="853" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G15" x="966.582" y="958" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L9</tspan></text>
-<text id="CHT_03_R16_LBL" x="966.582" y="973" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_G17" x="966.582" y="1078" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="966.582" dy="0">L10</tspan></text>
-<text id="CHT_03_R18_LBL" x="966.582" y="1093" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="966.582" dy="0">LAB</tspan></text>
-<text id="CHT_03_TOTAL" x="1266.582" y="1213" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1266.582" dy="0">191,092 GSF</tspan></text>
+<text id="CHT_01_TOTAL" x="505.582" y="373" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="505.582" dy="0">39,183 GSF</tspan></text>
+<text id="CHT_02_TITLE" x="539.582" y="85" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="539.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G01" x="553.582" y="118" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">B1</tspan></text>
+<text id="CHT_02_R02_LBL" x="553.582" y="133" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G03" x="553.582" y="228.304" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L1</tspan></text>
+<text id="CHT_02_R04_LBL" x="553.582" y="243.304" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G05" x="553.582" y="338.609" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L2</tspan></text>
+<text id="CHT_02_R06_LBL" x="553.582" y="353.609" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G07" x="553.582" y="448.913" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L3</tspan></text>
+<text id="CHT_02_R08_LBL" x="553.582" y="463.913" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G09" x="553.582" y="559.217" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L4</tspan></text>
+<text id="CHT_02_R10_LBL" x="553.582" y="574.217" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G11" x="553.582" y="669.522" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L5</tspan></text>
+<text id="CHT_02_R12_LBL" x="553.582" y="684.522" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G13" x="553.582" y="779.826" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L6</tspan></text>
+<text id="CHT_02_R14_LBL" x="553.582" y="794.826" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G15" x="553.582" y="890.13" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L7</tspan></text>
+<text id="CHT_02_R16_LBL" x="553.582" y="905.13" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G17" x="553.582" y="1000.435" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L8</tspan></text>
+<text id="CHT_02_R18_LBL" x="553.582" y="1015.435" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G19" x="553.582" y="1110.739" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L9</tspan></text>
+<text id="CHT_02_R20_LBL" x="553.582" y="1125.739" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G21" x="553.582" y="1221.043" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L10</tspan></text>
+<text id="CHT_02_R22_LBL" x="553.582" y="1236.043" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G23" x="553.582" y="1331.347" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L11</tspan></text>
+<text id="CHT_02_R24_LBL" x="553.582" y="1346.347" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_G25" x="553.582" y="1441.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="553.582" dy="0">L12</tspan></text>
+<text id="CHT_02_R26_LBL" x="553.582" y="1456.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="553.582" dy="0">CORE</tspan></text>
+<text id="CHT_02_TOTAL" x="853.582" y="1576.652" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="853.582" dy="0">37,725 GSF</tspan></text>
+<text id="CHT_03_TITLE" x="887.582" y="85" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="887.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G01" x="901.582" y="118" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">B1</tspan></text>
+<text id="CHT_03_R02_LBL" x="901.582" y="133" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G03" x="901.582" y="238" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L2</tspan></text>
+<text id="CHT_03_R04_LBL" x="901.582" y="253" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G05" x="901.582" y="358" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L4</tspan></text>
+<text id="CHT_03_R06_LBL" x="901.582" y="373" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G07" x="901.582" y="478" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L5</tspan></text>
+<text id="CHT_03_R08_LBL" x="901.582" y="493" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G09" x="901.582" y="598" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L6</tspan></text>
+<text id="CHT_03_R10_LBL" x="901.582" y="613" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G11" x="901.582" y="718" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L7</tspan></text>
+<text id="CHT_03_R12_LBL" x="901.582" y="733" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G13" x="901.582" y="838" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L8</tspan></text>
+<text id="CHT_03_R14_LBL" x="901.582" y="853" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G15" x="901.582" y="958" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L9</tspan></text>
+<text id="CHT_03_R16_LBL" x="901.582" y="973" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_G17" x="901.582" y="1078" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="901.582" dy="0">L10</tspan></text>
+<text id="CHT_03_R18_LBL" x="901.582" y="1093" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="901.582" dy="0">LAB</tspan></text>
+<text id="CHT_03_TOTAL" x="1201.582" y="1213" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1201.582" dy="0">191,092 GSF</tspan></text>
 <text id="CHT_04_TITLE" x="36" y="1623.652" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="36" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
 <text id="CHT_04_G01" x="50" y="1656.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">B1</tspan></text>
 <text id="CHT_04_R02_LBL" x="50" y="1671.652" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
@@ -298,6 +297,6 @@
 <text id="CHT_10_G03" x="746" y="2236.185" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="746" dy="0">L12</tspan></text>
 <text id="CHT_10_R04_LBL" x="746" y="2251.185" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="746" dy="0">SHELL / PENTHOUSE</tspan></text>
 <text id="CHT_10_TOTAL" x="1046" y="2371.185" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1046" dy="0">48,817 GSF</tspan></text>
-<text id="CHT_SOURCE" x="36" y="2403.185" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">Model (GSF) — total 446,604 GSF</tspan></text>
+<text id="CHT_SOURCE" x="36" y="2403.185" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">Model (GSF) — total 444,444 GSF</tspan></text>
 </g>
 </svg>

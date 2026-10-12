@@ -85,7 +85,7 @@
       "role": "BG.Landscape"
     },
     {
-      "pattern": "SITE|PLAZA|SIDEWALK|HARDSCAPE|PAVING|PAVEMENT|WALKWAY|PEDESTRIAN|COURTYARD",
+      "pattern": "SITE|PLAZA|SIDEWALK|HARDSCAPE|PAVING|PAVEMENT|WALKWAY|PEDESTRIAN|COURTYARD|LOT ?FILL|^LOTS?$|BLOCKS?$",
       "role": "BG.Hardscape"
     },
     {
@@ -93,7 +93,7 @@
       "role": "BG.Building"
     },
     {
-      "pattern": "FRAME|BASE|LOT ?FILL|^LOT$|GROUND ?PLANE",
+      "pattern": "FRAME|BASE|GROUND ?PLANE",
       "role": "BG.Base"
     },
     {

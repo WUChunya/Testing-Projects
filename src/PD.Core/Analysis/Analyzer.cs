@@ -66,6 +66,12 @@ public static class Analyzer
         var live = local.Objects.Where(o => !stray.Contains(o.Id)).ToList();
 
         var masses = live.Where(o => o.Role == Roles.Program).Select(o => MassClassifier.Classify(o, rules.Cleanup)).ToList();
+        // A thin program mass lying at grade (a plaza slab on PROGRAM::Circulation, a lawn on PROGRAM::Green Roof) is
+        // site paving / planting: drawn with our site, never a floor area or a level candidate. Raised ones (roof
+        // gardens, terraces) stay programs.
+        var paving = masses.Where(m => IsSitePaving(m, rules)).ToList();
+        foreach (var m in paving) m.Source.Role = m.ProgramKey == "GREEN_ROOF" ? Roles.Green : Roles.NcHardscape;
+        masses = masses.Except(paving).ToList();
         var facade = live.Where(o => o.Role == Roles.Facade).ToList();
         facade.AddRange(masses.Where(m => m.Status == MassStatus.SingleSurface
             && input.SingleSurfaceChoices.GetValueOrDefault(m.Id) == SingleSurfaceChoice.Facade).Select(m => m.Source));
@@ -95,6 +101,10 @@ public static class Analyzer
             if (m.Status == MassStatus.SingleSurface && input.SingleSurfaceChoices.GetValueOrDefault(m.Id) == SingleSurfaceChoice.Ask)
                 issues.Add(new Issue(IssueKind.SingleSurface, $"{m.Source.LayerPath}: single surface on a program layer (ignore / facade / extrude)", new[] { m.Id }));
         }
+        foreach (var g in paving.GroupBy(m => m.Source.LayerPath))
+            issues.Add(new Issue(IssueKind.SitePaving,
+                $"{g.Count()} thin mass(es) at grade on '{g.Key}' drawn as site {(g.First().Source.Role == Roles.Green ? "planting" : "paving")}, not counted",
+                g.Select(m => m.Id).ToArray()));
         foreach (var o in overlaps)
             issues.Add(new Issue(IssueKind.Overlap,
                 $"{levels[o.LevelIndex].Name}: {Program(masses, o.WinnerId)} overrides {Program(masses, o.LoserId)} ({o.Area:0} SF, smaller volume wins)",
@@ -131,6 +141,15 @@ public static class Analyzer
             FacadeIds = facade.Select(f => f.Id).ToList(), Detected = detected, Levels = levels, Spans = spans,
             Plans = plans, Overlaps = overlaps, Issues = issues,
         };
+    }
+
+    /// <summary>No thicker than a flat mass and lying within that thickness of the ground (cores and stairs never).</summary>
+    static bool IsSitePaving(Mass m, Rules rules)
+    {
+        var b = m.Source.BBox;
+        var t = rules.Cleanup.FlatMassMaxThicknessFt;
+        return m.ProgramKey is not ("CORE" or "STAIR") && b.SizeZ <= t
+            && Math.Abs(b.MaxZ - rules.Levels.GroundElevationFt) <= t;
     }
 
     static string Layer(SourceModel m, string id) => m.Objects.First(o => o.Id == id).LayerPath;

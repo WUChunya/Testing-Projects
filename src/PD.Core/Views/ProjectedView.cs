@@ -113,7 +113,7 @@ public static class ProjectedView
             };
             if (it.Kind == ViewKind.Context) item.Dash = v.ContextDash;
             d.Layer(LayerName(it)).Items.Add(item);
-            if (it.Kind == ViewKind.Context && it.Label.Length > 0)
+            if (it.Kind == ViewKind.Context && PD.Core.Sections.SectionDrawing.IsDisplayName(it.Label))
             {
                 var e = g.EnvelopeInternal;
                 d.Layer("PD_LABELS").Items.Add(PD.Core.Sections.SectionDrawing.Text(name + "_LBL", map.X((e.MinX + e.MaxX) / 2), map.Y(e.MaxY) - ctx.Pt(4), it.Label, "PD Note", "center"));

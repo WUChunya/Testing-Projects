@@ -21,12 +21,18 @@ public static class PlanBackground
     /// <summary>Drawing order bottom → top.</summary>
     static readonly string[] Order =
     {
-        Roles.Hardscape, Roles.Road, Roles.Landscape, Roles.Water, Roles.NcHardscape, Roles.Green, Roles.NcWater,
+        Roles.Road, Roles.Hardscape, Roles.Landscape, Roles.Water, Roles.NcHardscape, Roles.Green, Roles.NcWater,
         Roles.Building, Roles.Tree, Roles.NcTree, Roles.Line,
     };
 
+    /// <summary>
+    /// Site items inside <paramref name="extent"/>, bottom → top: road surface first (CADMAPPER-style models carry one road
+    /// slab under the blocks), then blocks / hardscape, landscape, water, our site, other buildings, trees, lines.
+    /// Other buildings standing on our own footprint (the existing building the project replaces) are left out.
+    /// </summary>
     public static List<BackgroundItem> Collect(AnalysisResult r, Envelope extent, double[]? treeDiameterFt = null)
     {
+        var ours = Footprint(r);
         var clip = MeshSlicer.Factory.ToGeometry(extent);
         var dia = treeDiameterFt is { Length: 2 } td ? td : new[] { 14.0, 22.0 };
         var items = new List<BackgroundItem>();
@@ -52,9 +58,26 @@ public static class PlanBackground
             }
             if (o.Mesh == null) continue;
             var g = MeshSlicer.Polygonal(Safe(() => MeshProjection.TopDown(o.Mesh).Intersection(clip)));
+            if (o.Role == Roles.Building && !g.IsEmpty && !ours.IsEmpty && OnOurSite(g, ours)) continue;
             if (!g.IsEmpty && g.Area > 0.5) items.Add(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ));
         }
         return items.OrderBy(i => Array.IndexOf(Order, i.Role)).ToList();
+    }
+
+    /// <summary>Union of our building's footprints on every level.</summary>
+    public static NtsGeometry Footprint(AnalysisResult r)
+    {
+        var parts = r.Plans.Select(p => p.Union).Where(u => !u.IsEmpty).ToList();
+        return parts.Count == 0 ? MeshSlicer.Factory.CreatePolygon()
+            : MeshSlicer.Polygonal(Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(parts)) ?? parts[0]);
+    }
+
+    /// <summary>A context building is "on our site" when a fifth or more of it lies under our building.</summary>
+    static bool OnOurSite(NtsGeometry building, NtsGeometry ours)
+    {
+        if (!building.EnvelopeInternal.Intersects(ours.EnvelopeInternal)) return false;
+        var shared = MeshSlicer.Polygonal(Safe(() => building.Intersection(ours)));
+        return shared.Area >= 0.2 * building.Area;
     }
 
     /// <summary>AI layer: other buildings, trees, the context ground, our own site.</summary>

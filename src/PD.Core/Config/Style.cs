@@ -257,6 +257,20 @@ public sealed class PlanStyle
     public double TitleTagPadPt { get; set; }
     /// <summary>Trees are circles of this diameter range (ft).</summary>
     public double[] TreeDiameterFt { get; set; } = { 14, 22 };
+    /// <summary>00_Site_Plan.ai: site shown this far around the ground floor.</summary>
+    public double SiteMarginFt { get; set; } = 160;
+    public string SiteTitle { get; set; } = "Site Plan";
+    /// <summary>Upper floors sit on the same site, washed out by a white veil of this opacity.</summary>
+    public string UpperVeilFill { get; set; } = "#FFFFFF";
+    public double UpperVeilOpacity { get; set; } = 0.7;
+    /// <summary>Basement plans: cut earth instead of the site.</summary>
+    public string BasementEarthFill { get; set; } = "#D9D9D9";
+    /// <summary>Smallest room-name size (pt at the reference scale) tried before a leader is drawn.</summary>
+    public double LabelMinPt { get; set; } = 8;
+    /// <summary>A program's name appears once per level (on its largest block); the legend covers the rest.</summary>
+    public bool LabelOncePerProgram { get; set; } = true;
+    /// <summary>Site plan: names of the other buildings (numeric GIS ids are never shown).</summary>
+    public bool ContextNames { get; set; } = true;
 }
 
 /// <summary>
