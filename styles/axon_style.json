@@ -1,0 +1,71 @@
+{
+  "_doc": "Axon (exploded + massing-step) style profile. Values in pt unless suffixed. See docs/AXON_STYLE.md.",
+  "scale": { "paper_in": 1.0, "model_ft": 45.0, "pt_per_ft": 1.6 },
+  "projection": {
+    "type": "isometric",
+    "axis_angle_deg": 30,
+    "foreshorten": false,
+    "make2d_upscale_pct": 122.474
+  },
+  "artboard": { "name": "ARCH D", "width_in": 36, "height_in": 24, "margin_in": 1.0, "color_mode": "RGB", "raster_ppi": 300 },
+  "lines": {
+    "silhouette":       { "width": 2.5, "color": "#000000", "join": "round", "cap": "round" },
+    "silhouette_slab":  { "width": 2.0, "color": "#000000", "join": "round", "cap": "round" },
+    "fold_edge":        { "width": 1.0, "color": "#000000", "join": "round", "cap": "round" },
+    "division":         { "width": 0.5, "color": "#FFFFFF", "join": "miter", "cap": "butt" },
+    "division_massing": { "width": 0.5, "color": "#000000", "join": "miter", "cap": "butt" },
+    "context":          { "width": 0.35, "color": "#A6A6A6", "join": "miter", "cap": "butt" },
+    "hidden":           { "width": 0.5, "color": "#808080", "dash": [3, 2], "cap": "butt" },
+    "leader":           { "width": 0.35, "color": "#8C8C8C", "cap": "butt" },
+    "action":           { "width": 0.75, "color": "#000000", "cap": "round" },
+    "cut_line":         { "width": 0.5, "color": "#000000", "dash": [2, 2], "cap": "butt" }
+  },
+  "faces": {
+    "program": { "top_black_pct": 0, "left_black_pct": 10, "right_black_pct": 20, "method": "extra fill #000000 at N% opacity, Multiply" },
+    "neutral": { "top": "#FFFFFF", "left": "#F5F5F5", "right": "#E6E6E6" }
+  },
+  "exploded": {
+    "slab_thickness_ft": 3.75,
+    "pitch_rule": "max(gap_factor * floor_height, min_top_visible * projected_top_depth)",
+    "gap_factor": 1.5,
+    "min_top_visible": 0.7,
+    "max_plates": 7,
+    "group_typical_floors": true,
+    "side_faces": "program",
+    "core": { "fill": "#999999", "label": "CORE" },
+    "connector": { "fill": "#FDF5D1", "opacity": 0.6, "blend": "multiply", "stroke": "#B3AA8A", "stroke_width": 0.5 }
+  },
+  "massing": {
+    "faces": "neutral",
+    "program_band": { "opacity": 0.6, "blend": "multiply", "stroke": null },
+    "facade_veil": { "fill": "#FFFFFF", "opacity": 0.3 },
+    "grid": { "cols": 2, "rows": 2, "gutter_in": 1.0, "anchor": "site_min_corner" }
+  },
+  "context": {
+    "ground":      { "fill": "#F5F5F5", "stroke": "context" },
+    "block":       { "fill": "#EBEBEB", "stroke": "context" },
+    "road":        { "fill": "#D9D9D9", "stroke": null },
+    "landscape":   { "fill": "#D7DEBC", "stroke": null },
+    "tree":        { "fill": "#C8E2BF", "stroke": "#7A9A6A", "stroke_width": 0.35 },
+    "building":    { "fill": "#FFFFFF", "stroke": "context" },
+    "street_arrow":{ "fill": "#A6A6A6", "band_width": 12, "head_width": 24, "head_length": 18 }
+  },
+  "text": {
+    "font": "Century Gothic",
+    "label_primary":   { "size": 14, "weight": "Bold", "case": "upper", "tracking": 50 },
+    "label_secondary": { "size": 10, "weight": "Bold", "case": "upper", "tracking": 50 },
+    "label_core":      { "size": 9,  "weight": "Bold", "case": "upper", "tracking": 50, "color": "#262626" },
+    "label_fit_ratio": 0.6,
+    "label_light": "#FFFFFF",
+    "label_dark": "#404040",
+    "label_dark_if_luminance_above": 0.6,
+    "level":       { "size": 10, "weight": "Regular", "case": "title", "color": "#333333" },
+    "street":      { "size": 9,  "weight": "Bold", "case": "upper", "color": "#FFFFFF" },
+    "step_title":  { "size": 12, "weight": "Regular", "case": "upper", "color": "#000000" }
+  },
+  "level_tag": {
+    "marker_size": 6, "marker_fill": "#FFC000", "marker_text_gap": 4,
+    "column_offset_in": 1.5, "leader_direction": "iso_x"
+  },
+  "ai_layers": ["OVERLAY", "_MANUAL", "ANNO_LEVEL", "LABEL", "LINE", "CONNECTOR", "PROGRAM", "FACADE", "CONTEXT", "SITE"]
+}
