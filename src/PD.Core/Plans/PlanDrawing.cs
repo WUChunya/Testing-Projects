@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -47,7 +47,9 @@ public static class PlanDrawing
             var lvl = r.Plans[i].Level;
             var keys = Keys(ctx, r.Plans[i]);
             var rows = (int)Math.Ceiling(keys.Count / (double)Math.Max(1, ps.LegendColumns));
-            var legendW = Math.Min(keys.Count, ps.LegendColumns) * ctx.Pt(ps.LegendColumnPt);
+            var legendW = Math.Min(keys.Count, ps.LegendColumns) * Math.Max(ctx.Pt(ps.LegendColumnPt),
+                keys.Select(key => TextFit.Width(ctx.ProgramLabel(key), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max()
+                + ctx.Pt(ps.LegendSwatchPt) + ctx.Pt(14));
             var legendH = rows * ctx.Pt(ps.LegendRowPt);
             var bar = ScaleBar(ps, w, k);
             var tools = bar * k + ctx.Pt(ps.NorthArrowPt) * 2.5;
@@ -140,6 +142,12 @@ public static class PlanDrawing
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
         var outline = plan.Union;
         var centre = outline.IsEmpty ? null : outline.Centroid.Coordinate;
+        // Blocks whose name does not fit inside would each pull a leader outside the plan; keep one per program
+        // (the biggest), so the sheet does not fill up with the same name over and over.
+        var leaders = plan.Footprints.Where(f => !f.Resolved.IsEmpty && !Fits(ctx, map, f, sizeFt))
+            .GroupBy(f => f.OpenToBelow ? "#VOID" : f.Mass.ProgramKey)
+            .Select(g => g.OrderByDescending(f => f.Resolved.Area).First().Mass.Id)
+            .ToHashSet();
         foreach (var f in plan.Footprints.Where(x => !x.Resolved.IsEmpty))
         {
             var row = ctx.Names.GetValueOrDefault(f.Mass.Id);
@@ -160,7 +168,7 @@ public static class PlanDrawing
                     var cut = Safe(() => f.Resolved.Intersection(diag));
                     if (cut is { IsEmpty: false }) v.Items.Add(At(map.Geom($"{name}_X{j + 1}", cut, null, stroke, ps.VoidPt, false), a));
                 }
-                Label(d, ctx, a, map, name, f.Resolved, ps.OpenToBelowLabel, sizeFt, centre, outline);
+                Label(d, ctx, a, map, name, f.Resolved, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: leaders.Contains(f.Mass.Id));
                 continue;
             }
             var (fill, pStroke, pPt, pDash) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
@@ -168,8 +176,10 @@ public static class PlanDrawing
             block.Dash = pDash;
             d.Layer("PD_PROGRAM").Items.Add(block);
             var text = row?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
-            Label(d, ctx, a, map, name, f.Resolved, text, sizeFt, centre, outline, ctx.LabelStyle(d, fill));
+            Label(d, ctx, a, map, name, f.Resolved, text, sizeFt, centre, outline, ctx.LabelStyle(d, fill), leaders.Contains(f.Mass.Id));
         }
+
+        People(d, ctx, a, map, p, plan, background);
 
         if (!outline.IsEmpty)
         {
@@ -190,9 +200,43 @@ public static class PlanDrawing
         }
     }
 
+    /// <summary>PRD 4: people in the program footprints (density per program) and on our own plaza outside.</summary>
+    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, PD.Core.Cleanup.LevelPlan plan,
+        List<BackgroundItem> background)
+    {
+        if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
+        var e = ctx.Style.Entourage;
+        var layer = d.Layer(PD.Core.Entourage.EntouragePlacer.Layer);
+        var n = 0;
+        void Draw(IEnumerable<PD.Core.Entourage.Figure> people)
+        {
+            foreach (var f in people)
+                layer.Items.Add(At(PD.Core.Entourage.EntourageSymbols.Plan(d, e, $"{p}PERSON_{++n:000}", map.X(f.X), map.Y(f.Y), map.K, f.Variant), a));
+        }
+        foreach (var f in plan.Footprints.Where(x => !x.OpenToBelow && !x.Resolved.IsEmpty))
+            Draw(PD.Core.Entourage.EntouragePlacer.InProgram(ctx, f.Resolved, f.Mass.ProgramKey, $"{p}{f.Mass.Id}"));
+        // Ground floor only: our plaza outside the building (the background items are already clipped to the sheet).
+        if (Math.Abs(plan.Level.Elevation - ctx.Rules.Levels.GroundElevationFt) > ctx.Rules.Levels.MinFloorHeightFt / 2) return;
+        foreach (var (b, i) in background.Where(b => b.Role is Roles.NcHardscape or Roles.Hardscape && !b.IsLine).Select((b, i) => (b, i)))
+        {
+            var open = Safe(() => b.Geometry.Difference(plan.Union));
+            if (open is { IsEmpty: false }) Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, $"{p}PLAZA{i}"));
+        }
+    }
+
+    /// <summary>True when the block's own name fits inside it at either label size.</summary>
+    static bool Fits(ExportContext ctx, PageMap map, PD.Core.Cleanup.Footprint f, double sizeFt)
+    {
+        var text = f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel
+            : ctx.Names.GetValueOrDefault(f.Mass.Id)?.Label ?? ctx.ProgramLabel(f.Mass.ProgramKey);
+        if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
+        var small = ctx.Pt(ctx.Style.Plan.LabelSmallPt);
+        return PlanLabels.Fit(f.Resolved, text, sizeFt) != null || (small > 0 && PlanLabels.Fit(f.Resolved, text, small / map.K) != null);
+    }
+
     /// <summary>Inside the block when it fits (widest spot, long direction); otherwise a leader to a label outside the building.</summary>
     static void Label(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string name, NtsGeometry block, string text,
-        double sizeFt, Coordinate? centre, NtsGeometry outline, string inside = "PD Label")
+        double sizeFt, Coordinate? centre, NtsGeometry outline, string inside = "PD Label", bool allowLeader = true)
     {
         if (ctx.Style.Fonts.Label.AllCaps) text = text.ToUpperInvariant();
         var layer = d.Layer("PD_LABELS");
@@ -208,6 +252,7 @@ public static class PlanDrawing
             layer.Items.Add(At(t, a));
             return;
         }
+        if (!allowLeader) return;   // too small for its name: the legend and the one leader per program cover it
         var anchor = PlanLabels.Anchor(block);
         double dx = anchor.X - (centre?.X ?? anchor.X), dy = anchor.Y - (centre?.Y ?? anchor.Y - 1);
         var len = Math.Sqrt(dx * dx + dy * dy);
@@ -221,9 +266,19 @@ public static class PlanDrawing
         var dist = start + ctx.Pt(ctx.Style.Plan.LeaderLengthPt) / map.K;
         var end = new Coordinate(anchor.X + dx * dist, anchor.Y + dy * dist);
         var ps = ctx.Style.Plan;
-        layer.Items.Add(At(map.Line(name + "_LDR", new[] { (anchor.X, anchor.Y), (end.X, end.Y) }, d.Gray(ps.LeaderStroke), ps.LeaderPt), a));
+        // Keep the label (and its leader) on the sheet: the text runs away from the leader, so clamp both ends.
+        var ab = d.Artboards[a];
+        // Long names outside the plan are set at the small size, like the reference sheets.
+        var leaderSize = text.Length > 20 && small > 0 ? small : ctx.Pt(ctx.Style.Fonts.Label.SizePt);
+        var width = TextFit.Width(text, leaderSize) * 1.05;
         var right = dx >= 0;
-        layer.Items.Add(At(SectionDrawing.Text(name + "_LBL", map.X(end.X) + (right ? 2 : -2), map.Y(end.Y) + ctx.Pt(2.5), text, "PD Label", right ? "left" : "right"), a));
+        var px = Math.Clamp(map.X(end.X), right ? 4 : Math.Min(width + 4, ab.W - 4), right ? Math.Max(4, ab.W - width - 4) : ab.W - 4);
+        var py = Math.Clamp(map.Y(end.Y), 10, ab.H - 10);
+        layer.Items.Add(At(map.Line(name + "_LDR", new[] { (anchor.X, anchor.Y), (end.X, end.Y) }, d.Gray(ps.LeaderStroke), ps.LeaderPt), a));
+        layer.Items[^1].Paths![0][1] = new[] { px, py };
+        var lbl = SectionDrawing.Text(name + "_LBL", px + (right ? 2 : -2), py + ctx.Pt(2.5), text, "PD Label", right ? "left" : "right");
+        lbl.SizePt = leaderSize;
+        layer.Items.Add(At(lbl, a));
     }
 
     /// <summary>Level name in a tinted box, right-aligned at (right, bottom).</summary>
@@ -259,9 +314,12 @@ public static class PlanDrawing
         var s = ctx.Pt(ps.LegendSwatchPt);
         var cols = Math.Max(1, ps.LegendColumns);
         var layer = d.Layer("PD_LEGEND");
+        // Wide enough for the longest name, so entries never run into each other.
+        var colW = Math.Max(ctx.Pt(ps.LegendColumnPt),
+            keys.Select(k => TextFit.Width(ctx.ProgramLabel(k), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max() + s + ctx.Pt(14));
         foreach (var (key, n) in keys.Select((key, n) => (key, n)))
         {
-            double x = x0 + n % cols * ctx.Pt(ps.LegendColumnPt), y = y0 + n / cols * ctx.Pt(ps.LegendRowPt);
+            double x = x0 + n % cols * colW, y = y0 + n / cols * ctx.Pt(ps.LegendRowPt);
             var (fill, stroke, pt, dash) = ctx.ProgramPaint(d, key);
             layer.Items.Add(At(new DItem
             {

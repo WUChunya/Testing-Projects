@@ -4,6 +4,7 @@
 
 | 版本 | 用户反馈 / 起因 | 结果 |
 |---|---|---|
+| v0.6.0 | 用 `261012_Downtown_Massing.3dm` 实测：读不到楼层高度、空中花园在 program 里消失、第①页 NC 元素分得不够细；随后继续做 S5 | **S1–S4 修复**：`FLOOR PLATE` 等同 `SLAB`（楼层线恢复，13 层）；`PROGRAM::` 下的子图层一律算 program（Seminar Room → Assembly、Support → Building Support、Green Roof → 新增 `GREEN_ROOF` 空中花园色），新增角色 `NC.Roof` 与 `Entourage`，Make2D / 剖切面 / 网格 / OUTLINE 图层按路径忽略，CADMAPPER、人行道、LOT FILL 等关键词补齐，第①页加 NC/BG 分组列和筛选；薄板体块（≤2 ft，屋顶花园、露台）按顶面归层而不再被丢弃；体块底面可低于楼板顶面 6" 仍吸附；只有本项目的对象会被判为游离（周边建筑不再被排除）；平面同一 program 只引一次标签、标签不再跑出画板、图例按最长名排列。**S5**：`05_Program_Chart.ai`（PRD 5.5 虚线部门框、按面积等比矩形、shelf packing）、`06_Program_Pie.ai`（环形图 43%、12 点顺时针、图例 + TOTAL、堆叠条）、Excel 程序表模板与读取（ClosedXML）、`program_table.csv`；配景人物（泊松盘、按 program 密度、种子存项目、`ENTOURAGE` 图层，平面/剖面/立面/轴测）、剖面棒棒糖树、模型自带的人（`Entourage` 角色）直接使用 |
 | v0.5.0 | 风格统一到 SITE_STYLE / AXON_STYLE；图层角色细分为 NC（新建）与 BG（背景） | 全部文字 Arial（§0.1 字体表）；剖面按 §4 改写（1"=16'、色条 0.68×层高、白色楼板条、右对齐标签 + 层号、3 pt 地坪线、红色虚线用地线）；平面按 §2（底色、建筑投影、3 pt 外轮廓、白色房间线、19/13 pt 房间名、右下角标题框）；叠合轴测按 §1（楼层线、0.75 折边、2.5 外轮廓、白色周边建筑、棒棒糖树）；爆炸 A 按 AXON_STYLE（线条等级、顶面露出 70%、前角对齐标签、CORE #D9D9D9、黄方块层标沿轴测方向引线）；新增爆炸 B `04_Axon_Exploded_B.ai`（30/60 平面斜轴测、85% 半透明块、中庭、竖井、场地板）；图层角色新增 NC.Core / Stair / Structure / Green / Hardscape / Tree / Water，旧 BG.Facade / BG.Slab 自动改名 |
 | v0.4.1 | 平面只有 SVG 没有 AI；平面注释、叠合轴测线型/文字/周边建筑按 Atlanta 参考图；爆炸轴测每层都要看清，另要「楼板 + 虚线体量」版本，core 连接、通高拉长 | 画板按行排布并居中在画布内（多画板 .ai 不再超出画布），单个对象出错不再整份失败；平面标题改为黄方块 + `Level 1`、深色色块上白字、灰色引线；叠合式：细线层级（边 0.35、轮廓 1.0）、标签贴在顶面、周边建筑为白色矮体块、默认不画立面罩面；爆炸式：每层间距自动加大到互不遮挡，CORE 用半透明体块连接，通高空间拉长到上一层板底；新增 `04_Axon_Levels.ai`（每层一个画板：该层彩色楼板 + 整栋虚线体量）；楼层名右侧黄方块 + 灰引线 |
 | v0.4.0 | S4；色块缝里透出看线；插件要全英文；输出放模型旁、不自动打开 AI；剖切和立面分开 | 新增 Plan（每层画板 + 总排版、MIC 标签/引线、图例、比例尺、指北针、背景、玻璃线、通高虚线）和 Axon 叠合式 / 爆炸式；剖面色块下铺白底；界面全英文、面板 9 页（6 Sections / 7 Elevations 分开）；每次导出在模型文件夹新建 `YYYY MMDD_Conceptual Program Diagram_HHMMSS`，Illustrator 后台生成后退出 |
@@ -22,6 +23,6 @@
 - 插件可从用户文件夹安装运行；T1 图层预填、T3 楼层、T4 面积均通过；Linux 上的 Core 计算结果与 Rhino 导出的 areas.csv 完全一致。
 
 ## 仍待做
-- 剖面：街道名、楼名、key plan、楼梯纹样、Unassigned 斜线、配景人物和树。
-- 平面：Unassigned 斜线、街道/树；轴测：周边建筑、街道箭头、立面分格线、竖向连接体。
-- S5 Program 分类图、饼图、Excel、配景；S6 验收与用户手册。
+- 剖面：街道名、楼名、key plan、楼梯纹样、Unassigned 斜线。
+- 平面：Unassigned 斜线、街道名；轴测：街道箭头、立面分格线。
+- S6 验收与用户手册；配景改用公司 `entourage.ai` 符号；街道名/箭头、流线与视线图标、key plan。

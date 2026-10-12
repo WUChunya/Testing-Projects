@@ -27,7 +27,7 @@ public static class SectionDrawing
         // Bottom → top: what is farther away is painted first and hidden by what is nearer.
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
         Views.ProjectedView.AddLayers(d, g.View);
-        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" })
+        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "BG_TREE", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
@@ -110,8 +110,74 @@ public static class SectionDrawing
         // Ground: a 3 pt black line at grade (no fill); basement bars sit below it.
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, g.Ground), (plane.Length, g.Ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
+        Trees(d, ctx, map, p, plane, depth, g.Ground);
+        People(d, ctx, g, map, p, plane.Length);
+
         SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(40));
         return d;
+    }
+
+    /// <summary>
+    /// Lollipop trees in front of the section (SITE_STYLE §4 配景): trunk line on the ground, canopy ellipse,
+    /// near ones drawn last. Uses the same tree style as the axons.
+    /// </summary>
+    static void Trees(PD.Core.Drawing.Drawing d, ExportContext ctx, PageMap map, string p, Geometry.SectionPlane plane, double depth, double ground)
+    {
+        var tr = ctx.Style.Axon.Trees;
+        if (tr.CanopyWFt <= 0) return;
+        var layer = d.Layer("BG_TREE");
+        var n = 0;
+        var trees = ctx.Result.Local.Objects
+            .Where(o => o.Role is PD.Core.Classification.Roles.Tree or PD.Core.Classification.Roles.NcTree && !ctx.Result.Stray.Contains(o.Id))
+            .Select(o => (x: (o.BBox.MinX + o.BBox.MaxX) / 2, y: (o.BBox.MinY + o.BBox.MaxY) / 2))
+            .Select(c => (u: plane.U(c.x, c.y), w: plane.W(c.x, c.y)))
+            .Where(c => c.w > 0 && c.w <= depth && c.u > -tr.CanopyWFt && c.u < plane.Length + tr.CanopyWFt)
+            .OrderByDescending(c => c.w)
+            .ToList();
+        foreach (var (u, _) in trees)
+        {
+            var x = map.X(u);
+            var top = map.Y(ground + tr.TrunkHFt);
+            layer.Items.Add(new DItem
+            {
+                Kind = ItemKind.Path, Name = $"{p}TREE_{++n:000}_TRUNK", Stroke = d.Gray(tr.Trunk), StrokePt = tr.TrunkPt, Closed = false,
+                Paths = new() { new[] { new[] { x, map.Y(ground) }, new[] { x, top } } },
+            });
+            var cy = map.Y(ground + tr.TrunkHFt + tr.CanopyHFt / 2);
+            double rx = tr.CanopyWFt / 2 * map.K, ry = tr.CanopyHFt / 2 * map.K;
+            var canopy = tr.Canopies.Count > 0 ? tr.Canopies[n % tr.Canopies.Count] : "#C4ECBC";
+            layer.Items.Add(new DItem
+            {
+                Kind = ItemKind.Path, Name = $"{p}TREE_{n:000}", Fill = d.Swatch("TREE_" + canopy.TrimStart('#'), canopy), Opacity = tr.Opacity,
+                Paths = new() { Enumerable.Range(0, 24).Select(j => new[] { x + rx * Math.Cos(2 * Math.PI * j / 24), cy + ry * Math.Sin(2 * Math.PI * j / 24) }).ToArray() },
+            });
+        }
+    }
+
+    /// <summary>
+    /// PRD 4: people stand on the floor of each cut bar (never taller than the bar, so nobody pokes into the level
+    /// above) and on the ground outside the building.
+    /// </summary>
+    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, double length)
+    {
+        if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
+        var e = ctx.Style.Entourage;
+        var layer = d.Layer(PD.Core.Entourage.EntouragePlacer.Layer);
+        var n = 0;
+        foreach (var b in g.Bars)
+        {
+            var h = Math.Min(e.HeightFt, (b.Z1 - b.Z0) * 0.86);
+            if (h < 3) continue;
+            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, b.U0, b.U1, b.ProgramKey, p + b.MassId))
+                layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
+                    map.X(f.X), map.Y(b.Z0), h * map.K, f.Variant, f.Mirror));
+        }
+        // Outside: on the ground line, left and right of the building footprint.
+        double lo = g.Bars.Count == 0 ? length : g.Bars.Min(b => b.U0), hi = g.Bars.Count == 0 ? 0 : g.Bars.Max(b => b.U1);
+        foreach (var (u0, u1, tag) in new[] { (0.0, lo, "L"), (hi, length, "R") })
+            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, u0, u1, "", p + "GROUND" + tag, outdoors: true))
+                layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
+                    map.X(f.X), map.Y(g.Ground), e.HeightFt * map.K, f.Variant, f.Mirror));
     }
 
     /// <summary>Floor height of the level band just below z (the slab belongs to it); 15 ft when unknown.</summary>

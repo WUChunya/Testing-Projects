@@ -19,6 +19,24 @@ public static class Reports
         return sb.ToString();
     }
 
+    /// <summary>The program table behind the charts (PRD 5.5 columns plus the computed area), model or Excel.</summary>
+    public static string TableCsv(Charts.ProgramTable t, Func<string, string> programLabel)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("# " + t.Source);
+        sb.AppendLine(string.Join(",", Charts.ProgramTable.Columns.Select(Csv)) + ",Program,Area (" + t.Unit + ")");
+        foreach (var r in t.Rows)
+            sb.AppendLine(string.Join(",", new[]
+            {
+                Csv(r.Department), Csv(r.SubGroup), Csv(r.Code), Csv(r.RoomName), Csv(programLabel(r.ProgramKey)),
+                r.Qty.ToString("0.##", CultureInfo.InvariantCulture), r.AreaEach.ToString("0.##", CultureInfo.InvariantCulture),
+                r.Factor.ToString("0.##", CultureInfo.InvariantCulture), Csv(r.ProgramKey),
+                r.Area.ToString("0", CultureInfo.InvariantCulture),
+            }));
+        sb.AppendLine($"TOTAL,,,,,,,,,{t.Total.ToString("0", CultureInfo.InvariantCulture)}");
+        return sb.ToString();
+    }
+
     static string Csv(string s) => s.Contains(',') || s.Contains('"') ? "\"" + s.Replace("\"", "\"\"") + "\"" : s;
 
     /// <summary>B2 "section line misses every mass": true when the local-feet segment crosses any level footprint.</summary>

@@ -31,7 +31,7 @@ public static class ElevationDrawing
         var d = new PD.Core.Drawing.Drawing { FileName = $"07_Elevation_{name}.ai" };
         ctx.AddStandardStyles(d);
         ProjectedView.AddLayers(d, items);
-        foreach (var n in new[] { "PD_LEVELS", "PD_GROUND", "PD_LABELS", "PD_ANNOTATION" }) d.Layer(n);
+        foreach (var n in new[] { "PD_LEVELS", "PD_GROUND", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" }) d.Layer(n);
 
         var k = ctx.PtPerFt;
         var groundT = st.GroundPt;
@@ -89,6 +89,16 @@ public static class ElevationDrawing
         }
 
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, ground), (plane.Length, ground) }, d.Gray(st.GroundStroke), st.GroundPt));
+
+        // PRD 4: people on the ground line in front of the elevation.
+        if (PD.Core.Entourage.EntouragePlacer.Enabled(ctx))
+        {
+            var e = ctx.Style.Entourage;
+            var n = 0;
+            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, 0, plane.Length, "", p + "GROUND", outdoors: true))
+                d.Layer(PD.Core.Entourage.EntouragePlacer.Layer).Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(
+                    d, e, $"{p}PERSON_{++n:000}", map.X(f.X), map.Y(ground), e.HeightFt * map.K, f.Variant, f.Mirror));
+        }
 
         var ty = map.Y(ground) + groundT / 2 + ctx.Pt(40);
         d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "TITLE", x0, ty, $"{es.TitlePrefix} {el.Name}", "PD Title", "left"));

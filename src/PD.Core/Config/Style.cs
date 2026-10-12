@@ -19,6 +19,8 @@ public sealed class Style
     /// <summary>Paint per layer role and drawing family (plan / axon / view): BG.* context and NC.* new construction.</summary>
     public Dictionary<string, RolePaint> Roles { get; set; } = new();
     public AxonStyle Axon { get; set; } = new();
+    public ChartsStyle Charts { get; set; } = new();
+    public EntourageStyle Entourage { get; set; } = new();
 
     public static Style Default()
     {
@@ -112,6 +114,11 @@ public sealed class Fonts
     /// <summary>Section bar labels (Regular, ≤ 20 pt, #333333 85 %) and floor numbers (Regular, ≤ 16 pt, #1A1A1A).</summary>
     public Font SectionLabel { get; set; } = new();
     public Font FloorNumber { get; set; } = new();
+    /// <summary>Charts (PRD 5.5 / 5.6): department title (Bold caps 13), sub-group (11), total (Bold 22), legend (11).</summary>
+    public Font ChartTitle { get; set; } = new();
+    public Font ChartGroup { get; set; } = new();
+    public Font ChartTotal { get; set; } = new();
+    public Font ChartLegend { get; set; } = new();
 }
 
 public sealed class FacadeStyle
@@ -381,4 +388,92 @@ public sealed class ExplodedBAxonStyle
     public string SitePlaneStroke { get; set; } = "";
     public double SitePlaneStrokePt { get; set; }
     public double SitePlanOpacity { get; set; }
+}
+
+
+/// <summary>PRD 5.5 program chart and 5.6 pie; sizes are absolute points (charts are not drawn at building scale).</summary>
+public sealed class ChartsStyle
+{
+    public ProgramChartStyle ProgramChart { get; set; } = new();
+    public PieStyle Pie { get; set; } = new();
+}
+
+public sealed class ProgramChartStyle
+{
+    public double PageWidthPt { get; set; } = 1584;
+    public double MarginPt { get; set; } = 36;
+    public double BoxPadPt { get; set; } = 14;
+    public double BoxGapPt { get; set; } = 20;
+    /// <summary>Boxes are at least this wide, so short room lists still read as a block.</summary>
+    public double MinBoxWidthPt { get; set; } = 300;
+    public string BoxStroke { get; set; } = "#9A9A9A";
+    public double BoxPt { get; set; } = 0.75;
+    public double[]? BoxDash { get; set; }
+    public double TitleGapPt { get; set; } = 8;
+    public double GroupGapPt { get; set; } = 12;
+    public double RowGapPt { get; set; } = 14;
+    public double LabelGapPt { get; set; } = 4;
+    /// <summary>White gap between the rectangles of one room type.</summary>
+    public double RectGapPt { get; set; } = 1;
+    public double RectMinPt { get; set; } = 4;
+    public double RectMaxPt { get; set; } = 64;
+    /// <summary>Rectangle side = this × sqrt(area in SF), so the drawn area stays proportional.</summary>
+    public double AreaScalePtPerSqrtSf { get; set; } = 1.6;
+    public string RectStroke { get; set; } = "#FFFFFF";
+    public double RectStrokePt { get; set; }
+    public string TotalFormat { get; set; } = "{0:N0} {1}";
+    public string Title { get; set; } = "";
+}
+
+public sealed class PieStyle
+{
+    public double OuterPt { get; set; } = 300;
+    public double InnerRatio { get; set; } = 0.43;
+    /// <summary>90 = 12 o'clock.</summary>
+    public double StartDeg { get; set; } = 90;
+    public bool Clockwise { get; set; } = true;
+    public string SegmentStroke { get; set; } = "#FFFFFF";
+    public double SegmentStrokePt { get; set; } = 0.75;
+    public string CenterText { get; set; } = "PROGRAM SF";
+    public double LegendGapPt { get; set; } = 56;
+    public double LegendSwatchPt { get; set; } = 13;
+    public double LegendRowPt { get; set; } = 21;
+    public string TotalLabel { get; set; } = "TOTAL:";
+    public double MarginPt { get; set; } = 48;
+    public BarStyle Bar { get; set; } = new();
+}
+
+/// <summary>Optional stacked bar (PRD 5.6 "Program Development Summary").</summary>
+public sealed class BarStyle
+{
+    public bool Enabled { get; set; } = true;
+    public double WidthPt { get; set; } = 760;
+    public double HeightPt { get; set; } = 34;
+    public double GapPt { get; set; } = 1;
+    public string Title { get; set; } = "";
+}
+
+/// <summary>PRD 4 entourage: seeded Poisson-disk people, density per program.</summary>
+public sealed class EntourageStyle
+{
+    public bool Enabled { get; set; } = true;
+    public string Color { get; set; } = "#9A9A9A";
+    public double Opacity { get; set; } = 0.9;
+    public double HeightFt { get; set; } = 5.75;
+    public double MinSpacingFt { get; set; } = 11;
+    public int Seed { get; set; } = 20251012;
+    /// <summary>Upper bound per placement area, so a huge floor plate cannot flood the drawing.</summary>
+    public int MaxPerArea { get; set; } = 150;
+    /// <summary>People modelled by the user (role Entourage) replace the generated ones where they exist.</summary>
+    public bool UseModelled { get; set; } = true;
+    public double PlanRadiusFt { get; set; } = 1.15;
+    public double PlanShoulderFt { get; set; } = 1.9;
+    public double DensityPer1000Sf { get; set; } = 1.0;
+    public double OutdoorDensityPer1000Sf { get; set; } = 0.3;
+    public double OutdoorMinSpacingFt { get; set; } = 26;
+    public Dictionary<string, double> DensityByProgram { get; set; } = new();
+
+    /// <summary>People per 1,000 SF for a program (PRD 4: Lobby high, Lab/Office medium, Core / Shell / Mechanical 0).</summary>
+    public double Density(string programKey) =>
+        DensityByProgram.TryGetValue(programKey, out var v) ? v : DensityPer1000Sf;
 }

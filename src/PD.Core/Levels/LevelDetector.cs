@@ -11,8 +11,6 @@ namespace PD.Core.Levels;
 /// </summary>
 public static class LevelDetector
 {
-    const double BelowSlack = 0.25; // a bottom may sit this far below a slab top and still snap to it
-
     public static List<LevelCandidate> SlabCandidates(IEnumerable<SourceObject> slabs, LevelRules r) => slabs
         .Where(o => o.Points == null && o.BBox.SizeZ < r.SlabMaxThicknessFt)
         .Select(o => (o, area: (o.BBox.MaxX - o.BBox.MinX) * (o.BBox.MaxY - o.BBox.MinY)))
@@ -33,6 +31,7 @@ public static class LevelDetector
     public static LevelResult Detect(List<LevelCandidate> slabs, List<LevelCandidate> others, LevelRules r)
     {
         var tol = r.ClusterToleranceFt;
+        var belowSlack = r.SlabSnapBelowFt;
         var levels = Cluster(slabs, c => c.Elevation, tol).Select(g =>
         {
             var l = new Level { Sources = LevelSource.Slab };
@@ -47,7 +46,7 @@ public static class LevelDetector
         foreach (var c in others.OrderBy(c => c.Elevation))
         {
             var best = levels.SelectMany(l => l.Members.Where(m => m.Kind == CandidateKind.Slab).Select(m => (l, m)))
-                .Where(x => x.m.Elevation <= c.Elevation + BelowSlack && c.Elevation - x.m.Elevation <= tol)
+                .Where(x => x.m.Elevation <= c.Elevation + belowSlack && c.Elevation - x.m.Elevation <= tol)
                 .OrderByDescending(x => x.m.Elevation)
                 .FirstOrDefault();
             if (best.l == null) { rest.Add(c); continue; }
@@ -60,7 +59,7 @@ public static class LevelDetector
         var leftovers = new List<LevelCandidate>();
         foreach (var c in rest)
         {
-            var hop = snapped.Where(s => Math.Abs(s.c.Elevation - c.Elevation) <= tol && c.Elevation >= SlabTop(s.l) - BelowSlack)
+            var hop = snapped.Where(s => Math.Abs(s.c.Elevation - c.Elevation) <= tol && c.Elevation >= SlabTop(s.l) - belowSlack)
                 .OrderBy(s => Math.Abs(s.c.Elevation - c.Elevation)).FirstOrDefault();
             if (hop.l != null) Attach(hop.l, c); else leftovers.Add(c);
         }

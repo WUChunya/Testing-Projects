@@ -512,7 +512,29 @@ public static class AxonDrawing
             sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}", ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
                 tr.StrokePt, Opacity: tr.Opacity)));
         }
+        People(d, ctx, sheet, proj, siteGeom, ours, z);
         return context;
+    }
+
+    /// <summary>PRD 4: people standing on the site plane around our building (never on top of it).</summary>
+    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, Sheet sheet, AxonProjection proj, NtsGeometry site, NtsGeometry ours, double z)
+    {
+        if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
+        var e = ctx.Style.Entourage;
+        var open = AxonFaces.Safe(() => site.Difference(ours), site);
+        var n = 0;
+        foreach (var f in PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, sheet.Prefix + "SITE")
+                     .OrderBy(f => proj.Depth(f.X, f.Y, z)))
+        {
+            var (px, py) = proj.Project(f.X, f.Y, z);
+            var (hx, hy) = proj.Project(f.X, f.Y, z + e.HeightFt);
+            var pts = PD.Core.Entourage.EntourageSymbols.Projected(px, py, (hx - px, hy - py), f.Variant, f.Mirror);
+            if (pts.Length == 0) continue;
+            var ring = MeshSlicer.Factory.CreatePolygon(pts.Select(q => new Coordinate(q[0], q[1]))
+                .Append(new Coordinate(pts[0][0], pts[0][1])).ToArray());
+            sheet.Paint.Add((PD.Core.Entourage.EntouragePlacer.Layer,
+                new Spec($"PERSON_{++n:000}", ring, d.Swatch("ENTOURAGE", e.Color), null, 0, Opacity: e.Opacity)));
+        }
     }
 
     static bool IsTree(BackgroundItem b) => b.Role is Roles.Tree or Roles.NcTree;
@@ -558,7 +580,7 @@ public static class AxonDrawing
         // Layer order (AXON_STYLE §9, bottom → top): site, context, hidden below, program / plates, lines, trees, facade, hidden above, labels, annotation.
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
         string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LINE" };
-        string[] last = { "AXON_TREE", "FACADE", "AXON_GHOST_ABOVE" };
+        string[] last = { "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE" };
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);
         foreach (var n in last.Where(used.Contains)) d.Layer(n);

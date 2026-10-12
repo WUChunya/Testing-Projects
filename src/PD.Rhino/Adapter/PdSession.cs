@@ -17,6 +17,7 @@ public sealed class PdSession
     public RhinoDoc? Doc => RhinoDoc.FromRuntimeSerialNumber(DocSerial);
     public PdSettings Settings { get; private set; }
     public Rules Rules { get; } = Rules.Default();
+    public Style Style { get; } = Style.Default();
     readonly List<ProgramDef> _legend = LayerClassifier.LoadPrograms();
     LayerClassifier? _classifier;
 

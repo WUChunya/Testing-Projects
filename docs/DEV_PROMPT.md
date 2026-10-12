@@ -14,26 +14,23 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: start of S5, after v0.5.0)
+## Next-session message (current: start of S6, after v0.6.0)
 
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.8; S0–S4 are done (plugin v0.5.0, 89 tests green).
-Style source of truth: docs/SITE_STYLE.md (§0.1 fonts, §1 site axon, §2 plan, §3 exploded B, §4 section) and docs/AXON_STYLE.md,
-already merged into styles/style_default.json (fonts, section, plan, axon.stacked/exploded/explodedB, roles, view);
-styles/site_style.json and styles/axon_style.json only feed the reference sheets (tools/*_reference.py) — read them by key, not whole.
-Do stage S5 (Charts + Entourage) from docs/DEV_PROMPT.md, reusing what exists — do not rebuild it:
-- Drawing model + ExportContext (true scale, ctx.Pt() text scaling at 1" = 45'; sections via ctx.ForSection() at 1" = 16'),
-  ParaStyle (opacity/tracking/leading), DItem (Matrix, SizePt, GlyphAnchor), SvgWriter/JsxWriter/Exporter, runtime.jsx.
-- PlanBackground + style "roles" (plan/axon/view paints per NC.*/BG.* role), ProgramBlocks, PlanLabels, AxonFaces, AxonProjection.
-- Entourage follows SITE_STYLE: lollipop trees (axon.trees, section §4 trees), people #9A9A9A; trees already drawn for NC/BG.Tree.
-- Charts use the unified Arial typography (fonts.*) and the colour scheme order (tab 5).
-- UI is English; tabs 1–9 (6 Sections, 7 Elevations, 8 Output, 9 Check); output = model folder/"YYYY MMDD_Conceptual Program Diagram_HHMMSS".
-- Lessons: true scale only (never fit-to-page); generated layers keep stable item names; our building (NC) vs context (BG) drawn differently.
-Defaults: PRD §9 (listed in PROGRESS.md); ask me only if blocked. Talk to me in Chinese; code/commits in English.
-At the end: run tests, one screenshot per new golden SVG, update PROGRESS.md (≤40 lines) and CHANGELOG.md,
-bump the version, run tools/package.sh, commit, push, send me the zip, reply in Chinese in ≤10 lines.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.8; S0-S5 are done (plugin v0.6.0, 128 tests green).
+Style source of truth: docs/SITE_STYLE.md and docs/AXON_STYLE.md, already merged into styles/style_default.json
+(fonts, section, plan, axon, roles, view, charts, entourage); read styles by key, never whole.
+Do stage S6 (Acceptance + docs) from docs/DEV_PROMPT.md, reusing what exists - do not rebuild it:
+- Run the Linux part of T1-T7 (PRD 7.3) against tests/fixtures/template.json AND tests/fixtures/downtown.json.
+- Write docs/USER_GUIDE.md (Chinese, short) and docs/MODELING_CONVENTION.md (one page, what a model must look like:
+  PROGRAM:: layers, FLOOR PLATE / slab, CORE / STAIR, GLASS, context on CADMAPPER / CONTEXT, people on an Entourage layer,
+  Make2D output anywhere - it is ignored by path).
+- Finalize the Windows checklist in PROGRESS.md from the user's feedback on v0.6.0.
+Defaults: PRD S9 (listed in PROGRESS.md); ask me only if blocked. Talk to me in Chinese; code/commits in English.
+At the end: run tests, update PROGRESS.md (<=40 lines) and CHANGELOG.md, bump the version, run tools/package.sh,
+commit, push, send me the zip, reply in Chinese in <=10 lines.
 [Paste Windows test results / screenshots here]
 ```
 
@@ -70,7 +67,7 @@ bump the version, run tools/package.sh, commit, push, send me the zip, reply in 
 | **S2 Rhino plugin shell** ✅ | §1, A1–A3, §3 | `.rhp` project; `ProgramDiagram` command; Eto dockable panel with tabs ①–⑧ (functional, plain UI); layer role auto-fill (T1); facade detection; 3D cleanup (T2); level-plane conduit; settings persistence; Yak manifest | Builds on Linux; Windows checklist written for: install, open the test model, walk all tabs |
 | **S3 Output engine + Section** ✅ (+ Elevation, v0.3.x) | §5.0, §5.1, §5.3, F8 notes | `runtime.jsx` (layers, global swatches, para styles, named items, in-place update, `_MANUAL` protection); `SvgWriter`; COM launcher; Section generator (cut bars, slab poche, beyond dashed, ground, property line, height dims, facade) | A golden SVG of Section A from the fixture looks right (one Playwright screenshot, viewed once); JSX passes a syntax check (`node --check` after stripping `#target`) |
 | **S4 Plan + Axon** ✅ | §5.2, §5.4, A3 | Plan per level plus overview sheet, labels (NTS MaximumInscribedCircle), legend, scale bar; stacked and exploded axon (affine projection, painter's sort, facade veil, level leaders) | Golden SVGs for L1, Axon Stacked, Axon Exploded |
-| **S5 Charts + Entourage** | §5.5, §5.6, §4 | Excel template and reader (ClosedXML); program diagram with shelf packing; donut pie; CSV; entourage (seeded Poisson disk, density by program, `ENTOURAGE` layer, symbols from `entourage.ai` with built-in placeholders) | Golden SVGs; same seed gives the same layout |
+| **S5 Charts + Entourage** ✅ | §5.5, §5.6, §4 | Excel template and reader (ClosedXML); program diagram with shelf packing; donut pie; CSV; entourage (seeded Poisson disk, density by program, `ENTOURAGE` layer, symbols from `entourage.ai` with built-in placeholders) | Golden SVGs; same seed gives the same layout |
 | **S6 Acceptance + docs** | §7.3, §8 | Run T1–T7 (Linux part); write `docs/USER_GUIDE.md` (Chinese, short) and `docs/MODELING_CONVENTION.md` (one page); finalize the Windows checklist | All Linux-checkable criteria pass; the user signs off the Windows checks |
 
 ## Token-saving rules (in addition to CLAUDE.md)

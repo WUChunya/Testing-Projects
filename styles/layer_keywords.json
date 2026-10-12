@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "comment": "Case-insensitive match on the layer's own name (last path segment); sub-layers never inherit the parent's role. Rules marked first run before program-name matching; the rest after it. First match wins. Roles: Program and NC.* = our new construction; BG.* = existing context. A site role (Tree/Water/Landscape/Hardscape) on a layer whose path contains an NC / NEW / PROJECT / PROPOSED segment becomes the NC.* variant.",
+  "version": 3,
+  "comment": "Case-insensitive match on the layer's own name (last path segment); sub-layers never inherit the parent's role. Rules marked first run before program-name matching; the rest after it. First match wins. Roles: Program and NC.* = our new construction; BG.* = existing context. A site role (Tree/Water/Landscape/Hardscape) on a layer whose path contains an NC / NEW / PROJECT / PROPOSED segment becomes the NC.* variant. ignorePathPattern drops Make2D / clipping-plane output layers before anything else. programPathPattern: a layer under a PROGRAM:: parent is a program layer even when its name matches nothing (Unassigned), except for the roles in programPathKeepRoles.",
   "roles": [
     "Program",
     "NC.Core",
@@ -8,6 +8,7 @@
     "NC.Slab",
     "NC.Facade",
     "NC.Structure",
+    "NC.Roof",
     "NC.Green",
     "NC.Hardscape",
     "NC.Tree",
@@ -20,9 +21,15 @@
     "BG.Water",
     "BG.Base",
     "BG.Line",
+    "Entourage",
     "Ignore"
   ],
   "rules": [
+    {
+      "pattern": "(^|[ _-])OUTLINES?$|^2D[ _-]|LINEWORK|^GUIDES?$",
+      "role": "Ignore",
+      "first": true
+    },
     {
       "pattern": "^CORES?$|^CORE[-_ ]|[-_ ]CORE$",
       "role": "NC.Core",
@@ -39,28 +46,38 @@
       "first": true
     },
     {
-      "pattern": "GREEN ?ROOF|GREEN ?SPACE|TERRACE|PLANTER|ROOF ?GARDEN",
+      "pattern": "SLAB|FLOOR ?PLATE|FLOORPLATE|FLOOR ?DECK|^DECKS?$|^FLOOR ?SLABS?$",
+      "role": "NC.Slab",
+      "first": true
+    },
+    {
+      "pattern": "GREEN ?ROOF|GREEN ?SPACE|TERRACE|PLANTER|ROOF ?GARDEN|SKY ?GARDEN",
       "role": "NC.Green",
       "first": true
     },
     {
-      "pattern": "^(GLASS.*|CW|CW[-_ ].*|MULLION.*|CURTAIN ?WALL.*|FACADE.*|FIN|FINS|PANEL.*)$",
+      "pattern": "PEOPLE|^PERSON|FIGURE|ENTOURAGE|^CARS?$|VEHICLE|SCALE ?FIGURE",
+      "role": "Entourage",
+      "first": true
+    },
+    {
+      "pattern": "^(GLASS.*|CW|CW[-_ ].*|MULLION.*|CURTAIN ?WALL.*|FACADE.*|FIN|FINS|PANEL.*|GLAZING)$",
       "role": "NC.Facade"
     },
     {
-      "pattern": "SLAB",
-      "role": "NC.Slab"
+      "pattern": "^ROOFS?$|PARAPET|CANOPY|CORNICE|^ROOF[-_ ]",
+      "role": "NC.Roof"
     },
     {
       "pattern": "TREE",
       "role": "BG.Tree"
     },
     {
-      "pattern": "ROAD|STREET",
+      "pattern": "ROAD|STREET|^CURB",
       "role": "BG.Road"
     },
     {
-      "pattern": "WATER|POND|POOL",
+      "pattern": "WATER|POND|POOL|RIVER",
       "role": "BG.Water"
     },
     {
@@ -68,29 +85,39 @@
       "role": "BG.Landscape"
     },
     {
-      "pattern": "SITE|PLAZA|SIDEWALK|HARDSCAPE|PAVING",
+      "pattern": "SITE|PLAZA|SIDEWALK|HARDSCAPE|PAVING|PAVEMENT|WALKWAY|PEDESTRIAN|COURTYARD",
       "role": "BG.Hardscape"
     },
     {
-      "pattern": "CONTEXT",
+      "pattern": "CONTEXT|CADMAPPER|MASSING|NEIGHBO|EXISTING ?BUILDING|^BUILDINGS?$|BUILDINGS$",
       "role": "BG.Building"
     },
     {
-      "pattern": "FRAME|BASE",
+      "pattern": "FRAME|BASE|LOT ?FILL|^LOT$|GROUND ?PLANE",
       "role": "BG.Base"
     },
     {
-      "pattern": "PROPERTY|GRID|BOUNDARY",
+      "pattern": "PROPERTY|BOUNDARY|SETBACK|LOT ?LINE|^ZONING",
       "role": "BG.Line"
     },
     {
-      "pattern": "^DEFAULT$|RENDER|MATERIAL",
+      "pattern": "^DEFAULT$|RENDER|MATERIAL|^TEXT$|ANNOTATION|^DIM|^NOTES?$|CLIPPING ?PLANE|VIEWPORT|GRID|^OUTLINE$|GUIDE",
       "role": "Ignore"
     }
   ],
   "programFallback": "Program layer names are matched against program_legend.json aliases; a match gives role Program.",
   "unmatchedRole": "Ignore",
   "ncPathPattern": "(^|::)(NC|NEW|PROJECT|PROPOSED)([-_ ].*)?(::|$)",
+  "ignorePathPattern": "(^|::)(MAKE ?2D|VISIBLE|HIDDEN)(::|$)|CLIPPING ?PLANE ?INTERSECTION|(^|::)VIEWPORT ?RECTANGLE(::|$)",
+  "ignorePathComment": "Rhino Make2D writes 'Visible::Curves::<source layer>' and clipping planes write 'ClippingPlaneIntersections::<source layer>'; those 2D copies would otherwise be classified as the layers they came from.",
+  "programPathPattern": "(^|::)(PROGRAM|PROGRAMS|PRG)([-_ ].*)?::",
+  "programPathKeepRoles": [
+    "NC.Core",
+    "NC.Stair",
+    "NC.Facade",
+    "NC.Structure",
+    "NC.Slab"
+  ],
   "legacyRoles": {
     "BG.Facade": "NC.Facade",
     "BG.Slab": "NC.Slab"

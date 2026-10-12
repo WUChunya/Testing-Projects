@@ -17,6 +17,7 @@ public static class Roles
     public const string Slab = "NC.Slab";
     public const string Facade = "NC.Facade";
     public const string Structure = "NC.Structure";
+    public const string Roof = "NC.Roof";
     public const string Green = "NC.Green";
     public const string NcHardscape = "NC.Hardscape";
     public const string NcTree = "NC.Tree";
@@ -29,12 +30,14 @@ public static class Roles
     public const string Water = "BG.Water";
     public const string Base = "BG.Base";
     public const string Line = "BG.Line";
+    /// <summary>People, cars and other scale figures modelled by the user; drawn as entourage instead of generated (PRD §4).</summary>
+    public const string Entourage = "Entourage";
     public const string Ignore = "Ignore";
 
     public static readonly string[] All =
     {
-        Program, Core, Stair, Slab, Facade, Structure, Green, NcHardscape, NcTree, NcWater,
-        Building, Road, Hardscape, Landscape, Tree, Water, Base, Line, Ignore,
+        Program, Core, Stair, Slab, Facade, Structure, Roof, Green, NcHardscape, NcTree, NcWater,
+        Building, Road, Hardscape, Landscape, Tree, Water, Base, Line, Entourage, Ignore,
     };
 
     /// <summary>Roles whose objects are program masses, and the program they get when the layer names none.</summary>
@@ -52,6 +55,11 @@ public static class Roles
     public static bool IsSite(string role) => role is Green or NcHardscape or NcTree or NcWater or Road or Hardscape or Landscape or Tree or Water;
 
     public static bool IsNew(string role) => role == Program || role.StartsWith("NC.", StringComparison.Ordinal);
+
+    /// <summary>Roles shown in the NC group on tab 1 (ours), in panel order; the rest are BG plus Entourage / Ignore.</summary>
+    public static readonly string[] NewGroup = { Program, Core, Stair, Slab, Facade, Structure, Roof, Green, NcHardscape, NcTree, NcWater };
+
+    public static readonly string[] ContextGroup = { Building, Road, Hardscape, Landscape, Tree, Water, Base, Line };
 
     /// <summary>Roles saved by older versions (BG.Facade / BG.Slab are our own building).</summary>
     public static string Normalize(string role) => role switch
@@ -83,6 +91,9 @@ public sealed class LayerClassifier
 {
     readonly List<(Regex re, string role, bool first)> _rules;
     readonly Regex? _ncPath;
+    readonly Regex? _ignorePath;
+    readonly Regex? _programPath;
+    readonly HashSet<string> _programPathKeep;
     readonly string _unmatched;
     public IReadOnlyList<ProgramDef> Programs { get; }
 
@@ -92,11 +103,18 @@ public sealed class LayerClassifier
             .Select(r => (new Regex(r.GetProperty("pattern").GetString()!, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant),
                 Roles.Normalize(r.GetProperty("role").GetString()!), r.TryGetProperty("first", out var f) && f.GetBoolean()))
             .ToList();
-        _ncPath = keywords.RootElement.TryGetProperty("ncPathPattern", out var nc)
-            ? new Regex(nc.GetString()!, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) : null;
+        _ncPath = Pattern(keywords, "ncPathPattern");
+        _ignorePath = Pattern(keywords, "ignorePathPattern");
+        _programPath = Pattern(keywords, "programPathPattern");
+        _programPathKeep = keywords.RootElement.TryGetProperty("programPathKeepRoles", out var keep)
+            ? keep.EnumerateArray().Select(x => Roles.Normalize(x.GetString()!)).ToHashSet(StringComparer.Ordinal)
+            : new HashSet<string>(StringComparer.Ordinal);
         _unmatched = keywords.RootElement.GetProperty("unmatchedRole").GetString()!;
         Programs = programs;
     }
+
+    static Regex? Pattern(JsonDocument doc, string name) => doc.RootElement.TryGetProperty(name, out var p)
+        ? new Regex(p.GetString()!, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) : null;
 
     public static LayerClassifier Default() => WithPrograms(LoadPrograms());
 
@@ -133,16 +151,31 @@ public sealed class LayerClassifier
     public LayerGuess Guess(LayerInfo layer)
     {
         var name = layer.Name.Trim();
+        // Make2D / clipping-plane output: a flat copy of another layer, never geometry of its own.
+        if (IsOutputPath(layer.Path)) return new LayerGuess(layer.Path, Roles.Ignore, "");
         // Strip a PRG:: style prefix: "PRG::Lab" has its own name "Lab" already; accept "PRG-Lab" too.
         var bare = Regex.Replace(name, "^PRG[-_ ]", "", RegexOptions.IgnoreCase);
+        var onProgramPath = IsProgramPath(layer.Path);
         foreach (var (re, role, _) in _rules.Where(r => r.first))
-            if (re.IsMatch(name)) return new LayerGuess(layer.Path, role, "");
+            if (re.IsMatch(name) && Keeps(role, onProgramPath)) return new LayerGuess(layer.Path, role, "");
         var program = MatchProgram(bare);
         if (program != null) return new LayerGuess(layer.Path, Roles.Program, program.Key);
         foreach (var (re, role, _) in _rules.Where(r => !r.first))
-            if (re.IsMatch(name)) return new LayerGuess(layer.Path, IsNewPath(layer.Path) ? Roles.ToNew(role) : role, "");
+            if (re.IsMatch(name) && Keeps(role, onProgramPath))
+                return new LayerGuess(layer.Path, IsNewPath(layer.Path) ? Roles.ToNew(role) : role, "");
+        // Under a PROGRAM:: parent an unknown name is still a program, drawn as Unassigned until tab 5 names it.
+        if (onProgramPath) return new LayerGuess(layer.Path, Roles.Program, ProgramCatalog.Unassigned, IsFallback: true);
         return new LayerGuess(layer.Path, _unmatched, "", IsFallback: true);
     }
+
+    /// <summary>A keyword role wins over the PROGRAM:: parent only for the building parts listed in the keyword file.</summary>
+    bool Keeps(string role, bool onProgramPath) => !onProgramPath || _programPathKeep.Contains(role);
+
+    /// <summary>Layer written by Make2D or a clipping plane: 2D line work copied from another layer.</summary>
+    public bool IsOutputPath(string path) => _ignorePath?.IsMatch(path) == true;
+
+    /// <summary>Layer sitting under a PROGRAM:: / PRG:: parent (PRD A2): its own name is the program category.</summary>
+    public bool IsProgramPath(string path) => _programPath?.IsMatch(path) == true;
 
     /// <summary>Layer path with an NC / NEW / PROJECT / PROPOSED segment: our new construction.</summary>
     public bool IsNewPath(string path) => _ncPath?.IsMatch(path) == true;

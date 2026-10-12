@@ -6,7 +6,9 @@
       "label": "Office",
       "fill": "#7CBECD",
       "aliases": [
-        "OFFICE"
+        "OFFICE",
+        "ENCLOSED OFFICE",
+        "PRIVATE OFFICE"
       ]
     },
     {
@@ -41,7 +43,8 @@
       "fill": "#FDF5D1",
       "aliases": [
         "CIRCULATION",
-        "CORRIDOR"
+        "CORRIDOR",
+        "LOBBY CIRC"
       ]
     },
     {
@@ -53,7 +56,9 @@
         "MECHANICAL",
         "MEP",
         "STORAGE",
-        "UTILITY"
+        "UTILITY",
+        "SUPPORT",
+        "SERVICE"
       ]
     },
     {
@@ -95,7 +100,9 @@
       "fill": "#EFB7D7",
       "aliases": [
         "LOBBY",
-        "BREAK"
+        "BREAK",
+        "BREAK ROOM",
+        "RECEPTION"
       ]
     },
     {
@@ -115,7 +122,10 @@
       "aliases": [
         "ASSEMBLY",
         "AUDITORIUM",
-        "BOARDROOM"
+        "BOARDROOM",
+        "SEMINAR",
+        "SEMINAR ROOM",
+        "LECTURE"
       ],
       "note": "color to be confirmed (PRD 5.1)"
     },
@@ -134,6 +144,21 @@
       "aliases": [
         "CLINIC SUPPORT"
       ]
+    },
+    {
+      "key": "GREEN_ROOF",
+      "label": "Green Roof / Sky Garden",
+      "fill": "#DCE9AE",
+      "aliases": [
+        "GREEN ROOF",
+        "ROOF GARDEN",
+        "SKY GARDEN",
+        "TERRACE",
+        "GARDEN",
+        "GREEN TERRACE"
+      ],
+      "stroke": "#A8BE7A",
+      "strokePt": 0.5
     },
     {
       "key": "CORE",
@@ -161,7 +186,9 @@
       "strokePt": 0.75,
       "aliases": [
         "SHELL",
-        "PENTHOUSE"
+        "PENTHOUSE",
+        "SHELL SPACE",
+        "FUTURE"
       ]
     },
     {

@@ -56,11 +56,25 @@ def mesh_of(geom, step):
             append_mesh(geom.Faces[i].GetMesh(r.MeshType.Render), step, verts, faces)
     elif kind == "Extrusion":
         append_mesh(geom.GetMesh(r.MeshType.Render), step, verts, faces)
+        if not faces:  # no cached render mesh: fall back to the extrusion's Brep faces
+            brep = geom.ToBrep(False)
+            if brep is not None:
+                for i in range(len(brep.Faces)):
+                    append_mesh(brep.Faces[i].GetMesh(r.MeshType.Render), step, verts, faces)
     elif kind == "Mesh":
         append_mesh(geom, step, verts, faces)
     if not faces:
         return None
     return {"v": verts, "f": faces}
+
+
+def box_mesh(bb):
+    x0, y0, z0, x1, y1, z1 = bb
+    v = []
+    for z in (z0, z1):
+        v.extend((x0, y0, z, x1, y0, z, x1, y1, z, x0, y1, z))
+    f = [[0, 3, 2, 1], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]]
+    return {"v": v, "f": f}
 
 
 def curve_points(geom, step):
@@ -110,8 +124,15 @@ def export(path_in):
             rec["points"] = curve_points(g, step)
         else:
             rec["mesh"] = mesh_of(g, step)
+            # Solids whose render mesh rhino3dm cannot build (some extrusions): stand in with the bounding box,
+            # so the fixture still carries a volume. Rhino itself meshes these properly.
+            if rec["mesh"] is None and closed:
+                rec["mesh"] = box_mesh(bb)
+                rec["meshFromBBox"] = True
         objects.append(rec)
-    return {"source": path_in.replace("\\", "/").split("/")[-1], "units": units,
+    # Coordinates are integer millimetres whatever the model unit is, so the fixture always declares millimetres;
+    # "sourceUnits" keeps the model's own unit for reference.
+    return {"source": path_in.replace("\\", "/").split("/")[-1], "units": "Millimeters", "sourceUnits": units,
             "coordStepMm": 1, "layers": layers, "objects": objects}
 
 
@@ -119,16 +140,56 @@ def dump(data):
     return json.dumps(data, separators=(",", ":"))
 
 
+# Layers whose geometry must survive the shrink step: our new construction and the levels.
+KEEP = ("PROGRAM", "PRG", "SLAB", "FLOOR PLATE", "CORE", "COLUMN", "GLASS", "FACADE", "SEC", "ELEV")
+# Make2D / clipping-plane output (see styles/layer_keywords.json ignorePathPattern): dropped first, it is 2D line work.
+DROP_FIRST = ("::VISIBLE::", "::HIDDEN::", "::MAKE2D::", "CLIPPINGPLANEINTERSECTION", "VIEWPORTRECTANGLE")
+
+
+def layer_bytes(data):
+    """Bytes per layer, heaviest first, skipping the layers we must keep."""
+    sizes = {}
+    for rec in data["objects"]:
+        sizes[rec["layer"]] = sizes.get(rec["layer"], 0) + len(dump(rec))
+    return sorted(sizes.items(), key=lambda kv: -kv[1])
+
+
+def strip(data, layer):
+    for rec in data["objects"]:
+        if rec["layer"] == layer:
+            rec["mesh"] = None
+            rec.pop("points", None)
+
+
+def shrink(data, text):
+    """Drop geometry (bboxes stay) until the fixture fits: 2D output layers first, then the heaviest background layers."""
+    dropped = []
+    for layer, _ in layer_bytes(data):
+        up = ("::" + layer.upper() + "::").replace(" ", "")
+        if not any(d in up for d in DROP_FIRST):
+            continue
+        strip(data, layer)
+        dropped.append(layer)
+    text = dump(data)
+    for layer, _ in layer_bytes(data):
+        if len(text) <= MAX_BYTES:
+            break
+        if any(k in layer.upper() for k in KEEP):
+            continue
+        strip(data, layer)
+        dropped.append(layer)
+        text = dump(data)
+    if dropped:
+        data["droppedMeshes"] = dropped
+    return dump(data)
+
+
 def main():
     src, dst = sys.argv[1], sys.argv[2]
     data = export(src)
     text = dump(data)
     if len(text) > MAX_BYTES:
-        for rec in data["objects"]:
-            if rec["layer"].upper().startswith("CONTEXT"):
-                rec["mesh"] = None
-        data["droppedMeshes"] = "CONTEXT*"
-        text = dump(data)
+        text = shrink(data, text)
     with open(dst, "w", encoding="utf-8") as fh:
         fh.write(text)
     print(f"{dst}: {len(data['objects'])} objects, {len(text) / 1e6:.2f} MB")

@@ -24,6 +24,9 @@ public sealed class Rules
 public sealed class LevelRules
 {
     public double ClusterToleranceFt { get; set; }
+    /// <summary>A mass or facade bottom may sit this far BELOW a slab top and still snap to it (masses are often
+    /// drawn from the slab soffit, PRD B1 step 2).</summary>
+    public double SlabSnapBelowFt { get; set; } = 0.5;
     public double MinFloorHeightFt { get; set; }
     public double GroundElevationFt { get; set; }
     public double SlabMaxThicknessFt { get; set; }
@@ -44,6 +47,9 @@ public sealed class CleanupRules
     public double GapCloseToleranceFt { get; set; }
     public double PlanCutHeightFt { get; set; }
     public double MinLevelOverlapFt { get; set; }
+    /// <summary>A mass no thicker than this is a slab-like element (roof garden, terrace, paving): it belongs to the
+    /// level under its own top face instead of needing a full story of overlap.</summary>
+    public double FlatMassMaxThicknessFt { get; set; } = 2.0;
     public string Overlap { get; set; } = "smallerVolumeWins";
     public int SpanKeepTallMaxLevels { get; set; }
     public double SpanKeepTallMaxStoryFactor { get; set; }

@@ -49,6 +49,12 @@ public sealed class ExportContext
         TextScaleOverride = 1,
     };
 
+    /// <summary>Context for the charts (PRD 5.5 / 5.6): absolute point sizes, no drawing scale.</summary>
+    public ExportContext ForChart() => new()
+    {
+        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules, TextScaleOverride = 1,
+    };
+
     /// <summary>A size given at the reference scale, in points at the drawing scale.</summary>
     public double Pt(double atReference) => atReference * TextScale;
 
@@ -110,6 +116,12 @@ public sealed class ExportContext
         Add("PD Heading", f.Heading, "left");
         Add("PD Section Label", f.SectionLabel, "right");
         Add("PD Floor Number", f.FloorNumber, "left");
+        Add("PD Chart Title", f.ChartTitle, "left");
+        Add("PD Chart Group", f.ChartGroup, "left");
+        Add("PD Chart Total", f.ChartTotal, "right");
+        Add("PD Chart Total Left", f.ChartTotal, "left");
+        Add("PD Chart Legend", f.ChartLegend, "left");
+        Add("PD Chart Legend Right", f.ChartLegend, "right");
     }
 
     /// <summary>The dark or the light ("… Light") variant of a label style, whichever reads on the given fill swatch.</summary>

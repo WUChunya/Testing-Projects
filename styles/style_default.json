@@ -307,6 +307,54 @@
       "opacity": 1.0,
       "tracking": 0,
       "leadingPt": 0
+    },
+    "chartTitle": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 13,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 40,
+      "leadingPt": 0
+    },
+    "chartGroup": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 11,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#5A5A5A",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "chartTotal": {
+      "family": "Arial",
+      "postScript": "Arial-BoldMT",
+      "fallbackPostScript": "Helvetica-Bold",
+      "sizePt": 22,
+      "allCaps": false,
+      "weight": "bold",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "chartLegend": {
+      "family": "Arial",
+      "postScript": "ArialMT",
+      "fallbackPostScript": "Helvetica",
+      "sizePt": 11,
+      "allCaps": false,
+      "weight": "normal",
+      "color": "#333333",
+      "opacity": 1.0,
+      "tracking": 0,
+      "leadingPt": 0
     }
   },
   "facade": {
@@ -713,6 +761,123 @@
       "view": {
         "fill": "#6E6E6E"
       }
+    },
+    "NC.Roof": {
+      "plan": {
+        "fill": "#EFEFEF",
+        "stroke": "#B4B4B4",
+        "strokePt": 0.5
+      },
+      "axon": {
+        "fill": "#F2F2F2",
+        "stroke": "#9A9A9A",
+        "strokePt": 0.5
+      },
+      "view": {
+        "fill": "#E4E4E4"
+      }
+    },
+    "Entourage": {
+      "plan": {
+        "fill": "#9A9A9A",
+        "opacity": 0.9
+      },
+      "axon": {
+        "fill": "#9A9A9A",
+        "opacity": 0.9
+      },
+      "view": {
+        "fill": "#9A9A9A"
+      }
+    }
+  },
+  "charts": {
+    "comment": "PRD 5.5 program chart and 5.6 donut pie. Absolute points (charts are not at building scale).",
+    "programChart": {
+      "pageWidthPt": 1584.0,
+      "marginPt": 36.0,
+      "boxPadPt": 14.0,
+      "boxGapPt": 20.0,
+      "minBoxWidthPt": 300.0,
+      "boxStroke": "#9A9A9A",
+      "boxPt": 0.75,
+      "boxDash": [
+        6.0,
+        6.0
+      ],
+      "titleGapPt": 8.0,
+      "groupGapPt": 12.0,
+      "rowGapPt": 14.0,
+      "labelGapPt": 4.0,
+      "rectGapPt": 1.0,
+      "rectMinPt": 4.0,
+      "rectMaxPt": 64.0,
+      "areaScalePtPerSqrtSf": 1.6,
+      "rectStroke": "#FFFFFF",
+      "rectStrokePt": 0.0,
+      "totalFormat": "{0:N0} {1}",
+      "title": "DETAILED PROGRAM PROPOSAL"
+    },
+    "pie": {
+      "outerPt": 300.0,
+      "innerRatio": 0.43,
+      "startDeg": 90.0,
+      "clockwise": true,
+      "segmentStroke": "#FFFFFF",
+      "segmentStrokePt": 0.75,
+      "minLabelShare": 0.0,
+      "centerText": "PROGRAM SF",
+      "legendGapPt": 56.0,
+      "legendSwatchPt": 13.0,
+      "legendRowPt": 21.0,
+      "totalLabel": "TOTAL:",
+      "marginPt": 48.0,
+      "bar": {
+        "enabled": true,
+        "widthPt": 760.0,
+        "heightPt": 34.0,
+        "gapPt": 1.0,
+        "title": "PROGRAM DEVELOPMENT SUMMARY"
+      }
+    }
+  },
+  "entourage": {
+    "comment": "PRD 4: seeded Poisson-disk people. Density is people per 1,000 SF of resolved program area; 0 = none.",
+    "enabled": true,
+    "color": "#9A9A9A",
+    "opacity": 0.9,
+    "heightFt": 5.75,
+    "minSpacingFt": 11.0,
+    "seed": 20251012,
+    "maxPerArea": 150,
+    "useModelled": true,
+    "planRadiusFt": 1.15,
+    "planShoulderFt": 1.9,
+    "densityPer1000Sf": 1.0,
+    "outdoorDensityPer1000Sf": 0.3,
+    "outdoorMinSpacingFt": 26.0,
+    "densityByProgram": {
+      "LOBBY": 3.0,
+      "CIRCULATION": 1.8,
+      "ASSEMBLY": 3.2,
+      "CONFERENCE": 1.6,
+      "INTERACTION": 2.6,
+      "OFFICE": 1.2,
+      "OPEN_OFFICE": 1.4,
+      "LAB": 1.0,
+      "LAB_SUPPORT": 0.5,
+      "CLINIC": 1.2,
+      "CLINIC_SUPPORT": 0.6,
+      "VIVARIUM": 0.4,
+      "VIVARIUM_SUPPORT": 0.3,
+      "VIVARIUM_PROCEDURE": 0.5,
+      "GREEN_ROOF": 0.8,
+      "BUILDING_SUPPORT": 0.0,
+      "CORE": 0.0,
+      "STAIR": 0.0,
+      "SHELL": 0.0,
+      "VOID": 0.0,
+      "UNASSIGNED": 0.0
     }
   }
 }

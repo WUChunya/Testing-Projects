@@ -2,6 +2,7 @@ using NetTopologySuite.Geometries;
 using PD.Core.Config;
 using PD.Core.Geometry;
 using PD.Core.Levels;
+using PD.Core.Model;
 using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 
 namespace PD.Core.Cleanup;
@@ -46,6 +47,8 @@ public static class LevelAssignment
         {
             var b = m.Source.BBox;
             var occ = Enumerable.Range(0, main.Count).Where(i => Occupies(b.MinZ, b.MaxZ, main, i, r)).ToArray();
+            // A slab-like mass (roof garden, terrace, paving) never fills a story: give it the level under its top face.
+            if (occ.Length == 0 && b.SizeZ <= r.FlatMassMaxThicknessFt) occ = FlatLevel(b, main, r);
             if (occ.Length == 0) continue;
             var story = Top(main, occ[0]) - main[occ[0]].Elevation;
             var mode = occ.Length == 1 ? SpanMode.Single
@@ -74,6 +77,18 @@ public static class LevelAssignment
         foreach (var (plan, i) in plans.Select((p, i) => (p, i)))
             Resolve(plan, i, r, overlaps);
         return (spans, plans, overlaps);
+    }
+
+    /// <summary>Level whose elevation is at or just below a flat mass's top, within one story; empty when it is below L1.</summary>
+    static int[] FlatLevel(BBox3 b, IReadOnlyList<Level> lv, CleanupRules r)
+    {
+        var top = b.MaxZ + r.FlatMassMaxThicknessFt;
+        var i = -1;
+        for (var k = 0; k < lv.Count; k++)
+            if (lv[k].Elevation <= top) i = k;
+        if (i < 0) return Array.Empty<int>();
+        var story = Top(lv, i) - lv[i].Elevation;
+        return b.MinZ - lv[i].Elevation > r.SpanKeepTallMaxStoryFactor * story ? Array.Empty<int>() : new[] { i };
     }
 
     static double Top(IReadOnlyList<Level> lv, int i) =>

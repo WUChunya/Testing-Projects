@@ -27,6 +27,10 @@ internal sealed class OutputTab : TabBase
     readonly Button _export;
     readonly CheckBox _launch = new() { Text = "Generate the .ai files in Illustrator (runs in the background; nothing is opened)" };
     readonly CheckBox _axonView = new() { Text = "Axons: use the active viewport's view direction (else isometric from the south-west)" };
+    /// <summary>PRD 5.5: Excel program table for the charts; empty = the model's own areas (GSF).</summary>
+    readonly TextBox _excel = new() { PlaceholderText = "(no Excel: the charts use the model areas, GSF)" };
+    readonly CheckBox _entourage = new() { Text = "Draw entourage (people) on an ENTOURAGE layer" };
+    readonly Label _seed = new() { TextColor = Eto.Drawing.Colors.Gray };
     readonly Label _status = new();
     bool _loading;
 
@@ -49,6 +53,8 @@ internal sealed class OutputTab : TabBase
         _png.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _launch.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _axonView.CheckedChanged += (_, _) => { if (!_loading) Store(); };
+        _excel.LostFocus += (_, _) => Store();
+        _entourage.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _artboard.SelectedValueChanged += (_, _) => { if (!_loading) Store(); };
         _export = Ui.Button("Export", Export);
 
@@ -65,6 +71,10 @@ internal sealed class OutputTab : TabBase
         layout.Add(_launch);
         layout.Add(_png);
         layout.Add(_axonView);
+        layout.AddRow(new Label { Text = "Program Excel" }, _excel, Ui.Button("…", BrowseExcel));
+        layout.AddSeparateRow(null, Ui.Button("Save Excel template...", SaveTemplate), null);
+        layout.Add(_entourage);
+        layout.AddSeparateRow(null, _seed, Ui.Button("Re-randomize entourage", Reseed), null);
         layout.AddSeparateRow(_export, Ui.Button("Open last export folder", OpenFolder), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "output"));
@@ -92,6 +102,9 @@ internal sealed class OutputTab : TabBase
         _sectionScale.Text = o.SectionScale;
         _png.Checked = o.ExportPng ?? Session.Rules.Output.ExportPng;
         _axonView.Checked = o.AxonFromViewport;
+        _excel.Text = o.ProgramExcel;
+        _entourage.Checked = o.Entourage ?? Session.Style.Entourage.Enabled;
+        _seed.Text = $"Entourage seed {o.EntourageSeed ?? Session.Style.Entourage.Seed} (kept with the project, so people stay put)";
         ShowScale();
         ShowFolder();
         _artboard.SelectedValue = o.Artboard;
@@ -114,6 +127,8 @@ internal sealed class OutputTab : TabBase
         if (ExportContext.ParseScale(_sectionScale.Text) != null) o.SectionScale = _sectionScale.Text.Trim();
         o.ExportPng = _png.Checked == true;
         o.AxonFromViewport = _axonView.Checked == true;
+        o.ProgramExcel = _excel.Text.Trim();
+        o.Entourage = _entourage.Checked == true;
         o.Artboard = _artboard.SelectedValue as string ?? o.Artboard;
         o.Drawings = _drawings.Items.Select(i => i.Control).OfType<CheckBox>().Where(c => c.Checked == true).Select(c => (string)c.Tag).ToList();
         Session.Save();
@@ -124,6 +139,35 @@ internal sealed class OutputTab : TabBase
         var k = ExportContext.ParseScale(_scale.Text);
         _scaleInfo.Text = k == null ? $"Unknown scale. {Session.Rules.Output.ScaleHelp}" : $"1 ft = {k:0.###} pt (1\" = {72 / k:0.##} ft)";
         _scaleInfo.TextColor = k == null ? Eto.Drawing.Colors.Red : Eto.Drawing.Colors.Gray;
+    }
+
+    void BrowseExcel()
+    {
+        var dlg = new OpenFileDialog { Title = "Program table (Excel)" };
+        dlg.Filters.Add(new FileFilter("Excel", ".xlsx"));
+        if (dlg.ShowDialog(this) != DialogResult.Ok) return;
+        _excel.Text = dlg.FileName;
+        Store();
+    }
+
+    /// <summary>Writes the empty program table of PRD 5.5 for the user to fill in.</summary>
+    void SaveTemplate()
+    {
+        var dlg = new SaveFileDialog { Title = "Program table template", FileName = "program_table.xlsx" };
+        dlg.Filters.Add(new FileFilter("Excel", ".xlsx"));
+        if (dlg.ShowDialog(this) != DialogResult.Ok) return;
+        PD.Core.Charts.ProgramTable.WriteTemplate(dlg.FileName, Session.Programs);
+        _excel.Text = dlg.FileName;
+        Store();
+        _status.Text = "Template written: fill it in, then export.";
+    }
+
+    /// <summary>New entourage seed (PRD 4): the people move, and the new seed is saved with the project.</summary>
+    void Reseed()
+    {
+        Session.Settings.Output.EntourageSeed = new Random().Next(1, int.MaxValue);
+        Session.Save();
+        Refresh();
     }
 
     void Browse()
@@ -153,7 +197,7 @@ internal sealed class OutputTab : TabBase
         {
             res = Exporter.Write(new ExportContext
             {
-                Result = Session.Result, Settings = Session.Settings, Programs = Session.Programs, Rules = Session.Rules,
+                Result = Session.Result, Settings = Session.Settings, Programs = Session.Programs, Rules = Session.Rules, Style = Session.Style,
             }, NewFolder(DateTime.Now));
             Session.Settings.Output.LastFolder = res.Folder;
             Session.Save();

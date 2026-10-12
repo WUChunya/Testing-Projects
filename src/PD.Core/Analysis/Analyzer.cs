@@ -82,8 +82,10 @@ public static class Analyzer
         var (spans, plans, overlaps) = LevelAssignment.Run(masses, levels, rules.Cleanup, input.SpanOverrides);
 
         var issues = new List<Issue>();
-        foreach (var id in stray)
-            issues.Add(new Issue(IssueKind.StrayObject, $"Object on '{Layer(local, id)}' is far from the building: excluded", new[] { id }));
+        // Only objects that would be drawn are worth reporting: Make2D copies and other ignored layers are noise.
+        foreach (var o in local.Objects.Where(o => stray.Contains(o.Id) && o.Role != Roles.Ignore && o.Role.Length > 0))
+            issues.Add(new Issue(IssueKind.StrayObject,
+                $"{(o.Role == Roles.Program ? "Program mass" : "Object")} on '{o.LayerPath}' is far from the building: excluded (keep it on tab 2)", new[] { o.Id }));
         foreach (var m in masses)
         {
             if (m.Status == MassStatus.Open)

@@ -3,6 +3,7 @@
   "comment": "Geometry and level rules (PRD 3.5, B1). Lengths in feet.",
   "levels": {
     "clusterToleranceFt": 1.5,
+    "slabSnapBelowFt": 0.5,
     "minFloorHeightFt": 10.0,
     "groundElevationFt": 0.0,
     "slabMaxThicknessFt": 3.0,
@@ -21,6 +22,7 @@
     "gapCloseToleranceFt": 0.5,
     "planCutHeightFt": 4.0,
     "minLevelOverlapFt": 4.0,
+    "flatMassMaxThicknessFt": 2.0,
     "overlap": "smallerVolumeWins",
     "spanKeepTallMaxLevels": 2,
     "spanKeepTallMaxStoryFactor": 1.6,

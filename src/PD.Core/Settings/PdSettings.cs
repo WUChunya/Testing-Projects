@@ -120,6 +120,12 @@ public sealed class OutputSetting
     public double[]? AxonViewDirection { get; set; }
     /// <summary>Take <see cref="AxonViewDirection"/> from the active Rhino viewport at export time.</summary>
     public bool AxonFromViewport { get; set; }
+    /// <summary>Excel program table for the charts (PRD 5.5); empty = use the model's areas (GSF).</summary>
+    public string ProgramExcel { get; set; } = "";
+    /// <summary>Draw entourage (PRD 4); null = style default.</summary>
+    public bool? Entourage { get; set; }
+    /// <summary>Entourage random seed: kept in the project so a re-export puts the people back in the same places.</summary>
+    public int? EntourageSeed { get; set; }
 
     public void FillDefaults(PD.Core.Config.OutputRules r)
     {

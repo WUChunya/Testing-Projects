@@ -30,12 +30,17 @@ public static class Localizer
 
         var diagFt = Math.Sqrt(Sq(building.MaxX - building.MinX) + Sq(building.MaxY - building.MinY)) * k;
         var limit = Math.Max(rules.OutlierMinDistanceFt, rules.OutlierDistanceFactor * diagFt);
-        var outliers = model.Objects.Where(o => Distance(o.BBox, building) * k > limit).Select(o => o.Id).ToHashSet();
+        // Only our own objects are expected near the building; context (roads, blocks, trees) covers the whole site.
+        var outliers = model.Objects
+            .Where(o => IsOurs(o) && Distance(o.BBox, building) * k > limit)
+            .Select(o => o.Id).ToHashSet();
 
         var objs = model.Objects.Select(o => Transform(o, frame)).ToList();
         var local = new SourceModel { Units = "Feet", Layers = model.Layers, Objects = objs };
         return (local, frame, Transform(building, frame), outliers);
     }
+
+    static bool IsOurs(SourceObject o) => o.Role.Length == 0 || Classification.Roles.IsNew(o.Role);
 
     static BBox3 RobustUnion(List<BBox3> boxes, CleanupRules rules, double k)
     {

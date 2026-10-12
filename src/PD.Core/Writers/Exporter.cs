@@ -33,8 +33,11 @@ public static class Exporter
         if (wanted.Contains("AxonExploded")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Exploded));
         if (wanted.Contains("AxonExplodedB")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.ExplodedB));
         if (wanted.Contains("AxonLevels")) drawings.Add(PD.Core.Axons.AxonDrawing.Build(ctx, PD.Core.Axons.AxonKind.Levels));
-        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded" or "AxonExplodedB" or "AxonLevels")))
-            notes.Add($"{w}: not implemented yet (charts in S5).");
+        if (wanted.Contains("ProgramChart")) drawings.Add(PD.Core.Charts.ProgramChartDrawing.Build(ctx));
+        if (wanted.Contains("Pie")) drawings.Add(PD.Core.Charts.PieDrawing.Build(ctx));
+        foreach (var w in wanted.Where(w => w is not ("Plan" or "Section" or "Elevation" or "AxonStacked" or "AxonExploded"
+                     or "AxonExplodedB" or "AxonLevels" or "ProgramChart" or "Pie")))
+            notes.Add($"{w}: not a known drawing.");
         foreach (var d in drawings) notes.AddRange(d.Notes);
         return drawings;
     }
@@ -55,6 +58,9 @@ public static class Exporter
         }
 
         Save(Path.Combine(folder, "program_areas.csv"), Reports.AreaCsv(ctx.Result, ctx.ProgramLabel));
+        var table = PD.Core.Charts.ProgramTable.For(ctx);
+        notes.AddRange(table.Notes);
+        Save(Path.Combine(folder, "program_table.csv"), Reports.TableCsv(table, ctx.ProgramLabel));
         foreach (var d in drawings)
             for (var a = 0; a < d.Artboards.Count; a++)
                 Save(Path.Combine(preview, PreviewName(d, a)), SvgWriter.Write(d, a));
