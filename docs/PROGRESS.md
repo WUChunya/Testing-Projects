@@ -13,6 +13,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   (layers per exploded plate `AXON_L*`, plane text via `DItem.Matrix`). Goldens: plan_L1, axon_stacked, axon_exploded, axon_levels_L3.
 - Axon style spec (proposal, not yet wired): `docs/AXON_STYLE.md` + `styles/axon_style.json` + sheet `docs/reference/axon_exploded_reference.svg`
   (`tools/axon_style_reference.py`). 1"=45' on ARCH D; diffs vs `style_default.json › axon` in AXON_STYLE §11 await user OK.
+  Text now measured from the Atlanta axon (Myriad Pro, white 70%, x2.118 on ARCH D); legend has core/facade/transport/flow/annotation.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade: stacked 30% veil, exploded hidden.

@@ -62,7 +62,7 @@
 ## 5. Program 颜色
 用公司图例（PRD §5.1），全部建成**全局色板**，色板组 `PD_Program`；背景色在 `PD_Context`，注释色在 `PD_Anno`。
 - 体量推演里 program 以**半透明色带**出现（参考图 2 的 EXTEND）：program 色、不透明度 60%、正片叠底、无描边，叠在白模面上。
-- 爆炸图里 program 铺满楼板顶面，核心筒 #999999 标 `CORE`。
+- 爆炸图里 program 铺满楼板顶面；核心筒按原图用 #D9D9D9（不是平面图的 #999999），标 `CORE`。
 
 ## 6. 斜向文字（贴在轴测面上，文字保持可编辑）
 标准 SSR 法（缩放 → 倾斜 → 旋转），做成动作 `PD_Iso_*`：
@@ -76,17 +76,23 @@
 - 也可用「效果 › 3D（经典）› 旋转」的「等角-上方/左方/右方」预设，但 SSR 输出更干净、可被脚本精确复现，插件采用 SSR 等价的仿射矩阵。
 - 文字方向：沿色块**长边**；放置在**未被上一层遮挡**的区域（顶面前半部）。
 
-| 段落样式 | 字体 | 字号 | 其他 |
-|---|---|---|---|
-| `PD_Label_Primary` | Century Gothic Bold | 14 pt | 全大写，字距 50，居中 |
-| `PD_Label_Secondary` | Century Gothic Bold | 10 pt | 放不下 Primary 时自动降级 |
-| `PD_Label_Core` | Century Gothic Bold | 9 pt | #262626 |
-| `PD_Level` | Century Gothic Regular | 10 pt | 首字母大写，#333333，左对齐 |
-| `PD_Street` | Century Gothic Bold | 9 pt | 全大写，白字，贴街道方向 |
-| `PD_StepTitle` | Century Gothic Regular | 12 pt | 全大写，体量推演每格标题（SPLIT / CONNECT …） |
+**文字完全取自原爆炸图（Atlanta，参考图 1）**：按原图 2000 px = 11×17 页面（1 px = 0.612 pt）逐字测量；字体由字形判断为 Myriad Pro（Illustrator 自带）。ARCH D 原尺寸用「× 2.118」（36/17）后的字号，**缩印到 11×17 时与原图完全一致**。
 
-- 字号适配：字长 ≤ 色块长边 × 60%，宽 ≤ 短边 × 50%；低于 Secondary 改为引线外标。
-- 文字颜色：底色相对亮度 > 0.6 用 #404040，否则白色（例：Open Office #B1D7DE 用深灰，Office #7CBECD 用白）。
+| 段落样式 | 字体 | 11×17 字号 | ARCH D 字号 | 颜色 / 透明度 | 其他 |
+|---|---|---|---|---|---|
+| `PD_Label_Primary` | Myriad Pro Semibold | 10 pt | 21.2 pt | #FFFFFF **70%**（正常混合） | 全大写，字距 0，居中，沿色块长边 |
+| `PD_Label_Secondary` | Myriad Pro Semibold | 8 pt | 16.9 pt | #FFFFFF 70% | 放不下 Primary 时降级 |
+| 最小字号 | — | 5 pt | 10.6 pt | — | 再小就改为引线外标（原图 DEBRIEF 即此级） |
+| `PD_Label_Core` | Myriad Pro Semibold | 7 pt | 14.8 pt | #1A1A1A 100% | 底色 #D9D9D9 无描边 |
+| `PD_Level` | Myriad Pro Regular | 7 pt | 14.8 pt | #333333 | 「Level 7」首字母大写 |
+| `PD_Annotation` | Myriad Pro Bold | 8 pt（行距 8） | 16.9 pt | #000000 | 全大写，贴竖直面（SWEET AUBURN 类） |
+| `PD_Street` | Myriad Pro Regular | 5.5 pt | 11.6 pt | #333333 | 全大写，贴地面沿街道方向 |
+| `PD_Legend` | Myriad Pro Regular | 7 pt | 14.8 pt | #333333 | 图例说明 |
+| `PD_StepTitle` | Myriad Pro Regular | 8 pt | 16.9 pt | #000000 | 体量推演每格标题 |
+
+- 半透明做法：文字填色白、在「外观」里把**填色**不透明度设 70%（不是整个对象），这样色块颜色透出来，和原图一样浅色色块上的字会很淡（原图 COLLAB 即如此）。
+- 原图透明度取样：TRAINING / HEALTH / AUDITORIUM 处文字像素反算 α ≈ 0.62–0.82，取 70%。
+- 字号适配：字长 ≤ 色块长边 × 60%，字高 ≤ 短边 × 45%。
 
 ## 7. 爆炸轴测专项
 | 项目 | 设定 |
@@ -94,15 +100,25 @@
 | 楼板厚度（图面表现） | 3'-9" = 6 pt（夸张值，真实板厚在图上看不出） |
 | 层间距（板顶到板顶） | `max(1.5 × 层高, 0.7 × 顶面投影深度)`；1.5×层高 是 PRD 默认，但在 1"=45' 下楼板投影深度约 4–6"，只用 1.5×层高 会被上一层盖住 85% 以上，所以加了「顶面至少露出 70%」的下限 |
 | 板数 | ≤ 7 块；标准层合并（如 `Level 4–6`），否则 ARCH D 放不下 |
-| 竖向连接体 | 中庭/楼梯：#FDF5D1、不透明度 60%、正片叠底，0.5 pt #B3AA8A 描边，分段画在两层之间 |
-| 流线 | 留空，在 `OVERLAY` 层手画（参考图的黄色流线） |
+| 竖向连接体 | 中庭/楼梯：用 FACADE 样式（见 §7.1），分段画在两层之间 |
+| 流线 | 用 FLOW 样式（见 §7.1）；手画时放在 `OVERLAY` 层 |
 | 背景 | 只在最底层显示：场地 #F5F5F5、街区 #EBEBEB、道路 #D9D9D9、绿地 #D7DEBC、周边建筑白底 + `PD_Context` |
 | 立面 | 隐藏（PRD §9 默认） |
 
 **层标**（右侧一列）：
-- 标记：6 pt 实心方块 #FFC000，与文字间距 4 pt，文字 `PD_Level`；
+- 标记：4 pt（ARCH D 8.5 pt）方块 #FBBC10，0.25 pt #C99600 描边，与文字间距 4 pt（ARCH D 8.5 pt），文字 `PD_Level`；引线 0.35 pt #B8B8B8；
 - 列位置：整栋最右点向右 1.5"，所有层标左对齐；
 - 引线：`PD_Leader`，从楼板顶面最右角出发，**沿 +X 轴测方向（向右下 30°）**一直到列位置，层标的竖向位置由引线终点决定。
+
+### 7.1 Legend 元素（均取自原图，参考 SVG 右侧 LEGEND 有实样）
+| 元素 | 图形样式 | 填色 | 描边 | 尺寸（11×17 / ARCH D） | 说明 |
+|---|---|---|---|---|---|
+| CORE | `PD_Core` | #D9D9D9 100% | 无 | — | 文字 `PD_Label_Core` |
+| FACADE / 中庭体 | `PD_Facade` | #E9E4D3，不透明度 60%，正常 | 0.25 / 0.53 pt #B5AE9C | — | 单一平涂，不分面明暗；透出后面的楼板 |
+| TRANSPORTATION | `PD_Transport` | #FDBE0E 100% | 无 | 带宽 4.8 / 10.2 pt | 地面上的道路/公交线；街名 `PD_Street` |
+| FLOW | `PD_Flow` | #F7C66F，不透明度 85% | 0.25 / 0.53 pt #D99A2B，圆角 | 带宽 4.8 / 10.2 pt | 室内流线：沿中庭立面上升、在楼板上转折 |
+| ANNOTATION | `PD_Annotation` | 文字 #000000 | 箭头 1.0 / 2.1 pt #000000 | 开口箭头 6 / 12.7 pt | 方向/片区标注，文字贴竖直面 SSR |
+| LEVEL TAG | `PD_Level` | 方块 #FBBC10 | 0.25 pt #C99600 | 4 / 8.5 pt | 见上 |
 
 ## 8. 体量推演专项（参考图 2）
 | 项目 | 设定 |
@@ -129,12 +145,15 @@
 | 外轮廓 `silhouettePt` | 1.0 pt #1A1A1A | 2.0 pt（楼板）/ 2.5 pt（体量）#000 | 与体量推演图同一线条等级；缩印 47% 后仍是最粗线 |
 | 棱线 `edgePt` | 0.35 pt #333333 | 折边 1.0 pt + 分隔 0.5 pt | 现有只有两级，体量推演需要三级 |
 | 侧面加深 `sideDarken` | 12% / 24% | 10% / 20% | PRD §5.4「侧面加深 10%」 |
-| 标签 `labelSizePt` | 9 pt | 14 / 10 / 9 pt 三级 | ARCH D 上楼板约 10" 宽，9 pt 偏小 |
+| 标签 `labelSizePt` | 9 pt Century Gothic，白/深灰 100% | Myriad Pro Semibold 21.2 / 16.9 pt，白 70%；CORE 14.8 pt | 与原爆炸图一致（缩印 11×17 后 10 / 8 / 7 pt） |
+| 核心筒颜色 | #999999 | #D9D9D9 | 原图取样 |
+| 连接体 | #E9E2CC 60%，0.35 pt #9A9A9A | #E9E4D3 60%，0.53 pt #B5AE9C | 原图取样，几乎相同 |
 | 层间距 `explodeGapPt` | 24 pt 净空（不遮挡） | 顶面露出 ≥ 70%，允许部分遮挡 | 参考图上一层压住下一层后部，更紧凑；全不遮挡在 1"=45' 下太高 |
 | 层标 `levelMarker` | #F2B705，5 pt | #FFC000，6 pt | 差别很小，可保留现值 |
 | 楼板 `slabThicknessFt` | 3'-0" | 3'-9" | 配合 2.0 pt 外轮廓，保证板厚可见 |
 
 ## 12. 待确认
 1. 层间距下限 0.7（比 PRD 的 1.5×层高 大很多）是否接受？
-2. 层标方块颜色 #FFC000 与 Lab #F7A238 接近，是否改为深灰 #333333？
-3. 标签字号 14/10/9 pt 是按 ARCH D 缩印到 11×17 可读来定的；如果主要出 11×17 原尺寸，改为 9/7/6 pt。
+2. 字体按字形判断为 Myriad Pro，如果你有原 AI 文件请确认实际字体。
+3. 原图假设为 11×17 版面；如果原图是 ARCH D 或 24×36，`page_text_scale` 改为 1.0 或 1.41。
+4. 白字 70% 在浅色（Support #D8D8D6、Lab Support #F5CB78）上很淡，与原图一致；如需加强可只对浅色改 #404040。
