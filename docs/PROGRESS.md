@@ -23,7 +23,6 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Item names: `SEC_*`, `ELV_*`, plans `PLN_<lvl>_<id>` / overview `PLO_<lvl>_*`, axons `AXS_<lvl>_<id>_TOP|SIDEnnn`, `AXE_<lvl>_*`.
 - Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu). Stale layers purged: `PD_*`, `VIEW_*`, `BG_*`, `AXON_*`, `FACADE`.
 - Axon: isometric from SW or active viewport direction (tab 8). Style = Atlanta reference; context height 8' (`contextHeightFt`, 0 = real).
-- Plan: all levels share one extent (building + 60'); model +Y = north; level title "Level {n}" for Ln names.
 
 ## Windows test checklist (for the user)
 1. Unzip `ProgramDiagram-0.4.1.zip` over the old files, restart Rhino; panel shows tabs 1–9 in English.
