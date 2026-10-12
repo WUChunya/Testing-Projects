@@ -27,7 +27,8 @@ public static class SectionDrawing
         // Bottom → top: what is farther away is painted first and hidden by what is nearer.
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
         Views.ProjectedView.AddLayers(d, g.View);
-        foreach (var n in new[] { "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "BG_TREE", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" })
+        // Trees stand beyond the cut: behind the cut colour blocks, in front of what is seen further away.
+        foreach (var n in new[] { "BG_TREE", "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
@@ -37,7 +38,7 @@ public static class SectionDrawing
         var zMax = geoms.Select(x => x.EnvelopeInternal.MaxY).DefaultIfEmpty(g.Ground + 30).Max();
         var zMin = Math.Min(g.Ground, geoms.Select(x => x.EnvelopeInternal.MinY).DefaultIfEmpty(g.Ground).Min());
         double w = plane.Length * k, h = (zMax - zMin) * k + groundT / 2, m = pg.MarginPt;
-        var colL = st.LevelColumn ? ctx.Pt(pg.LevelColumnPt) : 0;
+        var colL = st.LevelColumn || st.LevelMarkers ? ctx.Pt(pg.LevelColumnPt) : 0;
         var colR = st.HeightDimension ? ctx.Pt(pg.DimColumnPt) : 0;
         var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
@@ -65,11 +66,15 @@ public static class SectionDrawing
         foreach (var l in g.Levels)
         {
             d.Layer("PD_LEVELS").Items.Add(map.Line(p + "LVL_" + l.Name, new[] { (0.0, l.Elevation), (plane.Length, l.Elevation) }, d.Gray(st.LevelLineStroke), st.LevelLineStrokePt));
-            if (!st.LevelColumn) continue;
+            if (!st.LevelColumn || st.LevelMarkers) continue;
             var next = main.FirstOrDefault(x => x.Elevation > l.Elevation + 0.01);
             var label = next == null || l.IsRoof ? $"{l.Name} ROOF" : $"{l.Name}  {FeetInches.Format(next.Elevation - l.Elevation)}";
             d.Layer("PD_ANNOTATION").Items.Add(Text(p + "LVL_" + l.Name + "_TXT", x0 - colL + ctx.Pt(4), map.Y(l.Elevation) - ctx.Pt(2), label, "PD Note", "left"));
         }
+
+        // ▼ markers, level names and elevations in the left column, dashed to the cut (as in elevations).
+        if (st.LevelMarkers && !g.Outline.IsEmpty)
+            LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, map.X(g.Outline.EnvelopeInternal.MinX), zMax);
 
         // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.
         Views.ProjectedView.Draw(d, ctx, map, p + "VIEW_", g.View);
@@ -95,7 +100,7 @@ public static class SectionDrawing
         foreach (var (u0, u1, z) in g.SlabLines.OrderBy(x => x.Z).ThenBy(x => x.U0))
         {
             if (Math.Abs(z - g.Ground) < 0.5) continue; // the ground line is the ground floor's slab
-            var half = st.SlabHeightRatio * Story(g, z) * k / 2;
+            var half = st.SlabHeightRatio * g.TypicalStory * k / 2; // one thickness for every slab of the drawing
             var xa = Math.Min(map.X(u0), map.X(u1)) - st.SlabOverhangFt * k;
             var xb = Math.Max(map.X(u0), map.X(u1)) + st.SlabOverhangFt * k;
             var name = p + $"SLAB_{FeetInches.Format(z)}_{u0:0}";
@@ -166,11 +171,13 @@ public static class SectionDrawing
         var n = 0;
         foreach (var b in g.Bars)
         {
-            var h = Math.Min(e.HeightFt, (b.Z1 - b.Z0) * 0.86);
+            // Standing on the slab's top face (slabs are drawn centred on the level line).
+            var floor = b.Z0 + ctx.Style.Section.SlabHeightRatio * g.TypicalStory / 2;
+            var h = Math.Min(e.HeightFt, (b.Z1 - floor) * 0.8);
             if (h < 3) continue;
             foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, b.U0, b.U1, b.ProgramKey, p + b.MassId))
                 layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
-                    map.X(f.X), map.Y(b.Z0), h * map.K, f.Variant, f.Mirror));
+                    map.X(f.X), map.Y(floor), h * map.K, f.Variant, f.Mirror));
         }
         // Outside: on the ground line, left and right of the building footprint.
         double lo = g.Bars.Count == 0 ? length : g.Bars.Min(b => b.U0), hi = g.Bars.Count == 0 ? 0 : g.Bars.Max(b => b.U1);
@@ -180,15 +187,6 @@ public static class SectionDrawing
                     map.X(f.X), map.Y(g.Ground), e.HeightFt * map.K, f.Variant, f.Mirror));
     }
 
-    /// <summary>Floor height of the level band just below z (the slab belongs to it); 15 ft when unknown.</summary>
-    static double Story(SectionGeometry g, double z)
-    {
-        var main = g.Levels.Where(l => !l.IsMezzanine).Select(l => l.Elevation).OrderBy(e => e).ToList();
-        var below = main.LastOrDefault(e => e < z - 0.5, double.NaN);
-        var above = main.FirstOrDefault(e => e > z + 0.5, double.NaN);
-        var h = !double.IsNaN(below) ? z - below : !double.IsNaN(above) ? above - z : 15;
-        return Math.Clamp(h, 8, 30);
-    }
 
     static double[][] RectPts(double x0, double y0, double x1, double y1) =>
         new[] { new[] { x0, y0 }, new[] { x1, y0 }, new[] { x1, y1 }, new[] { x0, y1 } };

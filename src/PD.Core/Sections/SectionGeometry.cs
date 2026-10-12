@@ -45,8 +45,16 @@ public sealed class SectionGeometry
             var bandBot = r.Levels[i].Elevation;
             var bandTop = Top(r, last);
             var b = f.Mass.Source.BBox;
-            foreach (var (u0, u1) in Segments(f.Resolved.Intersection(line), plane))
-                g.Bars.Add(new CutBar(f.Mass.Id, f.Mass.ProgramKey, u0, u1, Math.Max(bandBot, b.MinZ), Math.Min(bandTop, b.MaxZ), Top(r, i) - bandBot));
+            // Masses are usually drawn a little short of the slabs (from the soffit, to the ceiling): snap them to the
+            // level band so every bar sits centred between its two slabs; a clearly shorter mass keeps its own height.
+            var story = Top(r, i) - bandBot;
+            var snap = Math.Max(2.0, 0.2 * story);
+            var z0 = Math.Abs(b.MinZ - bandBot) <= snap ? bandBot : Math.Max(bandBot, b.MinZ);
+            var z1 = Math.Abs(b.MaxZ - bandTop) <= snap ? bandTop : Math.Min(bandTop, b.MaxZ);
+            // A thin floor zone (a 1-ft circulation slab, a roof garden) is no volume in section: no bar, no slab edge.
+            if (z1 - z0 <= c.FlatMassMaxThicknessFt) continue;
+            foreach (var (u0, u1) in Segments(MeshSlicer.Lineal(f.Resolved.Intersection(line)), plane))
+                g.Bars.Add(new CutBar(f.Mass.Id, f.Mass.ProgramKey, u0, u1, z0, z1, story));
         }
         g.Outline = g.Bars.Count == 0 ? g.Outline
             : MeshSlicer.Factory.BuildGeometry(g.Bars.Select(x => Rect(x.U0, x.U1, x.Z0, x.Z1))).Union().Buffer(0.01).Buffer(-0.01);
@@ -100,24 +108,54 @@ public sealed class SectionGeometry
         // limited to that block so it never runs through a neighbouring program.
         if (!g.Outline.IsEmpty)
         {
+            var slabCuts = SlabRanges(r, plane, c);
             foreach (var l in r.Levels)
             {
                 // A tall space (one bar crossing this level) has no floor through it.
                 var open = g.Bars.Where(b => b.Z0 < l.Elevation - 0.1 && b.Z1 > l.Elevation + 0.1).Select(b => (b.U0, b.U1)).ToList();
-                foreach (var range in Merge(Across(g.Outline, l.Elevation + 0.05).Concat(Across(g.Outline, l.Elevation - 0.05))))
+                var ranges = Merge(Across(g.Outline, l.Elevation + 0.05).Concat(Across(g.Outline, l.Elevation - 0.05)));
+                if (ranges.Count == 0) continue;
+                // One slab per level: the modelled floor plates decide where it really opens (a deliberate void);
+                // without plates at this level the cut is one continuous slab.
+                var plates = slabCuts.Where(x => Math.Abs(x.Z - l.Elevation) <= rules.Levels.ClusterToleranceFt).Select(x => (x.U0, x.U1)).ToList();
+                var slab = plates.Count > 0
+                    ? Merge(ranges.Concat(plates), gap: 0.5)
+                    : new List<(double, double)> { (ranges.Min(x => x.Item1), ranges.Max(x => x.Item2)) };
+                foreach (var range in slab)
                     foreach (var (u0, u1) in Subtract(range, open))
                         g.SlabLines.Add((u0, u1, l.Elevation));
             }
             bool OnLevel(double z) => r.Levels.Any(l => Math.Abs(l.Elevation - z) < 0.1);
             bool Inside(double u, double z) => g.Outline.Contains(MeshSlicer.Factory.CreatePoint(new Coordinate(u, z)));
+            var exposed = new List<(double U0, double U1, double Z)>();
             foreach (var b in g.Bars)
             {
                 var mid = (b.U0 + b.U1) / 2;
-                if (!OnLevel(b.Z1) && !Inside(mid, b.Z1 + 0.05)) g.SlabLines.Add((b.U0, b.U1, b.Z1));
-                if (!OnLevel(b.Z0) && !Inside(mid, b.Z0 - 0.05)) g.SlabLines.Add((b.U0, b.U1, b.Z0));
+                if (!OnLevel(b.Z1) && !Inside(mid, b.Z1 + 0.05)) exposed.Add((b.U0, b.U1, b.Z1));
+                if (!OnLevel(b.Z0) && !Inside(mid, b.Z0 - 0.05)) exposed.Add((b.U0, b.U1, b.Z0));
+            }
+            // Roof edges a foot or two apart (a core standing a little above the roof) are one slab, at the higher one.
+            foreach (var cluster in LevelDetector.Cluster(exposed, x => x.Z, rules.Levels.ClusterToleranceFt))
+            {
+                var z = cluster.Max(x => x.Z);
+                foreach (var (u0, u1) in Merge(cluster.Select(x => (x.U0, x.U1)), gap: 0.5)) g.SlabLines.Add((u0, u1, z));
             }
         }
         return g;
+    }
+
+    /// <summary>
+    /// The drawing's one floor height for diagram sizes (slab thickness, bar clearance, text): the median story of the
+    /// main levels, so every slab is drawn equally thick whatever the real slab is.
+    /// </summary>
+    public double TypicalStory
+    {
+        get
+        {
+            var main = Levels.Where(l => !l.IsMezzanine).Select(l => l.Elevation).OrderBy(z => z).ToList();
+            var stories = main.Zip(main.Skip(1), (a, b) => b - a).Where(h => h > 1).OrderBy(h => h).ToList();
+            return stories.Count == 0 ? 15 : Math.Clamp(stories[stories.Count / 2], 8, 30);
+        }
     }
 
     /// <summary>Top of a level's band: next level, or for the top level the highest mass counted on it.</summary>
@@ -150,12 +188,29 @@ public sealed class SectionGeometry
         if (range.b > start + 0.05) yield return (start, range.b);
     }
 
-    static List<(double, double)> Merge(IEnumerable<(double a, double b)> ranges)
+    /// <summary>u-ranges and top elevation of the modelled floor plates (NC.Slab) that the section line crosses.</summary>
+    static List<(double U0, double U1, double Z)> SlabRanges(AnalysisResult r, SectionPlane plane, CleanupRules c)
+    {
+        var res = new List<(double, double, double)>();
+        var line = plane.PlanLine();
+        foreach (var o in r.Local.Objects.Where(o => o.Role == Roles.Slab && o.Mesh != null && !r.Stray.Contains(o.Id)))
+        {
+            var foot = MeshProjection.TopDown(o.Mesh!);
+            if (foot.IsEmpty || !foot.EnvelopeInternal.Intersects(line.EnvelopeInternal)) continue;
+            NtsGeometry cut;
+            try { cut = MeshSlicer.Lineal(foot.Intersection(line)); }
+            catch (Exception e) when (e is TopologyException or ArgumentException) { continue; }
+            foreach (var (u0, u1) in Segments(cut, plane)) res.Add((u0, u1, o.BBox.MaxZ));
+        }
+        return res;
+    }
+
+    static List<(double, double)> Merge(IEnumerable<(double a, double b)> ranges, double gap = 0.01)
     {
         var res = new List<(double, double)>();
         foreach (var (a, b) in ranges.OrderBy(r => r.a))
         {
-            if (res.Count > 0 && a <= res[^1].Item2 + 0.01) res[^1] = (res[^1].Item1, Math.Max(res[^1].Item2, b));
+            if (res.Count > 0 && a <= res[^1].Item2 + gap) res[^1] = (res[^1].Item1, Math.Max(res[^1].Item2, b));
             else res.Add((a, b));
         }
         return res;

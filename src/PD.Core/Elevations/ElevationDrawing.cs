@@ -63,30 +63,10 @@ public static class ElevationDrawing
         if (!items.Any(i => i.Kind != ViewKind.Context))
             d.Notes.Add($"Elevation {el.Name}: none of our building is in view; move the line or deepen its depth on tab 7.");
 
-        // Level markers: ▼, level name and elevation, dashed line to our building.
+        // Level markers: ▼, level name and elevation, dashed line to our building (same column as sections).
         var own = items.Where(i => i.Kind != ViewKind.Context).Select(i => i.Geometry.EnvelopeInternal).ToList();
         if (es.LevelMarkers && own.Count > 0)
-        {
-            var reach = map.X(own.Min(e => e.MinX));
-            var s = ctx.Pt(es.MarkerSizePt);
-            foreach (var l in r.Levels.Where(l => !l.IsMezzanine && l.Elevation <= zMax))
-            {
-                var y = map.Y(l.Elevation);
-                var mx = x0 - colL + ctx.Pt(4);
-                d.Layer("PD_LEVELS").Items.Add(new DItem
-                {
-                    Kind = ItemKind.Path, Name = p + "LVL_" + l.Name + "_MARK", Fill = d.Gray("#000000"),
-                    Paths = new() { new[] { new[] { mx, y - s * 0.6 }, new[] { mx + s, y - s * 0.6 }, new[] { mx + s / 2, y } } },
-                });
-                var line = map.Line(p + "LVL_" + l.Name, Array.Empty<(double, double)>(), d.Gray(es.LevelLineStroke), es.LevelLineStrokePt);
-                line.Paths = new() { new[] { new[] { mx + s * 1.3, y }, new[] { reach, y } } };
-                line.Dash = es.LevelLineDash;
-                d.Layer("PD_LEVELS").Items.Add(line);
-                var label = l.IsRoof ? $"{l.Name} ROOF" : l.Name;
-                d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "LVL_" + l.Name + "_TXT", mx + s * 1.5, y - ctx.Pt(2.5), label, "PD Note", "left"));
-                d.Layer("PD_ANNOTATION").Items.Add(SectionDrawing.Text(p + "LVL_" + l.Name + "_EL", mx + s * 1.5, y + ctx.Pt(7), FeetInches.Format(l.Elevation), "PD Note", "left"));
-            }
-        }
+            LevelMarkers.Add(d, ctx, map, p, r.Levels, x0 - colL, map.X(own.Min(e => e.MinX)), zMax);
 
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, ground), (plane.Length, ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 

@@ -165,6 +165,8 @@ public sealed class SectionStyle
     public string ContextCutFill { get; set; } = "";
     public double FacadeCutPt { get; set; }
     public bool LevelColumn { get; set; }
+    /// <summary>▼ + level name + elevation in a left column with a dashed line to the building, as in elevations.</summary>
+    public bool LevelMarkers { get; set; } = true;
     public bool HeightDimension { get; set; }
     public string TitlePrefix { get; set; } = "";
 }

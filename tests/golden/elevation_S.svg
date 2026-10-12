@@ -93,27 +93,27 @@
 </g>
 <g id="PD_LEVELS">
 <path id="ELV_S_LVL_L1_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,274.762 L46,274.762 L43,278.362 Z"/>
-<path id="ELV_S_LVL_L1" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,278.362 L114,278.362"/>
+<path id="ELV_S_LVL_L1_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,278.362 L114,278.362"/>
 <path id="ELV_S_LVL_L2_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,252.222 L46,252.222 L43,255.822 Z"/>
-<path id="ELV_S_LVL_L2" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,255.822 L114,255.822"/>
+<path id="ELV_S_LVL_L2_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,255.822 L114,255.822"/>
 <path id="ELV_S_LVL_L3_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,226.494 L46,226.494 L43,230.094 Z"/>
-<path id="ELV_S_LVL_L3" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,230.094 L114,230.094"/>
+<path id="ELV_S_LVL_L3_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,230.094 L114,230.094"/>
 <path id="ELV_S_LVL_L4_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,208.096 L46,208.096 L43,211.696 Z"/>
-<path id="ELV_S_LVL_L4" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,211.696 L114,211.696"/>
+<path id="ELV_S_LVL_L4_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,211.696 L114,211.696"/>
 <path id="ELV_S_LVL_L5_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,188.096 L46,188.096 L43,191.696 Z"/>
-<path id="ELV_S_LVL_L5" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,191.696 L114,191.696"/>
+<path id="ELV_S_LVL_L5_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,191.696 L114,191.696"/>
 <path id="ELV_S_LVL_L6_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,168.096 L46,168.096 L43,171.696 Z"/>
-<path id="ELV_S_LVL_L6" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,171.696 L114,171.696"/>
+<path id="ELV_S_LVL_L6_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,171.696 L114,171.696"/>
 <path id="ELV_S_LVL_L7_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,148.096 L46,148.096 L43,151.696 Z"/>
-<path id="ELV_S_LVL_L7" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,151.696 L114,151.696"/>
+<path id="ELV_S_LVL_L7_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,151.696 L114,151.696"/>
 <path id="ELV_S_LVL_L8_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,128.096 L46,128.096 L43,131.696 Z"/>
-<path id="ELV_S_LVL_L8" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,131.696 L114,131.696"/>
+<path id="ELV_S_LVL_L8_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,131.696 L114,131.696"/>
 <path id="ELV_S_LVL_L9_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,107.938 L46,107.938 L43,111.538 Z"/>
-<path id="ELV_S_LVL_L9" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,111.538 L114,111.538"/>
+<path id="ELV_S_LVL_L9_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,111.538 L114,111.538"/>
 <path id="ELV_S_LVL_L10_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,87.938 L46,87.938 L43,91.538 Z"/>
-<path id="ELV_S_LVL_L10" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,91.538 L114,91.538"/>
+<path id="ELV_S_LVL_L10_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,91.538 L114,91.538"/>
 <path id="ELV_S_LVL_L11_MARK" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M40,66.337 L46,66.337 L43,69.937 Z"/>
-<path id="ELV_S_LVL_L11" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,69.937 L114,69.937"/>
+<path id="ELV_S_LVL_L11_DASH" fill="none" stroke="#808080" stroke-width="0.35" stroke-dasharray="6 3" fill-rule="evenodd" d="M47.8,69.937 L114,69.937"/>
 </g>
 <g id="PD_GROUND">
 <path id="ELV_S_GROUND" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M114,278.362 L370,278.362"/>

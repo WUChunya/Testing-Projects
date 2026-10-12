@@ -400,6 +400,7 @@
     "contextCutFill": "#FFFFFF",
     "facadeCutPt": 0.5,
     "levelColumn": false,
+    "levelMarkers": true,
     "heightDimension": false,
     "titlePrefix": "SECTION"
   },
