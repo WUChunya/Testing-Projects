@@ -1,0 +1,308 @@
+{
+  "_doc": "Site program axon, site plan and exploded axon B, sampled from the ZGF Question-4 boards (refs 3/4/5). Sizes are final ARCH D pt: px x (2592 / 1666 image width) = 1.556 pt/px. See docs/SITE_STYLE.md.",
+  "scale": {
+    "pt_per_ft": 1.6
+  },
+  "artboard": {
+    "width_in": 36,
+    "height_in": 24
+  },
+  "site_axon": {
+    "projection": "isometric",
+    "ground": {
+      "block": "#F6F6F6",
+      "road": "#FFFFFF",
+      "curb_strip": "#F6E4CC",
+      "curb_strip_ft": 6,
+      "curb_line": "#C8B8A0",
+      "curb_line_pt": 0.5
+    },
+    "median": {
+      "fill": "#D2EAD2",
+      "stroke": "#A8CFA8",
+      "stroke_pt": 0.5
+    },
+    "park": {
+      "fill": "#D2EAD2",
+      "stroke": null
+    },
+    "plaza": {
+      "fill": "#FCECCC",
+      "stipple": "#6C7854",
+      "stipple_pt": 0.6,
+      "stipple_spacing_ft": 9
+    },
+    "lawn": {
+      "fill": "#CCECDC",
+      "hatch": "#8CBCA8",
+      "hatch_pt": 0.5,
+      "hatch_spacing_ft": 7
+    },
+    "bed_edge": {
+      "stroke": "#9CC4B4",
+      "stroke_pt": 0.5
+    },
+    "trees": {
+      "canopies": [
+        "#E4FCB4",
+        "#C4ECBC",
+        "#BACCC0",
+        "#CCECDC"
+      ],
+      "opacity": 0.85,
+      "stroke_pt": 0.35,
+      "trunk": "#8A8A8A",
+      "trunk_pt": 0.75,
+      "canopy_w_ft": 16,
+      "canopy_h_ft": 26,
+      "trunk_h_ft": 10
+    },
+    "context_bldg": {
+      "fill": "#FFFFFF",
+      "stroke": "#5A5A5A",
+      "stroke_pt": 0.75
+    },
+    "focus_bldg": {
+      "fill": "#FFFFFF",
+      "stroke": "#000000",
+      "stroke_pt": 3.5
+    },
+    "project": {
+      "silhouette_pt": 2.5,
+      "floor_line_pt": 0.5,
+      "floor_line_darken": 0.35,
+      "side_darken": [
+        0.06,
+        0.14
+      ],
+      "colors_measured": {
+        "lab_blue": "#CFE1F6",
+        "academic_green": "#E7F6E4",
+        "atrium_yellow": "#FCE494",
+        "atrium_yellow_side": "#F6CC36"
+      }
+    },
+    "label_context": {
+      "font": "Arial",
+      "weight": "Bold",
+      "size": 24,
+      "leading": 29.5,
+      "case": "upper",
+      "color": "#6C6C6C",
+      "transform": "none"
+    },
+    "label_street": {
+      "font": "Arial",
+      "weight": "Regular",
+      "size": 22,
+      "tracking": 200,
+      "case": "upper",
+      "color": "#5A5A5A",
+      "transform": "rotate_along_street"
+    },
+    "ped_flow": {
+      "color": "#E47200",
+      "stroke_pt": 14,
+      "dash": [
+        6,
+        4.5
+      ],
+      "head": "open_chevron",
+      "head_pt": 34,
+      "icon_d_pt": 44,
+      "icon_glyph": "#FFFFFF"
+    },
+    "view": {
+      "color": "#183C6C",
+      "stroke_pt": 4,
+      "dash": [
+        12,
+        8
+      ],
+      "head": "open_chevron",
+      "head_pt": 16,
+      "icon_d_pt": 40,
+      "label": "label_street"
+    },
+    "service": {
+      "color": "#6C6C6C",
+      "icon_d_pt": 54,
+      "leader_pt": 2.5
+    }
+  },
+  "site_plan": {
+    "projection": "plan",
+    "road": "#D2D2D2",
+    "sidewalk": "#E6E6E6",
+    "block": "#F0F0F0",
+    "park": "#DCECE4",
+    "trail": "#BCC494",
+    "context_bldg": {
+      "fill": "#FFFFFF",
+      "stroke": null,
+      "shadow": "#AEAEAE",
+      "shadow_offset_pt": [
+        12,
+        12
+      ]
+    },
+    "site": {
+      "plaza": "#FCECCC",
+      "path": "#FCF4A4",
+      "bed": "#DCECE4",
+      "court": "#F4D49C",
+      "dashed_path": "#9A8A7A",
+      "dashed_path_pt": 1.0,
+      "dash": [
+        4,
+        3
+      ]
+    },
+    "trees": {
+      "fill": "#90C696",
+      "opacity": 0.6,
+      "stroke": null,
+      "d_ft": [
+        14,
+        22
+      ]
+    },
+    "building": {
+      "outline": "#000000",
+      "outline_pt": 3.0,
+      "room_line": "#FFFFFF",
+      "room_line_pt": 1.0,
+      "colors_measured": {
+        "event_support": "#FCD44C",
+        "loading": "#CCCCCC",
+        "lecture": "#CCDEC0",
+        "vivarium_support": "#B1875D"
+      },
+      "lecture_outline_pt": 2.5
+    },
+    "label_context": {
+      "font": "Gotham Book",
+      "fallback": "Montserrat",
+      "weight": "Regular",
+      "size": 25,
+      "leading": 32,
+      "case": "upper",
+      "color": "#848484"
+    },
+    "label_street": {
+      "font": "Gotham Book",
+      "fallback": "Montserrat",
+      "weight": "Regular",
+      "size": 22,
+      "tracking": 100,
+      "case": "upper",
+      "color": "#848484"
+    },
+    "label_room": {
+      "font": "Arial",
+      "weight": "Regular",
+      "size": 19,
+      "leading": 22,
+      "case": "upper",
+      "color": "#333333"
+    },
+    "entry": {
+      "color": "#18427E",
+      "icon_d_pt": 48,
+      "triangle_pt": 26
+    },
+    "view_marker": {
+      "color": "#D8AE78",
+      "d_pt": 30,
+      "number": "#FFFFFF",
+      "arrow_pt": 3
+    },
+    "service": {
+      "color": "#6C6C6C",
+      "icon_d_pt": 50
+    },
+    "title_tag": {
+      "fill": "#F6F0E4",
+      "font": "Gotham Book",
+      "size": 31,
+      "color": "#333333"
+    }
+  },
+  "exploded_b": {
+    "projection": "planometric",
+    "x_axis_deg": 30,
+    "y_axis_deg": 120,
+    "block_thickness_ft": 6,
+    "plate_opacity": 0.85,
+    "side_darken": [
+      0.15,
+      0.3
+    ],
+    "edge": {
+      "stroke": "#FFFFFF",
+      "stroke_pt": 0.75
+    },
+    "atrium": {
+      "fill": "#F6F6C6",
+      "opacity": 0.6,
+      "envelope": "#E0E0B0",
+      "envelope_pt": 0.75
+    },
+    "shaft": {
+      "stroke": "#E4BA3C",
+      "stroke_pt": 3.0
+    },
+    "label": {
+      "font": "Arial",
+      "weight": "Bold",
+      "size": 26,
+      "small": 13,
+      "case": "upper",
+      "color": "#FFFFFF",
+      "opacity": 0.9,
+      "align": "center"
+    },
+    "level_tag": {
+      "marker_pt": 14,
+      "marker_fill": "#E49C30",
+      "font": "Arial",
+      "weight": "Bold",
+      "size": 17,
+      "case": "upper",
+      "color": "#333333",
+      "leader": "#666666",
+      "leader_pt": 0.75,
+      "gap_pt": 10
+    },
+    "site_plane": {
+      "fill": "#FFFFFF",
+      "stroke": "#9A9A9A",
+      "stroke_pt": 1.0,
+      "plan_opacity": 0.55,
+      "street": {
+        "font": "Arial",
+        "weight": "Bold",
+        "size": 19,
+        "color": "#6C6C6C"
+      }
+    },
+    "colors_measured": {
+      "office": "#848A78",
+      "class": "#BAC6A8",
+      "labs": "#F0C684",
+      "lab_blue": "#9CB4C0",
+      "simulation": "#DECCD8",
+      "gather": "#EAD278",
+      "atrium": "#F6F6C6",
+      "building_support": "#AEA8A2",
+      "vivarium": "#846C54"
+    },
+    "artboard": {
+      "width_in": 24,
+      "height_in": 36,
+      "orientation": "portrait"
+    },
+    "clear_ratio": 0.75,
+    "_doc_pitch": "Pitch = clear_ratio x projected depth of the plate footprint, so each plate is ~85% clear of the one above (ref 5). At 1\"=45' a 6-level stack needs ARCH D portrait."
+  }
+}
