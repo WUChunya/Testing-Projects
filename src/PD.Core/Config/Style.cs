@@ -256,11 +256,17 @@ public sealed class PlanStyle
     public double LeaderLengthPt { get; set; }
     /// <summary>Title tag behind the level name, bottom right (site plan "Ground Floor").</summary>
     public string TitleTagFill { get; set; } = "";
+    /// <summary>Edges where two hardscape pieces meet (user rev 0.8: 1 pt dark grey, light).</summary>
+    public Paint HardscapeEdge { get; set; } = new();
+    /// <summary>Edge between the site and the road (1.5 pt dark grey, light).</summary>
+    public Paint RoadEdge { get; set; } = new();
     public double TitleTagPadPt { get; set; }
     /// <summary>Trees are circles of this diameter range (ft).</summary>
     public double[] TreeDiameterFt { get; set; } = { 14, 22 };
     /// <summary>00_Site_Plan.ai: site shown this far around the ground floor.</summary>
     public double SiteMarginFt { get; set; } = 160;
+    /// <summary>Site plan: margin = this × the NC site's own width / depth on each side (user rev 0.8: 5).</summary>
+    public double SiteExtentFactor { get; set; } = 5;
     public string SiteTitle { get; set; } = "Site Plan";
     /// <summary>Upper floors sit on the same site, washed out by a white veil of this opacity.</summary>
     public string UpperVeilFill { get; set; } = "#FFFFFF";

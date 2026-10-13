@@ -123,5 +123,39 @@ public static class LevelAssignment
             plan.AreaByProgram[key] = plan.AreaByProgram.GetValueOrDefault(key) + f.Resolved.Area;
         }
         plan.Union = union;
+        Seal(plan, counted, r.SealGapFt);
+    }
+
+    /// <summary>
+    /// Blocks closer than <paramref name="gap"/> are modelling error and meant to touch (user rev 0.8): the level outline
+    /// is closed over such gaps and each footprint grows into them (smaller volume first, no overlaps), so drawings get
+    /// one outline and shared edges. Areas were counted before, from the modelled geometry.
+    /// </summary>
+    static void Seal(LevelPlan plan, List<Footprint> counted, double gap)
+    {
+        if (gap <= 0 || plan.Union.IsEmpty) return;
+        var mitre = new NetTopologySuite.Operation.Buffer.BufferParameters { JoinStyle = NetTopologySuite.Operation.Buffer.JoinStyle.Mitre };
+        NtsGeometry Grow(NtsGeometry g, double d) => NetTopologySuite.Operation.Buffer.BufferOp.Buffer(g, d, mitre);
+        try
+        {
+            var closed = Grow(Grow(plan.Union, gap / 2), -gap / 2);
+            if (closed.IsEmpty) return;
+            NtsGeometry taken = MeshSlicer.Factory.CreatePolygon();
+            var sealedParts = new List<(Footprint F, NtsGeometry G)>();
+            foreach (var f in counted.Where(f => !f.Resolved.IsEmpty))
+            {
+                var g = MeshSlicer.Polygonal(Grow(f.Resolved, gap / 2).Intersection(closed));
+                if (!taken.IsEmpty) g = MeshSlicer.Polygonal(g.Difference(taken));
+                if (g.IsEmpty) continue;
+                sealedParts.Add((f, g));
+                taken = taken.IsEmpty ? g : taken.Union(g);
+            }
+            foreach (var (f, g) in sealedParts) f.Resolved = g;
+            plan.Union = closed;
+        }
+        catch (TopologyException)
+        {
+            // Keep the modelled geometry.
+        }
     }
 }

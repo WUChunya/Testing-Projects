@@ -31,10 +31,11 @@ public class S4PlanAxonTests
         var r = AnalysisFixture.Result;
         _out.WriteLine(string.Join(", ", d.Artboards.Select(a => $"{a.Name} {a.W}x{a.H}")));
         Assert.Equal("01_Plans.ai", d.FileName);
-        Assert.Equal("PLANS OVERVIEW", d.Artboards[^1].Name);
-        Assert.Equal(r.Plans.Count(p => p.Footprints.Count > 0) + 1, d.Artboards.Count);
+        Assert.Equal("PLANS OVERVIEW", d.Artboards[^2].Name);
+        Assert.Equal("LEGEND & SYMBOLS", d.Artboards[^1].Name);
+        Assert.Equal(r.Plans.Count(p => p.Footprints.Count > 0) + 2, d.Artboards.Count);
         // Every level: colour blocks, a heavy outline, a title, a legend, a scale bar and a north arrow.
-        for (var a = 0; a < d.Artboards.Count - 1; a++)
+        for (var a = 0; a < d.Artboards.Count - 2; a++)
         {
             var on = All(d).Where(i => i.Artboard == a).ToList();
             Assert.Contains(on, i => i.Name.EndsWith("_OUTLINE") && i.StrokePt == ctx.Style.Plan.OutlinePt);
@@ -44,7 +45,7 @@ public class S4PlanAxonTests
             Assert.Contains(on, i => i.Name.EndsWith("_NORTH"));
             Assert.Contains(on, i => i.Fill?.StartsWith("PRG_") == true);
         }
-        Assert.Equal(r.Plans.Count(p => p.Footprints.Count > 0), All(d).Count(i => i.Artboard == d.Artboards.Count - 1 && i.Name.EndsWith("_NAME")));
+        Assert.Equal(r.Plans.Count(p => p.Footprints.Count > 0), All(d).Count(i => i.Artboard == d.Artboards.Count - 2 && i.Name.EndsWith("_NAME")));
         // Labels: most blocks labelled inside (centred), the rest with a leader.
         var labels = d.Layer("PD_LABELS").Items.Where(i => i.Kind == ItemKind.Text).ToList();
         Assert.True(labels.Count(l => l.Center) * 2 >= labels.Count, $"{labels.Count(l => l.Center)} of {labels.Count} inside");

@@ -189,9 +189,9 @@
 <g id="PD_PROGRAM">
 <rect id="SEC_A_L01_LOBBY_03" fill="#EFB7D7" stroke="none" stroke-width="0" x="474.245" y="778.228" width="252.655" height="45.396" rx="7.875"/>
 <rect id="SEC_A_L01_OFFICE_02" fill="#7CBECD" stroke="none" stroke-width="0" x="778.839" y="778.228" width="71.088" height="45.396" rx="7.875"/>
-<rect id="SEC_A_L01_LOBBY_02" fill="#EFB7D7" stroke="none" stroke-width="0" x="1032.761" y="778.228" width="68.135" height="45.396" rx="7.875"/>
-<rect id="SEC_A_L01_LOBBY_01" fill="#EFB7D7" stroke="none" stroke-width="0" x="1100.896" y="778.228" width="261.171" height="45.396" rx="7.875"/>
-<rect id="SEC_A_L01_OFFICE_01" fill="#7CBECD" stroke="none" stroke-width="0" x="1362.068" y="778.228" width="58.745" height="45.396" rx="7.875"/>
+<rect id="SEC_A_L01_LOBBY_02" fill="#EFB7D7" stroke="none" stroke-width="0" x="1032.761" y="778.228" width="68.585" height="45.396" rx="7.875"/>
+<rect id="SEC_A_L01_LOBBY_01" fill="#EFB7D7" stroke="none" stroke-width="0" x="1101.346" y="778.228" width="261.171" height="45.396" rx="7.875"/>
+<rect id="SEC_A_L01_OFFICE_01" fill="#7CBECD" stroke="none" stroke-width="0" x="1362.518" y="778.228" width="58.295" height="45.396" rx="7.875"/>
 <rect id="SEC_A_L02_LOBBY_01" fill="#EFB7D7" stroke="none" stroke-width="0" x="778.839" y="705.871" width="71.088" height="54.357" rx="7.875"/>
 <rect id="SEC_A_L02_OFFICE_02" fill="#7CBECD" stroke="none" stroke-width="0" x="1032.761" y="685.113" width="68.135" height="75.115" rx="7.875"/>
 <rect id="SEC_A_L01_OFFICE_01_2" fill="#7CBECD" stroke="none" stroke-width="0" x="1312.004" y="705.871" width="108.809" height="54.357" rx="7.875"/>
@@ -231,8 +231,8 @@
 <text id="SEC_A_L01_LOBBY_03_NUM" x="480.245" y="806.526" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="480.245" dy="0">01</tspan></text>
 <text id="SEC_A_L01_LOBBY_03_LBL" x="718.899" y="807.926" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="718.899" dy="0">LOBBY / BREAK</tspan></text>
 <text id="SEC_A_L01_OFFICE_02_LBL" x="841.927" y="806.11" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="14.81" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="841.927" dy="0">OFFICE</tspan></text>
-<text id="SEC_A_L01_LOBBY_01_LBL" x="1354.068" y="807.926" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1354.068" dy="0">LOBBY / BREAK</tspan></text>
-<text id="SEC_A_L01_OFFICE_01_LBL" x="1412.813" y="804.948" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11.49" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
+<text id="SEC_A_L01_LOBBY_01_LBL" x="1354.518" y="807.926" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1354.518" dy="0">LOBBY / BREAK</tspan></text>
+<text id="SEC_A_L01_OFFICE_01_LBL" x="1412.813" y="804.906" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11.37" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
 <text id="SEC_A_L02_LOBBY_01_NUM" x="784.839" y="738.65" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="784.839" dy="0">02</tspan></text>
 <text id="SEC_A_L02_OFFICE_02_LBL" x="1092.896" y="737.953" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="14.01" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1092.896" dy="0">OFFICE</tspan></text>
 <text id="SEC_A_L01_OFFICE_01_2_LBL" x="1412.813" y="740.05" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
@@ -262,11 +262,11 @@
 <use id="SEC_A_PERSON_003" href="#sym_PD_PERSON_P29" transform="matrix(0.259 -0 0 0.259 606.437 828.687)" opacity="0.9"/>
 <use id="SEC_A_PERSON_004" href="#sym_PD_PERSON_P12" transform="matrix(-0.259 0 0 0.259 652.363 828.687)" opacity="0.9"/>
 <use id="SEC_A_PERSON_005" href="#sym_PD_PERSON_P26" transform="matrix(0.259 -0 0 0.259 687.671 828.687)" opacity="0.9"/>
-<use id="SEC_A_PERSON_006" href="#sym_PD_PERSON_P38" transform="matrix(0.259 -0 0 0.259 1121.855 828.687)" opacity="0.9"/>
-<use id="SEC_A_PERSON_007" href="#sym_PD_PERSON_P07" transform="matrix(-0.259 0 0 0.259 1183.581 828.687)" opacity="0.9"/>
-<use id="SEC_A_PERSON_008" href="#sym_PD_PERSON_P26" transform="matrix(0.259 -0 0 0.259 1234.325 828.687)" opacity="0.9"/>
-<use id="SEC_A_PERSON_009" href="#sym_PD_PERSON_P13" transform="matrix(-0.259 0 0 0.259 1265.63 828.687)" opacity="0.9"/>
-<use id="SEC_A_PERSON_010" href="#sym_PD_PERSON_P27" transform="matrix(0.259 -0 0 0.259 1315.464 828.687)" opacity="0.9"/>
+<use id="SEC_A_PERSON_006" href="#sym_PD_PERSON_P38" transform="matrix(0.259 -0 0 0.259 1122.305 828.687)" opacity="0.9"/>
+<use id="SEC_A_PERSON_007" href="#sym_PD_PERSON_P07" transform="matrix(-0.259 0 0 0.259 1184.031 828.687)" opacity="0.9"/>
+<use id="SEC_A_PERSON_008" href="#sym_PD_PERSON_P26" transform="matrix(0.259 -0 0 0.259 1234.775 828.687)" opacity="0.9"/>
+<use id="SEC_A_PERSON_009" href="#sym_PD_PERSON_P13" transform="matrix(-0.259 0 0 0.259 1266.08 828.687)" opacity="0.9"/>
+<use id="SEC_A_PERSON_010" href="#sym_PD_PERSON_P27" transform="matrix(0.259 -0 0 0.259 1315.914 828.687)" opacity="0.9"/>
 <use id="SEC_A_PERSON_011" href="#sym_PD_PERSON_P22" transform="matrix(0.259 -0 0 0.259 798.233 828.687)" opacity="0.9"/>
 <use id="SEC_A_PERSON_012" href="#sym_PD_PERSON_P05" transform="matrix(-0.259 0 0 0.259 1048.569 828.687)" opacity="0.9"/>
 <use id="SEC_A_PERSON_013" href="#sym_PD_PERSON_P28" transform="matrix(-0.259 0 0 0.259 1345.285 765.291)" opacity="0.9"/>

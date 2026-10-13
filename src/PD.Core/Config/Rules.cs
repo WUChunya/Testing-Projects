@@ -56,6 +56,8 @@ public sealed class CleanupRules
     public string SingleSurface { get; set; } = "ask";
     public double SingleSurfaceExtrudeFt { get; set; }
     public double MinOverlapAreaSf { get; set; }
+    /// <summary>Blocks on a level closer than this are treated as touching (drawing geometry only; areas unchanged).</summary>
+    public double SealGapFt { get; set; } = 0.2;
 }
 
 public sealed class FacadeRules

@@ -497,7 +497,7 @@
     "leaderStroke": "#808080",
     "leaderPt": 0.35,
     "leaderLengthPt": 18.0,
-    "titleTagFill": "#F6F0E4",
+    "titleTagFill": "",
     "titleTagPadPt": 10.0,
     "treeDiameterFt": [
       14,
@@ -505,13 +505,25 @@
     ],
     "labelSmallPt": 13,
     "siteMarginFt": 160.0,
+    "siteExtentFactor": 5.0,
+    "siteExtentComment": "Site plan shows the NC site plus siteExtentFactor × its width (E–W) / depth (N–S) on each side; siteMarginFt is the minimum.",
     "siteTitle": "Site Plan",
     "upperVeilFill": "#FFFFFF",
     "upperVeilOpacity": 0.7,
     "basementEarthFill": "#D9D9D9",
     "labelMinPt": 8.0,
     "labelOncePerProgram": true,
-    "contextNames": true
+    "contextNames": true,
+    "hardscapeEdge": {
+      "stroke": "#4A4A4A",
+      "strokePt": 1.0,
+      "opacity": 0.45
+    },
+    "roadEdge": {
+      "stroke": "#4A4A4A",
+      "strokePt": 1.5,
+      "opacity": 0.45
+    }
   },
   "axon": {
     "comment": "PRD 5.4. Shared values from docs/AXON_STYLE.md (styles/axon_style.json); stacked = docs/SITE_STYLE.md §1 site program axon; exploded = AXON_STYLE §7 (A, Atlanta); explodedB = SITE_STYLE §3 (planometric). azimuthDeg = where the viewer stands (225 = south-west).",

@@ -28,7 +28,8 @@
     "spanKeepTallMaxStoryFactor": 1.6,
     "singleSurface": "ask",
     "singleSurfaceExtrudeFt": 10.0,
-    "minOverlapAreaSf": 1.0
+    "minOverlapAreaSf": 1.0,
+    "sealGapFt": 0.2
   },
   "facade": {
     "thinSheetMaxFt": 1.0,

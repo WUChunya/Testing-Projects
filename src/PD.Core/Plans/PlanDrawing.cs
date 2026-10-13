@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -62,6 +62,11 @@ public static class PlanDrawing
             DrawLevel(d, ctx, ov, new PageMap(cx - env.MinX * k, cy + nameBand, k, env.MaxY, env.Width, flip: false), i, p, background, env, KindOf(ctx, i));
             d.Layer("PD_ANNOTATION").Items.Add(At(SectionDrawing.Text(p + "NAME", cx, cy + ctx.Pt(14), lvl.Name, "PD Heading", "left"), ov));
         }
+        PlanLegendSheet.Add(d, ctx, (a, x, y) =>
+        {
+            North(d, ctx, a, "LGD_", x + ctx.Pt(ps.NorthArrowPt) * 0.5, y);
+            Bar(d, ctx, a, "LGD_", ScaleBar(ps, 600, k), x + ctx.Pt(ps.NorthArrowPt) * 1.5, y + ctx.Pt(ps.NorthArrowPt) * 0.6);
+        });
         return d;
     }
 
@@ -93,7 +98,7 @@ public static class PlanDrawing
         var ps = ctx.Style.Plan;
         var d = new PD.Core.Drawing.Drawing { FileName = "00_Site_Plan.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE",
+        foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE",
                      "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
         var i = GroundIndex(ctx);
@@ -102,8 +107,7 @@ public static class PlanDrawing
             d.Notes.Add("Site plan: no ground floor footprint.");
             return d;
         }
-        var env = new Envelope(r.Plans[i].Union.EnvelopeInternal);
-        env.ExpandBy(ps.SiteMarginFt);
+        var env = SiteExtent(ctx, i);
         Sheet(d, ctx, i, env, PlanBackground.Collect(r, env, ps.TreeDiameterFt), "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
         return d;
     }
@@ -160,6 +164,53 @@ public static class PlanDrawing
     }
 
     /// <summary>Background, program blocks, open-to-below voids, outline, facade line and labels of one level.</summary>
+    /// <summary>
+    /// Site plan extent (user rev 0.8): our site (ground floor + NC site objects) grown by plan.siteExtentFactor × its
+    /// own size in each direction (100 × 80 ft site → ±500 ft N–S, ±400 ft E–W), never less than plan.siteMarginFt.
+    /// </summary>
+    public static Envelope SiteExtent(ExportContext ctx, int groundIndex)
+    {
+        var r = ctx.Result;
+        var ps = ctx.Style.Plan;
+        var site = new Envelope(r.Plans[groundIndex].Union.EnvelopeInternal);
+        foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role) && Roles.IsNew(o.Role)))
+            site.ExpandToInclude(new Envelope(o.BBox.MinX, o.BBox.MaxX, o.BBox.MinY, o.BBox.MaxY));
+        var env = new Envelope(site);
+        env.ExpandBy(Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Width), Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Height));
+        return env;
+    }
+
+    /// <summary>
+    /// User rev 0.8: a light 1 pt dark-grey line where two hardscape pieces meet, 1.5 pt where the site meets the road.
+    /// </summary>
+    static void SiteEdges(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background)
+    {
+        var ps = ctx.Style.Plan;
+        var polys = background.Where(b => !b.IsLine && !b.Geometry.IsEmpty).ToList();
+        var hard = polys.Where(b => b.Role is Roles.Hardscape or Roles.NcHardscape).Select(b => b.Geometry).ToList();
+        var road = polys.Where(b => b.Role == Roles.Road).Select(b => b.Geometry).ToList();
+        var site = polys.Where(b => b.Role is Roles.Hardscape or Roles.NcHardscape or Roles.Landscape or Roles.Green or Roles.Water or Roles.NcWater)
+            .Select(b => b.Geometry).ToList();
+        void Add(string name, NtsGeometry? lines, Config.Paint paint)
+        {
+            if (lines == null || lines.IsEmpty || paint.StrokePt is not > 0) return;
+            var item = At(map.Geom(p + name, MeshSlicer.Lineal(lines), null, d.Swatch(name, paint.Stroke ?? "#4A4A4A"), paint.StrokePt.Value, false), a);
+            item.Opacity = paint.Opacity;
+            item.Dash = paint.Dash;
+            if (item.Paths is { Count: > 0 }) d.Layer("BG_SITE_EDGE").Items.Add(item);
+        }
+        if (hard.Count > 1)
+            Add("HARDSCAPE_EDGE", Safe(() =>
+            {
+                var all = NetTopologySuite.Operation.Union.UnaryUnionOp.Union(hard.Select(g => g.Boundary).ToList());
+                var outer = NetTopologySuite.Operation.Union.UnaryUnionOp.Union(hard).Boundary.Buffer(0.25);
+                return all.Difference(outer);
+            }), ps.HardscapeEdge);
+        if (road.Count > 0 && site.Count > 0)
+            Add("ROAD_EDGE", Safe(() => NetTopologySuite.Operation.Union.UnaryUnionOp.Union(road).Boundary
+                .Intersection(NetTopologySuite.Operation.Union.UnaryUnionOp.Union(site).Buffer(0.5))), ps.RoadEdge);
+    }
+
     static void DrawLevel(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, int i, string p, List<BackgroundItem> background,
         Envelope env, LevelKind kind)
     {
@@ -187,6 +238,8 @@ public static class PlanDrawing
                 d.Layer("BG_CONTEXT_SHADOW").Items.Add(At(shadow, a));
             }
         }
+
+        if (kind != LevelKind.Basement) SiteEdges(d, ctx, a, map, p, background);
 
         // Upper floors: the same site under a white veil, so the floor reads first (Typical Floor reference).
         if (kind == LevelKind.Upper && ps.UpperVeilOpacity > 0)
@@ -391,7 +444,8 @@ public static class PlanDrawing
     static void TitleTag(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, string p, string text, double right, double bottom)
     {
         var ps = ctx.Style.Plan;
-        var size = ctx.Pt(ctx.Style.Fonts.Title.SizePt);
+        // "LEVEL 1" as plain text the size of the largest program name (user rev 0.8); a fill only if the style sets one.
+        var size = ctx.Pt(ctx.Style.Fonts.Label.SizePt);
         var pad = ctx.Pt(ps.TitleTagPadPt);
         var w = TextFit.Width(text, size) * 0.85 + 2 * pad;
         var h = size * 1.2 + 2 * pad;
@@ -403,6 +457,7 @@ public static class PlanDrawing
                 Paths = new() { new[] { new[] { right - w, bottom - h }, new[] { right, bottom - h }, new[] { right, bottom }, new[] { right - w, bottom } } },
             }, a));
         var t = SectionDrawing.Text(p + "TITLE", right - w / 2, bottom - h / 2, text, "PD Title", "center", center: true);
+        t.SizePt = size;
         anno.Items.Add(At(t, a));
     }
 
