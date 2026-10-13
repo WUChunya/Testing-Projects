@@ -12,14 +12,14 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   `AXON_LEVEL_LINE`, exploded / levels site at L1 with excavation (`GroundAndExcavation`, `Excavation`), trees `HideBehind`.
   Elevations: same `LevelMarkers` as sections, dashed lines across the drawing. S6: `S6AcceptanceTests` (T5–T7; T7 runs
   runtime.jsx in node on a mock doc), `docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, PRD v1.0.
-- Next: Windows acceptance of v0.8.0 (`docs/DEV_PROMPT.md` message). Review: `PD_DUMP=<dir> dotnet test --filter DumpForReview`.
+- Next: Windows test-and-tune of v0.8.0 in a new session — opening message, feature map, tuning keys, review workflow and
+  open questions in **`docs/HANDOFF.md`**. Review: `DumpForReview` (PD_DUMP / PD_ONLY) + `node tools/svg_shot.mjs`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off.
 - Penthouse = top row only SHELL/CORE/STAIR/BUILDING_SUPPORT (`section.penthousePrograms`). Exploded site follows L1 (ground).
-- Defaults in `styles/` (rules, style incl. plan/section/axon.site/entourage/charts/roles). Scales 1" = 45' / sections 16'.
+- Defaults in `styles/` (rules, style incl. plan/section/axon.site/entourage/charts/roles). Scales 1" = 45' / sections 16'. Env: HANDOFF §5.
 - Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
-- Env: apt dotnet-sdk-8.0, pip rhino3dm + pypdf, node 22 + global playwright (--disable-gpu).
 
 ## Windows test checklist (for the user)
 1. Unzip `ProgramDiagram-0.8.0.zip` over the old folder (whole folder), restart Rhino. Install Futura PT (Book, Heavy).
@@ -37,4 +37,4 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 ## Known issues
 - Plan people = built-in top-view symbol (office library has side views only).
 - Not yet: street names / arrows, flow / view / service icons (draw on `ANNOTATION`), key plan, Unassigned hatch.
-- Elevations draw no trees (sections do). Text widths are estimates (centring in AI uses glyph bounds: VERIFY-WIN).
+- Elevations draw no trees (sections do). Text widths are estimates. Open: "site context follows B1" read as site at L1.

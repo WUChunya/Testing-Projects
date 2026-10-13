@@ -1,6 +1,6 @@
 # Program Diagram — Rhino 8 plugin (Windows)
 
-Spec: `docs/PRD.md` (Chinese). Progress/handoff: `docs/PROGRESS.md`. Session plan: `docs/DEV_PROMPT.md`.
+Spec: `docs/PRD.md` (Chinese). Progress: `docs/PROGRESS.md`. Handoff (current round, where each feature lives): `docs/HANDOFF.md`. Session plan: `docs/DEV_PROMPT.md`.
 Talk to the user in Chinese; write code, comments, commits in English.
 
 ## Layout

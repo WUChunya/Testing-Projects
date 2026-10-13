@@ -14,22 +14,9 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: after S6, v0.8.0 — Windows acceptance and fixes)
+## Next-session message (current: v0.8.0 test-and-tune rounds)
 
-```
-You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
-Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections you need
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v1.0; S0-S6 are done (plugin v0.8.0, all tests green).
-Style: styles/style_default.json (fonts = Futura PT caps; roles incl. NC.Interior / Furniture / Massing / Screen; plan,
-section incl. penthouse, axon incl. axon.site / excavation, entourage, charts); read styles by key, never whole.
-Fixtures: tests/fixtures/template.json and downtown.json (rev 2026-10-13, no roof slab). DowntownTests.DumpForReview
-writes every drawing as SVG with PD_DUMP=<dir> (PD_ONLY=Plan,Section,... to limit).
-Task: fix what the Windows test of v0.8.0 shows (results below), reusing what exists. Keep: true scale, stable item
-names, _MANUAL / OVERLAY untouched, NC vs BG drawn differently, every default in styles/*.json.
-Talk to me in Chinese; code/commits in English. At the end: run tests, update PROGRESS.md (<=40 lines) and
-CHANGELOG.md, bump the version, run tools/package.sh, commit, push, send me the zip, reply in Chinese in <=10 lines.
-[Paste Windows test results / screenshots here]
-```
+Use the opening message in `docs/HANDOFF.md` §1 (kept there with the feature map, tuning keys and review workflow).
 
 ---
 
