@@ -87,13 +87,14 @@ public class DowntownTests
     public void LevelsComeFromTheFloorPlates()
     {
         var levels = Analysis.Value.Levels;
-        Assert.Equal(13, levels.Count);
+        // Rev 2026-10-13: no roof slab over the penthouse any more (its top gets an elevation marker instead).
+        Assert.Equal(12, levels.Count);
         Assert.Equal("B1", levels[0].Name);
         Assert.Equal(-21.99, levels[0].Elevation, 1);
         Assert.Equal("L1", levels[1].Name);
         Assert.Equal(0.18, levels[1].Elevation, 1);
-        Assert.Equal("L12", levels[^1].Name);
-        Assert.Equal(194.01, levels[^1].Elevation, 1);
+        Assert.Equal("L11", levels[^1].Name);
+        Assert.Equal(178.01, levels[^1].Elevation, 1);
         // Masses are drawn from the slab soffit here (bottom 3" below the slab top): no phantom level, no mezzanine.
         Assert.All(levels, l => Assert.False(l.IsMezzanine));
         Assert.All(levels, l => Assert.True(l.Sources.HasFlag(LevelSource.Slab), $"{l.Name} has no slab"));
@@ -101,7 +102,8 @@ public class DowntownTests
 
     /// <summary>
     /// The roof garden sits 4,000 ft from the tower (drawn aside), so it is reported as a stray program mass;
-    /// once kept it lands on the top level although it is only 6" thick (flat-mass rule).
+    /// once kept it is 34 ft above the top level L11 (rev 2026-10-13 has no roof slab), more than 1.6 stories, so the
+    /// flat-mass rule does not put it on a level.
     /// </summary>
     [Fact]
     public void SkyGardenIsReportedStrayAndCountedOnceKept()
@@ -112,8 +114,8 @@ public class DowntownTests
 
         var kept = Analyzer.Run(new AnalysisInput { Model = model, KeepStray = new HashSet<string> { sky.Id } });
         var top = kept.Plans[^1];
-        Assert.Equal("L12", top.Level.Name);
-        Assert.Equal(28800, top.AreaByProgram["GREEN_ROOF"], 0);
+        Assert.Equal("L11", top.Level.Name);
+        Assert.False(top.AreaByProgram.ContainsKey("GREEN_ROOF"));
     }
 
     /// <summary>Context spreads over the whole downtown site: only our own objects can be stray (PRD 3.5).</summary>
@@ -150,7 +152,7 @@ public class DowntownTests
         var r = Analysis.Value;
         Assert.DoesNotContain(r.Masses, m => m.Source.LayerPath.Contains("::Visible::", StringComparison.Ordinal));
         Assert.DoesNotContain(r.Local.Objects.Where(o => o.Role == Roles.Slab), o => o.LayerPath.Contains("Visible", StringComparison.Ordinal));
-        Assert.Equal(16, r.Local.Objects.Count(o => o.Role == Roles.Slab));
+        Assert.Equal(15, r.Local.Objects.Count(o => o.Role == Roles.Slab));
         Assert.Equal(155, r.Local.Objects.Count(o => o.Role == Roles.Entourage && o.Mesh != null));
     }
 
