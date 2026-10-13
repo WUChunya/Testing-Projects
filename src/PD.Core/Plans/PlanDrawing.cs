@@ -173,10 +173,25 @@ public static class PlanDrawing
         var r = ctx.Result;
         var ps = ctx.Style.Plan;
         var site = new Envelope(r.Plans[groundIndex].Union.EnvelopeInternal);
+        // Only NC site objects next to the building count: a stray or oversized one (a ground plane, a far-off
+        // test object) would blow the extent up past Illustrator's canvas and the site plan would not be created.
+        var near = new Envelope(site);
+        near.ExpandBy(ps.SiteMarginFt);
         foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role) && Roles.IsNew(o.Role)))
-            site.ExpandToInclude(new Envelope(o.BBox.MinX, o.BBox.MaxX, o.BBox.MinY, o.BBox.MaxY));
+        {
+            var e = new Envelope(o.BBox.MinX, o.BBox.MaxX, o.BBox.MinY, o.BBox.MaxY);
+            if (near.Contains(e)) site.ExpandToInclude(e);
+        }
         var env = new Envelope(site);
         env.ExpandBy(Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Width), Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Height));
+        // Illustrator refuses artboards past its canvas (runtime.jsx throws): keep the drawing inside page.maxArtboardPt.
+        var maxFt = (ctx.Style.Page.MaxArtboardPt - 2 * ctx.Style.Page.MarginPt - ctx.Pt(ctx.Style.Page.TitleBandPt) - ctx.Pt(ps.BandPt) * 4) / ctx.PtPerFt;
+        if (maxFt > 0 && (env.Width > maxFt || env.Height > maxFt))
+        {
+            var c = site.Centre;
+            double hw = Math.Min(env.Width, maxFt) / 2, hh = Math.Min(env.Height, maxFt) / 2;
+            env = new Envelope(c.X - hw, c.X + hw, c.Y - hh, c.Y + hh);
+        }
         return env;
     }
 

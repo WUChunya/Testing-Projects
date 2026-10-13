@@ -92,8 +92,15 @@ public static class AxonDrawing
         var reach = site
             ? new SiteReach(ax.Site.SiteMarginFt, ax.Site.ContextMarginFt, ax.Site.ContextHeightFt, ax.Site.MaxContextHeightFt, ax.Site.People)
             : SiteReach.Of(ax);
+        // User rev 0.8.1: 03 shows the building from grade up; basements would stand on the site plate.
+        if (!(site ? ax.Site.ShowBasements : st.ShowBasements))
+        {
+            var above = AboveGrade(ctx.Result, blocks, ground);
+            if (above.Count > 0) blocks = above;
+        }
+        var full = site ? ax.Site.FullHeightBlocks : st.FullHeightBlocks;
         var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach);
-        Func<ProgramBlock, (double, double)> band = site && ax.Site.FullHeightBlocks ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
+        Func<ProgramBlock, (double, double)> band = full ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
         var program = ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList();
         var faces = AxonFaces.Render(proj, context.Concat(program));
         HideBehind(sheet, proj, faces);
@@ -112,12 +119,13 @@ public static class AxonDrawing
         var folds = AxonFaces.Folds(mine);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
         var outline = AxonFaces.Union(mine.Select(f => f.Screen));
-        if (site)
+        if (full)
         {
             // The heavy line only on the outer silhouette (no holes, no hairline gaps between faces).
             outline = AxonFaces.Safe(() => outline.Buffer(0.05).Buffer(-0.05), outline);
             outline = MeshSlicer.Factory.BuildGeometry(AxonFaces.Polygons(outline).Select(p => (NtsGeometry)MeshSlicer.Factory.CreatePolygon(p.Shell)).ToList());
-            LevelLines(d, ctx, proj, sheet, mine, ctx.Rules.Levels.GroundElevationFt);
+            var (lineColor, linePt) = site ? (ax.Site.LevelLineColor, ax.Site.LevelLinePt) : (st.LevelLineColor, st.LevelLinePt);
+            LevelLines(d, proj, sheet, mine, ground, lineColor, linePt);
         }
         if (!outline.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", outline, null, line, st.SilhouettePt)));
         if (st.Labels) CentredLabels(ctx, proj, mine, sheet, "PD_LABELS", "PD Plane Label", "PD Plane Label Small");
@@ -158,13 +166,22 @@ public static class AxonDrawing
         return (z0, Math.Max(z1, z0 + 0.1));
     }
 
+    /// <summary>Blocks of the levels at or above grade (the ground-floor plate and up; see <see cref="GroundAndExcavation"/>).</summary>
+    public static List<ProgramBlock> AboveGrade(AnalysisResult r, List<ProgramBlock> blocks, double ground)
+    {
+        var levels = Plates(blocks);
+        if (levels.Count == 0) return blocks;
+        var (at, _) = GroundAndExcavation(r, blocks, levels, ground);
+        return blocks.Where(b => r.Levels[b.LevelIndex].Elevation >= r.Levels[at].Elevation - 1).ToList();
+    }
+
     /// <summary>
     /// 2 pt line between floors (own layer): the bottom edge of every visible wall of a block that stands above the
     /// ground, kept where that wall is seen.
     /// </summary>
-    static void LevelLines(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> mine, double ground)
+    static void LevelLines(PD.Core.Drawing.Drawing d, AxonProjection proj, Sheet sheet, List<VisibleFace> mine, double ground, string color, double pt)
     {
-        var st = ctx.Style.Axon.Site;
+        if (pt <= 0) return;
         var lines = new List<NtsGeometry>();
         foreach (var f in mine.Where(f => !f.IsTop && f.Prism.Z0 > ground + 0.5))
         {
@@ -193,7 +210,7 @@ public static class AxonDrawing
         }
         if (lines.Count == 0) return;
         var all = AxonFaces.Safe(() => NetTopologySuite.Operation.Union.UnaryUnionOp.Union(lines), MeshSlicer.Factory.BuildGeometry(lines));
-        sheet.Paint.Add(("AXON_LEVEL_LINE", new Spec("LEVEL_LINES", MeshSlicer.Lineal(all), null, d.Gray(st.LevelLineColor), st.LevelLinePt, Closed: false)));
+        sheet.Paint.Add(("AXON_LEVEL_LINE", new Spec("LEVEL_LINES", MeshSlicer.Lineal(all), null, d.Gray(color), pt, Closed: false)));
     }
 
     /// <summary>
@@ -241,9 +258,15 @@ public static class AxonDrawing
         var lifted = Lifted(r, blocks, levels, (lower, story) => Math.Max(ex.GapFactor * story, ex.MinTopVisible * Depth(proj, lower) / proj.ZScale));
         double Lift(double z) => LiftZ(r, levels, lifted, z);
 
-        // The site sits at ground level (user rev 0.8): L1 stands on it, basements hang below in the dug-out hole.
-        var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ctx.Rules.Levels.GroundElevationFt);
-        Site(d, ctx, proj, blocks, sheet, lifted[siteLevel] - t, flatContext: true, family: "axon", opacity: 1, excavation: dig);
+        // The site follows Level 1 (user rev 0.8 / 0.8.1): L1 stands on it; basements are underground — they hang below
+        // the whole site plate (never drawn over it) and the site shows the dug-out hole with its far walls.
+        var ground = ctx.Rules.Levels.GroundElevationFt;
+        var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
+        var siteZ = lifted[siteLevel] - t;
+        var basements = DropBasements(r, proj, blocks, levels, lifted, siteLevel, siteZ, ax.SiteMarginFt, ex.BasementClearFt);
+        Site(d, ctx, proj, blocks, sheet, siteZ, flatContext: true, family: "axon", opacity: 1, excavation: dig);
+        if (dig != null && basements.Count > 0)
+            Excavation(d, ctx, proj, sheet, dig, siteZ - (r.Levels[siteLevel].Elevation - r.Levels[basements[0]].Elevation), siteZ);
         var allFaces = new List<VisibleFace>();
         var joined = 0;
         foreach (var (i, n) in levels.Select((i, n) => (i, n)))
@@ -278,6 +301,31 @@ public static class AxonDrawing
         return sheet;
     }
 
+    /// <summary>
+    /// Basements are underground (user rev 0.8.1): every level below <paramref name="siteLevel"/> is lowered together
+    /// until the top basement's highest drawn point sits <paramref name="clearFt"/> (drawn height) under the front
+    /// edge of the site plate (blocks' envelope + <paramref name="siteMarginFt"/> at <paramref name="siteZ"/>), so no
+    /// basement plate is drawn over the site. Returns the basement levels, lowest first.
+    /// </summary>
+    static List<int> DropBasements(AnalysisResult r, AxonProjection proj, List<ProgramBlock> blocks, List<int> levels,
+        Dictionary<int, double> lifted, int siteLevel, double siteZ, double siteMarginFt, double clearFt)
+    {
+        var basements = levels.Where(i => i != siteLevel && r.Levels[i].Elevation < r.Levels[siteLevel].Elevation - 1).ToList();
+        if (basements.Count == 0) return basements;
+        var own = new Envelope();
+        foreach (var b in blocks) own.ExpandToInclude(b.Geometry.EnvelopeInternal);
+        own.ExpandBy(siteMarginFt);
+        var siteBottom = proj.Plane(MeshSlicer.Factory.ToGeometry(own), siteZ).EnvelopeInternal.MinY;
+        var top = basements[^1];
+        var plate = AxonFaces.Union(blocks.Where(b => b.LevelIndex == top).Select(b => b.Geometry));
+        if (plate.IsEmpty) return basements;
+        var plateTop = proj.Plane(plate, lifted[top]).EnvelopeInternal.MaxY;
+        var drop = (plateTop - siteBottom) / proj.ZScale + clearFt;
+        if (drop > 0)
+            foreach (var i in basements) lifted[i] -= drop;
+        return basements;
+    }
+
     /// <summary>Plate faces (AXON_STYLE §3): tops with white 0.5 pt divisions, sides plain, 1.0 pt folds, 2.0 pt plate silhouette.</summary>
     static void PlateFaces(PD.Core.Drawing.Drawing d, ExportContext ctx, List<VisibleFace> faces, Sheet sheet, string layer, string prefix)
     {
@@ -309,6 +357,7 @@ public static class AxonDrawing
         // White site plane under the ground floor with the site plan printed on it at 55 %.
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var groundPlate = levels.FirstOrDefault(i => r.Levels[i].Elevation >= ground - 0.5, levels[0]);
+        DropBasements(r, proj, blocks, levels, lifted, groundPlate, lifted[groundPlate] - t, ax.SiteMarginFt, ax.Exploded.BasementClearFt);
         Site(d, ctx, proj, blocks, sheet, lifted[groundPlate] - t, flatContext: true, family: "plan", opacity: eb.SitePlanOpacity,
             plane: (eb.SitePlaneFill, eb.SitePlaneStroke, eb.SitePlaneStrokePt));
 

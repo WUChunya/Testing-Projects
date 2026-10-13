@@ -423,7 +423,9 @@
     "textReferenceScale": "1\" = 45'-0\"",
     "textComment": "All text sizes and annotation offsets are given at textReferenceScale and scale with the drawing scale.",
     "lightLabelColor": "#FFFFFF",
-    "labelLightBelowLuma": 150
+    "labelLightBelowLuma": 150,
+    "maxArtboardPt": 15000.0,
+    "maxArtboardComment": "Largest artboard side in pt (Illustrator canvas 16383); the site plan extent is clipped to fit."
   },
   "view": {
     "comment": "Projected (Make2D-like) view used behind section cuts and for elevations. Our building: masses = solid light-grey base; every slab/facade layer gets its own AI layer and global swatch (grey by layer order, glass white); all opaque, near hides far. Other buildings: white fill + dashed grey outline.",
@@ -602,7 +604,12 @@
         0.06,
         0.14
       ],
-      "labels": true
+      "labels": true,
+      "fullHeightBlocks": true,
+      "levelLineColor": "#000000",
+      "levelLinePt": 2.0,
+      "showBasements": false,
+      "comment": "User rev 0.8.1: like the site axon — no slabs (blocks floor to floor), 2 pt level lines on AXON_LEVEL_LINE, the heavy silhouettePt line only on the outer silhouette; basements are not drawn (showBasements)."
     },
     "exploded": {
       "slabThicknessFt": 3.75,
@@ -617,7 +624,9 @@
       "levelMarkerGapPt": 8.5,
       "leaderStroke": "#B8B8B8",
       "leaderPt": 0.35,
-      "columnOffsetPt": 108
+      "columnOffsetPt": 108,
+      "basementClearFt": 12.0,
+      "basementComment": "User rev 0.8.1: the site follows Level 1; basements hang below the whole site plate (basementClearFt of drawn height under its front edge) with the dug-out hole shown in the site, never drawn over the site."
     },
     "explodedB": {
       "yAxisDeg": 30,
@@ -661,7 +670,8 @@
       "annotationLayer": "ANNOTATION",
       "fullHeightBlocks": true,
       "levelLineColor": "#000000",
-      "levelLinePt": 2.0
+      "levelLinePt": 2.0,
+      "showBasements": false
     },
     "titleSite": "SITE AXON",
     "excavationFill": "#C8C8C8",

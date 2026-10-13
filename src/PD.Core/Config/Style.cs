@@ -193,6 +193,8 @@ public sealed class PageStyle
     /// <summary>Labels on fills darker than this luma (0–255) are white.</summary>
     public double LabelLightBelowLuma { get; set; } = 150;
     public string LightLabelColor { get; set; } = "#FFFFFF";
+    /// <summary>Largest artboard side; Illustrator's canvas is 16383 pt and runtime.jsx refuses layouts past 16000.</summary>
+    public double MaxArtboardPt { get; set; } = 15000;
 }
 
 /// <summary>Projected (Make2D-like) view: behind section cuts and in elevations.</summary>
@@ -368,6 +370,8 @@ public sealed class SiteAxonStyle
     /// <summary>Line between two floors on the faces (own layer AXON_LEVEL_LINE).</summary>
     public string LevelLineColor { get; set; } = "#000000";
     public double LevelLinePt { get; set; } = 2.0;
+    /// <summary>Basement levels in the site axon (user rev 0.8.1: no — 03 shows the building from grade up).</summary>
+    public bool ShowBasements { get; set; }
 }
 
 /// <summary>Lollipop trees (SITE_STYLE §1).</summary>
@@ -394,12 +398,23 @@ public sealed class StackedAxonStyle
     public double FloorLineDarken { get; set; }
     public double[] SideDarken { get; set; } = { 0.06, 0.14 };
     public bool Labels { get; set; }
+    /// <summary>User rev 0.8.1: like the site axon — blocks floor to floor, 2 pt level lines, heavy line only outside.</summary>
+    public bool FullHeightBlocks { get; set; } = true;
+    public string LevelLineColor { get; set; } = "#000000";
+    public double LevelLinePt { get; set; } = 2.0;
+    /// <summary>Basement levels in the stacked axon (user rev 0.8.1: no).</summary>
+    public bool ShowBasements { get; set; }
 }
 
 /// <summary>Exploded axon A (AXON_STYLE §6–7).</summary>
 public sealed class ExplodedAxonStyle
 {
     public double SlabThicknessFt { get; set; }
+    /// <summary>
+    /// Basements hang below the whole site plate (user rev 0.8.1): the top basement's far edge sits this many feet
+    /// (drawn height) under the site plate's front edge, so no basement plate is drawn over the site.
+    /// </summary>
+    public double BasementClearFt { get; set; } = 12;
     /// <summary>Pitch (top to top) = max(gapFactor × floor height, minTopVisible × projected top depth).</summary>
     public double GapFactor { get; set; }
     public double MinTopVisible { get; set; }

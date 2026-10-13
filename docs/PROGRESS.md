@@ -3,17 +3,16 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 14 (v0.8.0, 168 tests): user rev 0.8 + **S6 done**. Fixture `downtown.json` = Downtown 2026-10-13 (no roof slab, B1–L11).
-  Fonts Futura PT caps (Heavy/Book, Arial fallback). Roles NC.Interior/Furniture/Massing/Screen (`PlanLinework`, section
-  `MassingCut`, axon `ScreensAndMassing`; screens = `ViewKind.Facade`, never extruded). Site plan extent `plan.siteExtentFactor` 5.
-  Plans: `BG_SITE_EDGE` (hardscape 1 pt / road 1.5 pt), `PlanLegendSheet` artboard, plain level tag, `cleanup.sealGapFt` 0.2
-  (`LevelAssignment.Seal`, areas counted before). Sections: centred labels (`SectionBars.Fit`, 3 letters), `Penthouse` row
-  grey + T.O. marker, random `AlongLine`. Axons: `AxonFaces.SplitAtNeighbours` (roof core fix), site axon `FullHeight` +
-  `AXON_LEVEL_LINE`, exploded / levels site at L1 with excavation (`GroundAndExcavation`, `Excavation`), trees `HideBehind`.
-  Elevations: same `LevelMarkers` as sections, dashed lines across the drawing. S6: `S6AcceptanceTests` (T5–T7; T7 runs
-  runtime.jsx in node on a mock doc), `docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, PRD v1.0.
-- Next: Windows test-and-tune of v0.8.0 in a new session — opening message, feature map, tuning keys, review workflow and
-  open questions in **`docs/HANDOFF.md`**. Review: `DumpForReview` (PD_DUMP / PD_ONLY) + `node tools/svg_shot.mjs`.
+- Rev 15 (v0.8.1, 174 tests): Windows feedback on v0.8.0 (`Rev081Tests`). Site plan was missing: artboard > Illustrator
+  canvas (runtime.jsx throws) → `SiteExtent` counts only NC site objects within `plan.siteMarginFt`, capped by
+  `page.maxArtboardPt`. 03 stacked = site axon treatment (`axon.stacked.fullHeightBlocks`, level lines, outer
+  silhouette only); 03 shows no basements (`showBasements` false, `AxonDrawing.AboveGrade`). Exploded A / B: site at L1,
+  basements dropped under the whole site plate (`DropBasements`, `axon.exploded.basementClearFt`), A digs the hole
+  with excavation walls. User clarified: "site follows L1; B1 reads as underground".
+- Rev 14 (v0.8.0): user rev 0.8 + S6 (fonts, NC roles, site plan extent, plan / section / axon / elevation details).
+  Fixture `downtown.json` = Downtown 2026-10-13 (no roof slab, B1–L11). Feature map: `docs/HANDOFF.md` §3.
+- Next: next Windows round — opening message, feature map, tuning keys, review workflow and open questions in
+  **`docs/HANDOFF.md`**. Review: `DumpForReview` (PD_DUMP / PD_ONLY) + `node tools/svg_shot.mjs`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off.
@@ -22,19 +21,14 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.8.0.zip` over the old folder (whole folder), restart Rhino. Install Futura PT (Book, Heavy).
-2. Tab 1: new roles NC.Screen / Interior / Furniture / Massing in the list; layers named SCREEN, INTERIOR, FURNITURE,
-   NC::MASSING pre-fill. Export: plan lines grey, massing dashed, screen a line (no block) in plans and axons.
-3. Every text Futura PT capitals (WARN in illustrator_log.txt if the font is missing → Arial).
-4. Site plan ≈ 11× the site each way; plans: hardscape / road edges, LEGEND & SYMBOLS artboard, LEVEL X without fill.
-5. Section: names centred, CON/LAB style short names, grey PENTHOUSE without roof slab, T.O. PENTHOUSE marker.
-6. Site axon: no slab gaps, 2 pt black lines between floors (layer AXON_LEVEL_LINE), heavy line only outside.
-7. Exploded / level axons: site at L1, B1 below in the dug-out hole (levels: dashed site + grey walls), roof core upright.
-8. Elevation: level column and dashed lines like the section, across the whole drawing.
-9. Symbols PD_PERSON_* / PD_TREE_* in the Symbols panel (VERIFY-WIN symbols.add / symbolItems.add + transform).
-10. Re-export after editing a mass: `_MANUAL` drawings untouched; send any WARN / ERROR lines.
+1. Unzip `ProgramDiagram-0.8.1.zip` over the old folder (whole folder), restart Rhino.
+2. `00_Site_Plan.ai` is created again (illustrator_log.txt: no "larger than the Illustrator canvas").
+3. `03_Axon_Stacked` / `03_Site_Axon`: no B1; floors touch (no slab gaps); 2 pt lines between floors, heavy line
+   only on the outside.
+4. `04_Axon_Exploded` (and B): site at L1; B1 hangs below the whole site plate, core connectors run through the hole.
+5. Send WARN / ERROR lines from illustrator_log.txt and NOTE lines from export_log.txt.
 
 ## Known issues
 - Plan people = built-in top-view symbol (office library has side views only).
 - Not yet: street names / arrows, flow / view / service icons (draw on `ANNOTATION`), key plan, Unassigned hatch.
-- Elevations draw no trees (sections do). Text widths are estimates. Open: "site context follows B1" read as site at L1.
+- Elevations draw no trees (sections do). Text widths are estimates.
