@@ -535,7 +535,12 @@
       "strokePt": 1.5,
       "opacity": 0.45
     },
-    "siteCurvesComment": "Site curves: closed curves are filled like surfaces (closedCurves \"line\" = kerb lines, e.g. CADMAPPER ROAD LINES); open curves use the role's \"line\" paint. Green / water: no outline, a \"hatch\" over the fill (true-scale spacingFt, angleDeg, dash)."
+    "siteCurvesComment": "Site curves: closed curves are filled like surfaces (closedCurves \"line\" = kerb lines, e.g. CADMAPPER ROAD LINES); open curves use the role's \"line\" paint. Green / water: no outline, a \"hatch\" over the fill (true-scale spacingFt, angleDeg, dash).",
+    "siteRoofView": true,
+    "siteRoofTitle": "Site Plan - Roof",
+    "roofTierStroke": "#4A4A4A",
+    "roofTierPt": 0.75,
+    "siteRoofComment": "00_Site_Plan.ai second artboard \"SITE PLAN ROOF\": the whole building from above, each tier's roof in its programs' colour, roofTierPt lines where a tier steps, outlinePt around all."
   },
   "axon": {
     "comment": "PRD 5.4. Shared values from docs/AXON_STYLE.md (styles/axon_style.json); stacked = docs/SITE_STYLE.md §1 site program axon; exploded = AXON_STYLE §7 (A, Atlanta); explodedB = SITE_STYLE §3 (planometric). azimuthDeg = where the viewer stands (225 = south-west).",
@@ -672,13 +677,32 @@
       "fullHeightBlocks": true,
       "levelLineColor": "#000000",
       "levelLinePt": 2.0,
-      "showBasements": false
+      "showBasements": false,
+      "fillPage": true,
+      "pageWidthIn": 17.0,
+      "pageHeightIn": 11.0,
+      "fillPageComment": "User rev 0.8.3: the site and context fill the whole page (fixed artboard, or pageWidthIn × pageHeightIn with \"Fit content\"), centred on our building and clipped to that frame — no blank corners. contextMarginFt − siteMarginFt is how far beyond the frame context buildings are collected (tall ones in front reach into it)."
     },
     "titleSite": "SITE AXON",
     "excavationFill": "#C8C8C8",
     "excavationStroke": "#4A4A4A",
     "excavationPt": 0.5,
-    "excavationComment": "Level axons of basements: the site is only hinted (dashed outlines, no fill); the dug-out hole shows its far walls solid from the basement floor to grade. Colour site from Level 1 up."
+    "excavationComment": "Level axons of basements: the site is only hinted (dashed outlines, no fill); the dug-out hole shows its far walls solid from the basement floor to grade. Colour site from Level 1 up.",
+    "levels": {
+      "comment": "04_Axon_Levels (user rev 0.8.3): axonometric cutaway — floors below in plain white (belowFill) with thin level lines (belowStroke / belowStrokePt), this floor's program blocks floor to floor in colour split by white lines (edgeStroke / edgePt, as exploded B), heavy silhouettePt outline, and above it only the building's total outline (outlineStroke / outlinePt / outlineDash).",
+      "belowFill": "#FFFFFF",
+      "belowStroke": "#8C8C8C",
+      "belowStrokePt": 0.35,
+      "edgeStroke": "#FFFFFF",
+      "edgePt": 1.0,
+      "silhouettePt": 2.0,
+      "outlineStroke": "#808080",
+      "outlinePt": 0.5,
+      "outlineDash": [
+        3,
+        2
+      ]
+    }
   },
   "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
   "roles": {
@@ -691,7 +715,7 @@
         }
       },
       "axon": {
-        "fill": "#F6F6F6",
+        "fill": "#F8F8F8",
         "line": {
           "stroke": "#DADADA",
           "strokePt": 0.3
@@ -707,7 +731,7 @@
         }
       },
       "axon": {
-        "fill": "#FFFFFF",
+        "fill": "#DCDFE1",
         "line": {
           "stroke": "#C8C8C8",
           "strokePt": 0.4
@@ -1024,6 +1048,50 @@
         "stroke": "#6E6E6E",
         "strokePt": 0.35
       }
+    },
+    "BG.Sidewalk": {
+      "plan": {
+        "fill": "#E8E8E8",
+        "line": {
+          "stroke": "#C4C4C4",
+          "strokePt": 0.35
+        }
+      },
+      "axon": {
+        "fill": "#EDEDED",
+        "line": {
+          "stroke": "#CFCFCF",
+          "strokePt": 0.3
+        }
+      }
+    },
+    "BG.Median": {
+      "plan": {
+        "fill": "#DCECE4",
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.2,
+            3.6
+          ]
+        }
+      },
+      "axon": {
+        "fill": "#D2EAD2",
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 6.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.0,
+            3.6
+          ]
+        }
+      }
     }
   },
   "charts": {
@@ -1139,6 +1207,59 @@
       "maxTotal": 3000,
       "maxAboveGroundFt": 3.0,
       "comment": "Trees planted at random in green areas at grade (site plan, ground floor plan, site / exploded axons), seeded per green so every drawing shows the same trees; canopy size = plan.treeDiameterFt."
+    },
+    "sectionBandFt": 20.0,
+    "elevationBandFt": 120.0,
+    "outdoorComment": "Outdoor people stand only on hardscape and sidewalks (never roads, buildings, water or greens); sections use the walkable ground within sectionBandFt beyond the cut, elevations within elevationBandFt in front.",
+    "sectionTreeBandFt": 60.0
+  },
+  "site": {
+    "comment": "User rev 0.8.3 — generated streetscape on the site plan, plans, axons and sections. Blocks = site areas (BG/NC hardscape, landscape, our site) of at least minBlockAreaSf plus closed kerb curves on road layers; roads lie between them. Sidewalk: a sidewalkWidthFt band inside the block along the road (paint roles \"BG.Sidewalk\"), joints every sidewalkJointFt. Street trees offsetFt from the kerb every spacingFt, clear of corners. Median (roles \"BG.Median\"): roads wider than minRoadWidthFt kerb to kerb get a widthFt green strip on the centre line with round ends endClearFt short of the crossing, trees every treeSpacingFt.",
+    "minBlockAreaSf": 1500.0,
+    "sidewalkWidthFt": 4.5,
+    "sidewalkJointFt": 5.0,
+    "streetTrees": {
+      "enabled": true,
+      "offsetFt": 1.5,
+      "spacingFt": 30.0,
+      "cornerClearFt": 25.0,
+      "minEdgeFt": 40.0
+    },
+    "median": {
+      "enabled": true,
+      "minRoadWidthFt": 50.0,
+      "maxRoadWidthFt": 160.0,
+      "widthFt": 5.0,
+      "endClearFt": 8.0,
+      "treeSpacingFt": 30.0
     }
+  },
+  "screen": {
+    "comment": "User rev 0.8.3 — NC.Screen as solid walls (thicknessFt; 0 = median NC.Slab thickness of the model, else fallbackThicknessFt), a solid opaque floor where the screen closes around an area (roof screen around the penthouse), open on top: equipment inside shows at its real heights; screens never add a level. Axons: wall / floor fills; plans: floor fill + wall poche at the level the screen stands on; sections: cut walls and floor solid, the open top dashed, PENTHOUSE label and T.O. marker at the screen top.",
+    "solid": true,
+    "thicknessFt": 0.0,
+    "fallbackThicknessFt": 1.0,
+    "closeGapFt": 3.0,
+    "axonWallFill": "#FFFFFF",
+    "axonWallDarken": [
+      0.08,
+      0.16
+    ],
+    "axonFloorFill": "#FFFFFF",
+    "axonFloorThicknessFt": 0.5,
+    "planFloorFill": "#FFFFFF",
+    "planFloorStroke": "#4A4A4A",
+    "planFloorPt": 0.5,
+    "planWallFill": "#4A4A4A",
+    "sectionWallFill": "#4A4A4A",
+    "sectionFloorFill": "#FFFFFF",
+    "sectionDashStroke": "#4A4A4A",
+    "sectionDashPt": 0.75,
+    "sectionDash": [
+      4,
+      3
+    ],
+    "axonLineColor": "#4A4A4A",
+    "axonLinePt": 0.35
   }
 }

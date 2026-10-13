@@ -216,14 +216,15 @@ public class S4PlanAxonTests
         Assert.Equal("04_Axon_Levels.ai", d.FileName);
         var levels = ProgramBlocksLevels();
         Assert.Equal(levels, d.Artboards.Count);
+        // User rev 0.8.3 cutaway: this floor in colour, the building's total outline dashed above it (the top floor
+        // has nothing above, so no outline there).
         for (var a = 0; a < d.Artboards.Count; a++)
         {
             var on = d.Layers.SelectMany(l => l.Items).Where(i => i.Artboard == a).ToList();
             Assert.Contains(on, i => i.Fill?.StartsWith("PRG_") == true);
-            Assert.Contains(on, i => i.Name.Contains("GHOST") && i.Dash != null && !i.Closed);
+            if (a < d.Artboards.Count - 1) Assert.Contains(on, i => i.Name.EndsWith("BUILDING_OUTLINE") && i.Dash != null && !i.Closed);
             Assert.Single(on, i => i.Name.EndsWith("_LDR"));
         }
-        Assert.True(d.Layers.FindIndex(l => l.Name == "AXON_GHOST_BELOW") < d.Layers.FindIndex(l => l.Name == "PD_PROGRAM"));
         Assert.True(d.Layers.FindIndex(l => l.Name == "AXON_GHOST_ABOVE") > d.Layers.FindIndex(l => l.Name == "PD_PROGRAM"));
         UniqueNamesInsideArtboards(d);
     }

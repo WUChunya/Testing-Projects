@@ -4,6 +4,7 @@ using Rhino;
 using PD.Core.Drawing;
 using PD.Core.Writers;
 using PD.Rhino.Adapter;
+using PD.Rhino.Display;
 using PD.Rhino.Output;
 
 namespace PD.Rhino.UI.Tabs;
@@ -26,7 +27,13 @@ internal sealed class OutputTab : TabBase
     readonly StackLayout _drawings = new() { Orientation = Orientation.Vertical, Spacing = 2 };
     readonly Button _export;
     readonly CheckBox _launch = new() { Text = "Generate the .ai files in Illustrator (runs in the background; nothing is opened)" };
-    readonly CheckBox _axonView = new() { Text = "Axons: use the active viewport's view direction (else isometric from the south-west)" };
+    /// <summary>User rev 0.8.3: where the axons are seen from — a corner, the active viewport, or the V marker placed in plan.</summary>
+    readonly DropDown _axonView = new();
+    static readonly (string Key, string Text)[] AxonViews =
+    {
+        ("SW", "South-west corner"), ("SE", "South-east corner"), ("NE", "North-east corner"), ("NW", "North-west corner"),
+        ("Viewport", "Active viewport's direction"), ("Point", "V view marker placed in plan"),
+    };
     /// <summary>PRD 5.5: Excel program table for the charts; empty = the model's own areas (GSF).</summary>
     readonly TextBox _excel = new() { PlaceholderText = "(no Excel: the charts use the model areas, GSF)" };
     readonly CheckBox _entourage = new() { Text = "Draw entourage (people) on an ENTOURAGE layer" };
@@ -52,7 +59,8 @@ internal sealed class OutputTab : TabBase
         _sectionScale.TextChanged += (_, _) => { if (!_loading) Store(); };
         _png.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _launch.CheckedChanged += (_, _) => { if (!_loading) Store(); };
-        _axonView.CheckedChanged += (_, _) => { if (!_loading) Store(); };
+        _axonView.DataStore = AxonViews.Select(v => v.Text).ToList();
+        _axonView.SelectedIndexChanged += (_, _) => { if (!_loading) { Store(); ShowAxonView(); } };
         _excel.LostFocus += (_, _) => Store();
         _entourage.CheckedChanged += (_, _) => { if (!_loading) Store(); };
         _artboard.SelectedValueChanged += (_, _) => { if (!_loading) Store(); };
@@ -70,12 +78,12 @@ internal sealed class OutputTab : TabBase
         layout.AddRow(new Label { Text = "Drawings" }, _drawings);
         layout.Add(_launch);
         layout.Add(_png);
-        layout.Add(_axonView);
+        layout.AddRow(new Label { Text = "Axons seen from" }, _axonView, Ui.Button("Place view in plan…", PlaceView));
         layout.AddRow(new Label { Text = "Program Excel" }, _excel, Ui.Button("…", BrowseExcel));
         layout.AddSeparateRow(null, Ui.Button("Save Excel template...", SaveTemplate), null);
         layout.Add(_entourage);
         layout.AddSeparateRow(null, _seed, Ui.Button("Re-randomize entourage", Reseed), null);
-        layout.AddSeparateRow(_export, Ui.Button("Open last export folder", OpenFolder), null);
+        layout.AddSeparateRow(_export, Ui.Button("Open last export folder", OpenFolder), Ui.Button("Load settings…", LoadSettings), null);
         layout.Add(_status);
         layout.Add(Ui.Confirm(s, "output"));
         layout.Add(null);
@@ -101,7 +109,9 @@ internal sealed class OutputTab : TabBase
         _scale.Text = o.Scale;
         _sectionScale.Text = o.SectionScale;
         _png.Checked = o.ExportPng ?? Session.Rules.Output.ExportPng;
-        _axonView.Checked = o.AxonFromViewport;
+        var view = string.IsNullOrEmpty(o.AxonView) ? (o.AxonFromViewport ? "Viewport" : "SW") : o.AxonView;
+        _axonView.SelectedIndex = Math.Max(0, Array.FindIndex(AxonViews, v => string.Equals(v.Key, view, StringComparison.OrdinalIgnoreCase)));
+        ShowAxonView();
         _excel.Text = o.ProgramExcel;
         _entourage.Checked = o.Entourage ?? Session.Style.Entourage.Enabled;
         _seed.Text = $"Entourage seed {o.EntourageSeed ?? Session.Style.Entourage.Seed} (kept with the project, so people stay put)";
@@ -126,13 +136,47 @@ internal sealed class OutputTab : TabBase
         if (ExportContext.ParseScale(_scale.Text) != null) o.Scale = _scale.Text.Trim();
         if (ExportContext.ParseScale(_sectionScale.Text) != null) o.SectionScale = _sectionScale.Text.Trim();
         o.ExportPng = _png.Checked == true;
-        o.AxonFromViewport = _axonView.Checked == true;
+        if (_axonView.SelectedIndex >= 0)
+        {
+            var key = AxonViews[_axonView.SelectedIndex].Key;
+            // "Point" without a placed marker stays on the default corner until one is placed.
+            o.AxonView = key == "Point" && o.AxonViewPoint == null ? "SW" : key;
+            o.AxonFromViewport = key == "Viewport";
+        }
         o.ProgramExcel = _excel.Text.Trim();
         o.Entourage = _entourage.Checked == true;
         o.Artboard = _artboard.SelectedValue as string ?? o.Artboard;
         o.Drawings = _drawings.Items.Select(i => i.Control).OfType<CheckBox>().Where(c => c.Checked == true).Select(c => (string)c.Tag).ToList();
         Session.Save();
     }
+
+    /// <summary>The V marker in the Rhino views for the chosen corner / placed point.</summary>
+    void ShowAxonView()
+    {
+        AxonViewConduit.Instance.Update(Session);
+        AxonViewConduit.Instance.Enabled = !string.Equals(Session.Settings.Output.AxonView, "Viewport", StringComparison.OrdinalIgnoreCase);
+        Session.Doc?.Views.Redraw();
+    }
+
+    /// <summary>Every export carries pd_settings.json: load one back (another model, or after a plugin update).</summary>
+    void LoadSettings()
+    {
+        var dlg = new OpenFileDialog { Title = "Load Program Diagram settings (pd_settings.json from an export folder)" };
+        dlg.Filters.Add(new FileFilter("Program Diagram settings", ".json"));
+        if (!string.IsNullOrEmpty(Session.Settings.Output.LastFolder)) dlg.Directory = new Uri(Session.Settings.Output.LastFolder);
+        if (dlg.ShowDialog(this) != DialogResult.Ok) return;
+        try
+        {
+            Session.ReplaceSettings(PD.Core.Settings.PdSettings.FromJson(File.ReadAllText(dlg.FileName)));
+            MessageBox.Show(this, "Settings loaded; the next export re-runs the analysis with them.", MessageBoxType.Information);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            MessageBox.Show(this, $"Could not read the file: {e.Message}", MessageBoxType.Error);
+        }
+    }
+
+    void PlaceView() => RhinoApp.RunScript("_ProgramDiagramPlaceAxonView", false);
 
     void ShowScale()
     {
@@ -185,7 +229,7 @@ internal sealed class OutputTab : TabBase
         Store();
         // VERIFY-WIN: camera direction of the active viewport (points into the scene).
         var cam = Session.Doc?.Views.ActiveView?.ActiveViewport.CameraDirection;
-        Session.Settings.Output.AxonViewDirection = Session.Settings.Output.AxonFromViewport && cam is { } c && c.IsValid && !c.IsZero
+        Session.Settings.Output.AxonViewDirection = string.Equals(Session.Settings.Output.AxonView, "Viewport", StringComparison.OrdinalIgnoreCase) && cam is { } c && c.IsValid && !c.IsZero
             ? new[] { c.X, c.Y, c.Z } : null;
         if (!Session.Analyze() || Session.Result == null)
         {

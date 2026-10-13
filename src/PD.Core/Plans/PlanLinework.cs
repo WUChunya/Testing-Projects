@@ -24,7 +24,9 @@ public static class PlanLinework
         var cutAt = z0 + ctx.Rules.Cleanup.PlanCutHeightFt;
         var weld = ctx.Rules.Cleanup.WeldToleranceFt;
         var n = 0;
-        foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Role is Roles.Interior or Roles.Furniture or Roles.Massing or Roles.Screen))
+        // Screens drawn solid (walls + floor, user rev 0.8.3) are not repeated as lines.
+        var solid = PD.Core.Analysis.ScreenEnclosures.For(ctx).SelectMany(e => e.ObjectIds).ToHashSet();
+        foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Role is Roles.Interior or Roles.Furniture or Roles.Massing or Roles.Screen && !solid.Contains(o.Id)))
         {
             var b = o.BBox;
             if (b.MaxZ < z0 - 0.5 || b.MinZ > z1 - 0.5) continue;

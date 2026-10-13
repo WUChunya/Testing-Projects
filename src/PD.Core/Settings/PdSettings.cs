@@ -13,6 +13,10 @@ public sealed class PdSettings
     public int Version { get; set; } = CurrentVersion;
 
     public const int CurrentVersion = 2;
+    /// <summary>When these settings were last saved (UTC, ISO 8601): the newest copy wins on load (user rev 0.8.3).</summary>
+    public string SavedUtc { get; set; } = "";
+    /// <summary>File name of the copy written next to the model and into every export folder.</summary>
+    public const string FileName = "pd_settings.json";
     public Dictionary<string, LayerSetting> Layers { get; set; } = new();
     public Dictionary<string, SpanMode> SpanModes { get; set; } = new();
     public Dictionary<string, SingleSurfaceChoice> SingleSurfaces { get; set; } = new();
@@ -39,22 +43,47 @@ public sealed class PdSettings
 
     public string ToJson() => JsonSerializer.Serialize(this, Json);
 
+    /// <summary>
+    /// Settings from JSON. A part a newer / older plugin cannot read (a renamed enum value, a changed shape) is
+    /// skipped on its own instead of losing everything (user rev 0.8.3: settings survived plugin updates badly).
+    /// </summary>
     public static PdSettings FromJson(string? json)
     {
         if (string.IsNullOrWhiteSpace(json)) return new PdSettings();
-        try
-        {
-            var s = JsonSerializer.Deserialize<PdSettings>(json, Json) ?? new PdSettings();
-            foreach (var l in s.Layers.Values) l.Role = Roles.Normalize(l.Role);
-            // Saves from before v0.7.0 list their drawings without the new site plan / site axon: tick them once.
-            if (s.Version < 2 && s.Output.Drawings != null)
-                foreach (var add in new[] { "SitePlan", "SiteAxon" })
-                    if (!s.Output.Drawings.Contains(add)) s.Output.Drawings.Add(add);
-            s.Version = CurrentVersion;
-            return s;
-        }
-        catch (JsonException) { return new PdSettings(); }
+        PdSettings? s;
+        try { s = JsonSerializer.Deserialize<PdSettings>(json, Json); }
+        catch (JsonException) { s = Lenient(json); }
+        if (s == null) return new PdSettings();
+        foreach (var l in s.Layers.Values) l.Role = Roles.Normalize(l.Role);
+        // Saves from before v0.7.0 list their drawings without the new site plan / site axon: tick them once.
+        if (s.Version < 2 && s.Output.Drawings != null)
+            foreach (var add in new[] { "SitePlan", "SiteAxon" })
+                if (!s.Output.Drawings.Contains(add)) s.Output.Drawings.Add(add);
+        s.Version = CurrentVersion;
+        return s;
     }
+
+    /// <summary>Property by property: keeps every top-level setting that still reads.</summary>
+    static PdSettings? Lenient(string json)
+    {
+        System.Text.Json.Nodes.JsonObject? obj;
+        try { obj = System.Text.Json.Nodes.JsonNode.Parse(json) as System.Text.Json.Nodes.JsonObject; }
+        catch (JsonException) { return null; }
+        if (obj == null) return null;
+        var result = new PdSettings();
+        foreach (var prop in typeof(PdSettings).GetProperties().Where(p => p.CanWrite))
+        {
+            var node = obj.FirstOrDefault(kv => string.Equals(kv.Key, prop.Name, StringComparison.OrdinalIgnoreCase)).Value;
+            if (node == null) continue;
+            try { prop.SetValue(result, node.Deserialize(prop.PropertyType, Json)); }
+            catch (Exception e) when (e is JsonException or NotSupportedException or InvalidOperationException) { }
+        }
+        return result;
+    }
+
+    /// <summary>The most recently saved of several copies (3dm, model side file); null when none.</summary>
+    public static PdSettings? Newest(params PdSettings?[] copies) =>
+        copies.Where(c => c != null).OrderByDescending(c => c!.SavedUtc, StringComparer.Ordinal).FirstOrDefault();
 
     public Dictionary<string, LayerGuess> RoleOverrides() =>
         Layers.ToDictionary(kv => kv.Key, kv => kv.Value.Use
@@ -130,6 +159,14 @@ public sealed class OutputSetting
     public double[]? AxonViewDirection { get; set; }
     /// <summary>Take <see cref="AxonViewDirection"/> from the active Rhino viewport at export time.</summary>
     public bool AxonFromViewport { get; set; }
+    /// <summary>
+    /// Where every axon is seen from (user rev 0.8.3): a building corner "SW" / "SE" / "NE" / "NW", "Viewport" (the
+    /// active Rhino view at export), or "Point" (the V view marker placed in plan, <see cref="AxonViewPoint"/>).
+    /// Empty = the style's azimuth (south-west), or the viewport when <see cref="AxonFromViewport"/> is set.
+    /// </summary>
+    public string AxonView { get; set; } = "";
+    /// <summary>The V view marker: viewer position [x, y] in model units; the axons look from it at the building.</summary>
+    public double[]? AxonViewPoint { get; set; }
     /// <summary>Excel program table for the charts (PRD 5.5); empty = use the model's areas (GSF).</summary>
     public string ProgramExcel { get; set; } = "";
     /// <summary>Draw entourage (PRD 4); null = style default.</summary>

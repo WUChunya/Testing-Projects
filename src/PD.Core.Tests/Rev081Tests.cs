@@ -16,8 +16,10 @@ public class Rev081Tests
         var ctx = DowntownAnalysis.Context();
         ctx.Style.Plan.SiteExtentFactor = 60;
         var d = PlanDrawing.BuildSite(ctx);
-        var ab = Assert.Single(d.Artboards);
-        Assert.True(ab.W <= ctx.Style.Page.MaxArtboardPt && ab.H <= ctx.Style.Page.MaxArtboardPt, $"{ab.W} × {ab.H}");
+        Assert.All(d.Artboards, ab => Assert.True(ab.W <= ctx.Style.Page.MaxArtboardPt && ab.H <= ctx.Style.Page.MaxArtboardPt, $"{ab.W} × {ab.H}"));
+        // Site plan + roof view laid out in one file stay inside Illustrator's canvas (runtime.jsx refuses > 16000 pt).
+        var (w, h) = d.LayoutArtboards();
+        Assert.True(w <= 16000 && h <= 16000, $"layout {w} × {h}");
         Assert.NotEmpty(d.Layer("PD_PROGRAM").Items);
     }
 

@@ -38,8 +38,16 @@ public sealed class PdSession
     PdSession(uint serial)
     {
         DocSerial = serial;
-        Settings = PdSettings.FromJson(Doc?.Strings.GetValue(Section, Entry));
+        // The model's own copy, or the side file next to the model when that is newer (settings changed but the 3dm
+        // not saved, or a plugin update could not read the old copy).
+        var inDoc = Doc?.Strings.GetValue(Section, Entry);
+        var side = SidePath is { } path && File.Exists(path) ? PdSettings.FromJson(File.ReadAllText(path)) : null;
+        Settings = PdSettings.Newest(string.IsNullOrWhiteSpace(inDoc) ? null : PdSettings.FromJson(inDoc), side) ?? new PdSettings();
     }
+
+    /// <summary>"Tower.3dm" → "Tower.programdiagram.json" beside it; null for an unsaved model.</summary>
+    public string? SidePath => string.IsNullOrEmpty(Doc?.Path) ? null
+        : Path.Combine(Path.GetDirectoryName(Doc!.Path)!, Path.GetFileNameWithoutExtension(Doc.Path) + ".programdiagram.json");
 
     public static PdSession For(uint docSerial)
     {
@@ -51,7 +59,13 @@ public sealed class PdSession
 
     public void Save()
     {
-        Doc?.Strings.SetString(Section, Entry, Settings.ToJson());
+        Settings.SavedUtc = DateTime.UtcNow.ToString("o");
+        var json = Settings.ToJson();
+        Doc?.Strings.SetString(Section, Entry, json);
+        // Also beside the model, so nothing is lost if the 3dm is closed unsaved (VERIFY-WIN: folder write access).
+        if (SidePath is { } path)
+            try { File.WriteAllText(path, json); }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
     }
 
     /// <summary>Call after adding, removing or re-aliasing programs so tab 1 and auto-fill see them.</summary>

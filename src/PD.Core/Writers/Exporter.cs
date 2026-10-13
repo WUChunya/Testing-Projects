@@ -88,6 +88,8 @@ public static class Exporter
             settings = ctx.Settings,
             drawings,
         }, JsxWriter.Json));
+        // Every setting of this export travels with it (user rev 0.8.3): tab 8 "Load settings…" reads it back.
+        Save(Path.Combine(folder, PD.Core.Settings.PdSettings.FileName), ctx.Settings.ToJson());
         Save(Path.Combine(folder, "export_log.txt"), Log(ctx, notes));
         return new ExportResult(folder, jsx, files, notes);
     }

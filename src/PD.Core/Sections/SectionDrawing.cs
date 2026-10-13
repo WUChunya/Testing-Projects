@@ -77,7 +77,11 @@ public static class SectionDrawing
         // ▼ markers, level names and elevations in the left column, dashed to the cut (as in elevations).
         if (st.LevelMarkers && !g.Outline.IsEmpty)
             LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, x0 + w, zMax);
-        if (st.LevelMarkers && Penthouse(ctx, g) is { } top)
+        // Roof screens cut by the section (user rev 0.8.3) replace the grey penthouse block of that level.
+        var screenCuts = ScreenCuts(ctx, plane);
+        if (st.LevelMarkers && screenCuts.Count > 0)
+            LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, screenCuts.Max(c => c.E.Z1), x0 - colL, x0 + w);
+        else if (st.LevelMarkers && Penthouse(ctx, g) is { } top)
             LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, top.Z1, x0 - colL, x0 + w);
 
         // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.
@@ -92,8 +96,10 @@ public static class SectionDrawing
         if (!g.Outline.IsEmpty && st.ProgramBackground is { Length: > 0 } bg)
             d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + "PROGRAM_BG", g.Outline, d.Swatch("PD_PROGRAM_BG", bg), null, 0));
         var pent = Penthouse(ctx, g);
+        if (pent != null && screenCuts.Any(c => Math.Abs(c.E.Z0 - pent.Z0) < 3)) pent = null;
         var labelBoxes = SectionBars.Add(d, ctx, g, map, p, pent?.Bars);
         if (pent != null) DrawPenthouse(d, ctx, g, map, p, pent, labelBoxes);
+        DrawScreens(d, ctx, g, map, p, screenCuts, labelBoxes);
 
         // Envelope: thin light-grey line under the bars; slabs: white strips 0.14 × floor with a dark outline, 2 ft past the bars.
         if (!g.Outline.IsEmpty)
@@ -132,7 +138,7 @@ public static class SectionDrawing
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, g.Ground), (plane.Length, g.Ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
         Trees(d, ctx, map, p, plane, depth, g.Ground);
-        People(d, ctx, g, map, p, plane.Length, labelBoxes);
+        People(d, ctx, g, map, p, plane, labelBoxes);
 
         SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(40));
         return d;
@@ -147,18 +153,33 @@ public static class SectionDrawing
         var e = ctx.Style.Entourage;
         if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx) || PD.Core.Entourage.EntourageLibrary.Default.Trees.Count == 0) return;
         var layer = d.Layer("BG_TREE");
+        // Modelled trees within the view depth, and the generated ones (street, median, green-area trees: user rev 0.8.3)
+        // within entourage.sectionTreeBandFt beyond the cut.
         var trees = ctx.Result.Local.Objects
             .Where(o => o.Role is PD.Core.Classification.Roles.Tree or PD.Core.Classification.Roles.NcTree && !ctx.Result.Stray.Contains(o.Id))
-            .Select(o => (o, u: plane.U((o.BBox.MinX + o.BBox.MaxX) / 2, (o.BBox.MinY + o.BBox.MaxY) / 2), w: plane.W((o.BBox.MinX + o.BBox.MaxX) / 2, (o.BBox.MinY + o.BBox.MaxY) / 2)))
-            .Where(c => c.w > 0 && c.w <= depth && c.u > -20 && c.u < plane.Length + 20)
-            .OrderByDescending(c => c.w).ThenBy(c => c.o.Id, StringComparer.Ordinal)
+            .Select(o => (Key: o.Id, X: (o.BBox.MinX + o.BBox.MaxX) / 2, Y: (o.BBox.MinY + o.BBox.MaxY) / 2,
+                H: o.BBox.SizeZ >= 8 ? Math.Clamp(o.BBox.SizeZ, e.TreeHeightFt[0], e.TreeHeightFt[1]) : e.TreeDefaultHeightFt))
+            .Where(c => plane.W(c.X, c.Y) <= depth)
             .ToList();
-        var n = 0;
-        foreach (var (o, u, _) in trees)
+        var band = Math.Min(depth, e.SectionTreeBandFt);
+        if (band > 0)
         {
-            var h = o.BBox.SizeZ >= 8 ? Math.Clamp(o.BBox.SizeZ, e.TreeHeightFt[0], e.TreeHeightFt[1]) : e.TreeDefaultHeightFt;
-            var rng = new Random(PD.Core.Entourage.EntouragePlacer.Mix(PD.Core.Entourage.EntouragePlacer.Seed(ctx), "TREE_" + o.Id));
-            layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Tree(d, e, $"{p}TREE_{++n:000}", map.X(u), map.Y(ground), h * map.K, rng));
+            var strip = new NetTopologySuite.Geometries.Envelope(plane.Ax, plane.Ax + plane.Dx * plane.Length, plane.Ay, plane.Ay + plane.Dy * plane.Length);
+            strip.ExpandToInclude(plane.Ax + plane.Nx * band, plane.Ay + plane.Ny * band);
+            strip.ExpandToInclude(plane.Ax + plane.Dx * plane.Length + plane.Nx * band, plane.Ay + plane.Dy * plane.Length + plane.Ny * band);
+            foreach (var t in PD.Core.Plans.PlanBackground.Collect(ctx, strip).Where(i => i.Role is PD.Core.Classification.Roles.Tree or PD.Core.Classification.Roles.NcTree
+                         && (i.Name.StartsWith("STREET_TREE") || i.Name.StartsWith("MEDIAN_TREE") || i.Name.StartsWith("GREEN_TREE"))))
+            {
+                var c = t.Geometry.Centroid.Coordinate;
+                if (plane.W(c.X, c.Y) <= band) trees.Add(($"{c.X:0.0}_{c.Y:0.0}", c.X, c.Y, e.TreeDefaultHeightFt));
+            }
+        }
+        var n = 0;
+        foreach (var (key, x, y, h) in trees.Select(c => (c.Key, c.X, c.Y, c.H)).Where(c => plane.W(c.X, c.Y) > 0 && plane.U(c.X, c.Y) > -20 && plane.U(c.X, c.Y) < plane.Length + 20)
+                     .OrderByDescending(c => plane.W(c.X, c.Y)).ThenBy(c => c.Key, StringComparer.Ordinal))
+        {
+            var rng = new Random(PD.Core.Entourage.EntouragePlacer.Mix(PD.Core.Entourage.EntouragePlacer.Seed(ctx), "TREE_" + key));
+            layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Tree(d, e, $"{p}TREE_{++n:000}", map.X(plane.U(x, y)), map.Y(ground), h * map.K, rng));
         }
     }
 
@@ -166,7 +187,7 @@ public static class SectionDrawing
     /// PRD 4: people stand on the floor of each cut bar (never taller than the bar, so nobody pokes into the level
     /// above) and on the ground outside the building.
     /// </summary>
-    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, double length,
+    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, Geometry.SectionPlane plane,
         List<(double X0, double X1, double Y0, double Y1)> labels)
     {
         if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
@@ -188,14 +209,46 @@ public static class SectionDrawing
                 layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
                     map.X(f.X), map.Y(floor), h * map.K, f.Variant, f.Mirror));
         }
-        // Outside: on the ground line, left and right of the building footprint.
-        double lo = g.Bars.Count == 0 ? length : g.Bars.Min(b => b.U0), hi = g.Bars.Count == 0 ? 0 : g.Bars.Max(b => b.U1);
-        foreach (var (u0, u1, tag) in new[] { (0.0, lo, "L"), (hi, length, "R") })
+        // Outside: on the ground line where the cut crosses hardscape / sidewalk (never a road or a building).
+        foreach (var (u0, u1, tag) in WalkableAlong(ctx, plane, ctx.Style.Entourage.SectionBandFt))
             foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, u0, u1, "", p + "GROUND" + tag, outdoors: true))
                 layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
                     map.X(f.X), map.Y(g.Ground), e.HeightFt * map.K, f.Variant, f.Mirror));
     }
 
+
+    /// <summary>
+    /// Stretches of the ground line (u from / to) where people may stand: the strip from the plane to
+    /// <paramref name="band"/> ft beyond it, walkable ground only (<see cref="PD.Core.Plans.PlanBackground.Walkable"/>).
+    /// </summary>
+    public static List<(double U0, double U1, string Tag)> WalkableAlong(ExportContext ctx, Geometry.SectionPlane plane, double band)
+    {
+        var strip = PD.Core.Geometry.MeshSlicer.Factory.CreatePolygon(new[]
+        {
+            new NetTopologySuite.Geometries.Coordinate(plane.Ax, plane.Ay),
+            new NetTopologySuite.Geometries.Coordinate(plane.Ax + plane.Dx * plane.Length, plane.Ay + plane.Dy * plane.Length),
+            new NetTopologySuite.Geometries.Coordinate(plane.Ax + plane.Dx * plane.Length + plane.Nx * band, plane.Ay + plane.Dy * plane.Length + plane.Ny * band),
+            new NetTopologySuite.Geometries.Coordinate(plane.Ax + plane.Nx * band, plane.Ay + plane.Ny * band),
+            new NetTopologySuite.Geometries.Coordinate(plane.Ax, plane.Ay),
+        });
+        var env = strip.EnvelopeInternal.Copy();
+        env.ExpandBy(1);
+        var walk = PD.Core.Plans.PlanBackground.Walkable(PD.Core.Plans.PlanBackground.Collect(ctx, env), PD.Core.Plans.PlanBackground.Footprint(ctx.Result));
+        NtsGeometry hit;
+        try { hit = PD.Core.Geometry.MeshSlicer.Polygonal(walk.Intersection(strip)); }
+        catch (Exception e) when (e is NetTopologySuite.Geometries.TopologyException or ArgumentException) { return new(); }
+        var spans = new List<(double A, double B)>();
+        for (var i = 0; i < hit.NumGeometries; i++)
+        {
+            var us = hit.GetGeometryN(i).Coordinates.Select(c => plane.U(c.X, c.Y)).ToList();
+            if (us.Count > 0 && us.Max() - us.Min() > 2) spans.Add((Math.Max(0, us.Min()), Math.Min(plane.Length, us.Max())));
+        }
+        var merged = new List<(double U0, double U1, string Tag)>();
+        foreach (var (a, b) in spans.OrderBy(x => x.A))
+            if (merged.Count > 0 && a <= merged[^1].U1) merged[^1] = (merged[^1].U0, Math.Max(merged[^1].U1, b), merged[^1].Tag);
+            else merged.Add((a, b, merged.Count.ToString()));
+        return merged;
+    }
 
     /// <summary>The penthouse: the top row of bars when all of them are section.penthousePrograms (shell, core…).</summary>
     public sealed record PenthouseRow(List<CutBar> Bars, List<(double U0, double U1)> Ranges, double Z0, double Z1);
@@ -239,6 +292,86 @@ public static class SectionDrawing
             if (SectionBars.Fit(st.PenthouseLabel.ToUpperInvariant(), size, xb - xa, st.LabelInsetPt) is not { } text) continue;
             var cy = (yTop + yBot) / 2;
             var t = Text(name + "_LBL", (xa + xb) / 2, cy, text, "PD Section Label", "center", center: true);
+            t.SizePt = Math.Round(size, 2);
+            d.Layer("PD_LABELS").Items.Add(t);
+            var half = SectionBars.TextWidth(text, size) / 2;
+            labels.Add(((xa + xb) / 2 - half, (xa + xb) / 2 + half, cy - size / 2, cy + size / 2));
+        }
+    }
+
+    /// <summary>Screen enclosures the cut crosses: the u-ranges of their walls and of their floor.</summary>
+    public static List<(PD.Core.Analysis.ScreenEnclosure E, List<(double U0, double U1)> Walls, List<(double U0, double U1)> Floor)> ScreenCuts(
+        ExportContext ctx, Geometry.SectionPlane plane)
+    {
+        var line = plane.PlanLine();
+        var cuts = new List<(PD.Core.Analysis.ScreenEnclosure, List<(double, double)>, List<(double, double)>)>();
+        foreach (var e in PD.Core.Analysis.ScreenEnclosures.For(ctx))
+        {
+            List<(double, double)> Along(NtsGeometry g)
+            {
+                try { return SectionGeometry.Segments(Geometry.MeshSlicer.Lineal(g.Intersection(line)), plane).OrderBy(x => x.Item1).ToList(); }
+                catch (Exception ex) when (ex is NetTopologySuite.Geometries.TopologyException or ArgumentException) { return new(); }
+            }
+            var walls = Along(e.Walls);
+            var floor = e.Encloses ? Along(e.Floor) : new List<(double, double)>();
+            if (walls.Count > 0 || floor.Count > 0) cuts.Add((e, walls, floor));
+        }
+        return cuts;
+    }
+
+    /// <summary>
+    /// A cut roof screen (user rev 0.8.3): its walls solid from foot to top, the penthouse volume it stands for
+    /// completed with dashed lines where the screen does not close it (the open top, an open side), the PENTHOUSE
+    /// name inside. The floor is the roof slab below (drawn with the slabs).
+    /// </summary>
+    static void DrawScreens(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p,
+        List<(PD.Core.Analysis.ScreenEnclosure E, List<(double U0, double U1)> Walls, List<(double U0, double U1)> Floor)> cuts,
+        List<(double X0, double X1, double Y0, double Y1)> labels)
+    {
+        var st = ctx.Style.Section;
+        var sc = ctx.Style.Screen;
+        var layer = d.Layer("PD_SCREEN");
+        var wall = d.Swatch("NC_SCREEN_WALL_SECTION", sc.SectionWallFill);
+        var dash = d.Gray(sc.SectionDashStroke);
+        foreach (var (e, walls, floor) in cuts)
+        {
+            var id = $"{p}SCREEN_{e.Index:00}";
+            foreach (var ((u0, u1), k) in walls.Select((w, k) => (w, k)))
+                layer.Items.Add(new DItem
+                {
+                    Kind = ItemKind.Path, Name = $"{id}_WALL_{k + 1:00}", Fill = wall,
+                    Paths = new() { RectPts(Math.Min(map.X(u0), map.X(u1)), map.Y(e.Z1), Math.Max(map.X(u0), map.X(u1)), map.Y(e.Z0)) },
+                });
+            var spans = floor.Count > 0 ? floor : walls;
+            double a = spans.Min(x => x.U0), b = spans.Max(x => x.U1);
+            if (b - a < 1) continue;
+            // The volume's outline where no wall stands: the top always (open), a side without a wall at its edge.
+            var pts = new List<(double, double)[]> { new[] { (a, e.Z1), (b, e.Z1) } };
+            if (!walls.Any(w => w.U0 <= a + 1)) pts.Add(new[] { (a, e.Z0), (a, e.Z1) });
+            if (!walls.Any(w => w.U1 >= b - 1)) pts.Add(new[] { (b, e.Z0), (b, e.Z1) });
+            foreach (var (seg, k) in pts.Select((x, k) => (x, k)))
+            {
+                var line = map.Line($"{id}_OPEN_{k + 1:00}", seg, dash, sc.SectionDashPt);
+                line.Dash = sc.SectionDash;
+                layer.Items.Add(line);
+            }
+            // The penthouse name just under the screen top, in the widest stretch clear of the walls and of the bars
+            // (cores, equipment) standing at that height.
+            var size = Math.Clamp(st.LabelSizeRatio * (e.Z1 - e.Z0) * map.K * 0.5, st.LabelSizeMin, st.LabelSizeMax);
+            var cy = map.Y(e.Z1) + size * 1.2;
+            var zLabel = e.Z1 - size * 1.2 / map.K;
+            var blocked = walls.Concat(g.Bars.Where(x => x.Z1 > zLabel - size / map.K && x.Z0 < zLabel + size / map.K).Select(x => (x.U0, x.U1)))
+                .OrderBy(x => x.Item1).ToList();
+            var (fa, fb, cursor) = (a, a, a);
+            foreach (var (u0, u1) in blocked)
+            {
+                if (u0 > cursor && u0 - cursor > fb - fa) (fa, fb) = (cursor, Math.Min(u0, b));
+                cursor = Math.Max(cursor, u1);
+            }
+            if (b - cursor > fb - fa) (fa, fb) = (cursor, b);
+            double xa = Math.Min(map.X(fa), map.X(fb)), xb = Math.Max(map.X(fa), map.X(fb));
+            if (SectionBars.Fit(st.PenthouseLabel.ToUpperInvariant(), size, xb - xa, st.LabelInsetPt) is not { } text) continue;
+            var t = Text(id + "_LBL", (xa + xb) / 2, cy, text, "PD Section Label", "center", center: true);
             t.SizePt = Math.Round(size, 2);
             d.Layer("PD_LABELS").Items.Add(t);
             var half = SectionBars.TextWidth(text, size) / 2;

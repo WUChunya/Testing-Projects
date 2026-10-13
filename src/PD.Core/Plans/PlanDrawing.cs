@@ -71,7 +71,7 @@ public static class PlanDrawing
     }
 
     /// <summary>How a level sits on the site: under grade (cut earth), at grade, above it (veiled site), or the site plan.</summary>
-    public enum LevelKind { Basement, Ground, Upper, Site }
+    public enum LevelKind { Basement, Ground, Upper, Site, Roof }
 
     /// <summary>The ground floor is the main level nearest the ground elevation; below it basements, above it upper floors.</summary>
     public static int GroundIndex(ExportContext ctx)
@@ -108,7 +108,10 @@ public static class PlanDrawing
             return d;
         }
         var env = SiteExtent(ctx, i);
-        Sheet(d, ctx, i, env, PlanBackground.Collect(ctx, env), "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
+        var background = PlanBackground.Collect(ctx, env);
+        Sheet(d, ctx, i, env, background, "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
+        // User rev 0.8.3: the same site with the whole building seen from above (each tier's roof in its programs' colour).
+        if (ps.SiteRoofView) Sheet(d, ctx, i, env, background, "SITE PLAN ROOF", "STR_", ps.SiteRoofTitle, LevelKind.Roof);
         return d;
     }
 
@@ -124,10 +127,10 @@ public static class PlanDrawing
         var titleH = ctx.Pt(pg.TitleBandPt);
         var band = ctx.Pt(ps.BandPt);
         var lvl = r.Plans[i].Level;
-        var keys = Keys(ctx, r.Plans[i]);
+        var keys = kind == LevelKind.Roof ? Keys(ctx, RoofLevels(ctx).Select(j => r.Plans[j])) : Keys(ctx, r.Plans[i]);
         var rows = (int)Math.Ceiling(keys.Count / (double)Math.Max(1, ps.LegendColumns));
         var legendW = Math.Min(keys.Count, ps.LegendColumns) * Math.Max(ctx.Pt(ps.LegendColumnPt),
-            keys.Select(key => TextFit.Width(ctx.ProgramLabel(key), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max()
+            keys.Select(key => LegendTextWidth(ctx, key)).DefaultIfEmpty(0).Max()
             + ctx.Pt(ps.LegendSwatchPt) + ctx.Pt(14));
         var legendH = rows * ctx.Pt(ps.LegendRowPt);
         var bar = ScaleBar(ps, w, k);
@@ -185,11 +188,15 @@ public static class PlanDrawing
         var env = new Envelope(site);
         env.ExpandBy(Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Width), Math.Max(ps.SiteMarginFt, ps.SiteExtentFactor * site.Height));
         // Illustrator refuses artboards past its canvas (runtime.jsx throws): keep the drawing inside page.maxArtboardPt.
-        var maxFt = (ctx.Style.Page.MaxArtboardPt - 2 * ctx.Style.Page.MarginPt - ctx.Pt(ctx.Style.Page.TitleBandPt) - ctx.Pt(ps.BandPt) * 4) / ctx.PtPerFt;
-        if (maxFt > 0 && (env.Width > maxFt || env.Height > maxFt))
+        // With the roof view the file holds two such artboards stacked: each gets half the canvas height.
+        var pg = ctx.Style.Page;
+        var extra = 2 * pg.MarginPt + ctx.Pt(pg.TitleBandPt) + ctx.Pt(ps.BandPt) * 4;
+        var maxW = (pg.MaxArtboardPt - extra) / ctx.PtPerFt;
+        var maxH = ((ps.SiteRoofView ? (pg.MaxArtboardPt - 72) / 2 : pg.MaxArtboardPt) - extra) / ctx.PtPerFt;
+        if (maxW > 0 && maxH > 0 && (env.Width > maxW || env.Height > maxH))
         {
             var c = site.Centre;
-            double hw = Math.Min(env.Width, maxFt) / 2, hh = Math.Min(env.Height, maxFt) / 2;
+            double hw = Math.Min(env.Width, maxW) / 2, hh = Math.Min(env.Height, maxH) / 2;
             env = new Envelope(c.X - hw, c.X + hw, c.Y - hh, c.Y + hh);
         }
         return env;
@@ -276,7 +283,14 @@ public static class PlanDrawing
             veil.Opacity = ps.UpperVeilOpacity;
             d.Layer("BG_VEIL").Items.Add(veil);
         }
-        if (kind == LevelKind.Site && ps.ContextNames) ContextNames(d, ctx, a, map, p, background);
+        if (kind is LevelKind.Site or LevelKind.Roof && ps.ContextNames) ContextNames(d, ctx, a, map, p, background);
+
+        if (kind == LevelKind.Roof)
+        {
+            RoofView(d, ctx, a, map, p);
+            People(d, ctx, a, map, p, plan, background);
+            return;
+        }
 
         // Our structure (columns, walls) cut at the plan height: solid dark.
         var cutAt = plan.Level.Elevation + ctx.Rules.Cleanup.PlanCutHeightFt;
@@ -289,6 +303,16 @@ public static class PlanDrawing
             d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STRUCTURE_{n:000}", cut, d.Swatch("NC_STRUCTURE", sPaint.Fill), null, 0), a));
         }
         PlanLinework.Add(d, ctx, a, map, i, p);
+        // A screen standing on this floor (roof screen around the penthouse): its floor solid, its walls as poche
+        // (user rev 0.8.3) — the same object as in the axons. The floor goes under the program blocks.
+        var sc = ctx.Style.Screen;
+        foreach (var e in PD.Core.Analysis.ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i))
+        {
+            if (e.Encloses)
+                d.Layer("PD_PROGRAM").Items.Insert(0, At(map.Poly($"{p}SCREEN_{e.Index:00}_FLOOR", e.Floor, d.Swatch("NC_SCREEN_FLOOR_PLAN", sc.PlanFloorFill),
+                    d.Gray(sc.PlanFloorStroke), sc.PlanFloorPt), a));
+            d.Layer("PD_SCREEN").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_WALL", e.Walls, d.Swatch("NC_SCREEN_WALL_PLAN", sc.PlanWallFill), null, 0), a));
+        }
 
         var count = new Dictionary<string, int>();
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
@@ -357,6 +381,63 @@ public static class PlanDrawing
         }
     }
 
+    /// <summary>Levels from grade up that carry program, lowest first (the roof view paints them in this order).</summary>
+    static List<int> RoofLevels(ExportContext ctx)
+    {
+        var r = ctx.Result;
+        var g = GroundIndex(ctx);
+        return Enumerable.Range(0, r.Plans.Count).Where(j => j >= g && r.Plans[j].Footprints.Any(f => !f.OpenToBelow && !f.Resolved.IsEmpty)).ToList();
+    }
+
+    /// <summary>
+    /// Roof view of the whole building (user rev 0.8.3): every level from grade up painted bottom to top, so each
+    /// point shows the top of the highest block over it; thin dark lines where a tier steps, the 3 pt outline around all.
+    /// </summary>
+    static void RoofView(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p)
+    {
+        var r = ctx.Result;
+        var ps = ctx.Style.Plan;
+        var levels = RoofLevels(ctx);
+        var tiers = new List<NtsGeometry>();
+        var sc = ctx.Style.Screen;
+        var screens = PD.Core.Analysis.ScreenEnclosures.For(ctx);
+        foreach (var j in levels)
+        {
+            var ln = SectionDrawing.Safe(r.Plans[j].Level.Name);
+            var k = 0;
+            // A roof screen standing on this level: its floor under this level's blocks, its walls over them.
+            foreach (var e in screens.Where(e => e.LevelIndex == j && e.Encloses))
+                d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_FLOOR", e.Floor, d.Swatch("NC_SCREEN_FLOOR_PLAN", sc.PlanFloorFill),
+                    d.Gray(sc.PlanFloorStroke), sc.PlanFloorPt), a));
+            foreach (var f in r.Plans[j].Footprints.Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty))
+            {
+                var (fill, _, _, _) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
+                d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}{ln}_{++k:000}", f.Resolved, fill, d.Gray(ps.RoomStroke), ps.RoomPt), a));
+            }
+            foreach (var e in screens.Where(e => e.LevelIndex == j))
+                d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_WALL", e.Walls, d.Swatch("NC_SCREEN_WALL_PLAN", sc.PlanWallFill), null, 0), a));
+            if (!r.Plans[j].Union.IsEmpty) tiers.Add(r.Plans[j].Union);
+        }
+        // A tier's edge shows where nothing higher covers it.
+        for (var t = 0; t < tiers.Count; t++)
+        {
+            var above = tiers.Skip(t + 1).ToList();
+            NtsGeometry edge = tiers[t].Boundary;
+            if (above.Count > 0)
+            {
+                var cover = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(above));
+                if (cover != null) edge = Safe(() => edge.Difference(cover.Buffer(-0.05))) ?? edge;
+            }
+            var lines = MeshSlicer.Lineal(edge);
+            if (!lines.IsEmpty) d.Layer("PD_OUTLINE").Items.Add(At(map.Geom($"{p}TIER_{t + 1:00}", lines, null, d.Gray(ps.RoofTierStroke), ps.RoofTierPt, false), a));
+        }
+        if (tiers.Count > 0)
+        {
+            var all = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(tiers));
+            if (all is { IsEmpty: false }) d.Layer("PD_OUTLINE").Items.Add(At(map.Poly($"{p}OUTLINE", all, null, d.Gray(ps.OutlineStroke), ps.OutlinePt), a));
+        }
+    }
+
     /// <summary>Other buildings' names on their roofs (SITE_STYLE §2: Arial Bold caps, #6C6C6C, horizontal).</summary>
     static void ContextNames(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background)
     {
@@ -387,13 +468,12 @@ public static class PlanDrawing
         }
         // Outdoors only: program blocks stay solid colour.
         // Our plaza, and the sidewalks / blocks right around it (not the whole neighbourhood).
+        // Only on hardscape and sidewalks (user rev 0.8.3): never on a road, a building, water or a green.
         var near = MeshSlicer.Polygonal(Safe(() => PlanBackground.Footprint(ctx.Result).Buffer(ctx.Style.Plan.ContextMarginFt)));
-        foreach (var (b, i) in background.Where(b => b.Role is Roles.NcHardscape or Roles.Hardscape && !b.IsLine).Select((b, i) => (b, i)))
-        {
-            var area = b.Role == Roles.Hardscape ? Safe(() => b.Geometry.Intersection(near)) : b.Geometry;
-            var open = MeshSlicer.Polygonal(Safe(() => area!.Difference(plan.Union)));
-            if (!open.IsEmpty) Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, $"{p}PLAZA{i}"));
-        }
+        var walk = PlanBackground.Walkable(background, plan.Union);
+        var open = MeshSlicer.Polygonal(Safe(() => walk.Intersection(near)));
+        foreach (var (part, i) in Enumerable.Range(0, open.NumGeometries).Select(i => (open.GetGeometryN(i), i)))
+            Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, part, $"{p}PLAZA{i}"));
     }
 
     static string LabelText(ExportContext ctx, PD.Core.Cleanup.Footprint f) => f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel
@@ -490,11 +570,21 @@ public static class PlanDrawing
     }
 
     /// <summary>Programs drawn on this level, in colour-scheme order.</summary>
-    static List<string> Keys(ExportContext ctx, PD.Core.Cleanup.LevelPlan plan)
+    static List<string> Keys(ExportContext ctx, PD.Core.Cleanup.LevelPlan plan) => Keys(ctx, new[] { plan });
+
+    static List<string> Keys(ExportContext ctx, IEnumerable<PD.Core.Cleanup.LevelPlan> plans)
     {
-        var used = plan.Footprints.Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty).Select(f => f.Mass.ProgramKey).ToHashSet();
+        var used = plans.SelectMany(plan => plan.Footprints).Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty).Select(f => f.Mass.ProgramKey).ToHashSet();
         var order = ctx.Programs.Select(x => x.Key).ToList();
         return used.OrderBy(k => order.IndexOf(k) is var n and >= 0 ? n : int.MaxValue).ThenBy(k => k, StringComparer.Ordinal).ToList();
+    }
+
+    /// <summary>Legend name width as printed: the note style sets capitals, so measure the capitals.</summary>
+    static double LegendTextWidth(ExportContext ctx, string key)
+    {
+        var f = ctx.Style.Fonts.Note;
+        var text = f.AllCaps ? ctx.ProgramLabel(key).ToUpperInvariant() : ctx.ProgramLabel(key);
+        return TextFit.Width(text, ctx.Pt(f.SizePt));
     }
 
     static void Legend(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, string p, List<string> keys, double x0, double y0)
@@ -505,7 +595,7 @@ public static class PlanDrawing
         var layer = d.Layer("PD_LEGEND");
         // Wide enough for the longest name, so entries never run into each other.
         var colW = Math.Max(ctx.Pt(ps.LegendColumnPt),
-            keys.Select(k => TextFit.Width(ctx.ProgramLabel(k), ctx.Pt(ctx.Style.Fonts.Note.SizePt)) * 0.85).DefaultIfEmpty(0).Max() + s + ctx.Pt(14));
+            keys.Select(k => LegendTextWidth(ctx, k)).DefaultIfEmpty(0).Max() + s + ctx.Pt(14));
         foreach (var (key, n) in keys.Select((key, n) => (key, n)))
         {
             double x = x0 + n % cols * colW, y = y0 + n / cols * ctx.Pt(ps.LegendRowPt);

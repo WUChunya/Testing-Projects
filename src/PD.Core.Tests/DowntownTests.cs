@@ -191,7 +191,7 @@ public class DowntownTests
         int Ab(string n) => plans.Artboards.FindIndex(x => x.Name == n);
         foreach (var (d, a, name) in new[]
                  {
-                     (By("00_Site_Plan.ai"), 0, "downtown_site_plan"), (plans, Ab("PLAN L1"), "downtown_plan_L1"),
+                     (By("00_Site_Plan.ai"), 0, "downtown_site_plan"), (By("00_Site_Plan.ai"), 1, "downtown_site_plan_roof"), (plans, Ab("PLAN L1"), "downtown_plan_L1"),
                      (plans, Ab("PLAN L5"), "downtown_plan_L5"), (plans, Ab("PLAN B1"), "downtown_plan_B1"),
                      (By("02_Section_DT.ai"), 0, "downtown_section_DT"), (By("03_Axon_Stacked.ai"), 0, "downtown_axon_stacked"),
                      (By("04_Axon_Exploded.ai"), 0, "downtown_axon_exploded"), (By("03_Site_Axon.ai"), 0, "downtown_site_axon"),

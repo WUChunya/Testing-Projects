@@ -18,6 +18,9 @@ public sealed class ExportContext
 
     Dictionary<string, NameRow>? _names;
 
+    /// <summary>Derived data shared by every drawing of one export (site layout, background per extent).</summary>
+    public Dictionary<string, object> Cache { get; init; } = new();
+
     /// <summary>Label and stable id per mass (tab 4).</summary>
     public IReadOnlyDictionary<string, NameRow> Names => _names ??=
         Naming.Build(Result, Settings.Names, ProgramLabel).ToDictionary(n => n.MassId);
@@ -44,7 +47,7 @@ public sealed class ExportContext
     /// <summary>Context for program sections (docs/SITE_STYLE.md §4): own scale, absolute text sizes.</summary>
     public ExportContext ForSection() => new()
     {
-        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules,
+        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules, Cache = Cache,
         ScaleOverride = string.IsNullOrWhiteSpace(Settings.Output.SectionScale) ? Rules.Output.DefaultSectionScale : Settings.Output.SectionScale,
         TextScaleOverride = 1,
     };
@@ -52,8 +55,39 @@ public sealed class ExportContext
     /// <summary>Context for the charts (PRD 5.5 / 5.6): absolute point sizes, no drawing scale.</summary>
     public ExportContext ForChart() => new()
     {
-        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules, TextScaleOverride = 1,
+        Result = Result, Settings = Settings, Programs = Programs, Style = Style, Rules = Rules, Cache = Cache, TextScaleOverride = 1,
     };
+
+    /// <summary>
+    /// Axon viewer azimuth in degrees (0 = east, counter-clockwise, 225 = south-west) from the output settings: a
+    /// building corner, or the direction from the building's centre to the V view marker; null = the style's azimuth.
+    /// </summary>
+    public double? AxonAzimuth()
+    {
+        var o = Settings.Output;
+        switch ((o.AxonView ?? "").Trim().ToUpperInvariant())
+        {
+            case "SW": return 225;
+            case "SE": return 315;
+            case "NE": return 45;
+            case "NW": return 135;
+            case "POINT" when o.AxonViewPoint is { Length: >= 2 } pt:
+                var (x, y, _) = Result.Frame.ToLocal(pt[0], pt[1], 0);
+                var c = PD.Core.Plans.PlanBackground.Footprint(Result).EnvelopeInternal;
+                if (c.IsNull) c = new NetTopologySuite.Geometries.Envelope(Result.Building.MinX, Result.Building.MaxX, Result.Building.MinY, Result.Building.MaxY);
+                double dx = x - c.Centre.X, dy = y - c.Centre.Y;
+                return Math.Abs(dx) + Math.Abs(dy) < 1e-6 ? null : Math.Atan2(dy, dx) * 180 / Math.PI;
+            default: return null;
+        }
+    }
+
+    /// <summary>Use the Rhino viewport's direction (only when the view setting asks for it).</summary>
+    public double[]? AxonViewDirection()
+    {
+        var o = Settings.Output;
+        var mode = (o.AxonView ?? "").Trim().ToUpperInvariant();
+        return mode == "VIEWPORT" || (mode.Length == 0 && o.AxonFromViewport) ? o.AxonViewDirection : null;
+    }
 
     /// <summary>A size given at the reference scale, in points at the drawing scale.</summary>
     public double Pt(double atReference) => atReference * TextScale;

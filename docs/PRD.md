@@ -1,11 +1,12 @@
 # PRD：Program Diagram Rhino 8 插件
 
-v1.0 · 2026-10-13 · 状态：S0–S6 完成，插件 v0.8.2，Windows 测试微调中（修订过程见 `docs/CHANGELOG.md`；使用说明 `docs/USER_GUIDE.md`，建模约定 `docs/MODELING_CONVENTION.md`）
+v1.0 · 2026-10-13 · 状态：S0–S6 完成，插件 v0.8.3，Windows 测试微调中（修订过程见 `docs/CHANGELOG.md`；使用说明 `docs/USER_GUIDE.md`，建模约定 `docs/MODELING_CONVENTION.md`）
 
 **v1.0 主要变化（用户 rev 0.8，Downtown 模型 2026-10-13 版）**
 - 文字：全部 **Futura PT、全大写**；粗体位置用 FuturaPT-Heavy，其余 FuturaPT-Book（未安装时退回 Arial）。
 - 新图层角色：`NC.Interior`（平面中灰线）、`NC.Furniture`（平面浅灰线）、`NC.Massing`（建筑外轮廓，含无 program 的空间，虚线）、`NC.Screen`（围墙 / 装饰墙等表皮，只画一层面，不挤出体块）。配景人物和树用公司 ENTOURAGES.ai / TREES.ai。
 - 总平面范围：NC 场地四周各留场地自身尺寸的 5 倍（`plan.siteExtentFactor`）；只算建筑附近（`plan.siteMarginFt` 内）的 NC 场地物体，画板最大 `page.maxArtboardPt`（Illustrator 画布 16383 pt，超出时 AI 建不出总平面）。
+- v0.8.3：人行道 4.5 ft、行道树距路缘 1.5 ft、> 50 ft 道路中央 5 ft 绿化带（`site.*`）；总平面加屋顶俯瞰画板；人物只在硬质铺装；screen = 实心墙 + 白色底板 + 顶部开敞（`screen.*`，轴测 / 平面 / 剖面），不加楼层；爆炸轴测挖方墙跟随 B1；分层轴测改为轴测剖切；场地轴测铺满画面；轴测视角可选（角点或 V 形视点）；设置随模型旁文件和导出包保存。
 - 场地（v0.8.2）：场地曲线也画——闭合曲线按面（道路曲线按路缘线），开放曲线按线；地面绿地按 `entourage.greenTrees` 随机植树（各图同一批树）；绿地、水体无外框，填色上加 hatch（`roles.*.hatch`）；层平面四周带出 150 ft 周边（`plan.contextMarginFt`）。叠合轴测层间只有一条 0.5 pt 细线。
 - 平面：不同硬质铺装交界 1 pt、场地与道路交界 1.5 pt 深灰浅描边；新增 "LEGEND & SYMBOLS" 画板保存全部图例和符号；`LEVEL X` 无底色、字号同最大 program 名；同层体块间 < 0.2 ft 视为贴合（`cleanup.sealGapFt`），白色细线分隔、外轮廓统一。
 - 剖面：人物随机分布并避开文字；program 名在色块正中，每块都写，放不下用前三个字母，再放不下不写；顶层只有 Shell / Core / 设备时画成一个灰色 PENTHOUSE 色块，上方不加楼板，加 T.O. PENTHOUSE 标高。

@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.2）
+# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.3）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.2; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.3; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,8 +18,8 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.2**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），179 个测试全过，`dist/ProgramDiagram-0.8.2.zip`（dist 下的 zip 随提交入库）。
-- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.3**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），198 个测试全过，`dist/ProgramDiagram-0.8.3.zip`（dist 下的 zip 随提交入库）。
+- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。
 
@@ -33,6 +33,15 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | 场地曲线（闭合 = 面、开放 = 线、去重） | `PlanBackground.Collect`（平面、总平面、所有轴测共用） | `roles.*.closedCurves`（`"area"` / `"line"`）、`roles.*.plan/axon.line` |
 | 绿地随机植树 | `PlanBackground.PlantGreens`（每块绿地整体种植，按 id 定种子） | `entourage.greenTrees.*`（spacingFt、coverage、edgeInsetFt、roles、maxAboveGroundFt），树冠大小 `plan.treeDiameterFt` |
 | 绿地 / 水体 hatch | `PlanBackground.Hatch`；平面 `PlanDrawing.DrawLevel`，轴测 `AxonDrawing.Site` | `roles.*.plan/axon.hatch`（stroke、strokePt、spacingFt、angleDeg、dash） |
+| 人行道 4.5 ft、行道树距路缘 1.5 ft、> 50 ft 道路中央绿化带（半圆端头） | `Plans/SiteLayout.cs`（每次导出算一次，`PlanBackground.Collect(ctx, …)` 按范围裁切；剖面 `SectionDrawing.Trees`） | `site.*`、`roles.BG.Sidewalk / BG.Median`、`entourage.sectionTreeBandFt` |
+| 总平面屋顶俯瞰画板 | `PlanDrawing.RoofView`（`LevelKind.Roof`） | `plan.siteRoofView / siteRoofTitle / roofTierStroke / roofTierPt` |
+| 人物只在硬质铺装上 | `PlanBackground.Walkable`；平面 `People`、轴测 `People`、剖面 / 立面 `SectionDrawing.WalkableAlong` | `entourage.sectionBandFt / elevationBandFt` |
+| Screen 实心墙 + 白色底板 + 顶部开敞（不加楼层） | `Analysis/ScreenEnclosures.cs`；轴测 `AxonDrawing.ScreenPrisms`；平面 `DrawLevel` / `RoofView`；剖面 `SectionDrawing.ScreenCuts / DrawScreens` | `screen.*`（thicknessFt 0 = 模型楼板厚度） |
+| 爆炸轴测挖方墙跟随 B1 | `AxonDrawing.ExplodedA`、`DropBasements(riseFt)` | `axon.exploded.basementClearFt` |
+| 分层轴测 = 轴测剖切 | `AxonDrawing.Levels` | `axon.levels.*` |
+| 场地轴测铺满画面 | `AxonDrawing.PageFrame / ClipToFrame` | `axon.site.fillPage / pageWidthIn / pageHeightIn` |
+| 轴测视角（角点 / V 形视点） | `ExportContext.AxonAzimuth`；Rhino `PlaceAxonViewCommand`、`AxonViewConduit`、第 8 页下拉框 | `Output.AxonView / AxonViewPoint`（设置里） |
+| 设置保存 | `PdSettings.FromJson`（逐项容错）、`Newest`；Rhino `PdSession.Save / SidePath`；导出包 `pd_settings.json` | — |
 | 平面铺装 / 道路交界线 | `PlanDrawing.SiteEdges`（图层 `BG_SITE_EDGE`） | `plan.hardscapeEdge`、`plan.roadEdge` |
 | 图例符号画板 | `Plans/PlanLegendSheet.cs`（`01_Plans.ai` 最后一个画板） | — |
 | LEVEL X 标签 | `PlanDrawing.TitleTag` | `plan.titleTagFill`（空 = 无底色），字号 = `fonts.label` |
@@ -71,6 +80,8 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 - Penthouse 的判定：顶层只含 SHELL / CORE / STAIR / BUILDING_SUPPORT（`section.penthousePrograms`）；模板模型的 L11 设备层也被当作 penthouse。
 - 平面顶视人物是内置简图（公司库只有立面人物）；立面图不画树（剖面画）。
 - 文字宽度是估算值（剖面缩写、图例列宽）；字体换了要校 `SectionBars.TextWidth`。
-- 场地丰富度取决于模型：CADMAPPER 的 PARK / WATER / ROAD LINES 要在第①页设成 BG.Landscape / BG.Water / BG.Road（`CADMAPPER  OUTLINE` 默认忽略）；Linux 夹具里 Downtown 周边绿地较远，场地轴测范围内看不到植树。
+- 场地丰富度取决于模型：街区来自 LOT FILL 等 BG.Hardscape / 公园 BG.Landscape / 闭合的道路曲线（ROAD LINES），没有街区就没有人行道和行道树。用户 0.8.2 的 preview 里没有 LOT FILL 与公园填色，应检查第①页这些图层的角色。
+- 屋面 screen 在 Linux 上只用合成模型验证过（`ScreenModel`）；真实模型的 screen 若是多段曲面或有缺口，`screen.closeGapFt` 控制视为闭合的缝宽。
+- 轴测 V 形视点、"Load settings…"、模型旁 `.programdiagram.json` 都是 Rhino 端（VERIFY-WIN）。
 - 尚未做：街道名 / 箭头、流线 / 视线 / 服务图标（画在 `ANNOTATION`）、key plan、Unassigned 斜线。
 - 分支上曾有其他会话同时推送：开工前先 `git fetch` + `git pull`，冲突时以远端为准再合并自己的改动。

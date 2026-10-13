@@ -85,7 +85,8 @@ public static class ElevationDrawing
         {
             var e = ctx.Style.Entourage;
             var n = 0;
-            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, 0, plane.Length, "", p + "GROUND", outdoors: true))
+            foreach (var (u0, u1, tag) in SectionDrawing.WalkableAlong(ctx, plane, Math.Min(depth, ctx.Style.Entourage.ElevationBandFt)))
+            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, u0, u1, "", p + "GROUND" + tag, outdoors: true))
                 d.Layer(PD.Core.Entourage.EntouragePlacer.Layer).Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(
                     d, e, $"{p}PERSON_{++n:000}", map.X(f.X), map.Y(ground), e.HeightFt * map.K, f.Variant, f.Mirror));
         }

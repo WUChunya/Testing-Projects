@@ -227,7 +227,7 @@ public sealed class SectionGeometry
         return res;
     }
 
-    static IEnumerable<(double, double)> Segments(NtsGeometry g, SectionPlane p)
+    public static IEnumerable<(double, double)> Segments(NtsGeometry g, SectionPlane p)
     {
         for (var i = 0; i < g.NumGeometries; i++)
             if (g.GetGeometryN(i) is LineString ls && ls.Length > 0.05)

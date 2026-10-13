@@ -60,7 +60,8 @@ public class NcLineworkTests
         Assert.Equal("#8C8C8C", hex[One("PD_INTERIOR").Stroke!]);
         Assert.Equal("#C8C8C8", hex[One("PD_FURNITURE").Stroke!]);
         Assert.NotNull(One("PD_MASSING").Dash);
-        Assert.False(One("PD_SCREEN").Closed);
+        // User rev 0.8.3: a screen is a solid wall as thick as the slabs (poche), no longer a line.
+        Assert.NotNull(One("PD_SCREEN").Fill);
         // The desk stands on L1 only; the envelope is cut on every level.
         var l5 = d.Artboards.FindIndex(a => a.Name == "PLAN L5");
         Assert.DoesNotContain(d.Layer("PD_FURNITURE").Items, i => i.Artboard == l5);
@@ -79,11 +80,14 @@ public class NcLineworkTests
         Assert.All(s.Layer("PD_MASSING").Items, i => Assert.NotNull(i.Dash));
 
         var ax = AxonDrawing.Build(ctx, AxonKind.Site);
-        var screen = Assert.Single(ax.Layer("AXON_SCREEN").Items);
+        // User rev 0.8.3: the screen is a solid wall (slab-thick) among the program faces, not a thin veil.
+        Assert.DoesNotContain(ax.Layers, l => l.Name == "AXON_SCREEN" && l.Items.Count > 0);
+        var wall = ax.Layer("PD_PROGRAM").Items.Where(i => i.Name.StartsWith("AXT_SCREEN_01_WALL")).ToList();
+        Assert.NotEmpty(wall);
         Assert.NotEmpty(ax.Layer("AXON_MASSING").Items);
-        // A 100 ft × 12 ft panel stays thin in the drawing (not a block).
-        var ys = screen.Paths!.SelectMany(p => p).Select(q => q[1]).ToList();
-        var xs = screen.Paths!.SelectMany(p => p).Select(q => q[0]).ToList();
+        // A 100 ft × 12 ft panel stays a thin wall in the drawing (not a block).
+        var ys = wall.SelectMany(i => i.Paths!).SelectMany(p => p).Select(q => q[1]).ToList();
+        var xs = wall.SelectMany(i => i.Paths!).SelectMany(p => p).Select(q => q[0]).ToList();
         Assert.True(ys.Max() - ys.Min() < (xs.Max() - xs.Min()) * 1.2);
     }
 

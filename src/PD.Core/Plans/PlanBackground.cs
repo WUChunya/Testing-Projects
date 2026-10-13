@@ -21,7 +21,7 @@ public static class PlanBackground
     /// <summary>Drawing order bottom → top.</summary>
     static readonly string[] Order =
     {
-        Roles.Road, Roles.Hardscape, Roles.Landscape, Roles.Water, Roles.NcHardscape, Roles.Green, Roles.NcWater,
+        Roles.Road, SiteLayout.Median, Roles.Hardscape, Roles.Landscape, Roles.Water, SiteLayout.Sidewalk, Roles.NcHardscape, Roles.Green, Roles.NcWater,
         Roles.Building, Roles.Tree, Roles.NcTree, Roles.Line,
     };
 
@@ -87,14 +87,69 @@ public static class PlanBackground
             }
         }
         if (greens.Count > 0) items.AddRange(PlantGreens(r, greens, ours, extent, dia, greenTrees!, seed));
-        return items.OrderBy(i => i.IsLine && i.Role != Roles.Line ? Array.IndexOf(Order, Roles.Building) - 0.5 : Array.IndexOf(Order, i.Role)).ToList();
+        return items.OrderBy(Rank).ToList();
     }
 
-    /// <summary>Background of a drawing with the context's style, seed and green-area planting.</summary>
-    public static List<BackgroundItem> Collect(ExportContext ctx, Envelope extent) =>
-        Collect(ctx.Result, extent, ctx.Style.Plan.TreeDiameterFt, ctx.Style,
+    /// <summary>
+    /// Background of a drawing with the context's style, seed and green-area planting, plus the generated streetscape
+    /// (<see cref="SiteLayout"/>: sidewalks, street trees, medians) clipped to the extent. Cached per extent.
+    /// </summary>
+    public static List<BackgroundItem> Collect(ExportContext ctx, Envelope extent)
+    {
+        var key = $"BG|{extent.MinX:0.##}|{extent.MinY:0.##}|{extent.MaxX:0.##}|{extent.MaxY:0.##}";
+        if (ctx.Cache.TryGetValue(key, out var hit) && hit is List<BackgroundItem> cached) return cached;
+        var items = Collect(ctx.Result, extent, ctx.Style.Plan.TreeDiameterFt, ctx.Style,
             PD.Core.Entourage.EntouragePlacer.Enabled(ctx) ? ctx.Style.Entourage.GreenTrees : null,
             PD.Core.Entourage.EntouragePlacer.Seed(ctx), ctx.Rules.Levels.GroundElevationFt);
+        var clip = MeshSlicer.Factory.ToGeometry(extent);
+        var trees = PD.Core.Entourage.EntouragePlacer.Enabled(ctx);
+        foreach (var i in SiteLayout.For(ctx).Items)
+        {
+            if (!extent.Intersects(i.Geometry.EnvelopeInternal)) continue;
+            if (i.Role is Roles.Tree)
+            {
+                if (trees && extent.Contains(i.Geometry.Centroid.Coordinate)) items.Add(i);
+                continue;
+            }
+            var g = i.IsLine ? MeshSlicer.Lineal(Safe(() => i.Geometry.Intersection(clip))) : MeshSlicer.Polygonal(Safe(() => i.Geometry.Intersection(clip)));
+            if (!g.IsEmpty) items.Add(i with { Geometry = g });
+        }
+        items = items.OrderBy(Rank).ToList();
+        ctx.Cache[key] = items;
+        return items;
+    }
+
+    static double Rank(BackgroundItem i) => i.IsLine && i.Role != Roles.Line ? Array.IndexOf(Order, Roles.Building) - 0.5 : Array.IndexOf(Order, i.Role);
+
+    /// <summary>
+    /// Where people may stand outdoors (user rev 0.8.3): hardscape (ours and the context's, sidewalks included), never
+    /// on a road, a building (ours or another), water or a green.
+    /// </summary>
+    public static NtsGeometry Walkable(IEnumerable<BackgroundItem> items, NtsGeometry ours)
+    {
+        var list = items.Where(i => !i.IsLine).ToList();
+        var hard = list.Where(i => i.Role is Roles.Hardscape or Roles.NcHardscape or SiteLayout.Sidewalk).Select(i => i.Geometry).ToList();
+        if (hard.Count == 0) return MeshSlicer.Factory.CreatePolygon();
+        var walk = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(hard)) ?? MeshSlicer.Factory.CreatePolygon();
+        var off = list.Where(i => i.Role is Roles.Building or Roles.Water or Roles.NcWater or SiteLayout.Median)
+            .Select(i => i.Geometry).ToList();
+        if (!ours.IsEmpty) off.Add(ours);
+        // Greens, except where the sidewalk runs along their road edge.
+        var greens = list.Where(i => i.Role is Roles.Green or Roles.Landscape).Select(i => i.Geometry).ToList();
+        if (greens.Count > 0)
+        {
+            var g = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(greens));
+            var walks = list.Where(i => i.Role == SiteLayout.Sidewalk).Select(i => i.Geometry).ToList();
+            if (g != null && walks.Count > 0) g = Safe(() => g.Difference(NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(walks))) ?? g;
+            if (g != null) off.Add(g);
+        }
+        if (off.Count > 0)
+        {
+            var o = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(off));
+            if (o != null) walk = Safe(() => walk.Difference(o)) ?? walk;
+        }
+        return MeshSlicer.Polygonal(walk);
+    }
 
     static string Key(string role, bool line, Envelope e) =>
         $"{role}|{line}|{Math.Round(e.MinX * 2)}|{Math.Round(e.MinY * 2)}|{Math.Round(e.MaxX * 2)}|{Math.Round(e.MaxY * 2)}";

@@ -55,7 +55,7 @@ public static class AxonDrawing
         var ax = ctx.Style.Axon;
         var proj = kind == AxonKind.ExplodedB
             ? AxonProjection.Planometric(ax.ExplodedB.YAxisDeg)
-            : AxonProjection.FromAngles(ax.AzimuthDeg, ax.ElevationDeg, ctx.Settings.Output.AxonViewDirection, trueLength: !ax.Foreshorten);
+            : AxonProjection.FromAngles(ctx.AxonAzimuth() ?? ax.AzimuthDeg, ax.ElevationDeg, ctx.AxonViewDirection(), trueLength: !ax.Foreshorten);
         var d = new PD.Core.Drawing.Drawing { FileName = FileName(kind) };
         ctx.AddStandardStyles(d);
         var blocks = ProgramBlocks.Build(ctx.Result);
@@ -99,10 +99,25 @@ public static class AxonDrawing
             if (above.Count > 0) blocks = above;
         }
         var full = site ? ax.Site.FullHeightBlocks : st.FullHeightBlocks;
-        var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach);
+        // User rev 0.8.3: the site axon fills its page — the ground under the whole frame, everything clipped to it.
+        var frame = site && ax.Site.FillPage ? PageFrame(ctx, proj, blocks, ground) : null;
+        Envelope? area = null;
+        if (frame != null)
+        {
+            area = new Envelope();
+            foreach (var c in frame.Coordinates)
+            {
+                var (x, y) = proj.Unproject(c.X, c.Y, ground);
+                area.ExpandToInclude(x, y);
+            }
+            area.ExpandBy(10);
+        }
+        var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach, area: area);
         Func<ProgramBlock, (double, double)> band = full ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
         var program = ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList();
-        var faces = AxonFaces.Render(proj, context.Concat(program));
+        // Screens as solid walls with a white floor, open on top (user rev 0.8.3).
+        var screens = ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => blocks.Any(b => b.LevelIndex == e.LevelIndex))).ToList();
+        var faces = AxonFaces.Render(proj, context.Concat(program).Concat(screens));
         HideBehind(sheet, proj, faces);
         var line = d.Gray(ax.LineColor);
         var ctxPaint = PlanBackground.PaintOf(ctx.Style, Roles.Building, "axon");
@@ -110,15 +125,18 @@ public static class AxonDrawing
         {
             if (f.Prism.Group == "CTX")
                 sheet.Paint.Add(("AXON_CONTEXT", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctxPaint.Stroke), ctxPaint.StrokePt ?? ax.ContextPt)));
+            else if (f.Prism.Group == "SCR")
+                sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt)));
             else
                 // Faces carry the floor lines: 0.5 pt in their own colour, 35 % darker.
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, FloorLine(d, f.Fill, st.FloorLineDarken), st.FloorLinePt)));
         }
         ScreensAndMassing(d, ctx, proj, sheet, faces);
+        var withScreens = faces.Where(f => f.Prism.Group is "PRG" or "SCR").ToList();
         var mine = faces.Where(f => f.Prism.Group == "PRG").ToList();
-        var folds = AxonFaces.Folds(mine);
+        var folds = AxonFaces.Folds(withScreens);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
-        var outline = AxonFaces.Union(mine.Select(f => f.Screen));
+        var outline = AxonFaces.Union(withScreens.Select(f => f.Screen));
         if (full)
         {
             // The heavy line only on the outer silhouette (no holes, no hairline gaps between faces).
@@ -138,6 +156,8 @@ public static class AxonDrawing
                 Text: c.Label!.ToUpperInvariant(), TextAt: proj.Project(pt.X, pt.Y, c.Z1), Style: "PD Context Label")));
         }
 
+        if (frame != null) ClipToFrame(sheet, frame);
+
         if (ax.FacadeVeil && ctx.Style.Facade.StackedAxonOpacity > 0)
         {
             var ids = ctx.Result.FacadeIds.ToHashSet();
@@ -151,6 +171,71 @@ public static class AxonDrawing
             }
         }
         return sheet;
+    }
+
+    /// <summary>
+    /// Screen frame of the site axon's page (screen feet): the rectangle around our building and its site margin as
+    /// projected (at least axon.site.pageWidthIn × pageHeightIn), or the fixed artboard less margins and title band.
+    /// </summary>
+    static Polygon PageFrame(ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, double ground)
+    {
+        var pg = ctx.Style.Page;
+        var k = ctx.PtPerFt;
+        var own = new Envelope();
+        foreach (var b in blocks) own.ExpandToInclude(b.Geometry.EnvelopeInternal);
+        var top = blocks.Count == 0 ? ground : blocks.Max(b => b.Z1);
+        var site = new Envelope(own);
+        site.ExpandBy(ctx.Style.Axon.Site.SiteMarginFt);
+        var scr = new Envelope();
+        foreach (var (x, y) in new[] { (site.MinX, site.MinY), (site.MaxX, site.MinY), (site.MaxX, site.MaxY), (site.MinX, site.MaxY) })
+        {
+            var (sx, sy) = proj.Project(x, y, ground);
+            scr.ExpandToInclude(sx, sy);
+        }
+        foreach (var (x, y) in new[] { (own.MinX, own.MinY), (own.MaxX, own.MinY), (own.MaxX, own.MaxY), (own.MinX, own.MaxY) })
+        {
+            var (sx, sy) = proj.Project(x, y, top);
+            scr.ExpandToInclude(sx, sy);
+        }
+        double w, h;
+        if (ctx.ArtboardSize is { } ab)
+        {
+            w = Math.Max(72, ab.W - 2 * pg.MarginPt) / k;
+            h = Math.Max(72, ab.H - 2 * pg.MarginPt - ctx.Pt(pg.TitleBandPt)) / k;
+        }
+        else
+        {
+            w = Math.Max(scr.Width, (ctx.Style.Axon.Site.PageWidthIn * 72 - 2 * pg.MarginPt) / k);
+            h = Math.Max(scr.Height, (ctx.Style.Axon.Site.PageHeightIn * 72 - 2 * pg.MarginPt - ctx.Pt(pg.TitleBandPt)) / k);
+        }
+        double cx = scr.Centre.X, cy = scr.Centre.Y;
+        return MeshSlicer.Factory.CreatePolygon(new[]
+        {
+            new Coordinate(cx - w / 2, cy - h / 2), new Coordinate(cx + w / 2, cy - h / 2), new Coordinate(cx + w / 2, cy + h / 2),
+            new Coordinate(cx - w / 2, cy + h / 2), new Coordinate(cx - w / 2, cy - h / 2),
+        });
+    }
+
+    /// <summary>Site, context, trees and people clipped to the page frame; context names outside it dropped.</summary>
+    static void ClipToFrame(Sheet sheet, Polygon frame)
+    {
+        string[] clip = { "AXON_SITE", "AXON_CONTEXT", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer };
+        var fe = frame.EnvelopeInternal;
+        for (var i = sheet.Paint.Count - 1; i >= 0; i--)
+        {
+            var (layer, spec) = sheet.Paint[i];
+            if (spec.Text != null)
+            {
+                if (spec.Name.EndsWith("_NAME") && spec.TextAt is { } at && !fe.Contains(at.X, at.Y)) sheet.Paint.RemoveAt(i);
+                continue;
+            }
+            if (!clip.Contains(layer) || spec.Geometry.IsEmpty) continue;
+            if (fe.Contains(spec.Geometry.EnvelopeInternal)) continue;
+            var g = AxonFaces.Safe(() => spec.Closed ? MeshSlicer.Polygonal(spec.Geometry.Intersection(frame)) : MeshSlicer.Lineal(spec.Geometry.Intersection(frame)),
+                MeshSlicer.Factory.CreatePolygon());
+            if (g.IsEmpty) sheet.Paint.RemoveAt(i);
+            else sheet.Paint[i] = (layer, spec with { Geometry = g });
+        }
     }
 
     /// <summary>
@@ -221,7 +306,8 @@ public static class AxonDrawing
     {
         var r = ctx.Result;
         var n = 0;
-        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && o.Role is Roles.Screen or Roles.Massing))
+        var solid = ScreenEnclosures.For(ctx).SelectMany(e => e.ObjectIds).ToHashSet();
+        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && o.Role is Roles.Screen or Roles.Massing && !solid.Contains(o.Id)))
         {
             var shape = AxonFaces.Safe(() => MeshProjection.Union(o.Mesh!, proj.Project), MeshSlicer.Factory.CreatePolygon());
             if (shape.IsEmpty) continue;
@@ -244,6 +330,30 @@ public static class AxonDrawing
         }
     }
 
+    /// <summary>
+    /// Screens as solid walls (as thick as the slabs) from their foot to their top, and a white floor plate inside
+    /// those that close, laid on the roof below; nothing on top (user rev 0.8.3). <paramref name="foot"/> moves the
+    /// foot (exploded plates); default = the screen's real foot.
+    /// </summary>
+    static IEnumerable<Prism> ScreenPrisms(PD.Core.Drawing.Drawing d, ExportContext ctx, IEnumerable<ScreenEnclosure> list, Func<ScreenEnclosure, double>? foot = null,
+        double? floorThicknessFt = null)
+    {
+        var st = ctx.Style.Screen;
+        var dk = st.AxonWallDarken;
+        var wall = d.Swatch("NC_SCREEN_WALL", st.AxonWallFill);
+        var side1 = d.Swatch("NC_SCREEN_WALL_SIDE1", Darken(st.AxonWallFill, dk.ElementAtOrDefault(0)));
+        var side2 = d.Swatch("NC_SCREEN_WALL_SIDE2", Darken(st.AxonWallFill, dk.ElementAtOrDefault(1)));
+        var floor = d.Swatch("NC_SCREEN_FLOOR", st.AxonFloorFill);
+        foreach (var e in list)
+        {
+            var z = foot?.Invoke(e) ?? e.Z0;
+            yield return new Prism($"SCREEN_{e.Index:00}_WALL", e.Walls, z, z + (e.Z1 - e.Z0), wall, side1, side2, "SCR");
+            if (!e.Encloses) continue;
+            var inside = AxonFaces.Safe(() => MeshSlicer.Polygonal(e.Floor.Difference(e.Walls)), MeshSlicer.Factory.CreatePolygon());
+            if (!inside.IsEmpty) yield return new Prism($"SCREEN_{e.Index:00}_FLOOR", inside, z, z + (floorThicknessFt ?? st.AxonFloorThicknessFt), floor, floor, floor, "SCR");
+        }
+    }
+
     // ---------------------------------------------------------------- exploded A (Atlanta)
 
     static Sheet ExplodedA(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
@@ -263,10 +373,19 @@ public static class AxonDrawing
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
         var siteZ = lifted[siteLevel] - t;
-        var basements = DropBasements(r, proj, blocks, levels, lifted, siteLevel, siteZ, ax.SiteMarginFt, ex.BasementClearFt);
+        // The pit walls rise from the top basement to its grade: they too stay under the site plate.
+        var pitRise = levels.Where(i => r.Levels[i].Elevation < r.Levels[siteLevel].Elevation - 1).Select(i => r.Levels[siteLevel].Elevation - r.Levels[i].Elevation - t)
+            .DefaultIfEmpty(0).Min();
+        var basements = DropBasements(r, proj, blocks, levels, lifted, siteLevel, siteZ, ax.SiteMarginFt, ex.BasementClearFt, Math.Max(0, pitRise));
         Site(d, ctx, proj, blocks, sheet, siteZ, flatContext: true, family: "axon", opacity: 1, excavation: dig);
+        // The dug-out walls go with the basements (user rev 0.8.3): from the lowest basement plate up to where grade
+        // is relative to the top basement, so B1 sits in its own pit below the site.
         if (dig != null && basements.Count > 0)
-            Excavation(d, ctx, proj, sheet, dig, siteZ - (r.Levels[siteLevel].Elevation - r.Levels[basements[0]].Elevation), siteZ);
+        {
+            var topB = basements[^1];
+            var grade = lifted[topB] + (r.Levels[siteLevel].Elevation - r.Levels[topB].Elevation) - t;
+            Excavation(d, ctx, proj, sheet, dig, lifted[basements[0]] - t, grade);
+        }
         var allFaces = new List<VisibleFace>();
         var joined = 0;
         foreach (var (i, n) in levels.Select((i, n) => (i, n)))
@@ -276,6 +395,8 @@ public static class AxonDrawing
             var z = lifted[i];
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
             var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), ax.SideDarken, coreOverride: true).ToList();
+            // A screen on this level stands on the plate: solid walls, white floor, open top (user rev 0.8.3).
+            prisms.AddRange(ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i), _ => z - t, floorThicknessFt: t));
             var faces = AxonFaces.Render(proj, prisms);
             allFaces.AddRange(faces);
             PlateFaces(d, ctx, faces, sheet, layer, $"{SectionDrawing.Safe(lvl.Name)}_");
@@ -308,7 +429,7 @@ public static class AxonDrawing
     /// basement plate is drawn over the site. Returns the basement levels, lowest first.
     /// </summary>
     static List<int> DropBasements(AnalysisResult r, AxonProjection proj, List<ProgramBlock> blocks, List<int> levels,
-        Dictionary<int, double> lifted, int siteLevel, double siteZ, double siteMarginFt, double clearFt)
+        Dictionary<int, double> lifted, int siteLevel, double siteZ, double siteMarginFt, double clearFt, double riseFt = 0)
     {
         var basements = levels.Where(i => i != siteLevel && r.Levels[i].Elevation < r.Levels[siteLevel].Elevation - 1).ToList();
         if (basements.Count == 0) return basements;
@@ -319,7 +440,8 @@ public static class AxonDrawing
         var top = basements[^1];
         var plate = AxonFaces.Union(blocks.Where(b => b.LevelIndex == top).Select(b => b.Geometry));
         if (plate.IsEmpty) return basements;
-        var plateTop = proj.Plane(plate, lifted[top]).EnvelopeInternal.MaxY;
+        var plateTop = proj.Plane(dig(plate, riseFt), lifted[top] + riseFt).EnvelopeInternal.MaxY;
+        static NtsGeometry dig(NtsGeometry g, double rise) => rise > 0 ? AxonFaces.Safe(() => g.Buffer(0.5), g) : g;
         var drop = (plateTop - siteBottom) / proj.ZScale + clearFt;
         if (drop > 0)
             foreach (var i in basements) lifted[i] -= drop;
@@ -403,42 +525,84 @@ public static class AxonDrawing
 
     // ---------------------------------------------------------------- floor keys
 
-    /// <summary>One sheet per level: the building as dashed hidden lines (below the plate / above it), that level's plate in colour.</summary>
+    /// <summary>
+    /// One sheet per level, an axonometric cutaway (user rev 0.8.3): the floors below in plain white with thin level
+    /// lines, this floor's program blocks floor to floor in colour, split by 1 pt white lines (exploded B style), and
+    /// above it only the building's total outline (dashed). Below grade the site is a dashed hint over the dug-out hole.
+    /// </summary>
     static List<Sheet> Levels(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
+        var lv = ax.Levels;
         var t = ax.Exploded.SlabThicknessFt;
         var ground = ctx.Rules.Levels.GroundElevationFt;
-        var ghost = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, b.Z0, b.Z1, null, null, null, b.LevelIndex.ToString())));
         var levels = Plates(blocks);
         var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
+        var band = blocks.ToDictionary(b => b, b => FullHeight(r, b));
+        // The building's total outline: every block, floor to floor.
+        var screens = ScreenEnclosures.For(ctx);
+        var all = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, band[b].Z0, band[b].Z1, null, null, null, "G"))
+            .Concat(screens.Select(e => new Prism($"GS{e.Index:00}", e.Walls, e.Z0, e.Z1, null, null, null, "G"))));
+        var total = Shells(AxonFaces.Union(all.Select(f => f.Screen)));
+        var white = d.Swatch("AXON_LEVELS_BELOW", lv.BelowFill);
+        var belowLine = d.Gray(lv.BelowStroke);
+        var edge = d.Gray(lv.EdgeStroke);
+        var line = d.Gray(ax.LineColor);
+        var gradeElev = r.Levels[siteLevel].Elevation;
         var sheets = new List<Sheet>();
         foreach (var i in levels)
         {
             var lvl = r.Levels[i];
             var n = SectionDrawing.Safe(lvl.Name);
             var sheet = new Sheet { Name = $"AXON {lvl.Name}", Prefix = $"AXK_{n}_", Title = $"{ax.TitleLevels} {PlanDrawing.Title(ctx.Style.Plan.LevelTitleFormat, lvl.Name)}" };
-            // Each plate on the site in its true place: below grade the site is a dashed hint over a dug-out hole with solid
-            // far walls; from the ground floor up the site is in colour (user rev 0.8).
-            var below = lvl.Elevation < r.Levels[siteLevel].Elevation - 1;
+            var below = lvl.Elevation < gradeElev - 1;
             Site(d, ctx, proj, blocks, sheet, ground, flatContext: true, family: "axon", opacity: 1, excavation: below ? dig : null, outlineOnly: below);
             if (below && dig != null) Excavation(d, ctx, proj, sheet, dig, lvl.Elevation - t, ground);
-            var stroke = d.Gray(ax.HiddenStroke);
-            var lowerEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) < i).Select(f => f.Screen));
-            if (!lowerEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_BELOW", new Spec("GHOST_BELOW", lowerEdges, null, stroke, ax.HiddenPt, ax.HiddenDash, Closed: false)));
-            var prisms = ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), _ => (lvl.Elevation - t, lvl.Elevation), ax.SideDarken, coreOverride: true).ToList();
+
+            // Floors below in white, one mass per level and height band (no program divisions); basements stay
+            // underground on the floors at grade and above.
+            var lower = levels.Where(j => j < i && (below || r.Levels[j].Elevation >= gradeElev - 1)).ToList();
+            var prisms = new List<Prism>();
+            foreach (var j in lower)
+                foreach (var (g, k) in blocks.Where(b => b.LevelIndex == j).GroupBy(b => (Math.Round(band[b].Z0, 1), Math.Round(band[b].Z1, 1))).Select((g, k) => (g, k)))
+                {
+                    var shape = AxonFaces.Union(g.Select(b => b.Geometry));
+                    if (!shape.IsEmpty) prisms.Add(new Prism($"{SectionDrawing.Safe(r.Levels[j].Name)}_BELOW_{k + 1:00}", shape, g.Key.Item1, g.Key.Item2, white, white, white, "BELOW"));
+                }
+            prisms.AddRange(ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), b => band[b], ax.SideDarken, coreOverride: true));
+            // Screens standing on this floor (or on a roof below it): solid walls, white floor, open top.
+            prisms.AddRange(ScreenPrisms(d, ctx, screens.Where(e => e.LevelIndex == i || lower.Contains(e.LevelIndex))));
             var faces = AxonFaces.Render(proj, prisms);
-            PlateFaces(d, ctx, faces, sheet, "PD_PROGRAM", "");
-            FrontCornerLabels(ctx, proj, faces, sheet, "PD_LABELS");
-            // Trees standing behind the plate lose the part it hides.
+            foreach (var f in faces)
+                sheet.Paint.Add(("PD_PROGRAM", f.Prism.Group switch
+                {
+                    "BELOW" => new Spec(f.Name, f.Screen, white, belowLine, lv.BelowStrokePt),
+                    "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
+                    _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
+                }));
+            var stack = AxonFaces.Union(faces.Select(f => f.Screen));
+            var silhouette = Shells(stack);
+            if (!silhouette.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", silhouette, null, line, lv.SilhouettePt)));
+            // Above this floor: only the building's total outline, where the drawn stack does not cover it.
+            var ghost = AxonFaces.Safe(() => MeshSlicer.Lineal(total.Boundary.Difference(stack.Buffer(0.05))), MeshSlicer.Factory.CreateLineString());
+            if (!ghost.IsEmpty) sheet.Paint.Add(("AXON_GHOST_ABOVE", new Spec("BUILDING_OUTLINE", ghost, null, d.Gray(lv.OutlineStroke), lv.OutlinePt, lv.OutlineDash, Closed: false)));
+            var mine = faces.Where(f => f.Prism.Group == "PRG").ToList();
+            CentredLabels(ctx, proj, mine, sheet, "PD_LABELS", "PD Plane Label", "PD Plane Label Small");
+            // Trees standing behind the building lose the part it hides.
             HideBehind(sheet, proj, faces);
-            var upperEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) >= i).Select(f => f.Screen));
-            if (!upperEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_ABOVE", new Spec("GHOST_ABOVE", upperEdges, null, stroke, ax.HiddenPt, ax.HiddenDash, Closed: false)));
-            sheet.Tags.Add((i, lvl.Elevation));
+            sheet.Tags.Add((i, band.Where(kv => kv.Key.LevelIndex == i).Select(kv => kv.Value.Z1).DefaultIfEmpty(lvl.Elevation).Max()));
             sheets.Add(sheet);
         }
         return sheets;
+    }
+
+    /// <summary>Outer shells of a screen union (no holes, no hairline gaps).</summary>
+    static NtsGeometry Shells(NtsGeometry g)
+    {
+        if (g.IsEmpty) return g;
+        g = AxonFaces.Safe(() => g.Buffer(0.05).Buffer(-0.05), g);
+        return MeshSlicer.Factory.BuildGeometry(AxonFaces.Polygons(g).Select(p => (NtsGeometry)MeshSlicer.Factory.CreatePolygon(p.Shell)).ToList());
     }
 
     /// <summary>
@@ -664,15 +828,16 @@ public static class AxonDrawing
 
     static List<Prism> Site(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, Sheet sheet, double z,
         bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null, SiteReach? reach = null,
-        NtsGeometry? excavation = null, bool outlineOnly = false)
+        NtsGeometry? excavation = null, bool outlineOnly = false, Envelope? area = null)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
         reach ??= SiteReach.Of(ax);
         var own = new Envelope();
         foreach (var b in blocks) own.ExpandToInclude(b.Geometry.EnvelopeInternal);
-        var site = new Envelope(own);
-        site.ExpandBy(reach.SiteMarginFt);
+        // A given area (site axon filling the page) replaces the margin around our building.
+        var site = area != null ? new Envelope(area) : new Envelope(own);
+        if (area == null) site.ExpandBy(reach.SiteMarginFt);
         var siteGeom = MeshSlicer.Factory.ToGeometry(site);
         var (pf, ps, pp) = plane ?? (ax.SiteFill, ax.SiteStroke ?? "", ax.SiteStroke == null ? 0 : ax.ContextPt);
         // Basements below: the site is dug open over them (exploded / level axons).
@@ -682,10 +847,12 @@ public static class AxonDrawing
         sheet.Paint.Add(("AXON_SITE", outlineOnly
             ? new Spec("SITE", proj.Plane(ground, z), null, hint.Stroke, hint.Pt, hint.Dash)
             : new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
-        var near = new Envelope(own);
-        near.ExpandBy(reach.ContextMarginFt);
+        var near = area != null ? new Envelope(area) : new Envelope(own);
+        near.ExpandBy(area != null ? reach.ContextMarginFt - reach.SiteMarginFt : reach.ContextMarginFt);
         var items = PlanBackground.Collect(ctx, near);
-        foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)).Select((b, n) => (b, n)))
+        // Below grade the hint leaves out the sidewalk paving lines (too busy dashed).
+        foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)
+                     && !(outlineOnly && b.IsLine && b.Role == SiteLayout.Sidewalk)).Select((b, n) => (b, n)))
         {
             var g = AxonFaces.Safe(() => bg.Geometry.Intersection(ground), bg.Geometry);
             var (fill, stroke, pt, dash, op) = PlanBackground.Paint(d, ctx.Style, bg, family);
@@ -747,7 +914,7 @@ public static class AxonDrawing
             sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}", ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
                 tr.StrokePt, Opacity: tr.Opacity, Depth: treeDepth)));
         }
-        if (reach.People && !outlineOnly) People(d, ctx, sheet, proj, siteGeom, ours, z);
+        if (reach.People && !outlineOnly) People(d, ctx, sheet, proj, AxonFaces.Safe(() => PlanBackground.Walkable(items, ours).Intersection(siteGeom), siteGeom), ours, z);
         return context;
     }
 
@@ -756,7 +923,7 @@ public static class AxonDrawing
     {
         if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
         var e = ctx.Style.Entourage;
-        // Our plaza and the ground right around it, never on top of a building.
+        // Hardscape and sidewalks (site = walkable ground) around our building: never on a road or a building.
         var near = AxonFaces.Safe(() => ours.Buffer(ctx.Style.Plan.ContextMarginFt).Intersection(site), site);
         var open = MeshSlicer.Polygonal(AxonFaces.Safe(() => near.Difference(ours), near));
         var n = 0;

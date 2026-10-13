@@ -21,6 +21,10 @@ public sealed class Style
     public AxonStyle Axon { get; set; } = new();
     public ChartsStyle Charts { get; set; } = new();
     public EntourageStyle Entourage { get; set; } = new();
+    /// <summary>Generated streetscape: sidewalks, street trees, road medians (site plan, plans, axons, sections).</summary>
+    public SiteStyle Site { get; set; } = new();
+    /// <summary>NC.Screen as solid walls with a floor and an open top (roof screens, user rev 0.8.3).</summary>
+    public ScreenStyle Screen { get; set; } = new();
 
     public static Style Default()
     {
@@ -70,6 +74,79 @@ public sealed class HatchStyle
     public double AngleDeg { get; set; } = 45;
     public double[]? Dash { get; set; }
     public double Opacity { get; set; } = 1;
+}
+
+/// <summary>
+/// User rev 0.8.3: screens (NC.Screen) drawn as what they are — solid walls as thick as the model's slabs, a solid
+/// floor where they close around an area (the roof inside a penthouse screen), open on top so the equipment inside
+/// shows at its real heights. They never add a level.
+/// </summary>
+public sealed class ScreenStyle
+{
+    public bool Solid { get; set; } = true;
+    /// <summary>Wall thickness; 0 = the median thickness of the model's slabs (NC.Slab), else fallbackThicknessFt.</summary>
+    public double ThicknessFt { get; set; }
+    public double FallbackThicknessFt { get; set; } = 1;
+    /// <summary>Panels this close together count as one screen; gaps this small still close the floor.</summary>
+    public double CloseGapFt { get; set; } = 3;
+    public string AxonWallFill { get; set; } = "#FFFFFF";
+    public double[] AxonWallDarken { get; set; } = { 0.08, 0.16 };
+    public string AxonFloorFill { get; set; } = "#FFFFFF";
+    /// <summary>The floor plate inside the screen, laid on the roof below (opaque white).</summary>
+    public double AxonFloorThicknessFt { get; set; } = 0.5;
+    public string AxonLineColor { get; set; } = "#4A4A4A";
+    public double AxonLinePt { get; set; } = 0.35;
+    public string PlanFloorFill { get; set; } = "#FFFFFF";
+    public string PlanFloorStroke { get; set; } = "#4A4A4A";
+    public double PlanFloorPt { get; set; } = 0.5;
+    public string PlanWallFill { get; set; } = "#4A4A4A";
+    public string SectionWallFill { get; set; } = "#4A4A4A";
+    public string SectionFloorFill { get; set; } = "#FFFFFF";
+    /// <summary>Section: the part of the penthouse volume the screen does not close (its top), dashed.</summary>
+    public string SectionDashStroke { get; set; } = "#4A4A4A";
+    public double SectionDashPt { get; set; } = 0.75;
+    public double[] SectionDash { get; set; } = { 4, 3 };
+}
+
+/// <summary>
+/// Generated streetscape (user rev 0.8.3). Blocks = site areas (hardscape, landscape, our site) of at least
+/// minBlockAreaSf, plus closed kerb curves on road layers; roads are what lies between them.
+/// </summary>
+public sealed class SiteStyle
+{
+    public double MinBlockAreaSf { get; set; } = 1500;
+    /// <summary>Sidewalk: a band this wide inside every block along the road (paint: roles "BG.Sidewalk").</summary>
+    public double SidewalkWidthFt { get; set; } = 4.5;
+    /// <summary>Paving joints across the sidewalk, every this many feet (0 = none).</summary>
+    public double SidewalkJointFt { get; set; } = 5;
+    public StreetTreeStyle StreetTrees { get; set; } = new();
+    public MedianStyle Median { get; set; } = new();
+}
+
+public sealed class StreetTreeStyle
+{
+    public bool Enabled { get; set; } = true;
+    /// <summary>Trunks this far from the kerb, inside the sidewalk.</summary>
+    public double OffsetFt { get; set; } = 1.5;
+    public double SpacingFt { get; set; } = 30;
+    /// <summary>No tree this close to a block corner (crossings, sight lines).</summary>
+    public double CornerClearFt { get; set; } = 25;
+    /// <summary>Kerb stretches shorter than this get no trees.</summary>
+    public double MinEdgeFt { get; set; } = 40;
+}
+
+/// <summary>Green median on wide roads: on the road centre line, round (semicircle) ends short of the crossings.</summary>
+public sealed class MedianStyle
+{
+    public bool Enabled { get; set; } = true;
+    /// <summary>Kerb-to-kerb width above which a road gets a median.</summary>
+    public double MinRoadWidthFt { get; set; } = 50;
+    /// <summary>Wider gaps are open ground, not a road.</summary>
+    public double MaxRoadWidthFt { get; set; } = 160;
+    public double WidthFt { get; set; } = 5;
+    /// <summary>The round end stops this far before the crossing (the block corner line).</summary>
+    public double EndClearFt { get; set; } = 8;
+    public double TreeSpacingFt { get; set; } = 30;
 }
 
 /// <summary>Trees planted at random in green areas (site plan, plans, site axon), like the section entourage.</summary>
@@ -312,6 +389,11 @@ public sealed class PlanStyle
     /// <summary>Site plan: margin = this × the NC site's own width / depth on each side (user rev 0.8: 5).</summary>
     public double SiteExtentFactor { get; set; } = 5;
     public string SiteTitle { get; set; } = "Site Plan";
+    /// <summary>00_Site_Plan.ai second artboard: the whole building seen from above (user rev 0.8.3).</summary>
+    public bool SiteRoofView { get; set; } = true;
+    public string SiteRoofTitle { get; set; } = "Site Plan - Roof";
+    public string RoofTierStroke { get; set; } = "#4A4A4A";
+    public double RoofTierPt { get; set; } = 0.75;
     /// <summary>Upper floors sit on the same site, washed out by a white veil of this opacity.</summary>
     public string UpperVeilFill { get; set; } = "#FFFFFF";
     public double UpperVeilOpacity { get; set; } = 0.7;
@@ -331,6 +413,8 @@ public sealed class PlanStyle
 /// </summary>
 public sealed class AxonStyle
 {
+    /// <summary>04_Axon_Levels as an axonometric cutaway (user rev 0.8.3).</summary>
+    public LevelsAxonStyle Levels { get; set; } = new();
     /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>
     public double AzimuthDeg { get; set; }
     /// <summary>35.264 = isometric.</summary>
@@ -406,6 +490,13 @@ public sealed class SiteAxonStyle
     public double LevelLinePt { get; set; } = 2.0;
     /// <summary>Basement levels in the site axon (user rev 0.8.1: no — 03 shows the building from grade up).</summary>
     public bool ShowBasements { get; set; }
+    /// <summary>
+    /// User rev 0.8.3: the site and its context fill the whole page (no blank corners), clipped to a frame of the
+    /// artboard size (or pageWidthIn × pageHeightIn with "Fit content") centred on our building.
+    /// </summary>
+    public bool FillPage { get; set; } = true;
+    public double PageWidthIn { get; set; } = 17;
+    public double PageHeightIn { get; set; } = 11;
 }
 
 /// <summary>Lollipop trees (SITE_STYLE §1).</summary>
@@ -439,6 +530,24 @@ public sealed class StackedAxonStyle
     public double LevelLinePt { get; set; } = 0.5;
     /// <summary>Basement levels in the stacked axon (user rev 0.8.1: no).</summary>
     public bool ShowBasements { get; set; }
+}
+
+/// <summary>
+/// Floor key axons (user rev 0.8.3): an axonometric cutaway — the floors below in plain white with thin level lines,
+/// this floor's program blocks in colour split by white lines (as exploded B), nothing above but the building's
+/// total outline.
+/// </summary>
+public sealed class LevelsAxonStyle
+{
+    public string BelowFill { get; set; } = "#FFFFFF";
+    public string BelowStroke { get; set; } = "#8C8C8C";
+    public double BelowStrokePt { get; set; } = 0.35;
+    public string EdgeStroke { get; set; } = "#FFFFFF";
+    public double EdgePt { get; set; } = 1.0;
+    public double SilhouettePt { get; set; } = 2.0;
+    public string OutlineStroke { get; set; } = "#808080";
+    public double OutlinePt { get; set; } = 0.5;
+    public double[]? OutlineDash { get; set; } = { 3, 2 };
 }
 
 /// <summary>Exploded axon A (AXON_STYLE §6–7).</summary>
@@ -563,6 +672,12 @@ public sealed class EntourageStyle
 {
     public bool Enabled { get; set; } = true;
     public GreenTreeStyle GreenTrees { get; set; } = new();
+    /// <summary>Section ground people: walkable ground within this far beyond the cut.</summary>
+    public double SectionBandFt { get; set; } = 20;
+    /// <summary>Sections: generated trees (street, median, greens) within this far beyond the cut.</summary>
+    public double SectionTreeBandFt { get; set; } = 60;
+    /// <summary>Elevation ground people: walkable ground within this far in front of the building.</summary>
+    public double ElevationBandFt { get; set; } = 120;
     public string Color { get; set; } = "#9A9A9A";
     public double Opacity { get; set; } = 0.9;
     public double HeightFt { get; set; } = 5.75;
