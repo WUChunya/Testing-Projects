@@ -34,7 +34,8 @@ public sealed class SiteLayout
         if (ctx.Cache.TryGetValue("SiteLayout", out var c) && c is SiteLayout s) return s;
         // Same analysis and same streetscape settings → same layout (exports of one session, tests).
         var key = System.Text.Json.JsonSerializer.Serialize(ctx.Style.Site) + "|" + PD.Core.Entourage.EntouragePlacer.Seed(ctx) + "|"
-                  + string.Join(",", ctx.Style.Plan.TreeDiameterFt ?? Array.Empty<double>()) + "|" + ctx.Settings.Output.Scale;
+                  + string.Join(",", ctx.Style.Plan.TreeDiameterFt ?? Array.Empty<double>()) + "|" + ctx.Settings.Output.Scale
+                  + "|" + Extent(ctx); // plan style / artboard change the extent
         var byKey = Shared.GetOrCreateValue(ctx.Result);
         SiteLayout? built;
         lock (byKey)

@@ -52,13 +52,18 @@ public static class Analyzer
             l => input.RoleOverrides.TryGetValue(l.Path, out var o) ? o : input.Classifier.Guess(l));
         foreach (var o in input.Model.Objects)
         {
-            if (roles.TryGetValue(o.LayerPath, out var g)) { o.Role = Roles.Normalize(g.Role); o.ProgramKey = g.ProgramKey; }
+            // Work on locals and write once: the source model may be shared (never expose a half-set role).
+            var (role, program) = (o.Role, o.ProgramKey);
+            if (roles.TryGetValue(o.LayerPath, out var g)) (role, program) = (Roles.Normalize(g.Role), g.ProgramKey);
             // Cores and stairs are masses with their own program (unless the layer names one).
-            if (Roles.MassProgram(o.Role) is not { } implied) continue;
-            o.Role = Roles.Program;
-            if (string.IsNullOrEmpty(o.ProgramKey)) o.ProgramKey = implied;
-            if (input.ProgramOverrides.TryGetValue(o.Id, out var key) && !string.IsNullOrEmpty(key)) o.ProgramKey = key;
-            if (string.IsNullOrEmpty(o.ProgramKey)) o.ProgramKey = ProgramCatalog.Unassigned;
+            if (Roles.MassProgram(role) is { } implied)
+            {
+                role = Roles.Program;
+                if (string.IsNullOrEmpty(program)) program = implied;
+                if (input.ProgramOverrides.TryGetValue(o.Id, out var key) && !string.IsNullOrEmpty(key)) program = key;
+                if (string.IsNullOrEmpty(program)) program = ProgramCatalog.Unassigned;
+            }
+            (o.Role, o.ProgramKey) = (role, program);
         }
 
         var (local, frame, building, stray) = Localizer.Localize(input.Model, o => o.Role == Roles.Program, rules.Cleanup);

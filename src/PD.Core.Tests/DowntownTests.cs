@@ -35,8 +35,11 @@ public static class DowntownAnalysis
         var s = UserSettings();
         // Layers missing from the settings were hidden in Rhino (never extracted): leave them out.
         var roles = s.RoleOverrides().ToDictionary(kv => kv.Key, kv => kv.Value);
-        foreach (var l in Model.Layers.Where(l => !roles.ContainsKey(l.Path))) roles[l.Path] = new LayerGuess(l.Path, Roles.Ignore, "");
-        return Analyzer.Run(new AnalysisInput { Model = Model, RoleOverrides = roles, KeepStray = s.KeepStray.ToHashSet() });
+        // Own copy of the model: Analyzer.Run writes roles into the source objects, and Result may be running in
+        // parallel on the shared one (xUnit runs test classes concurrently).
+        var model = FixtureReader.Load(FixtureSmokeTests.FixturePath("downtown.json"));
+        foreach (var l in model.Layers.Where(l => !roles.ContainsKey(l.Path))) roles[l.Path] = new LayerGuess(l.Path, Roles.Ignore, "");
+        return Analyzer.Run(new AnalysisInput { Model = model, RoleOverrides = roles, KeepStray = s.KeepStray.ToHashSet() });
     });
 
     public static AnalysisResult UserResult => LazyUserResult.Value;
