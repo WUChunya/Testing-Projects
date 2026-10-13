@@ -211,6 +211,9 @@ public class DowntownTests
         var (ex1, ey1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, b.MinY - 60, 0);
         ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "DT", Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
         ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "S", Kind = PD.Core.Settings.SectionSetting.ElevationKind, Line = new[] { ex0, ey0, ex1, ey1 }, LookLeft = true, DepthFt = 400 });
+        var fr = ctx.Result.Frame;
+        File.WriteAllLines(Path.Combine(dir, "blocks.txt"), PD.Core.Analysis.ProgramBlocks.Build(ctx.Result)
+            .Select(b => $"{ctx.Result.Levels[b.LevelIndex].Name} {b.ProgramKey} z {b.Z0:0.0}-{b.Z1:0.0} env {b.Geometry.EnvelopeInternal.MinX:0.0},{b.Geometry.EnvelopeInternal.MinY:0.0} {b.Geometry.EnvelopeInternal.MaxX:0.0},{b.Geometry.EnvelopeInternal.MaxY:0.0} src {b.Footprint.Mass.Source.BBox.MinZ / 304.8:0.0}-{b.Footprint.Mass.Source.BBox.MaxZ / 304.8:0.0}"));
         File.WriteAllLines(Path.Combine(dir, "roles.txt"), ctx.Result.Roles.Values.Where(g => !g.LayerPath.Contains("::Visible") && !g.LayerPath.StartsWith("NE ISO"))
             .Select(g => $"{g.LayerPath} -> {g.Role} {g.ProgramKey}"));
         var only = Environment.GetEnvironmentVariable("PD_ONLY");

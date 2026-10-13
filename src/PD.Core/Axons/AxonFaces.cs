@@ -32,7 +32,7 @@ public static class AxonFaces
     public static List<VisibleFace> Render(AxonProjection proj, IEnumerable<Prism> prisms)
     {
         var faces = new List<Face>();
-        foreach (var p in prisms)
+        foreach (var p in SplitAtNeighbours(prisms.ToList()))
         {
             var n = 0;
             foreach (var poly in Polygons(Simplify(p.Plan)))
@@ -113,6 +113,43 @@ public static class AxonFaces
                 visible.Add(new VisibleFace(f.Prism, f.Name, f.IsTop, g, f.Fill, f.Side, f.Normal, f.D0) { Depth = f.Depth });
         }
         return visible.OrderBy(v => v.Depth).ToList(); // far → near
+    }
+
+    /// <summary>
+    /// A prism passing through another one's top or bottom (a roof core rising out of the penthouse) is split there, so
+    /// each piece is wholly above or below that face: the one-sample depth test per overlap then holds everywhere.
+    /// </summary>
+    static IEnumerable<Prism> SplitAtNeighbours(List<Prism> prisms)
+    {
+        var index = new NetTopologySuite.Index.Strtree.STRtree<int>();
+        for (var i = 0; i < prisms.Count; i++) index.Insert(prisms[i].Plan.EnvelopeInternal, i);
+        for (var i = 0; i < prisms.Count; i++)
+        {
+            var p = prisms[i];
+            var env = new Envelope(p.Plan.EnvelopeInternal);
+            env.ExpandBy(0.5);
+            var cuts = new SortedSet<double>();
+            foreach (var j in index.Query(env))
+            {
+                if (j == i) continue;
+                var q = prisms[j];
+                foreach (var z in new[] { q.Z0, q.Z1 })
+                    if (z > p.Z0 + 0.05 && z < p.Z1 - 0.05 && Safe(() => p.Plan.Buffer(0.5), p.Plan).Intersects(q.Plan)) cuts.Add(Math.Round(z, 3));
+            }
+            if (cuts.Count == 0)
+            {
+                yield return p;
+                continue;
+            }
+            var lo = p.Z0;
+            var k = 0;
+            foreach (var z in cuts.Append(p.Z1))
+            {
+                // Only the top piece carries the label (and is named like the whole prism).
+                yield return z >= p.Z1 ? p with { Z0 = lo } : p with { Name = $"{p.Name}_P{++k}", Z1 = z, Label = null };
+                lo = z;
+            }
+        }
     }
 
     sealed record Face(Prism Prism, string Name, bool IsTop, NtsGeometry Screen, double Depth, string? Fill, int Side,

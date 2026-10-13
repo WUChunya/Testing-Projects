@@ -50,4 +50,36 @@ public class Rev08AxonTests
         Assert.Equal(ctx.Result.Levels[lab.LevelIndex].Elevation, z0, 3);
         Assert.Equal(next, z1, 3);
     }
+
+    /// <summary>A core rising out of a penthouse roof: its part inside the penthouse is hidden, the part above stands on the roof.</summary>
+    [Fact]
+    public void Faces_PrismThroughARoof_LowerPartHidden()
+    {
+        var f = new NetTopologySuite.Geometries.GeometryFactory();
+        NetTopologySuite.Geometries.Polygon Sq(double x0, double y0, double x1, double y1) => f.CreatePolygon(new[]
+        {
+            new NetTopologySuite.Geometries.Coordinate(x0, y0), new NetTopologySuite.Geometries.Coordinate(x1, y0),
+            new NetTopologySuite.Geometries.Coordinate(x1, y1), new NetTopologySuite.Geometries.Coordinate(x0, y1), new NetTopologySuite.Geometries.Coordinate(x0, y0),
+        });
+        var shell = new Prism("SHELL", Sq(0, 0, 40, 60).Difference(Sq(15, 20, 25, 30)), 0, 40, "T", "S1", "S2", "PRG");
+        var core = new Prism("CORE", Sq(15, 20, 25, 30), 0, 80, "T", "S1", "S2", "PRG");
+        var proj = AxonProjection.FromAngles(225, 35.264);
+        var faces = AxonFaces.Render(proj, new[] { shell, core });
+        Assert.True(faces.Where(v => v.Name.StartsWith("CORE_P1")).Sum(v => v.Screen.Area) < 1e-3, "the core shows through the roof");
+        Assert.True(faces.Where(v => v.Name.StartsWith("CORE_SIDE") || v.Name == "CORE_TOP").Sum(v => v.Screen.Area) > 100);
+    }
+
+    [Fact]
+    public void Exploded_SiteAtGroundLevelDugOpenOverTheBasement()
+    {
+        var ctx = DowntownAnalysis.Context();
+        var d = AxonDrawing.Build(ctx, AxonKind.Exploded);
+        var site = d.Layer("AXON_SITE").Items.Single(i => i.Name == "AXE_SITE");
+        Assert.True(site.Paths!.Count >= 2, "the site has a hole over B1");
+        // The site plate is drawn at L1's height: its level tag and the site's top-most point line up with the L1 plate, above B1.
+        var b1 = d.Layer("PD_ANNOTATION").Items.Single(i => i.Name == "AXE_LVL_B1_LDR").Paths![0][0][1];
+        var l1 = d.Layer("PD_ANNOTATION").Items.Single(i => i.Name == "AXE_LVL_L1_LDR").Paths![0][0][1];
+        var siteTop = site.Paths!.SelectMany(p => p).Min(q => q[1]);
+        Assert.True(siteTop < b1 - 20 && l1 < b1, $"site {siteTop}, L1 {l1}, B1 {b1}");
+    }
 }

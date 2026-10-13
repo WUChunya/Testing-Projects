@@ -241,7 +241,10 @@ public static class AxonDrawing
         var lifted = Lifted(r, blocks, levels, (lower, story) => Math.Max(ex.GapFactor * story, ex.MinTopVisible * Depth(proj, lower) / proj.ZScale));
         double Lift(double z) => LiftZ(r, levels, lifted, z);
 
-        Site(d, ctx, proj, blocks, sheet, lifted[levels[0]] - t, flatContext: true, family: "axon", opacity: 1);
+        // The site sits at ground level (user rev 0.8): L1 stands on it, basements hang below in the dug-out hole.
+        var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ctx.Rules.Levels.GroundElevationFt);
+        Site(d, ctx, proj, blocks, sheet, lifted[siteLevel] - t, flatContext: true, family: "axon", opacity: 1, excavation: dig);
+        var allFaces = new List<VisibleFace>();
         var joined = 0;
         foreach (var (i, n) in levels.Select((i, n) => (i, n)))
         {
@@ -251,6 +254,7 @@ public static class AxonDrawing
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
             var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), ax.SideDarken, coreOverride: true).ToList();
             var faces = AxonFaces.Render(proj, prisms);
+            allFaces.AddRange(faces);
             PlateFaces(d, ctx, faces, sheet, layer, $"{SectionDrawing.Safe(lvl.Name)}_");
             FrontCornerLabels(ctx, proj, faces, sheet, layer);
             sheet.Tags.Add((i, z));
@@ -267,6 +271,8 @@ public static class AxonDrawing
                 if (name.StartsWith("CONNECTOR")) joined++;
             }
         }
+        // Trees (and people) on the site disappear behind the plates in front of them.
+        HideBehind(sheet, proj, allFaces);
         if (joined == 0 && ax.ConnectorPrograms.Count > 0)
             d.Notes.Add($"Exploded axon: no {string.Join("/", ax.ConnectorPrograms)} program on consecutive levels, so plates are not connected (set core / stair layers to NC.Core / NC.Stair on tab 1).");
         return sheet;
@@ -383,6 +389,19 @@ public static class AxonDrawing
     static List<int> Plates(List<ProgramBlock> blocks) => blocks.Select(b => b.LevelIndex).Distinct().OrderBy(i => i).ToList();
 
     /// <summary>Drawn height of each plate: the first at its real elevation, each next one a pitch above the one below.</summary>
+    /// <summary>
+    /// The plate the site belongs to (the first level at or above grade, else the lowest) and the excavation: the
+    /// footprint of every level below grade, slightly grown.
+    /// </summary>
+    static (int Level, NtsGeometry? Dig) GroundAndExcavation(AnalysisResult r, List<ProgramBlock> blocks, List<int> levels, double ground)
+    {
+        var at = levels.Where(i => r.Levels[i].Elevation >= ground - 1).DefaultIfEmpty(levels[0]).First();
+        var below = levels.Where(i => r.Levels[i].Elevation < r.Levels[at].Elevation - 1).ToHashSet();
+        if (below.Count == 0) return (at, null);
+        var dig = AxonFaces.Union(blocks.Where(b => below.Contains(b.LevelIndex)).Select(b => b.Geometry));
+        return (at, dig.IsEmpty ? null : AxonFaces.Safe(() => dig.Buffer(0.5), dig));
+    }
+
     static Dictionary<int, double> Lifted(AnalysisResult r, List<ProgramBlock> blocks, List<int> levels, Func<NtsGeometry, double, double> pitch)
     {
         var lifted = new Dictionary<int, double>();
@@ -562,7 +581,8 @@ public static class AxonDrawing
     }
 
     static List<Prism> Site(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, Sheet sheet, double z,
-        bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null, SiteReach? reach = null)
+        bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null, SiteReach? reach = null,
+        NtsGeometry? excavation = null)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
@@ -573,13 +593,15 @@ public static class AxonDrawing
         site.ExpandBy(reach.SiteMarginFt);
         var siteGeom = MeshSlicer.Factory.ToGeometry(site);
         var (pf, ps, pp) = plane ?? (ax.SiteFill, ax.SiteStroke ?? "", ax.SiteStroke == null ? 0 : ax.ContextPt);
-        sheet.Paint.Add(("AXON_SITE", new Spec("SITE", proj.Plane(siteGeom, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
+        // Basements below: the site is dug open over them (exploded / level axons).
+        var ground = excavation == null ? siteGeom : AxonFaces.Safe(() => siteGeom.Difference(excavation), siteGeom);
+        sheet.Paint.Add(("AXON_SITE", new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
         var near = new Envelope(own);
         near.ExpandBy(reach.ContextMarginFt);
         var items = PlanBackground.Collect(r, near, ctx.Style.Plan.TreeDiameterFt);
         foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)).Select((b, n) => (b, n)))
         {
-            var g = AxonFaces.Safe(() => bg.Geometry.Intersection(siteGeom), bg.Geometry);
+            var g = AxonFaces.Safe(() => bg.Geometry.Intersection(ground), bg.Geometry);
             var (fill, stroke, pt, dash, op) = PlanBackground.Paint(d, ctx.Style, bg, family);
             sheet.Paint.Add(("AXON_SITE", new Spec($"BG_{n:000}", proj.Plane(g, z), fill, stroke, pt, dash, !bg.IsLine, op * opacity)));
         }
