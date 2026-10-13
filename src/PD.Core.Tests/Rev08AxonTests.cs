@@ -82,4 +82,26 @@ public class Rev08AxonTests
         var siteTop = site.Paths!.SelectMany(p => p).Min(q => q[1]);
         Assert.True(siteTop < b1 - 20 && l1 < b1, $"site {siteTop}, L1 {l1}, B1 {b1}");
     }
+
+    [Fact]
+    public void Levels_BasementSiteDashedWithExcavationWalls_ColourSiteFromLevel1()
+    {
+        var d = AxonDrawing.Build(DowntownAnalysis.Context(), AxonKind.Levels);
+        int Ab(string name) => d.Artboards.FindIndex(a => a.Name == name);
+        var b1 = Ab("AXON B1");
+        var l1 = Ab("AXON L1");
+        var site = d.Layer("AXON_SITE").Items;
+        var b1Site = site.Single(i => i.Artboard == b1 && i.Name == "AXK_B1_SITE");
+        Assert.Null(b1Site.Fill);
+        Assert.NotNull(b1Site.Dash);
+        Assert.All(site.Where(i => i.Artboard == b1), i => Assert.Null(i.Fill));
+        Assert.NotEmpty(d.Layer("AXON_EXCAVATION").Items.Where(i => i.Artboard == b1));
+        Assert.DoesNotContain(d.Layer("AXON_TREE").Items, i => i.Artboard == b1);
+
+        Assert.NotNull(site.Single(i => i.Artboard == l1 && i.Name == "AXK_L1_SITE").Fill);
+        Assert.DoesNotContain(d.Layer("AXON_EXCAVATION").Items, i => i.Artboard == l1);
+        // The excavation sits under the plate.
+        var names = d.Layers.Select(l => l.Name).ToList();
+        Assert.True(names.IndexOf("AXON_EXCAVATION") < names.IndexOf("PD_PROGRAM"));
+    }
 }

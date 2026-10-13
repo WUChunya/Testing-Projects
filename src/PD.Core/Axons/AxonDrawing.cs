@@ -362,13 +362,19 @@ public static class AxonDrawing
         var t = ax.Exploded.SlabThicknessFt;
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var ghost = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, b.Z0, b.Z1, null, null, null, b.LevelIndex.ToString())));
+        var levels = Plates(blocks);
+        var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
         var sheets = new List<Sheet>();
-        foreach (var i in Plates(blocks))
+        foreach (var i in levels)
         {
             var lvl = r.Levels[i];
             var n = SectionDrawing.Safe(lvl.Name);
             var sheet = new Sheet { Name = $"AXON {lvl.Name}", Prefix = $"AXK_{n}_", Title = $"{ax.TitleLevels} {PlanDrawing.Title(ctx.Style.Plan.LevelTitleFormat, lvl.Name)}" };
-            Site(d, ctx, proj, blocks, sheet, ground, flatContext: true, family: "axon", opacity: 1);
+            // Each plate on the site in its true place: below grade the site is a dashed hint over a dug-out hole with solid
+            // far walls; from the ground floor up the site is in colour (user rev 0.8).
+            var below = lvl.Elevation < r.Levels[siteLevel].Elevation - 1;
+            Site(d, ctx, proj, blocks, sheet, ground, flatContext: true, family: "axon", opacity: 1, excavation: below ? dig : null, outlineOnly: below);
+            if (below && dig != null) Excavation(d, ctx, proj, sheet, dig, lvl.Elevation - t, ground);
             var stroke = d.Gray(ax.HiddenStroke);
             var lowerEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) < i).Select(f => f.Screen));
             if (!lowerEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_BELOW", new Spec("GHOST_BELOW", lowerEdges, null, stroke, ax.HiddenPt, ax.HiddenDash, Closed: false)));
@@ -376,12 +382,39 @@ public static class AxonDrawing
             var faces = AxonFaces.Render(proj, prisms);
             PlateFaces(d, ctx, faces, sheet, "PD_PROGRAM", "");
             FrontCornerLabels(ctx, proj, faces, sheet, "PD_LABELS");
+            // Trees standing behind the plate lose the part it hides.
+            HideBehind(sheet, proj, faces);
             var upperEdges = AxonFaces.Edges(ghost.Where(f => int.Parse(f.Prism.Group) >= i).Select(f => f.Screen));
             if (!upperEdges.IsEmpty) sheet.Paint.Add(("AXON_GHOST_ABOVE", new Spec("GHOST_ABOVE", upperEdges, null, stroke, ax.HiddenPt, ax.HiddenDash, Closed: false)));
             sheet.Tags.Add((i, lvl.Elevation));
             sheets.Add(sheet);
         }
         return sheets;
+    }
+
+    /// <summary>
+    /// The far walls of the dug-out hole (their inner faces look at the viewer), solid from <paramref name="z0"/> up to
+    /// grade, drawn under the plate.
+    /// </summary>
+    static void Excavation(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, NtsGeometry dig, double z0, double ground)
+    {
+        var ax = ctx.Style.Axon;
+        var k = 0;
+        foreach (var poly in AxonFaces.Polygons(AxonFaces.Simplify(dig)))
+        {
+            var pts = poly.ExteriorRing.Coordinates;
+            var ccw = !NetTopologySuite.Algorithm.Orientation.IsCCW(pts);
+            for (var i = 0; i + 1 < pts.Length; i++)
+            {
+                var (a, q) = ccw ? (pts[i + 1], pts[i]) : (pts[i], pts[i + 1]);
+                var outward = (q.Y - a.Y, a.X - q.X, 0.0);
+                // A wall whose outside turns away from the viewer shows its inside: a far wall of the hole.
+                if (proj.Faces(outward) || a.Distance(q) < 0.1) continue;
+                var quad = proj.Polygon(new[] { (a.X, a.Y, z0), (q.X, q.Y, z0), (q.X, q.Y, ground), (a.X, a.Y, ground) });
+                sheet.Paint.Add(("AXON_EXCAVATION", new Spec($"EXCAVATION_{++k:000}", quad, d.Swatch("AXON_EXCAVATION", ax.ExcavationFill),
+                    d.Gray(ax.ExcavationStroke), ax.ExcavationPt)));
+            }
+        }
     }
 
     // ---------------------------------------------------------------- spacing
@@ -582,7 +615,7 @@ public static class AxonDrawing
 
     static List<Prism> Site(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<ProgramBlock> blocks, Sheet sheet, double z,
         bool flatContext, string family, double opacity, (string Fill, string Stroke, double Pt)? plane = null, SiteReach? reach = null,
-        NtsGeometry? excavation = null)
+        NtsGeometry? excavation = null, bool outlineOnly = false)
     {
         var r = ctx.Result;
         var ax = ctx.Style.Axon;
@@ -595,7 +628,11 @@ public static class AxonDrawing
         var (pf, ps, pp) = plane ?? (ax.SiteFill, ax.SiteStroke ?? "", ax.SiteStroke == null ? 0 : ax.ContextPt);
         // Basements below: the site is dug open over them (exploded / level axons).
         var ground = excavation == null ? siteGeom : AxonFaces.Safe(() => siteGeom.Difference(excavation), siteGeom);
-        sheet.Paint.Add(("AXON_SITE", new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
+        // Below grade the site is only hinted: dashed outlines, no fill, no trees or people (user rev 0.8).
+        var hint = (Stroke: d.Gray(ax.HiddenStroke), Pt: ax.HiddenPt, Dash: ax.HiddenDash);
+        sheet.Paint.Add(("AXON_SITE", outlineOnly
+            ? new Spec("SITE", proj.Plane(ground, z), null, hint.Stroke, hint.Pt, hint.Dash)
+            : new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
         var near = new Envelope(own);
         near.ExpandBy(reach.ContextMarginFt);
         var items = PlanBackground.Collect(r, near, ctx.Style.Plan.TreeDiameterFt);
@@ -603,7 +640,9 @@ public static class AxonDrawing
         {
             var g = AxonFaces.Safe(() => bg.Geometry.Intersection(ground), bg.Geometry);
             var (fill, stroke, pt, dash, op) = PlanBackground.Paint(d, ctx.Style, bg, family);
-            sheet.Paint.Add(("AXON_SITE", new Spec($"BG_{n:000}", proj.Plane(g, z), fill, stroke, pt, dash, !bg.IsLine, op * opacity)));
+            sheet.Paint.Add(("AXON_SITE", outlineOnly
+                ? new Spec($"BG_{n:000}", proj.Plane(g, z), null, hint.Stroke, hint.Pt, hint.Dash, !bg.IsLine)
+                : new Spec($"BG_{n:000}", proj.Plane(g, z), fill, stroke, pt, dash, !bg.IsLine, op * opacity)));
         }
 
         // Other buildings near ours; never over our own footprint.
@@ -619,7 +658,9 @@ public static class AxonDrawing
             var name = $"CONTEXT_{++k:000}";
             if (flatContext)
             {
-                sheet.Paint.Add(("AXON_CONTEXT", new Spec(name, proj.Plane(foot, z), white, d.Gray(ax.ContextStroke), ax.ContextPt, Opacity: opacity)));
+                sheet.Paint.Add(("AXON_CONTEXT", outlineOnly
+                    ? new Spec(name, proj.Plane(foot, z), null, hint.Stroke, hint.Pt, hint.Dash)
+                    : new Spec(name, proj.Plane(foot, z), white, d.Gray(ax.ContextStroke), ax.ContextPt, Opacity: opacity)));
                 continue;
             }
             var z0 = Math.Max(z, bg.Z0);
@@ -630,7 +671,7 @@ public static class AxonDrawing
         // Lollipop trees (site axon), far → near, on top.
         var tr = ax.Trees;
         var rng = new Random(17);
-        foreach (var (tree, n) in items.Where(IsTree).Where(b => site.Intersects(b.Geometry.EnvelopeInternal))
+        foreach (var (tree, n) in items.Where(_ => !outlineOnly).Where(IsTree).Where(b => site.Intersects(b.Geometry.EnvelopeInternal))
                      .OrderBy(b => proj.Depth(b.Geometry.Centroid.X, b.Geometry.Centroid.Y, z)).Select((b, n) => (b, n)))
         {
             var c = tree.Geometry.Centroid.Coordinate;
@@ -648,7 +689,7 @@ public static class AxonDrawing
             sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}", ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
                 tr.StrokePt, Opacity: tr.Opacity, Depth: treeDepth)));
         }
-        if (reach.People) People(d, ctx, sheet, proj, siteGeom, ours, z);
+        if (reach.People && !outlineOnly) People(d, ctx, sheet, proj, siteGeom, ours, z);
         return context;
     }
 
@@ -736,7 +777,7 @@ public static class AxonDrawing
 
         // Layer order (AXON_STYLE §9, bottom → top): site, context, hidden below, program / plates, lines, trees, facade, hidden above, labels, annotation.
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
-        string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
+        string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_EXCAVATION", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
         string[] last = { "AXON_SCREEN", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE", "AXON_MASSING" };
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);

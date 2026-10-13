@@ -663,7 +663,11 @@
       "levelLineColor": "#000000",
       "levelLinePt": 2.0
     },
-    "titleSite": "SITE AXON"
+    "titleSite": "SITE AXON",
+    "excavationFill": "#C8C8C8",
+    "excavationStroke": "#4A4A4A",
+    "excavationPt": 0.5,
+    "excavationComment": "Level axons of basements: the site is only hinted (dashed outlines, no fill); the dug-out hole shows its far walls solid from the basement floor to grade. Colour site from Level 1 up."
   },
   "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
   "roles": {

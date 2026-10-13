@@ -310,6 +310,10 @@ public sealed class AxonStyle
     public string DivisionColor { get; set; } = "#FFFFFF";
     public string ContextStroke { get; set; } = "";
     public double ContextPt { get; set; }
+    /// <summary>Level axons below grade (user rev 0.8): solid far walls of the dug-out site from the basement floor up to grade.</summary>
+    public string ExcavationFill { get; set; } = "#C8C8C8";
+    public string ExcavationStroke { get; set; } = "#4A4A4A";
+    public double ExcavationPt { get; set; } = 0.5;
     public string HiddenStroke { get; set; } = "";
     public double HiddenPt { get; set; }
     public double[]? HiddenDash { get; set; }
