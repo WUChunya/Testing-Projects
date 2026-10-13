@@ -49,8 +49,8 @@ public class S6AcceptanceTests
         var res = Exporter.Write(ctx, dir);
         foreach (var f in new[] { "program_areas.csv", "program_table.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx" })
             Assert.True(File.Exists(Path.Combine(dir, f)), f);
-        foreach (var ai in new[] { "00_Site_Plan_SITE_PLAN", "00_Site_Plan_SITE_PLAN_ROOF", "01_Plans_PLAN_L1", "01_Plans_LEGEND___SYMBOLS", "02_Section_A", "07_Elevation_North", "03_Site_Axon",
-                     "03_Axon_Stacked", "04_Axon_Exploded", "04_Axon_Exploded_B", "04_Axon_Levels_AXON_B1", "05_Program_Chart", "06_Program_Pie" })
+        foreach (var ai in new[] { "00_Site_Plan_SITE_PLAN", "00_Site_Plan_SITE_PLAN_ROOF", "01_Plans_PLAN_L1", "01_Plans_LEGEND___SYMBOLS", "02_Section_A", "07_Elevation_North", "03_Site_Axon_SITE_AXON",
+                     "03_Axon_Stacked_AXON_STACKED", "04_Axon_Exploded_AXON_EXPLODED", "04_Axon_Exploded_B_AXON_EXPLODED_B", "03_Site_Axon_LEGEND", "04_Axon_Levels_AXON_B1", "05_Program_Chart", "06_Program_Pie" })
             Assert.True(File.Exists(Path.Combine(dir, "_preview", ai + ".svg")), ai);
         Assert.DoesNotContain(res.Notes, n => n.Contains("failed", StringComparison.OrdinalIgnoreCase) || n.Contains("not implemented"));
 

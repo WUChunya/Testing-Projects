@@ -23,7 +23,9 @@ public static class Localizer
         SourceModel model, Func<SourceObject, bool> isProgram, CleanupRules rules)
     {
         var k = Units.ToFeet(model.Units);
-        var prog = model.Objects.Where(isProgram).ToList();
+        // Masses only: curves on a program layer (a section line drawn there, a sketch) are no part of the building.
+        var prog = model.Objects.Where(o => isProgram(o) && o.Points == null && o.BBox.SizeZ > 0.01 * (o.BBox.MaxX - o.BBox.MinX + o.BBox.MaxY - o.BBox.MinY)).ToList();
+        if (prog.Count == 0) prog = model.Objects.Where(isProgram).ToList();
         if (prog.Count == 0) prog = model.Objects.ToList();
         var building = RobustUnion(prog.Select(o => o.BBox).ToList(), rules, k);
         var frame = new LocalFrame(k, building.MinX, building.MinY);

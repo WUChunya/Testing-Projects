@@ -14,7 +14,7 @@ public class Rev08AxonTests
     {
         var d = Site.Value;
         var line = Assert.Single(d.Layer("AXON_LEVEL_LINE").Items);
-        Assert.Equal(2.0, line.StrokePt);
+        Assert.Equal(DowntownAnalysis.Context().Style.Axon.Site.LevelLinePt, line.StrokePt);
         Assert.Equal("#000000", d.Swatches.Single(s => s.Name == line.Stroke).Hex);
         Assert.False(line.Closed);
         Assert.True(line.Paths!.Count >= 10, $"{line.Paths.Count} segments");

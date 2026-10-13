@@ -16,6 +16,8 @@ internal sealed class ColorsTab : TabBase
     readonly GridView _grid = Ui.Grid(340);
     readonly TextBox _newLabel = new() { PlaceholderText = "New program name, e.g. Clean Room" };
     readonly Label _status = new();
+    readonly TextBox _trees = new() { PlaceholderText = "(default)", Width = 80 };
+    readonly TextBox _people = new() { PlaceholderText = "(default)", Width = 80 };
 
     public ColorsTab(PdSession s) : base(s)
     {
@@ -40,6 +42,11 @@ internal sealed class ColorsTab : TabBase
         layout.AddSeparateRow(_newLabel, Ui.Button("Add custom program", AddCustom), Ui.Button("Delete custom", RemoveCustom));
         layout.AddSeparateRow(Ui.Button("Create for layers without a program", CreateFromLayers), null);
         layout.AddSeparateRow(Ui.Button("Import scheme JSON...", Import), Ui.Button("Reset to company legend", ResetLegend), null);
+        // User rev 0.8.4: trees and people can have their own colour too (empty = the style's defaults).
+        _trees.LostFocus += (_, _) => StoreEntourage();
+        _people.LostFocus += (_, _) => StoreEntourage();
+        layout.AddSeparateRow(new Label { Text = "Trees" }, _trees, Ui.Button("Pick...", () => Pick(_trees)), new Label { Text = "People" }, _people,
+            Ui.Button("Pick...", () => Pick(_people)), Ui.Button("Default", () => { _trees.Text = ""; _people.Text = ""; StoreEntourage(); }), null);
         layout.Add(new Label
         {
             Text = "Custom programs appear in the Program lists of tab 1 Layers and tab 4 Names; aliases pre-fill layers with that name.\n" +
@@ -83,8 +90,27 @@ internal sealed class ColorsTab : TabBase
         Session.ProgramsChanged();
     }
 
+    void Pick(TextBox box)
+    {
+        var c = System.Drawing.Color.Gray;
+        if (Color.TryParse(box.Text ?? "", out var ec)) c = System.Drawing.Color.FromArgb(ec.Rb, ec.Gb, ec.Bb);
+        if (!global::Rhino.UI.Dialogs.ShowColorDialog(ref c)) return;
+        box.Text = $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+        StoreEntourage();
+    }
+
+    void StoreEntourage()
+    {
+        static string? Hex(string? t) => !string.IsNullOrWhiteSpace(t) && Color.TryParse(t.Trim(), out _) ? t.Trim().ToUpperInvariant() : null;
+        Session.Settings.TreeColor = Hex(_trees.Text);
+        Session.Settings.PeopleColor = Hex(_people.Text);
+        Session.Save();
+    }
+
     public override void Refresh()
     {
+        _trees.Text = Session.Settings.TreeColor ?? "";
+        _people.Text = Session.Settings.PeopleColor ?? "";
         _grid.DataStore = Session.Programs.ToList();
         var custom = Session.Programs.Count(p => p.IsCustom);
         _status.Text = Session.Settings.Programs == null

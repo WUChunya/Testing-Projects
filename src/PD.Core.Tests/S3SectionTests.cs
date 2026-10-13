@@ -172,20 +172,20 @@ public class S3SectionTests
         var res = Exporter.Write(Context(), dir);
         foreach (var f in new[] { "program_areas.csv", "program_table.csv", "diagram.json", "export_log.txt", "ProgramDiagram.jsx", "_preview/02_Section_A.svg", "_preview/07_Elevation_S.svg" })
             Assert.True(File.Exists(Path.Combine(dir, f)), f);
-        foreach (var f in new[] { "00_Site_Plan_SITE_PLAN.svg", "00_Site_Plan_SITE_PLAN_ROOF.svg", "pd_settings.json".Insert(0, "../"), "03_Site_Axon.svg", "05_Program_Chart.svg", "06_Program_Pie.svg", "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked.svg", "04_Axon_Exploded.svg", "04_Axon_Exploded_B.svg", "04_Axon_Levels_AXON_L3.svg" })
+        foreach (var f in new[] { "00_Site_Plan_SITE_PLAN.svg", "00_Site_Plan_SITE_PLAN_ROOF.svg", "pd_settings.json".Insert(0, "../"), "03_Site_Axon_SITE_AXON.svg", "05_Program_Chart.svg", "06_Program_Pie.svg", "01_Plans_PLAN_L1.svg", "01_Plans_PLANS_OVERVIEW.svg", "03_Axon_Stacked_AXON_STACKED.svg", "04_Axon_Exploded_AXON_EXPLODED.svg", "04_Axon_Exploded_B_AXON_EXPLODED_B.svg", "04_Axon_Levels_AXON_L3.svg" })
             Assert.True(File.Exists(Path.Combine(dir, "_preview", f)), f);
 
         // Golden preview for review (checked in).
         File.Copy(Path.Combine(dir, "_preview", "02_Section_A.svg"), Path.Combine(Golden(), "section_A.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "07_Elevation_S.svg"), Path.Combine(Golden(), "elevation_S.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "01_Plans_PLAN_L1.svg"), Path.Combine(Golden(), "plan_L1.svg"), true);
-        File.Copy(Path.Combine(dir, "_preview", "03_Axon_Stacked.svg"), Path.Combine(Golden(), "axon_stacked.svg"), true);
-        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded.svg"), Path.Combine(Golden(), "axon_exploded.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "03_Axon_Stacked_AXON_STACKED.svg"), Path.Combine(Golden(), "axon_stacked.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded_AXON_EXPLODED.svg"), Path.Combine(Golden(), "axon_exploded.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "04_Axon_Levels_AXON_L3.svg"), Path.Combine(Golden(), "axon_levels_L3.svg"), true);
-        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded_B.svg"), Path.Combine(Golden(), "axon_exploded_B.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "04_Axon_Exploded_B_AXON_EXPLODED_B.svg"), Path.Combine(Golden(), "axon_exploded_B.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "05_Program_Chart.svg"), Path.Combine(Golden(), "program_chart.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "00_Site_Plan_SITE_PLAN.svg"), Path.Combine(Golden(), "site_plan.svg"), true);
-        File.Copy(Path.Combine(dir, "_preview", "03_Site_Axon.svg"), Path.Combine(Golden(), "site_axon.svg"), true);
+        File.Copy(Path.Combine(dir, "_preview", "03_Site_Axon_SITE_AXON.svg"), Path.Combine(Golden(), "site_axon.svg"), true);
         File.Copy(Path.Combine(dir, "_preview", "06_Program_Pie.svg"), Path.Combine(Golden(), "program_pie.svg"), true);
 
         // node --check after stripping the #target directive (ExtendScript-only).

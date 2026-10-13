@@ -25,6 +25,32 @@ public sealed class Style
     public SiteStyle Site { get; set; } = new();
     /// <summary>NC.Screen as solid walls with a floor and an open top (roof screens, user rev 0.8.3).</summary>
     public ScreenStyle Screen { get; set; } = new();
+    /// <summary>Slabs / flat glass with nothing on them: roofs, terraces, canopies (user rev 0.8.4).</summary>
+    public ExposedStyle Exposed { get; set; } = new();
+    /// <summary>Annotation symbols and legends for analysis overlays (user rev 0.8.4).</summary>
+    public AnnotationStyle Annotation { get; set; } = new();
+
+    /// <summary>
+    /// Project colours from tab 5 (user rev 0.8.4) over the style: one tree colour for plan canopies, axon lollipops and
+    /// section trees; the people colour. Unset = the style's own colours. Call on a fresh style (each export).
+    /// </summary>
+    public void ApplyColors(PD.Core.Settings.PdSettings s)
+    {
+        if (!string.IsNullOrWhiteSpace(s.TreeColor))
+        {
+            var c = s.TreeColor.Trim();
+            foreach (var role in new[] { "BG.Tree", "NC.Tree" })
+                if (Roles.TryGetValue(role, out var rp))
+                {
+                    if (rp.Plan != null) rp.Plan.Fill = c;
+                    if (rp.Axon != null) rp.Axon.Fill = c;
+                }
+            Axon.Trees.Canopies = new List<string> { c };
+            Entourage.TreeFills = new List<string> { c };
+            Annotation.TreeFill = c;
+        }
+        if (!string.IsNullOrWhiteSpace(s.PeopleColor)) Entourage.Color = s.PeopleColor.Trim();
+    }
 
     public static Style Default()
     {
@@ -74,6 +100,46 @@ public sealed class HatchStyle
     public double AngleDeg { get; set; } = 45;
     public double[]? Dash { get; set; }
     public double Opacity { get; set; } = 1;
+}
+
+/// <summary>Annotation symbols (docs/reference site plan / site axon legends, user rev 0.8.4). Absolute pt.</summary>
+public sealed class AnnotationStyle
+{
+    public double IconPt { get; set; } = 18;
+    public double LegendRowPt { get; set; } = 30;
+    public string EntryFill { get; set; } = "#18427E";
+    public string ServiceFill { get; set; } = "#6C6C6C";
+    public string ViewMarkerFill { get; set; } = "#D8AE78";
+    public string CarStroke { get; set; } = "#6C6C6C";
+    public string PedFlowStroke { get; set; } = "#E47200";
+    public double[] PedFlowDash { get; set; } = { 6, 4.5 };
+    public string CarFlowStroke { get; set; } = "#6C6C6C";
+    public double[] CarFlowDash { get; set; } = { 10, 5 };
+    public double FlowPt { get; set; } = 4;
+    public string GatewayStroke { get; set; } = "#183C6C";
+    public double GatewayPt { get; set; } = 2;
+    public double[] GatewayDash { get; set; } = { 12, 8 };
+    public string TransitFill { get; set; } = "#2F6DB5";
+    public string TreeFill { get; set; } = "#90C696";
+    public string TagStroke { get; set; } = "#333333";
+    /// <summary>A "LEGEND" artboard in every axon file and in the site plan.</summary>
+    public bool LegendArtboards { get; set; } = true;
+    /// <summary>Axon title: a north arrow along the projected north, this long.</summary>
+    public double AxonNorthPt { get; set; } = 26;
+}
+
+/// <summary>
+/// User rev 0.8.4: the open part of a floor slab or of flat glass (a roof, terrace, canopy) is drawn — slabs in the
+/// NC.Roof paint at their real thickness, glass pale blue with a slightly bluer diagonal hatch — never labelled.
+/// </summary>
+public sealed class ExposedStyle
+{
+    public bool Show { get; set; } = true;
+    public double MinAreaSf { get; set; } = 20;
+    public string GlassFill { get; set; } = "#EEF6FB";
+    public HatchStyle GlassHatch { get; set; } = new() { Stroke = "#A9CBE3", StrokePt = 0.35, SpacingFt = 3, AngleDeg = 45 };
+    public string LineColor { get; set; } = "#9A9A9A";
+    public double LinePt { get; set; } = 0.35;
 }
 
 /// <summary>
@@ -145,7 +211,7 @@ public sealed class MedianStyle
     public double MaxRoadWidthFt { get; set; } = 160;
     public double WidthFt { get; set; } = 5;
     /// <summary>The round end stops this far before the crossing (the block corner line).</summary>
-    public double EndClearFt { get; set; } = 8;
+    public double EndClearFt { get; set; } = 20;
     public double TreeSpacingFt { get; set; } = 30;
 }
 
@@ -459,6 +525,10 @@ public sealed class AxonStyle
     public double ConnectorPt { get; set; }
     public string CoreLabel { get; set; } = "";
     public double LevelColumnPt { get; set; }
+    /// <summary>Trees cut by a building stop this far short of it (room for its outline, user rev 0.8.4).</summary>
+    public double TreeClearPt { get; set; } = 1;
+    /// <summary>04 axons: the site is the property line (NC.PropertyLine) grown by this much (user rev 0.8.4).</summary>
+    public double PropertySiteMarginFt { get; set; } = 50;
     public TreeStyle Trees { get; set; } = new();
     public StackedAxonStyle Stacked { get; set; } = new();
     public ExplodedAxonStyle Exploded { get; set; } = new();
@@ -473,8 +543,8 @@ public sealed class AxonStyle
 /// <summary>03_Site_Axon.ai (SITE_STYLE §1): wider site, context at real height, people, an ANNOTATION layer kept for the user.</summary>
 public sealed class SiteAxonStyle
 {
-    public double SiteMarginFt { get; set; } = 220;
-    public double ContextMarginFt { get; set; } = 240;
+    public double SiteMarginFt { get; set; } = 440;
+    public double ContextMarginFt { get; set; } = 460;
     /// <summary>0 = real height.</summary>
     public double ContextHeightFt { get; set; }
     /// <summary>Taller context (a merged mesh, a tower far away) is cut at this height.</summary>
@@ -487,7 +557,7 @@ public sealed class SiteAxonStyle
     public bool FullHeightBlocks { get; set; } = true;
     /// <summary>Line between two floors on the faces (own layer AXON_LEVEL_LINE).</summary>
     public string LevelLineColor { get; set; } = "#000000";
-    public double LevelLinePt { get; set; } = 2.0;
+    public double LevelLinePt { get; set; } = 0.5;
     /// <summary>Basement levels in the site axon (user rev 0.8.1: no — 03 shows the building from grade up).</summary>
     public bool ShowBasements { get; set; }
     /// <summary>

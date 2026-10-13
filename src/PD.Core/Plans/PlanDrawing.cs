@@ -35,7 +35,10 @@ public static class PlanDrawing
         }
         var env = new Envelope();
         foreach (var i in levels) env.ExpandToInclude(r.Plans[i].Union.EnvelopeInternal);
+        var core = new Envelope(env);
         env.ExpandBy(ps.ContextMarginFt);
+        // Fixed artboard (user rev 0.8.4): the drawing fills the artboard around the building instead of spilling over.
+        if (ctx.ArtboardSize != null) env = FitArtboard(ctx, core, levels.Max(i => Keys(ctx, r.Plans[i]).Count)) ?? env;
         var background = PlanBackground.Collect(ctx, env);
         double w = env.Width * k, h = env.Height * k, m = pg.MarginPt;
 
@@ -108,10 +111,19 @@ public static class PlanDrawing
             return d;
         }
         var env = SiteExtent(ctx, i);
+        if (ctx.ArtboardSize != null)
+            env = FitArtboard(ctx, r.Plans[i].Union.EnvelopeInternal, Math.Max(Keys(ctx, r.Plans[i]).Count, Keys(ctx, RoofLevels(ctx).Select(j => r.Plans[j])).Count)) ?? env;
         var background = PlanBackground.Collect(ctx, env);
         Sheet(d, ctx, i, env, background, "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
         // User rev 0.8.3: the same site with the whole building seen from above (each tier's roof in its programs' colour).
         if (ps.SiteRoofView) Sheet(d, ctx, i, env, background, "SITE PLAN ROOF", "STR_", ps.SiteRoofTitle, LevelKind.Roof);
+        // Annotation symbols for analysis overlays (user rev 0.8.4).
+        if (ctx.Style.Annotation.LegendArtboards)
+        {
+            var a = d.Artboards.Count;
+            var bottom = AnnotationSymbols.Add(d, ctx, AnnotationSymbols.Set.Plan, "STL_", a, 54, 54);
+            d.Artboards.Add(new Artboard("LEGEND & SYMBOLS", 480, Math.Ceiling(bottom + 54)));
+        }
         return d;
     }
 
@@ -164,6 +176,25 @@ public static class PlanDrawing
         var yb = abH - m - bottom + band;
         Legend(d, ctx, a, p, keys, m, yb);
         TitleTag(d, ctx, a, p, title, xr, abH - m);
+    }
+
+    /// <summary>
+    /// The plan extent that fills the fixed artboard's drawing area (artboard less margins, title band, bottom band with
+    /// the legend and level tag), centred on <paramref name="core"/>; null when the building itself does not fit.
+    /// </summary>
+    static Envelope? FitArtboard(ExportContext ctx, Envelope core, int keys)
+    {
+        if (ctx.ArtboardSize is not { } ab) return null;
+        var ps = ctx.Style.Plan;
+        var pg = ctx.Style.Page;
+        var k = ctx.PtPerFt;
+        var rows = (int)Math.Ceiling(keys / (double)Math.Max(1, ps.LegendColumns));
+        var tag = ctx.Style.Fonts.Title.SizePt * 1.2 + 2 * ps.TitleTagPadPt;
+        var bottom = ctx.Pt(ps.BandPt) + Math.Max(rows * ctx.Pt(ps.LegendRowPt), ctx.Pt(tag));
+        double w = (ab.W - 2 * pg.MarginPt) / k, h = (ab.H - 2 * pg.MarginPt - ctx.Pt(pg.TitleBandPt) - bottom) / k;
+        if (w < core.Width || h < core.Height) return null;
+        var c = core.Centre;
+        return new Envelope(c.X - w / 2, c.X + w / 2, c.Y - h / 2, c.Y + h / 2);
     }
 
     /// <summary>Background, program blocks, open-to-below voids, outline, facade line and labels of one level.</summary>
@@ -303,6 +334,8 @@ public static class PlanDrawing
             d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STRUCTURE_{n:000}", cut, d.Swatch("NC_STRUCTURE", sPaint.Fill), null, 0), a));
         }
         PlanLinework.Add(d, ctx, a, map, i, p);
+        // Open slabs and flat glass on this level (roof, terrace, canopy, user rev 0.8.4): under the blocks, no label.
+        foreach (var it in ExposedItems(d, ctx, map, p, i)) d.Layer("PD_PROGRAM").Items.Insert(0, At(it, a));
         // A screen standing on this floor (roof screen around the penthouse): its floor solid, its walls as poche
         // (user rev 0.8.3) — the same object as in the axons. The floor goes under the program blocks.
         var sc = ctx.Style.Screen;
@@ -381,6 +414,33 @@ public static class PlanDrawing
         }
     }
 
+    /// <summary>
+    /// The open part of slabs (NC.Roof paint) and flat glass (pale blue + diagonal hatch) of level i, glass hatch
+    /// after its fill.
+    /// </summary>
+    static IEnumerable<DItem> ExposedItems(PD.Core.Drawing.Drawing d, ExportContext ctx, PageMap map, string p, int i)
+    {
+        var st = ctx.Style.Exposed;
+        var roof = PlanBackground.PaintOf(ctx.Style, Roles.Roof, "plan");
+        var list = PD.Core.Analysis.ExposedSurfaces.For(ctx).Where(e => e.LevelIndex == i).ToList();
+        var items = new List<DItem>();
+        foreach (var (e, n) in list.Select((e, n) => (e, n)))
+        {
+            var name = $"{p}{(e.IsGlass ? "EXPOSED_GLASS" : "EXPOSED_ROOF")}_{n + 1:00}";
+            if (!e.IsGlass)
+            {
+                items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_ROOF_PLAN", roof.Fill ?? "#EFEFEF"), d.Gray(roof.Stroke ?? "#B4B4B4"), roof.StrokePt ?? 0.5));
+                continue;
+            }
+            items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt));
+            var lines = PlanBackground.Hatch(e.Area, st.GlassHatch);
+            if (!lines.IsEmpty) items.Add(map.Geom(name + "_HATCH", lines, null, d.Swatch("EXPOSED_GLASS_HATCH", st.GlassHatch.Stroke), st.GlassHatch.StrokePt, false));
+        }
+        // Inserted at the bottom one by one: reverse so fills stay under their hatch.
+        items.Reverse();
+        return items;
+    }
+
     /// <summary>Levels from grade up that carry program, lowest first (the roof view paints them in this order).</summary>
     static List<int> RoofLevels(ExportContext ctx)
     {
@@ -405,6 +465,7 @@ public static class PlanDrawing
         {
             var ln = SectionDrawing.Safe(r.Plans[j].Level.Name);
             var k = 0;
+            foreach (var it in ExposedItems(d, ctx, map, $"{p}{ln}_", j).Reverse()) d.Layer("PD_PROGRAM").Items.Add(At(it, a));
             // A roof screen standing on this level: its floor under this level's blocks, its walls over them.
             foreach (var e in screens.Where(e => e.LevelIndex == j && e.Encloses))
                 d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_FLOOR", e.Floor, d.Swatch("NC_SCREEN_FLOOR_PLAN", sc.PlanFloorFill),

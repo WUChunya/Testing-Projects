@@ -20,6 +20,10 @@ public static class ElevationDrawing
         var (ax, ay, _) = r.Frame.ToLocal(el.Line[0], el.Line[1], 0);
         var (bx, by, _) = r.Frame.ToLocal(el.Line[2], el.Line[3], 0);
         var plane = new SectionPlane(ax, ay, bx, by, LooksLeft(r, el, ax, ay, bx, by));
+        // A fixed artboard (user rev 0.8.4): a longer line is cut down around the building.
+        if (ctx.ArtboardSize is { } ab0)
+            plane = plane.Fit((ab0.W - 2 * ctx.Style.Page.MarginPt - (ctx.Style.Elevation.LevelMarkers ? ctx.Pt(ctx.Style.Page.LevelColumnPt) : 0)) / ctx.PtPerFt,
+                PD.Core.Plans.PlanBackground.Footprint(r));
         var depth = el.DepthFt > 0 ? el.DepthFt : ctx.Rules.Output.SectionDepthFt;
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var items = ProjectedView.Collect(r, plane, depth, ProjectedView.GlassRegex(ctx.Style.View), ground);

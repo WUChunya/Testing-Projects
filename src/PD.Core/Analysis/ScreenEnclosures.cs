@@ -102,6 +102,13 @@ public static class ScreenEnclosures
         foreach (var f in m.Faces)
         {
             if (f.Length < 3) continue;
+            // Vertical faces only: the top and bottom of a screen modelled as a closed box would collapse to a
+            // diagonal (user rev 0.8.4 "diagonal wall").
+            double ax = v[3 * f[1]] - v[3 * f[0]], ay = v[3 * f[1] + 1] - v[3 * f[0] + 1], az = v[3 * f[1] + 2] - v[3 * f[0] + 2];
+            double bx = v[3 * f[2]] - v[3 * f[0]], by = v[3 * f[2] + 1] - v[3 * f[0] + 1], bz = v[3 * f[2] + 2] - v[3 * f[0] + 2];
+            double nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+            var nl = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+            if (nl < 1e-12 || Math.Abs(nz) / nl > 0.5) continue;
             var pts = f.Select(i => new Coordinate(v[3 * i], v[3 * i + 1])).ToList();
             var (a, b, best) = (pts[0], pts[1], -1.0);
             for (var i = 0; i < pts.Count; i++)

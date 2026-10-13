@@ -106,7 +106,7 @@ public class S4PlanAxonTests
         // Sides 6 % / 14 % darker; faces outlined by their floor-line colour (35 % darker, 0.5 pt).
         Assert.Equal(AxonDrawing.Darken("#F7A238", st.SideDarken[0]), d.Swatches.Single(s => s.Name == "PRG_LAB_SIDE1_6_14").Hex);
         Assert.Equal(AxonDrawing.Darken("#F7A238", st.FloorLineDarken), d.Swatches.Single(s => s.Name == "PRG_LAB_FLOOR").Hex);
-        Assert.All(prog, i => Assert.Equal(st.FloorLinePt, i.StrokePt));
+        Assert.All(prog.Where(i => !i.Name.Contains("EXPOSED") && !i.Name.Contains("SCREEN")), i => Assert.Equal(st.FloorLinePt, i.StrokePt));
         // Folds 0.75 pt and silhouette 2.5 pt black on their own layer.
         var lines = d.Layer("AXON_LINE").Items;
         Assert.Contains(lines, i => i.Name.EndsWith("FOLDS") && i.StrokePt == st.EdgePt && !i.Closed);
@@ -134,14 +134,14 @@ public class S4PlanAxonTests
         var plates = d.Layers.Where(l => l.Name.StartsWith("AXON_L")).ToList();
         Assert.True(plates.Count >= 5, string.Join(",", d.Layers.Select(l => l.Name)));
         Assert.Equal(plates.Select(l => l.Name), plates.OrderBy(l => r.Levels.FindIndex(x => "AXON_" + x.Name.ToUpperInvariant() == l.Name)).Select(l => l.Name));
-        // Line hierarchy: plate silhouette 2.0, folds 1.0, white 0.5 divisions on tops, plain sides.
+        // Line hierarchy (user rev 0.8.4, as the floor keys): one plate silhouette per level, no folds, every face edged in white.
         Assert.All(plates, l =>
         {
             Assert.Single(l.Items, i => i.Name.EndsWith("_OUTLINE") && i.StrokePt == ax.SlabSilhouettePt);
-            Assert.Single(l.Items, i => i.Name.EndsWith("_FOLDS") && i.StrokePt == ax.FoldPt);
-            var plate = l.Items.Where(i => !i.Name.Contains("_TALL_") && !i.Name.Contains("_CONNECTOR_")).ToList();
-            Assert.All(plate.Where(i => i.Name.Contains("_TOP")), i => Assert.Equal(ax.DivisionPt, i.StrokePt));
-            Assert.All(plate.Where(i => i.Name.Contains("_SIDE")), i => Assert.Null(i.Stroke));
+            Assert.DoesNotContain(l.Items, i => i.Name.EndsWith("_FOLDS"));
+            var plate = l.Items.Where(i => !i.Name.Contains("_TALL_") && !i.Name.Contains("_CONNECTOR_") && !i.Name.Contains("EXPOSED") && !i.Name.Contains("SCREEN")
+                && i.Kind == ItemKind.Path && !i.Name.EndsWith("_OUTLINE")).ToList();
+            Assert.All(plate, i => { Assert.Equal(ax.Levels.EdgePt, i.StrokePt); Assert.Equal("PD_FFFFFF", i.Stroke); });
         });
         // Front-corner labels: left or right aligned on the plane, white 70 %.
         var labels = plates.SelectMany(l => l.Items).Where(i => i.Kind == ItemKind.Text).ToList();
@@ -215,14 +215,16 @@ public class S4PlanAxonTests
         var d = AxonDrawing.Build(ctx, AxonKind.Levels);
         Assert.Equal("04_Axon_Levels.ai", d.FileName);
         var levels = ProgramBlocksLevels();
-        Assert.Equal(levels, d.Artboards.Count);
+        // One artboard per level and the LEGEND (user rev 0.8.4).
+        Assert.Equal(levels + 1, d.Artboards.Count);
+        Assert.Equal("LEGEND", d.Artboards[^1].Name);
         // User rev 0.8.3 cutaway: this floor in colour, the building's total outline dashed above it (the top floor
         // has nothing above, so no outline there).
-        for (var a = 0; a < d.Artboards.Count; a++)
+        for (var a = 0; a < levels; a++)
         {
             var on = d.Layers.SelectMany(l => l.Items).Where(i => i.Artboard == a).ToList();
             Assert.Contains(on, i => i.Fill?.StartsWith("PRG_") == true);
-            if (a < d.Artboards.Count - 1) Assert.Contains(on, i => i.Name.EndsWith("BUILDING_OUTLINE") && i.Dash != null && !i.Closed);
+            if (a < levels - 1) Assert.Contains(on, i => i.Name.EndsWith("BUILDING_OUTLINE") && i.Dash != null && !i.Closed);
             Assert.Single(on, i => i.Name.EndsWith("_LDR"));
         }
         Assert.True(d.Layers.FindIndex(l => l.Name == "AXON_GHOST_ABOVE") > d.Layers.FindIndex(l => l.Name == "PD_PROGRAM"));

@@ -20,6 +20,39 @@ public static class DowntownAnalysis
     public static SourceModel Model => Lazy.Value;
     public static AnalysisResult Result => LazyResult.Value;
 
+    /// <summary>The user's own panel settings for this model (tests/fixtures/downtown_settings.json, a pd_settings.json export copy).</summary>
+    public static PD.Core.Settings.PdSettings UserSettings()
+    {
+        var s = PD.Core.Settings.PdSettings.FromJson(File.ReadAllText(FixtureSmokeTests.FixturePath("downtown_settings.json")));
+        // The settings hold the 3dm's own units (feet); the fixture stores millimetres.
+        foreach (var sec in s.Sections) sec.Line = sec.Line.Select(v => v * 304.8).ToArray();
+        if (s.Output.AxonViewPoint is { } vp) s.Output.AxonViewPoint = vp.Select(v => v * 304.8).ToArray();
+        return s;
+    }
+
+    static readonly Lazy<AnalysisResult> LazyUserResult = new(() =>
+    {
+        var s = UserSettings();
+        // Layers missing from the settings were hidden in Rhino (never extracted): leave them out.
+        var roles = s.RoleOverrides().ToDictionary(kv => kv.Key, kv => kv.Value);
+        foreach (var l in Model.Layers.Where(l => !roles.ContainsKey(l.Path))) roles[l.Path] = new LayerGuess(l.Path, Roles.Ignore, "");
+        return Analyzer.Run(new AnalysisInput { Model = Model, RoleOverrides = roles, KeepStray = s.KeepStray.ToHashSet() });
+    });
+
+    public static AnalysisResult UserResult => LazyUserResult.Value;
+
+    /// <summary>The export as the user ran it on Windows: their layer roles, sections, scale and artboard.</summary>
+    public static PD.Core.Drawing.ExportContext UserContext()
+    {
+        var settings = UserSettings();
+        settings.Output.FillDefaults(PD.Core.Config.Rules.Default().Output);
+        return new PD.Core.Drawing.ExportContext
+        {
+            Result = UserResult, Settings = settings,
+            Programs = ProgramCatalog.Effective(LayerClassifier.LoadPrograms(), settings.Programs),
+        };
+    }
+
     public static PD.Core.Drawing.ExportContext Context()
     {
         var settings = new PD.Core.Settings.PdSettings();
@@ -58,7 +91,7 @@ public class DowntownTests
     [InlineData("LOT FILL", Roles.Hardscape)]                    // city blocks: 街区 ground
     [InlineData("PEOPLE / CARS", Roles.Entourage)]
     [InlineData("GRID (12x12')", Roles.Ignore)]            // drafting grid, not a property line
-    [InlineData("PROPERTY LINE", Roles.Line)]
+    [InlineData("PROPERTY LINE", Roles.PropertyLine)]
     [InlineData("CLIPPING PLANE", Roles.Ignore)]
     [InlineData("NE ISO::Visible::Curves::PROGRAM::Lab", Roles.Ignore)]            // Make2D copy
     [InlineData("1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Core", Roles.Ignore)]
@@ -208,6 +241,21 @@ public class DowntownTests
     {
         var dir = Environment.GetEnvironmentVariable("PD_DUMP");
         if (string.IsNullOrEmpty(dir)) return;
+        // PD_USER=1: the user's own settings (roles, sections, 1/64" scale, 11x17 artboard), as exported on Windows.
+        if (Environment.GetEnvironmentVariable("PD_USER") == "1")
+        {
+            var uc = DowntownAnalysis.UserContext();
+            var only0 = Environment.GetEnvironmentVariable("PD_ONLY");
+            if (!string.IsNullOrEmpty(only0)) uc.Settings.Output.Drawings = only0.Split(',').ToList();
+            var n0 = new List<string>();
+            foreach (var d in PD.Core.Writers.Exporter.BuildDrawings(uc, n0))
+                for (var a = 0; a < d.Artboards.Count; a++)
+                    File.WriteAllText(Path.Combine(dir, PD.Core.Writers.Exporter.PreviewName(d, a)), PD.Core.Writers.SvgWriter.Write(d, a));
+            File.WriteAllLines(Path.Combine(dir, "notes.txt"), n0);
+            File.WriteAllLines(Path.Combine(dir, "roles.txt"), uc.Result.Roles.Values.Where(g => !g.LayerPath.Contains("::Visible") && !g.LayerPath.StartsWith("NE ISO"))
+                .Select(g => $"{g.LayerPath} -> {g.Role} {g.ProgramKey}"));
+            return;
+        }
         var ctx = DowntownAnalysis.Context();
         var b = ctx.Result.Building;
         var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, (b.MinY + b.MaxY) / 2, 0);

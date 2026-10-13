@@ -174,7 +174,7 @@ public static class AxonFaces
     /// What is left of a page shape (tree, person, label backing) standing at <paramref name="depth"/> once every visible face
     /// in front of it is taken away; null when nothing is left.
     /// </summary>
-    public static NtsGeometry? Hide(AxonProjection proj, NtsGeometry screen, double depth, IReadOnlyList<VisibleFace> faces)
+    public static NtsGeometry? Hide(AxonProjection proj, NtsGeometry screen, double depth, IReadOnlyList<VisibleFace> faces, double gap = 0)
     {
         // Sample the shape (its vertices and an inside point) and keep every face that covers a sample and lies in front
         // there. Point-in-polygon also works on the odd self-touching face where an overlay would refuse to run.
@@ -198,6 +198,8 @@ public static class AxonFaces
         if (front.Count == 0) return screen;
         var cover = Union(front);
         if (!cover.IsValid) cover = cover.Buffer(0);
+        // Keep clear of the faces by a gap (room for the building's outline stroke).
+        if (gap > 0) cover = Safe(() => cover.Buffer(gap), cover);
         var shape = screen.Dimension == Dimension.Surface && !screen.IsValid ? screen.Buffer(0) : screen;
         var left = Robust(shape, cover, SpatialFunction.Difference) ?? Safe(() => shape.Difference(cover), shape);
         left = screen.Dimension == Dimension.Surface ? MeshSlicer.Polygonal(left) : MeshSlicer.Lineal(left);

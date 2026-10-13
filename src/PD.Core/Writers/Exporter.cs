@@ -16,6 +16,7 @@ public static class Exporter
     {
         var drawings = new List<PD.Core.Drawing.Drawing>();
         var wanted = ctx.Settings.Output.Drawings ?? ctx.Rules.Output.Drawings;
+        ctx.Style.ApplyColors(ctx.Settings);
 
         // One drawing that fails must not lose the whole export: it is reported and the others are still written.
         void Add(string what, Func<PD.Core.Drawing.Drawing> build)

@@ -667,8 +667,8 @@
     "titleLevels": "FLOOR KEY AXON",
     "site": {
       "comment": "03_Site_Axon.ai (SITE_STYLE §1, reference 'Question 4'): our massing with floor lines among white context at real height, the whole surrounding site (ground, roads, landscape, trees, people). Flow / view / service graphics go on the ANNOTATION layer, which the plugin never clears. User rev 0.8: no slabs — blocks run floor to floor (fullHeightBlocks); a 2 pt black line between floors on its own layer AXON_LEVEL_LINE; the heavy line only on the building's outer silhouette; screens stay thin surfaces.",
-      "siteMarginFt": 220.0,
-      "contextMarginFt": 240.0,
+      "siteMarginFt": 440.0,
+      "contextMarginFt": 460.0,
       "contextHeightFt": 0.0,
       "maxContextHeightFt": 400.0,
       "people": true,
@@ -676,7 +676,7 @@
       "annotationLayer": "ANNOTATION",
       "fullHeightBlocks": true,
       "levelLineColor": "#000000",
-      "levelLinePt": 2.0,
+      "levelLinePt": 0.5,
       "showBasements": false,
       "fillPage": true,
       "pageWidthIn": 17.0,
@@ -702,7 +702,9 @@
         3,
         2
       ]
-    }
+    },
+    "treeClearPt": 1.0,
+    "propertySiteMarginFt": 50.0
   },
   "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
   "roles": {
@@ -824,17 +826,15 @@
     "BG.Building": {
       "plan": {
         "fill": "#FFFFFF",
-        "shadow": "#AEAEAE",
-        "shadowOffsetPt": [
-          12,
-          12
-        ]
+        "stroke": "#5A5A5A",
+        "strokePt": 0.75
       },
       "axon": {
         "fill": "#FFFFFF",
         "stroke": "#5A5A5A",
         "strokePt": 0.75
-      }
+      },
+      "comment": "User rev 0.8.4: context buildings look the same in plans and axons — white, 0.75 pt #5A5A5A outline (add \"shadow\": \"#AEAEAE\", \"shadowOffsetPt\": [12, 12] to plan for the SITE_STYLE drop shadow)."
     },
     "BG.Line": {
       "plan": {
@@ -1092,6 +1092,41 @@
           ]
         }
       }
+    },
+    "NC.PropertyLine": {
+      "plan": {
+        "stroke": "#E05A6A",
+        "strokePt": 1.25,
+        "dash": [
+          18,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "axon": {
+        "stroke": "#E05A6A",
+        "strokePt": 1.0,
+        "dash": [
+          12,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "view": {
+        "stroke": "#E05A6A",
+        "strokePt": 1.0,
+        "dash": [
+          6,
+          4
+        ]
+      },
+      "comment": "User rev 0.8.4: our property line — phantom line (long dash, two short) in plans and on the 04 axons' site; sections draw it as section.property* dashed verticals."
     }
   },
   "charts": {
@@ -1230,7 +1265,7 @@
       "minRoadWidthFt": 50.0,
       "maxRoadWidthFt": 160.0,
       "widthFt": 5.0,
-      "endClearFt": 8.0,
+      "endClearFt": 20.0,
       "treeSpacingFt": 30.0
     }
   },
@@ -1261,5 +1296,50 @@
     ],
     "axonLineColor": "#4A4A4A",
     "axonLinePt": 0.35
+  },
+  "exposed": {
+    "comment": "User rev 0.8.4 — floor slabs (NC.Slab) and flat glass (NC.Facade lying down) with nothing standing on them are roofs / terraces / canopies: plans and axons draw the open part, slabs in the NC.Roof paint at their real thickness, glass glassFill with glassHatch; no label. Slabs at or below grade are ground.",
+    "show": true,
+    "minAreaSf": 20.0,
+    "glassFill": "#EEF6FB",
+    "glassHatch": {
+      "stroke": "#A9CBE3",
+      "strokePt": 0.35,
+      "spacingFt": 3.0,
+      "angleDeg": 45.0
+    },
+    "lineColor": "#9A9A9A",
+    "linePt": 0.35
+  },
+  "annotation": {
+    "comment": "User rev 0.8.4 — annotation symbols for analysis overlays (docs/reference site plan / site axon legends): entry, service, view marker, car, pedestrian / vehicle flow, view / gateway, transit, tree, tag, context label, street name, note. On the plans' LEGEND & SYMBOLS artboard and on a LEGEND artboard in the site plan and every axon file (legendArtboards); axon titles get a north arrow along the projected north (axonNorthPt). Absolute pt.",
+    "iconPt": 18.0,
+    "legendRowPt": 30.0,
+    "entryFill": "#18427E",
+    "serviceFill": "#6C6C6C",
+    "viewMarkerFill": "#D8AE78",
+    "carStroke": "#6C6C6C",
+    "pedFlowStroke": "#E47200",
+    "pedFlowDash": [
+      6,
+      4.5
+    ],
+    "carFlowStroke": "#6C6C6C",
+    "carFlowDash": [
+      10,
+      5
+    ],
+    "flowPt": 4.0,
+    "gatewayStroke": "#183C6C",
+    "gatewayPt": 2.0,
+    "gatewayDash": [
+      12,
+      8
+    ],
+    "transitFill": "#2F6DB5",
+    "treeFill": "#90C696",
+    "tagStroke": "#333333",
+    "legendArtboards": true,
+    "axonNorthPt": 26.0
   }
 }

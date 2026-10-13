@@ -22,7 +22,7 @@ public static class PlanBackground
     static readonly string[] Order =
     {
         Roles.Road, SiteLayout.Median, Roles.Hardscape, Roles.Landscape, Roles.Water, SiteLayout.Sidewalk, Roles.NcHardscape, Roles.Green, Roles.NcWater,
-        Roles.Building, Roles.Tree, Roles.NcTree, Roles.Line,
+        Roles.Building, Roles.Tree, Roles.NcTree, Roles.Line, Roles.PropertyLine,
     };
 
     /// <summary>
@@ -53,12 +53,12 @@ public static class PlanBackground
                 continue;
             }
             NtsGeometry? full = null;
-            if (o.Role == Roles.Line || (o.Mesh == null && o.Points is { Length: >= 2 }))
+            if (o.Role is Roles.Line or Roles.PropertyLine || (o.Mesh == null && o.Points is { Length: >= 2 }))
             {
                 if (o.Points is not { Length: >= 2 }) continue;
                 var pts = o.Points.Select(p => new Coordinate(p[0], p[1])).ToArray();
                 var closed = pts.Length >= 4 && (o.IsClosed || pts[0].Distance(pts[^1]) < 0.01);
-                var asArea = closed && o.Role is not (Roles.Line or Roles.Building)
+                var asArea = closed && o.Role is not (Roles.Line or Roles.PropertyLine or Roles.Building)
                     && (style?.Roles.GetValueOrDefault(o.Role)?.ClosedCurves ?? "area") != "line";
                 if (!asArea)
                 {
@@ -119,7 +119,26 @@ public static class PlanBackground
         return items;
     }
 
-    static double Rank(BackgroundItem i) => i.IsLine && i.Role != Roles.Line ? Array.IndexOf(Order, Roles.Building) - 0.5 : Array.IndexOf(Order, i.Role);
+    static double Rank(BackgroundItem i) => i.IsLine && !IsLineRole(i.Role) ? Array.IndexOf(Order, Roles.Building) - 0.5 : Array.IndexOf(Order, i.Role);
+
+    /// <summary>Roles that are lines by nature (their own paint is the stroke).</summary>
+    public static bool IsLineRole(string role) => role is Roles.Line or Roles.PropertyLine;
+
+    /// <summary>Our property line as areas (closed curves), unioned; empty when the model has none.</summary>
+    public static NtsGeometry PropertyArea(AnalysisResult r)
+    {
+        var polys = new List<NtsGeometry>();
+        foreach (var o in r.Local.Objects.Where(o => o.Role == Roles.PropertyLine && !r.Stray.Contains(o.Id) && o.Points is { Length: >= 4 }))
+        {
+            var pts = o.Points!.Select(p => new Coordinate(p[0], p[1])).ToList();
+            if (pts[0].Distance(pts[^1]) > 1) continue;
+            pts[^1] = pts[0];
+            var g = Safe(() => MeshSlicer.Factory.CreatePolygon(pts.ToArray()).Buffer(0));
+            if (g is { IsEmpty: false }) polys.Add(g);
+        }
+        return polys.Count == 0 ? MeshSlicer.Factory.CreatePolygon()
+            : MeshSlicer.Polygonal(Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(polys)) ?? polys[0]);
+    }
 
     /// <summary>
     /// Where people may stand outdoors (user rev 0.8.3): hardscape (ours and the context's, sidewalks included), never
@@ -250,6 +269,7 @@ public static class PlanBackground
     public static string LayerName(BackgroundItem i) => i.Role switch
     {
         Roles.Building => "BG_CONTEXT",
+        Roles.PropertyLine => "PD_PROPERTY_LINE",
         Roles.Tree or Roles.NcTree => "BG_TREE",
         _ when Roles.IsNew(i.Role) => "BG_PROJECT_SITE",
         _ => "BG_SITE",
@@ -269,7 +289,7 @@ public static class PlanBackground
     {
         var p = PaintOf(s, i.Role, family);
         var name = SwatchName(i.Role);
-        if (i.IsLine && i.Role != Roles.Line)
+        if (i.IsLine && !IsLineRole(i.Role))
         {
             // Open curves of an area role: the role's line paint, else a darker shade of its fill.
             var l = p.Line ?? new Paint { Stroke = p.Stroke ?? (p.Fill == null ? null : PD.Core.Axons.AxonDrawing.Darken(p.Fill, 0.25)), StrokePt = p.StrokePt ?? 0.5 };

@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.3）
+# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.4）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.3; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.4; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,8 +18,8 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.3**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），198 个测试全过，`dist/ProgramDiagram-0.8.3.zip`（dist 下的 zip 随提交入库）。
-- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.4**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），210 个测试全过，`dist/ProgramDiagram-0.8.4.zip`（dist 下的 zip 随提交入库）。
+- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，v0.8.4 = `Rev084Tests.cs`，其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。
 
@@ -42,6 +42,14 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | 场地轴测铺满画面 | `AxonDrawing.PageFrame / ClipToFrame` | `axon.site.fillPage / pageWidthIn / pageHeightIn` |
 | 轴测视角（角点 / V 形视点） | `ExportContext.AxonAzimuth`；Rhino `PlaceAxonViewCommand`、`AxonViewConduit`、第 8 页下拉框 | `Output.AxonView / AxonViewPoint`（设置里） |
 | 设置保存 | `PdSettings.FromJson`（逐项容错）、`Newest`；Rhino `PdSession.Save / SidePath`；导出包 `pd_settings.json` | — |
+| 露天楼板 / 平面玻璃（屋顶 / 露台 / 雨棚） | `Analysis/ExposedSurfaces.cs`（上面没东西的 NC.Slab / 平面 Facade）；平面 `PlanDrawing.ExposedItems`；轴测 `AxonDrawing.Exposed / GlassHatch` | `exposed.*`（minAreaSf、glassFill、glassHatch、line*） |
+| NC.PropertyLine（平面正规点划线、04 场地边缘 + 50 ft、剖面虚线） | 角色 `Roles.PropertyLine`；`PlanBackground.PropertyArea / IsLineRole`；`AxonDrawing.PropertySite`、`Site(..., shape)`；`SectionGeometry` | `roles.NC.PropertyLine.*`、`axon.propertySiteMarginFt`；关键字 `layer_keywords.json` |
+| 图例符号（入口、服务、视点、车、流线、树、标签、周边建筑名、街名、注释） | `Drawing/AnnotationSymbols.cs`；平面 `PlanLegendSheet`（第 4 列）、总平面 LEGEND & SYMBOLS 画板；轴测 `AxonDrawing.Page` 的 LEGEND 画板 + 图名处比例与指北针 `AxonNorth` | `annotation.*` |
+| 树 / 配景颜色（第 ⑦ 页 Colors） | `Style.ApplyColors`（`Exporter.BuildDrawings` 调用）；Rhino `ColorsTab` | 设置 `TreeColor` / `PeopleColor`（空 = 默认） |
+| 固定画板时平面 / 剖面 / 立面铺满画板 | `PlanDrawing.FitArtboard`、`SectionPlane.Fit`（剖面 / 立面） | `rules_default.json` 画板尺寸 |
+| 建筑范围只算体块（不含曲线） | `Analysis/Localizer.cs` | — |
+| 03 轴测层线 0.5 pt、树多裁 1 pt；场地轴测范围 +100%；绿化带两端退 20 ft | `AxonDrawing.HideBehind(…, treeGap)`、`AxonFaces.Hide(gap)`；`SiteLayout` | `axon.site.levelLinePt / siteMarginFt / contextMarginFt`、`axon.treeClearPt`、`site.median.endClearFt` |
+| 04 爆炸轴测描边（每层外轮廓、白色内线） | `AxonDrawing.PlateFaces` | `axon.levels.edgePt`、`axon.slabSilhouettePt` |
 | 平面铺装 / 道路交界线 | `PlanDrawing.SiteEdges`（图层 `BG_SITE_EDGE`） | `plan.hardscapeEdge`、`plan.roadEdge` |
 | 图例符号画板 | `Plans/PlanLegendSheet.cs`（`01_Plans.ai` 最后一个画板） | — |
 | LEVEL X 标签 | `PlanDrawing.TitleTag` | `plan.titleTagFill`（空 = 无底色），字号 = `fonts.label` |
@@ -83,5 +91,10 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 - 场地丰富度取决于模型：街区来自 LOT FILL 等 BG.Hardscape / 公园 BG.Landscape / 闭合的道路曲线（ROAD LINES），没有街区就没有人行道和行道树。用户 0.8.2 的 preview 里没有 LOT FILL 与公园填色，应检查第①页这些图层的角色。
 - 屋面 screen 在 Linux 上只用合成模型验证过（`ScreenModel`）；真实模型的 screen 若是多段曲面或有缺口，`screen.closeGapFt` 控制视为闭合的缝宽。
 - 轴测 V 形视点、"Load settings…"、模型旁 `.programdiagram.json` 都是 Rhino 端（VERIFY-WIN）。
-- 尚未做：街道名 / 箭头、流线 / 视线 / 服务图标（画在 `ANNOTATION`）、key plan、Unassigned 斜线。
+- 测试用用户设置：`tests/fixtures/downtown_settings.json`（用户 pd_settings.json 副本），`DowntownTests.UserContext`，`PD_USER=1` 出图（剖切线 / 视点 ft → mm）。
+- v0.8.4：用户 PROGRAM::Break Room 图层上有剖切线，曾把建筑范围撑到 ~1600 ft（`Localizer` 已改为只算体块）。周边建筑与截图逐块核对一致，平面样式统一为轴测白色 + 灰描边；若仍有不对，请用户指出具体哪栋。
+- NC.PropertyLine 只在合成模型上验证（`Rev084Tests.WithProperty`）；用户需在第 ① 页把红线图层设为 NC.PropertyLine。
+- 04 爆炸轴测在 1/64" 时仍超出 11x17（楼层叠高所致）；平面 / 剖面 / 立面已铺满固定画板。
+- 轴测预览名多了 `_LEGEND` 画板，原名带视图后缀（如 `03_Site_Axon_SITE_AXON`）。
+- 尚未做：流线 / 视线图标的自动放置（目前只有图例符号，图元画在 `ANNOTATION`）、key plan、Unassigned 斜线。
 - 分支上曾有其他会话同时推送：开工前先 `git fetch` + `git pull`，冲突时以远端为准再合并自己的改动。

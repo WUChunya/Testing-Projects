@@ -99,8 +99,12 @@ public static class PlanLegendSheet
         tag.SizePt = ctx.Pt(ctx.Style.Fonts.Label.SizePt);
         layer.Items.Add(At(tag));
 
-        // 5. Entourage symbols: every office person and tree (all colours), the plan figure.
-        var ey = Math.Max(Math.Max(py, ry), ly + 140) + 30;
+        // 5. Annotation symbols for analysis overlays (user rev 0.8.4): entry, service, view, car, flows, transit, tags…
+        var sx = x + colW;
+        var sy = AnnotationSymbols.Add(d, ctx, AnnotationSymbols.Set.Plan, Prefix, a, sx, y);
+
+        // 6. Entourage symbols: every office person and tree (all colours), the plan figure.
+        var ey = Math.Max(Math.Max(Math.Max(py, ry), ly + 140), sy) + 30;
         Heading("ENTOURAGE", m, ey);
         var lib = EntourageLibrary.Default;
         var ex = m;
@@ -124,7 +128,7 @@ public static class PlanLegendSheet
             }
             ty += 110;
         }
-        d.Artboards.Add(new Artboard("LEGEND & SYMBOLS", Math.Ceiling(Math.Max(Math.Max(ex, tx) + m, x + colW + m)), Math.Ceiling(ty + m)));
+        d.Artboards.Add(new Artboard("LEGEND & SYMBOLS", Math.Ceiling(Math.Max(Math.Max(ex, tx) + m, sx + 360 + m)), Math.Ceiling(ty + m)));
     }
 
     static string Safe(string s) => SectionDrawing.Safe(s.ToUpperInvariant());

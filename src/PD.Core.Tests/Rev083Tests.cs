@@ -158,7 +158,7 @@ public class Rev083Tests
     public void SitePlan_SecondArtboardSeesTheWholeBuildingFromAbove()
     {
         var d = PlanDrawing.BuildSite(DowntownAnalysis.Context());
-        Assert.Equal(new[] { "SITE PLAN", "SITE PLAN ROOF" }, d.Artboards.Select(a => a.Name));
+        Assert.Equal(new[] { "SITE PLAN", "SITE PLAN ROOF", "LEGEND & SYMBOLS" }, d.Artboards.Select(a => a.Name));
         var roof = d.Layer("PD_PROGRAM").Items.Where(i => i.Artboard == 1).ToList();
         // Every level from grade up, the top one last (it shows on top).
         Assert.Contains(roof, i => i.Name.StartsWith("STR_L1_"));
@@ -274,7 +274,7 @@ public class Rev083Tests
         var faces = d.Layer("PD_PROGRAM").Items.Where(i => i.Artboard == l5).ToList();
         var white = d.Swatches.Single(s => s.Name == "AXON_LEVELS_BELOW").Name;
         Assert.Contains(faces, i => i.Name.Contains("_BELOW_") && i.Fill == white);
-        Assert.DoesNotContain(faces, i => (i.Name.StartsWith("AXK_L5_L4_") && !i.Name.Contains("_BELOW_")) || i.Name.StartsWith("AXK_L5_L6_"));
+        Assert.DoesNotContain(faces, i => (i.Name.StartsWith("AXK_L5_L4_") && !i.Name.Contains("_BELOW_") && !i.Name.Contains("EXPOSED")) || i.Name.StartsWith("AXK_L5_L6_"));
         var current = faces.Where(i => i.Name.StartsWith("AXK_L5_L5_")).ToList();
         Assert.NotEmpty(current);
         Assert.All(current, i => Assert.Equal(1.0, i.StrokePt));

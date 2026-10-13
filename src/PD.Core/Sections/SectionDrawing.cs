@@ -18,9 +18,15 @@ public static class SectionDrawing
         var (bx, by, _) = r.Frame.ToLocal(sec.Line[2], sec.Line[3], 0);
         var plane = new Geometry.SectionPlane(ax, ay, bx, by, sec.LookLeft);
         var depth = sec.DepthFt > 0 ? sec.DepthFt : ctx.Rules.Output.SectionDepthFt;
-        var g = SectionGeometry.Build(r, plane, depth, ctx.Rules, ctx.Style);
         var st = ctx.Style.Section;
         var pg = ctx.Style.Page;
+        // A fixed artboard (user rev 0.8.4: 11x17 at 1/64"): a longer line is cut down around the building.
+        if (ctx.ArtboardSize is { } ab0)
+        {
+            var cols = (st.LevelColumn || st.LevelMarkers ? ctx.Pt(pg.LevelColumnPt) : 0) + (st.HeightDimension ? ctx.Pt(pg.DimColumnPt) : 0);
+            plane = plane.Fit((ab0.W - 2 * pg.MarginPt - cols) / ctx.PtPerFt, PD.Core.Plans.PlanBackground.Footprint(r));
+        }
+        var g = SectionGeometry.Build(r, plane, depth, ctx.Rules, ctx.Style);
 
         var d = new PD.Core.Drawing.Drawing { FileName = $"02_Section_{Safe(sec.Name)}.ai" };
         ctx.AddStandardStyles(d);

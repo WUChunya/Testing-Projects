@@ -28,6 +28,38 @@ public sealed class SectionPlane
         (Nx, Ny) = lookLeft ? (-Dy, Dx) : (Dy, -Dx);
     }
 
+    public bool LookLeft => Math.Abs(Nx + Dy) < 1e-9 && Math.Abs(Ny - Dx) < 1e-9;
+
+    /// <summary>The same plane cut down to u0…u1 (same side, same direction).</summary>
+    public SectionPlane Sub(double u0, double u1) => new(Ax + Dx * u0, Ay + Dy * u0, Ax + Dx * u1, Ay + Dy * u1, LookLeft);
+
+    /// <summary>
+    /// Fixed artboards (user rev 0.8.4): a line longer than <paramref name="maxFt"/> is cut down to that length,
+    /// centred on where it crosses <paramref name="building"/> (else on its middle).
+    /// </summary>
+    public SectionPlane Fit(double maxFt, NetTopologySuite.Geometries.Geometry building)
+    {
+        if (maxFt <= 0 || Length <= maxFt) return this;
+        var mid = Length / 2;
+        try
+        {
+            var hit = building.IsEmpty ? null : building.Buffer(1).Intersection(PlanLine());
+            if (hit is { IsEmpty: false })
+            {
+                var us = hit.Coordinates.Select(c => U(c.X, c.Y)).ToList();
+                mid = (us.Min() + us.Max()) / 2;
+            }
+            else if (!building.IsEmpty)
+            {
+                var c = building.Centroid.Coordinate;
+                mid = Math.Clamp(U(c.X, c.Y), 0, Length);
+            }
+        }
+        catch (Exception e) when (e is NetTopologySuite.Geometries.TopologyException or ArgumentException) { }
+        var u0 = Math.Clamp(mid - maxFt / 2, 0, Length - maxFt);
+        return Sub(u0, u0 + maxFt);
+    }
+
     public double U(double x, double y) => (x - Ax) * Dx + (y - Ay) * Dy;
     public double W(double x, double y) => (x - Ax) * Nx + (y - Ay) * Ny;
 

@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "comment": "Case-insensitive match on the layer's own name (last path segment); sub-layers never inherit the parent's role. Rules marked first run before program-name matching; the rest after it. First match wins. Roles: Program and NC.* = our new construction; BG.* = existing context. A site role (Tree/Water/Landscape/Hardscape) on a layer whose path contains an NC / NEW / PROJECT / PROPOSED segment becomes the NC.* variant. ignorePathPattern drops Make2D / clipping-plane output layers before anything else. programPathPattern: a layer under a PROGRAM:: parent is a program layer even when its name matches nothing (Unassigned), except for the roles in programPathKeepRoles. NC.Screen / NC.Interior / NC.Furniture / NC.Massing (rev 0.8): screens are facade surfaces (never extruded), interior and furniture are plan linework, massing is the dashed building envelope; a BG.Building layer on an NC path becomes NC.Massing.",
+  "comment": "Case-insensitive match on the layer's own name (last path segment); sub-layers never inherit the parent's role. Rules marked first run before program-name matching; the rest after it. First match wins. Roles: Program and NC.* = our new construction; BG.* = existing context. A site role (Tree/Water/Landscape/Hardscape) on a layer whose path contains an NC / NEW / PROJECT / PROPOSED segment becomes the NC.* variant. ignorePathPattern drops Make2D / clipping-plane output layers before anything else. programPathPattern: a layer under a PROGRAM:: parent is a program layer even when its name matches nothing (Unassigned), except for the roles in programPathKeepRoles. NC.Screen / NC.Interior / NC.Furniture / NC.Massing (rev 0.8): screens are facade surfaces (never extruded), interior and furniture are plan linework, massing is the dashed building envelope; a BG.Building layer on an NC path becomes NC.Massing. NC.PropertyLine (rev 0.8.4): our own property line — phantom line in plans, dashed verticals in sections, and the 04 axons' site = the property line grown by axon.propertySiteMarginFt.",
   "roles": [
     "Program",
     "NC.Core",
@@ -17,6 +17,7 @@
     "NC.Interior",
     "NC.Furniture",
     "NC.Massing",
+    "NC.PropertyLine",
     "BG.Building",
     "BG.Road",
     "BG.Hardscape",
@@ -121,7 +122,11 @@
       "role": "BG.Base"
     },
     {
-      "pattern": "PROPERTY|BOUNDARY|SETBACK|LOT ?LINE|^ZONING",
+      "pattern": "PROPERTY ?LINE|^P\\.?L\\.?$|LOT ?LINE|SITE ?BOUNDARY",
+      "role": "NC.PropertyLine"
+    },
+    {
+      "pattern": "PROPERTY|BOUNDARY|SETBACK|^ZONING",
       "role": "BG.Line"
     },
     {

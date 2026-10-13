@@ -32,6 +32,10 @@ public sealed class PdSettings
     public OutputSetting Output { get; set; } = new();
     public Dictionary<string, bool> Confirmed { get; set; } = new();
     public List<string> IgnoredIssues { get; set; } = new();
+    /// <summary>Tab 5 (user rev 0.8.4): one colour for every tree (plans, axons, sections); null = the style's.</summary>
+    public string? TreeColor { get; set; }
+    /// <summary>Tab 5: colour of the people (entourage); null = the style's.</summary>
+    public string? PeopleColor { get; set; }
 
     public static readonly JsonSerializerOptions Json = new()
     {

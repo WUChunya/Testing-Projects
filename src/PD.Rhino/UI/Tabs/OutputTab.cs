@@ -241,7 +241,8 @@ internal sealed class OutputTab : TabBase
         {
             res = Exporter.Write(new ExportContext
             {
-                Result = Session.Result, Settings = Session.Settings, Programs = Session.Programs, Rules = Session.Rules, Style = Session.Style,
+                // A fresh style per export: tab 5 tree / people colours are applied to it, never to the session's copy.
+                Result = Session.Result, Settings = Session.Settings, Programs = Session.Programs, Rules = Session.Rules, Style = PD.Core.Config.Style.Default(),
             }, NewFolder(DateTime.Now));
             Session.Settings.Output.LastFolder = res.Folder;
             Session.Save();

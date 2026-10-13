@@ -30,6 +30,8 @@ public static class Roles
     public const string Massing = "NC.Massing";
     /// <summary>Screens, fences, decorative walls: a facade layer drawn as its own thin surface, never extruded.</summary>
     public const string Screen = "NC.Screen";
+    /// <summary>Our property line (user rev 0.8.4): phantom line in plans, dashed verticals in sections, the 04 axons' site edge.</summary>
+    public const string PropertyLine = "NC.PropertyLine";
     public const string Building = "BG.Building";
     public const string Road = "BG.Road";
     public const string Hardscape = "BG.Hardscape";
@@ -44,7 +46,7 @@ public static class Roles
 
     public static readonly string[] All =
     {
-        Program, Core, Stair, Slab, Facade, Screen, Structure, Roof, Green, NcHardscape, NcTree, NcWater, Interior, Furniture, Massing,
+        Program, Core, Stair, Slab, Facade, Screen, Structure, Roof, Green, NcHardscape, NcTree, NcWater, Interior, Furniture, Massing, PropertyLine,
         Building, Road, Hardscape, Landscape, Tree, Water, Base, Line, Entourage, Ignore,
     };
 
@@ -65,7 +67,7 @@ public static class Roles
     public static bool IsNew(string role) => role == Program || role.StartsWith("NC.", StringComparison.Ordinal);
 
     /// <summary>Roles shown in the NC group on tab 1 (ours), in panel order; the rest are BG plus Entourage / Ignore.</summary>
-    public static readonly string[] NewGroup = { Program, Core, Stair, Slab, Facade, Screen, Structure, Roof, Green, NcHardscape, NcTree, NcWater, Interior, Furniture, Massing };
+    public static readonly string[] NewGroup = { Program, Core, Stair, Slab, Facade, Screen, Structure, Roof, Green, NcHardscape, NcTree, NcWater, Interior, Furniture, Massing, PropertyLine };
 
     /// <summary>Linework roles drawn only as lines in plans (and the massing outline), never as masses or site.</summary>
     public static bool IsLinework(string role) => role is Interior or Furniture or Massing;

@@ -87,7 +87,7 @@ public class Rev082Tests
         var line = Assert.Single(d.Layer("AXON_LEVEL_LINE").Items);
         Assert.True(line.StrokePt <= 0.5, $"{line.StrokePt} pt");
         Assert.True(ctx.Style.Axon.Stacked.SilhouettePt >= 4 * line.StrokePt);
-        // The site axon keeps its 2 pt floor lines (user rev 0.8).
-        Assert.Equal(2.0, Assert.Single(AxonDrawing.Build(ctx, AxonKind.Site).Layer("AXON_LEVEL_LINE").Items).StrokePt);
+        // User rev 0.8.4: the site axon's floor lines are 0.5 pt too.
+        Assert.Equal(0.5, Assert.Single(AxonDrawing.Build(ctx, AxonKind.Site).Layer("AXON_LEVEL_LINE").Items).StrokePt);
     }
 }

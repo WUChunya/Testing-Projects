@@ -109,7 +109,7 @@ public sealed class SectionGeometry
             if (!item.Geometry.IsEmpty) g.View.Add(item);
         }
 
-        foreach (var o in r.Local.Objects.Where(o => o.Role == "BG.Line" && o.Points is { Length: > 1 }))
+        foreach (var o in r.Local.Objects.Where(o => o.Role is "BG.Line" or PD.Core.Classification.Roles.PropertyLine && o.Points is { Length: > 1 } && !r.Stray.Contains(o.Id)))
         {
             var pl = MeshSlicer.Factory.CreateLineString(o.Points!.Select(p => new Coordinate(p[0], p[1])).ToArray());
             foreach (var pt in pl.Intersection(line).Coordinates) g.PropertyLines.Add(plane.U(pt.X, pt.Y));
