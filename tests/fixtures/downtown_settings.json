@@ -1,1 +1,618 @@
-{"version":2,"savedUtc":"2026-10-13T19:20:52.6066802Z","layers":{"CLIPPING PLANE":{"use":false,"role":"Ignore","programKey":"","mode":""},"TEXT":{"use":true,"role":"NC.Hardscape","programKey":"","mode":"color"},"Pedestrian Walkway 2":{"use":true,"role":"BG.Hardscape","programKey":"","mode":"color"},"ROAD":{"use":true,"role":"BG.Road","programKey":"","mode":"color"},"LOT FILL":{"use":true,"role":"BG.Hardscape","programKey":"","mode":"color"},"WATER":{"use":true,"role":"BG.Water","programKey":"","mode":"color"},"PARKS":{"use":true,"role":"BG.Landscape","programKey":"","mode":"color"},"PEOPLE / CARS":{"use":true,"role":"Entourage","programKey":"","mode":"color"},"TREES":{"use":true,"role":"BG.Tree","programKey":"","mode":"color"},"COLUMNS":{"use":true,"role":"NC.Structure","programKey":"","mode":"grayscale"},"FLOOR PLATE":{"use":true,"role":"NC.Slab","programKey":"","mode":"grayscale"},"PROGRAM":{"use":true,"role":"Program","programKey":"","mode":""},"PROGRAM::Green Roof":{"use":true,"role":"NC.Green","programKey":"GREEN_ROOF","mode":"color"},"PROGRAM::Core":{"use":true,"role":"NC.Core","programKey":"","mode":""},"PROGRAM::Lab":{"use":true,"role":"Program","programKey":"LAB","mode":""},"PROGRAM::Lab Support":{"use":true,"role":"Program","programKey":"LAB_SUPPORT","mode":""},"PROGRAM::Enclosed Office":{"use":true,"role":"Program","programKey":"OFFICE","mode":""},"PROGRAM::Conference":{"use":true,"role":"Program","programKey":"CONFERENCE","mode":""},"PROGRAM::Break Room":{"use":true,"role":"Program","programKey":"LOBBY","mode":""},"PROGRAM::Circulation":{"use":true,"role":"Program","programKey":"CIRCULATION","mode":""},"PROGRAM::Seminar Room":{"use":true,"role":"Program","programKey":"ASSEMBLY","mode":""},"PROGRAM::Shell Space":{"use":true,"role":"NC.Screen","programKey":"SHELL","mode":"color"},"PROGRAM::Support":{"use":true,"role":"Program","programKey":"BUILDING_SUPPORT","mode":""},"PROGRAM::Glass":{"use":true,"role":"NC.Facade","programKey":"","mode":"line"},"CADMAPPER":{"use":true,"role":"BG.Building","programKey":"","mode":"grayscale"},"CADMAPPER::CADMAPPER BUILDINGS":{"use":true,"role":"BG.Building","programKey":"","mode":"grayscale"},"1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER  OUTLINE":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER BUILDINGS":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::CADMAPPER::ROADS":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER WATER":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PROGRAM":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PROGRAM::Support":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PROGRAM::Green Roof":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PROGRAM::Glass":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PROGRAM::Circulation":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::PEOPLE / CARS":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::GRID (12x12\u0027)":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::FLOOR PLATE":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::Curves::TREES":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Glass":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Support":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Lab Support":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Break Room":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Seminar Room":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Core":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::COLUMNS":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::CADMAPPER::CADMAPPER BUILDINGS":{"use":false,"role":"Ignore","programKey":"","mode":""},"1.80 [0]::Visible::ClippingPlaneIntersections::TREES":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::CADMAPPER::CADMAPPER BUILDINGS":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::CADMAPPER::CADMAPPER  OUTLINE":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::CADMAPPER::ROADS":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PEOPLE / CARS":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::TEXT":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::FLOOR PLATE":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::TREES":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Conference":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Enclosed Office":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Lab":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Core":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Support":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Green Roof":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Break Room":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Lab Support":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Seminar Room":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Glass":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::PROGRAM::Shell Space":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::LOT FILL":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::COLUMNS":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::Visible::Curves::GRID (12x12\u0027)":{"use":false,"role":"Ignore","programKey":"","mode":""},"NE ISO::ViewportRectangle":{"use":false,"role":"Ignore","programKey":"","mode":""}},"spanModes":{},"singleSurfaces":{},"keepStray":[],"levels":null,"names":{},"objectPrograms":{},"programs":null,"sections":[{"name":"A","kind":"Section","isElevation":false,"objectId":"970d539b-bb57-4115-80b7-e2763880f9b1","line":[3231.1713869167224,3301.1085289684606,3231.171386916721,1757.0214698980697],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"B","kind":"Section","isElevation":false,"objectId":"57df3119-0f05-4cae-8608-5bb92d6bec4d","line":[3279.7744408919525,3301.1085289684606,3279.774440891951,1757.0214698980697],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"C","kind":"Section","isElevation":false,"objectId":"cf8718a5-c043-44a8-9405-2821026fcd61","line":[3362.9531183534637,3301.1085289684606,3362.9531183534623,1757.0214698980697],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"E1","kind":"Elevation","isElevation":true,"objectId":"957952cc-0bcb-4534-a76a-a52332044a6e","line":[3457.977370858196,3301.1085289684606,3457.9773708581947,1757.0214698980697],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"E2","kind":"Elevation","isElevation":true,"objectId":"28f7df9b-ba23-4434-8fe3-41b9870049b8","line":[3065.092296991296,3301.1085289684606,3065.0922969912945,1757.0214698980697],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"E3","kind":"Elevation","isElevation":true,"objectId":"93b14b24-8af3-41db-94ae-f6d40509c9c2","line":[2459.909879977765,2609.4820757859575,4066.9055363881203,2609.482075785959],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"E4","kind":"Elevation","isElevation":true,"objectId":"638096f4-0fa2-4a49-9eb9-a62885c14d5a","line":[2459.909879977765,2241.6304906145515,4066.9055363881203,2241.630490614553],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"D","kind":"Section","isElevation":false,"objectId":"a0f5e0f0-3646-4cd0-bd9a-4a2810b3a282","line":[2459.909879977765,2461.461494411493,4066.9055363881203,2461.461494411494],"lookLeft":true,"autoSide":true,"depthFt":1000},{"name":"E","kind":"Section","isElevation":false,"objectId":"129a84a0-d567-41b8-80df-8debef989be5","line":[2459.909879977765,2320.368425911631,4066.9055363881203,2320.3684259116326],"lookLeft":true,"autoSide":true,"depthFt":1000}],"output":{"saveIn":"Z:\\PDX\\Projects\\30256.mrl\\03 Design\\Process\\01 Programming-Concepts\\2025 1012 program test","lastFolder":"Z:\\PDX\\Projects\\30256.mrl\\03 Design\\Process\\01 Programming-Concepts\\2025 1012 program test\\2026 1013_Conceptual Program Diagram_121939","runIllustrator":true,"scheme":"OPT-1","drawings":["SitePlan","Plan","Section","Elevation","SiteAxon","AxonStacked","AxonExploded","AxonExplodedB","AxonLevels","ProgramChart","Pie"],"scale":"1/64\u0022 = 1\u0027-0\u0022","sectionScale":"1/64\u0022 = 1\u0027-0\u0022","artboard":"11x17 Landscape","exportPng":true,"axonViewDirection":null,"axonFromViewport":false,"axonView":"SW","axonViewPoint":null,"programExcel":"","entourage":true,"entourageSeed":null},"confirmed":{"layers":true,"cleanup":true,"levels":true,"names":true,"colors":true,"section":true,"output":true,"elevation":true,"check":true},"ignoredIssues":[]}
+{
+  "version": 2,
+  "savedUtc": "2026-10-13T19:20:52.6066802Z",
+  "layers": {
+    "CLIPPING PLANE": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "TEXT": {
+      "use": true,
+      "role": "NC.Hardscape",
+      "programKey": "",
+      "mode": "color"
+    },
+    "Pedestrian Walkway 2": {
+      "use": true,
+      "role": "BG.Hardscape",
+      "programKey": "",
+      "mode": "color"
+    },
+    "ROAD": {
+      "use": true,
+      "role": "BG.Road",
+      "programKey": "",
+      "mode": "color"
+    },
+    "LOT FILL": {
+      "use": true,
+      "role": "BG.Hardscape",
+      "programKey": "",
+      "mode": "color"
+    },
+    "WATER": {
+      "use": true,
+      "role": "BG.Water",
+      "programKey": "",
+      "mode": "color"
+    },
+    "PARKS": {
+      "use": true,
+      "role": "BG.Landscape",
+      "programKey": "",
+      "mode": "color"
+    },
+    "PEOPLE / CARS": {
+      "use": true,
+      "role": "Entourage",
+      "programKey": "",
+      "mode": "color"
+    },
+    "TREES": {
+      "use": true,
+      "role": "BG.Tree",
+      "programKey": "",
+      "mode": "color"
+    },
+    "COLUMNS": {
+      "use": true,
+      "role": "NC.Structure",
+      "programKey": "",
+      "mode": "grayscale"
+    },
+    "FLOOR PLATE": {
+      "use": true,
+      "role": "NC.Slab",
+      "programKey": "",
+      "mode": "grayscale"
+    },
+    "PROGRAM": {
+      "use": true,
+      "role": "Program",
+      "programKey": "",
+      "mode": ""
+    },
+    "PROGRAM::Green Roof": {
+      "use": true,
+      "role": "NC.Green",
+      "programKey": "GREEN_ROOF",
+      "mode": "color"
+    },
+    "PROGRAM::Core": {
+      "use": true,
+      "role": "NC.Core",
+      "programKey": "",
+      "mode": ""
+    },
+    "PROGRAM::Lab": {
+      "use": true,
+      "role": "Program",
+      "programKey": "LAB",
+      "mode": ""
+    },
+    "PROGRAM::Lab Support": {
+      "use": true,
+      "role": "Program",
+      "programKey": "LAB_SUPPORT",
+      "mode": ""
+    },
+    "PROGRAM::Enclosed Office": {
+      "use": true,
+      "role": "Program",
+      "programKey": "OFFICE",
+      "mode": ""
+    },
+    "PROGRAM::Conference": {
+      "use": true,
+      "role": "Program",
+      "programKey": "CONFERENCE",
+      "mode": ""
+    },
+    "PROGRAM::Break Room": {
+      "use": true,
+      "role": "Program",
+      "programKey": "LOBBY",
+      "mode": ""
+    },
+    "PROGRAM::Circulation": {
+      "use": true,
+      "role": "Program",
+      "programKey": "CIRCULATION",
+      "mode": ""
+    },
+    "PROGRAM::Seminar Room": {
+      "use": true,
+      "role": "Program",
+      "programKey": "ASSEMBLY",
+      "mode": ""
+    },
+    "PROGRAM::Shell Space": {
+      "use": true,
+      "role": "NC.Screen",
+      "programKey": "SHELL",
+      "mode": "color"
+    },
+    "PROGRAM::Support": {
+      "use": true,
+      "role": "Program",
+      "programKey": "BUILDING_SUPPORT",
+      "mode": ""
+    },
+    "PROGRAM::Glass": {
+      "use": true,
+      "role": "NC.Facade",
+      "programKey": "",
+      "mode": "line"
+    },
+    "CADMAPPER": {
+      "use": true,
+      "role": "BG.Building",
+      "programKey": "",
+      "mode": "grayscale"
+    },
+    "CADMAPPER::CADMAPPER BUILDINGS": {
+      "use": true,
+      "role": "BG.Building",
+      "programKey": "",
+      "mode": "grayscale"
+    },
+    "1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER  OUTLINE": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER BUILDINGS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::CADMAPPER::ROADS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::CADMAPPER::CADMAPPER WATER": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PROGRAM": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PROGRAM::Support": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PROGRAM::Green Roof": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PROGRAM::Glass": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PROGRAM::Circulation": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::PEOPLE / CARS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::GRID (12x12')": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::FLOOR PLATE": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::Curves::TREES": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Glass": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Support": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Lab Support": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Break Room": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Seminar Room": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::PROGRAM::Core": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::COLUMNS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::CADMAPPER::CADMAPPER BUILDINGS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "1.80 [0]::Visible::ClippingPlaneIntersections::TREES": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::CADMAPPER::CADMAPPER BUILDINGS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::CADMAPPER::CADMAPPER  OUTLINE": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::CADMAPPER::ROADS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PEOPLE / CARS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::TEXT": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::FLOOR PLATE": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::TREES": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Conference": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Enclosed Office": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Lab": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Core": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Support": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Green Roof": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Break Room": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Lab Support": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Seminar Room": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Glass": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::PROGRAM::Shell Space": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::LOT FILL": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::COLUMNS": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::Visible::Curves::GRID (12x12')": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "NE ISO::ViewportRectangle": {
+      "use": false,
+      "role": "Ignore",
+      "programKey": "",
+      "mode": ""
+    },
+    "property line": {
+      "use": true,
+      "role": "NC.PropertyLine",
+      "programKey": "",
+      "mode": ""
+    }
+  },
+  "spanModes": {},
+  "singleSurfaces": {},
+  "keepStray": [],
+  "levels": null,
+  "names": {},
+  "objectPrograms": {},
+  "programs": null,
+  "sections": [
+    {
+      "name": "A",
+      "kind": "Section",
+      "isElevation": false,
+      "objectId": "970d539b-bb57-4115-80b7-e2763880f9b1",
+      "line": [
+        3231.1713869167224,
+        3301.1085289684606,
+        3231.171386916721,
+        1757.0214698980697
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "B",
+      "kind": "Section",
+      "isElevation": false,
+      "objectId": "57df3119-0f05-4cae-8608-5bb92d6bec4d",
+      "line": [
+        3279.7744408919525,
+        3301.1085289684606,
+        3279.774440891951,
+        1757.0214698980697
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "C",
+      "kind": "Section",
+      "isElevation": false,
+      "objectId": "cf8718a5-c043-44a8-9405-2821026fcd61",
+      "line": [
+        3362.9531183534637,
+        3301.1085289684606,
+        3362.9531183534623,
+        1757.0214698980697
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "E1",
+      "kind": "Elevation",
+      "isElevation": true,
+      "objectId": "957952cc-0bcb-4534-a76a-a52332044a6e",
+      "line": [
+        3457.977370858196,
+        3301.1085289684606,
+        3457.9773708581947,
+        1757.0214698980697
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "E2",
+      "kind": "Elevation",
+      "isElevation": true,
+      "objectId": "28f7df9b-ba23-4434-8fe3-41b9870049b8",
+      "line": [
+        3065.092296991296,
+        3301.1085289684606,
+        3065.0922969912945,
+        1757.0214698980697
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "E3",
+      "kind": "Elevation",
+      "isElevation": true,
+      "objectId": "93b14b24-8af3-41db-94ae-f6d40509c9c2",
+      "line": [
+        2459.909879977765,
+        2609.4820757859575,
+        4066.9055363881203,
+        2609.482075785959
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "E4",
+      "kind": "Elevation",
+      "isElevation": true,
+      "objectId": "638096f4-0fa2-4a49-9eb9-a62885c14d5a",
+      "line": [
+        2459.909879977765,
+        2241.6304906145515,
+        4066.9055363881203,
+        2241.630490614553
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "D",
+      "kind": "Section",
+      "isElevation": false,
+      "objectId": "a0f5e0f0-3646-4cd0-bd9a-4a2810b3a282",
+      "line": [
+        2459.909879977765,
+        2461.461494411493,
+        4066.9055363881203,
+        2461.461494411494
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    },
+    {
+      "name": "E",
+      "kind": "Section",
+      "isElevation": false,
+      "objectId": "129a84a0-d567-41b8-80df-8debef989be5",
+      "line": [
+        2459.909879977765,
+        2320.368425911631,
+        4066.9055363881203,
+        2320.3684259116326
+      ],
+      "lookLeft": true,
+      "autoSide": true,
+      "depthFt": 1000
+    }
+  ],
+  "output": {
+    "saveIn": "Z:\\PDX\\Projects\\30256.mrl\\03 Design\\Process\\01 Programming-Concepts\\2025 1012 program test",
+    "lastFolder": "Z:\\PDX\\Projects\\30256.mrl\\03 Design\\Process\\01 Programming-Concepts\\2025 1012 program test\\2026 1013_Conceptual Program Diagram_121939",
+    "runIllustrator": true,
+    "scheme": "OPT-1",
+    "drawings": [
+      "SitePlan",
+      "Plan",
+      "Section",
+      "Elevation",
+      "SiteAxon",
+      "AxonStacked",
+      "AxonExploded",
+      "AxonExplodedB",
+      "AxonLevels",
+      "ProgramChart",
+      "Pie"
+    ],
+    "scale": "1/64\" = 1'-0\"",
+    "sectionScale": "1/64\" = 1'-0\"",
+    "artboard": "11x17 Landscape",
+    "exportPng": true,
+    "axonViewDirection": null,
+    "axonFromViewport": false,
+    "axonView": "NE",
+    "axonViewPoint": null,
+    "programExcel": "",
+    "entourage": true,
+    "entourageSeed": null
+  },
+  "confirmed": {
+    "layers": true,
+    "cleanup": true,
+    "levels": true,
+    "names": true,
+    "colors": true,
+    "section": true,
+    "output": true,
+    "elevation": true,
+    "check": true
+  },
+  "ignoredIssues": []
+}

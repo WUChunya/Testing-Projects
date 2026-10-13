@@ -113,11 +113,11 @@ public static class AxonDrawing
             area.ExpandBy(10);
         }
         var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach, area: area);
-        Func<ProgramBlock, (double, double)> band = full ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
+        Func<ProgramBlock, (double, double)> band = full ? b => UnderRoofs(ctx, b, FullHeight(ctx.Result, b)) : b => (b.Z0, b.Z1);
         var program = ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList();
         // Screens as solid walls with a white floor, open on top (user rev 0.8.3).
         var screens = ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => blocks.Any(b => b.LevelIndex == e.LevelIndex))).ToList();
-        var faces = AxonFaces.Render(proj, context.Concat(program).Concat(screens).Concat(Exposed(d, ctx, blocks, band: null)));
+        var faces = AxonFaces.Render(proj, context.Concat(program).Concat(screens).Concat(Exposed(d, ctx, blocks, band: null, shape: e => e.Sky)));
         // Trees stop short of the building by axon.treeClearPt (user rev 0.8.4: room for the black outline).
         HideBehind(sheet, proj, faces, ax.TreeClearPt / ctx.PtPerFt);
         var line = d.Gray(ax.LineColor);
@@ -255,6 +255,19 @@ public static class AxonDrawing
         return (z0, Math.Max(z1, z0 + 0.1));
     }
 
+    /// <summary>
+    /// A block stretched floor to floor stops under an open roof slab lying on it (user rev 0.8.5: the podium's
+    /// program showed through its roof where both tops met at the level line).
+    /// </summary>
+    public static (double Z0, double Z1) UnderRoofs(ExportContext ctx, ProgramBlock b, (double Z0, double Z1) full)
+    {
+        var z1 = full.Z1;
+        foreach (var e in ExposedSurfaces.For(ctx).Where(e => !e.IsGlass && e.Z0 >= full.Z1 - 2 && e.Z0 < full.Z1 && !e.Sky.IsEmpty))
+            if (e.Sky.EnvelopeInternal.Intersects(b.Geometry.EnvelopeInternal) && AxonFaces.Safe(() => e.Sky.Intersection(b.Geometry), MeshSlicer.Factory.CreatePolygon()).Area > 1)
+                z1 = e.Z0;
+        return (full.Z0, Math.Max(z1, full.Z0 + 0.1));
+    }
+
     /// <summary>Blocks of the levels at or above grade (the ground-floor plate and up; see <see cref="GroundAndExcavation"/>).</summary>
     public static List<ProgramBlock> AboveGrade(AnalysisResult r, List<ProgramBlock> blocks, double ground)
     {
@@ -374,7 +387,7 @@ public static class AxonDrawing
     /// blocks' levels; <paramref name="band"/> moves them (exploded plates), default = their real height.
     /// </summary>
     static IEnumerable<Prism> Exposed(PD.Core.Drawing.Drawing d, ExportContext ctx, IEnumerable<ProgramBlock> blocks, Func<ExposedSurface, (double Z0, double Z1)>? band,
-        Func<ExposedSurface, bool>? which = null)
+        Func<ExposedSurface, bool>? which = null, Func<ExposedSurface, NtsGeometry>? shape = null)
     {
         var levels = blocks.Select(b => b.LevelIndex).ToHashSet();
         var st = ctx.Style.Exposed;
@@ -386,7 +399,9 @@ public static class AxonDrawing
             var name = e.IsGlass ? "EXPOSED_GLASS" : "EXPOSED_ROOF";
             var top = d.Swatch(name, hex);
             var (z0, z1) = band?.Invoke(e) ?? (e.Z0, Math.Max(e.Z1, e.Z0 + 0.3));
-            yield return new Prism($"{SectionDrawing.Safe(ctx.Result.Levels[e.LevelIndex].Name)}_{name}_{n + 1:00}", e.Area, z0, z1, top,
+            var plan = shape?.Invoke(e) ?? e.Area;
+            if (plan.IsEmpty) continue;
+            yield return new Prism($"{SectionDrawing.Safe(ctx.Result.Levels[e.LevelIndex].Name)}_{name}_{n + 1:00}", plan, z0, z1, top,
                 d.Swatch(name + "_SIDE1", Darken(hex, dk.ElementAtOrDefault(0))), d.Swatch(name + "_SIDE2", Darken(hex, dk.ElementAtOrDefault(1))), "EXP");
         }
     }
@@ -464,9 +479,18 @@ public static class AxonDrawing
             var fill = d.Swatch("AXON_CONNECTOR", ax.ConnectorFill);
             foreach (var (shape, top, name) in Connectors(ctx, blocks, i, up, Lift))
             {
-                var link = new Prism($"{SectionDrawing.Safe(lvl.Name)}_{name}", shape, z, Math.Max(z + 1, top - t), fill, fill, fill, "LINK");
-                foreach (var f in AxonFaces.Render(proj, new[] { link }))
-                    sheet.Paint.Add((layer, new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.ConnectorStroke), ax.ConnectorPt, Opacity: ax.ConnectorOpacity)));
+                var z1 = Math.Max(z + 1, top - t);
+                // Under the site plate the link goes on its own layer behind the site (user rev 0.8.5): the shafts from
+                // the basements read as passing under the ground, not over it.
+                var pieces = z < siteZ && z1 > siteZ
+                    ? new[] { (z, siteZ, "AXON_CONNECTOR_BELOW", "_BELOW"), (siteZ, z1, layer, "") }
+                    : new[] { (z, z1, z1 <= siteZ + 0.01 ? "AXON_CONNECTOR_BELOW" : layer, "") };
+                foreach (var (a0, a1, lay, suffix) in pieces)
+                {
+                    var link = new Prism($"{SectionDrawing.Safe(lvl.Name)}_{name}{suffix}", shape, a0, a1, fill, fill, fill, "LINK");
+                    foreach (var f in AxonFaces.Render(proj, new[] { link }))
+                        sheet.Paint.Add((lay, new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.ConnectorStroke), ax.ConnectorPt, Opacity: ax.ConnectorOpacity)));
+                }
                 if (name.StartsWith("CONNECTOR")) joined++;
             }
         }
@@ -601,7 +625,7 @@ public static class AxonDrawing
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var levels = Plates(blocks);
         var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
-        var band = blocks.ToDictionary(b => b, b => FullHeight(r, b));
+        var band = blocks.ToDictionary(b => b, b => UnderRoofs(ctx, b, FullHeight(r, b)));
         // The building's total outline: every block, floor to floor.
         var screens = ScreenEnclosures.For(ctx);
         var all = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, band[b].Z0, band[b].Z1, null, null, null, "G"))
@@ -638,7 +662,7 @@ public static class AxonDrawing
             prisms.AddRange(ScreenPrisms(d, ctx, screens.Where(e => e.LevelIndex == i || lower.Contains(e.LevelIndex))));
             // Open slabs / glass of this floor in their paint, those of the floors below in white (user rev 0.8.4).
             prisms.AddRange(Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null));
-            prisms.AddRange(Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null)
+            prisms.AddRange(Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null, shape: e => ExposedSurfaces.SkyUpTo(ctx, e, i))
                 .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             var faces = AxonFaces.Render(proj, prisms);
             foreach (var f in faces)
@@ -1100,7 +1124,7 @@ public static class AxonDrawing
 
         // Layer order (AXON_STYLE §9, bottom → top): site, context, hidden below, program / plates, lines, trees, facade, hidden above, labels, annotation.
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
-        string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_EXCAVATION", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
+        string[] first = { "AXON_CONNECTOR_BELOW", "AXON_SITE", "AXON_CONTEXT", "AXON_EXCAVATION", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
         string[] last = { "AXON_SCREEN", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE", "AXON_MASSING" };
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);

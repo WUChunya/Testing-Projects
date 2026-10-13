@@ -107,10 +107,11 @@ public static class AxonFaces
             var f = faces[i];
             var g = f.Screen;
             if (taken != null && taken.EnvelopeInternal.Intersects(g.EnvelopeInternal)) g = Robust(g, taken, SpatialFunction.Difference) ?? g;
-            taken = taken == null ? f.Screen : Robust(taken, f.Screen, SpatialFunction.Union) ?? taken;
             g = MeshSlicer.Polygonal(g);
-            if (!g.IsEmpty && g.Area > 1e-3)
-                visible.Add(new VisibleFace(f.Prism, f.Name, f.IsTop, g, f.Fill, f.Side, f.Normal, f.D0) { Depth = f.Depth });
+            if (g.IsEmpty || g.Area <= 1e-3) continue;
+            visible.Add(new VisibleFace(f.Prism, f.Name, f.IsTop, g, f.Fill, f.Side, f.Normal, f.D0) { Depth = f.Depth });
+            // Only what is drawn covers what comes later: a face dropped here never leaves a blank hole behind it.
+            taken = taken == null ? g : Robust(taken, g, SpatialFunction.Union) ?? taken;
         }
         return visible.OrderBy(v => v.Depth).ToList(); // far → near
     }
@@ -185,15 +186,31 @@ public static class AxonFaces
         {
             if (!f.Screen.EnvelopeInternal.Intersects(screen.EnvelopeInternal)) continue;
             var locator = new NetTopologySuite.Algorithm.Locate.IndexedPointInAreaLocator(f.Screen);
+            var hit = false;
+            var tested = false;
             foreach (var pt in samples)
             {
                 var loc = locator.Locate(pt);
                 if (loc == Location.Exterior) continue;
+                tested = true;
                 var df = proj.DepthOnPlane(pt.X, pt.Y, f.Normal, f.D0);
                 if (double.IsNaN(df) || df <= depth) continue;
-                front.Add(f.Screen);
+                hit = true;
                 break;
             }
+            // A face crossing the shape between the samples (a slim corner through a tree crown, user rev 0.8.5):
+            // test a point of the overlap itself.
+            if (!hit && !tested && screen.Dimension == Dimension.Surface && f.Screen.Intersects(screen))
+            {
+                var overlap = Robust(f.Screen, screen, SpatialFunction.Intersection);
+                if (overlap != null && MeshSlicer.Polygonal(overlap) is { IsEmpty: false } o && o.Area > 1e-4)
+                {
+                    var pt = o.InteriorPoint.Coordinate;
+                    var df = proj.DepthOnPlane(pt.X, pt.Y, f.Normal, f.D0);
+                    hit = !double.IsNaN(df) && df > depth;
+                }
+            }
+            if (hit) front.Add(f.Screen);
         }
         if (front.Count == 0) return screen;
         var cover = Union(front);
@@ -228,8 +245,22 @@ public static class AxonFaces
         try { return OverlayNG.Overlay(a, b, op); }
         catch (Exception e) when (e is TopologyException or ArgumentException) { }
         try { return OverlayNGRobust.Overlay(a, b, op); }
-        catch (Exception e) when (e is TopologyException or ArgumentException) { return null; }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { }
+        // Last resort: snap-rounded to 0.001 page ft, which never fails on valid input.
+        try { return OverlayNG.Overlay(Fix(a), Fix(b), op, new PrecisionModel(1000)); }
+        catch (Exception e) when (e is TopologyException or ArgumentException) { }
+        System.Threading.Interlocked.Increment(ref failures);
+        return null;
     }
+
+    static int failures;
+
+    /// <summary>Overlays that failed even snapped since the last reset (written to the export log as a CHECK).</summary>
+    public static int Failures => failures;
+
+    public static void ResetFailures() => failures = 0;
+
+    static NtsGeometry Fix(NtsGeometry g) => g.IsValid ? g : NetTopologySuite.Geometries.Utilities.GeometryFixer.Fix(g);
 
     /// <summary>
     /// Fold edges: where a top meets a side, or a lit side a shaded one, plus the outline — the boundaries of the unions

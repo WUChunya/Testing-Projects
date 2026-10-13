@@ -351,6 +351,7 @@ public static class PlanDrawing
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
         var outline = plan.Union;
         var centre = outline.IsEmpty ? null : outline.Centroid.Coordinate;
+        BelowItems(d, ctx, a, map, p, i, sizeFt, centre, outline);
         // One name per program (per label text) and level: the largest block carries it, the legend covers the rest.
         var named = ps.LabelOncePerProgram
             ? plan.Footprints.Where(f => !f.Resolved.IsEmpty).GroupBy(f => LabelText(ctx, f))
@@ -415,6 +416,57 @@ public static class PlanDrawing
     }
 
     /// <summary>
+    /// Lower floors seen from this plan's cut, as top views (user rev 0.8.5, <see cref="SeenBelow"/>): roof paint for
+    /// plates and roofs, the glass hatch for flat glass, under this level's blocks. What shows through an opening in the
+    /// floors at grade also gets the open-to-below dashes, cross and label.
+    /// </summary>
+    static void BelowItems(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, int i, double sizeFt, Coordinate? centre,
+        NtsGeometry outline)
+    {
+        var ps = ctx.Style.Plan;
+        var st = ctx.Style.Exposed;
+        var roof = PlanBackground.PaintOf(ctx.Style, Roles.Roof, "plan");
+        var seen = SeenBelow.For(ctx, i);
+        var items = new List<DItem>();
+        foreach (var (e, n) in seen.Select((e, n) => (e, n)))
+        {
+            var name = $"{p}BELOW_{SectionDrawing.Safe(ctx.Result.Levels[e.LevelIndex].Name)}_{n + 1:00}";
+            if (!e.IsGlass)
+            {
+                items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_ROOF_PLAN", roof.Fill ?? "#EFEFEF"), d.Gray(roof.Stroke ?? "#B4B4B4"), roof.StrokePt ?? 0.5));
+                continue;
+            }
+            items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt));
+            var lines = PlanBackground.Hatch(e.Area, st.GlassHatch);
+            if (!lines.IsEmpty) items.Add(map.Geom(name + "_HATCH", lines, null, d.Swatch("EXPOSED_GLASS_HATCH", st.GlassHatch.Stroke), st.GlassHatch.StrokePt, false));
+        }
+        // Inserted at the bottom one by one, nearest level first: deeper levels end up under nearer ones, fills under hatches.
+        foreach (var it in items) d.Layer("PD_PROGRAM").Items.Insert(0, At(it, a));
+
+        var open = seen.Where(e => e.ThroughOpening).Select(e => e.Area).ToList();
+        if (open.Count == 0) return;
+        var all = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(open));
+        if (all == null || all.IsEmpty) return;
+        var v = d.Layer("PD_VOID");
+        var stroke = d.Gray(ps.VoidStroke);
+        foreach (var (hole, k) in Enumerable.Range(0, all.NumGeometries).Select(k => (all.GetGeometryN(k), k)).Where(x => x.Item1 is Polygon))
+        {
+            var name = $"{p}OPENING_{k + 1:00}";
+            var edge = At(map.Poly(name, hole, null, stroke, ps.VoidPt), a);
+            edge.Dash = ps.VoidDash;
+            v.Items.Add(edge);
+            var env = hole.EnvelopeInternal;
+            foreach (var (q, j) in new[] { (env.MinX, env.MinY, env.MaxX, env.MaxY), (env.MinX, env.MaxY, env.MaxX, env.MinY) }.Select((q, j) => (q, j)))
+            {
+                var diag = MeshSlicer.Factory.CreateLineString(new[] { new Coordinate(q.Item1, q.Item2), new Coordinate(q.Item3, q.Item4) });
+                var cut = Safe(() => hole.Intersection(diag));
+                if (cut is { IsEmpty: false }) v.Items.Add(At(map.Geom($"{name}_X{j + 1}", cut, null, stroke, ps.VoidPt, false), a));
+            }
+            if (k == 0) Label(d, ctx, a, map, name, hole, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: true);
+        }
+    }
+
+    /// <summary>
     /// The open part of slabs (NC.Roof paint) and flat glass (pale blue + diagonal hatch) of level i, glass hatch
     /// after its fill.
     /// </summary>
@@ -446,7 +498,8 @@ public static class PlanDrawing
     {
         var r = ctx.Result;
         var g = GroundIndex(ctx);
-        return Enumerable.Range(0, r.Plans.Count).Where(j => j >= g && r.Plans[j].Footprints.Any(f => !f.OpenToBelow && !f.Resolved.IsEmpty)).ToList();
+        var roofs = PD.Core.Analysis.ExposedSurfaces.For(ctx).Select(e => e.LevelIndex).ToHashSet();
+        return Enumerable.Range(0, r.Plans.Count).Where(j => j >= g && (roofs.Contains(j) || r.Plans[j].Footprints.Any(f => !f.OpenToBelow && !f.Resolved.IsEmpty))).ToList();
     }
 
     /// <summary>
@@ -477,7 +530,12 @@ public static class PlanDrawing
             }
             foreach (var e in screens.Where(e => e.LevelIndex == j))
                 d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_WALL", e.Walls, d.Swatch("NC_SCREEN_WALL_PLAN", sc.PlanWallFill), null, 0), a));
-            if (!r.Plans[j].Union.IsEmpty) tiers.Add(r.Plans[j].Union);
+            // A tier is the level's blocks and its open slabs / glass (user rev 0.8.5: a roof slab over lower blocks
+            // hides their edges, and the outline runs round it).
+            var parts = PD.Core.Analysis.ExposedSurfaces.For(ctx).Where(e => e.LevelIndex == j).Select(e => e.Area).ToList();
+            if (!r.Plans[j].Union.IsEmpty) parts.Add(r.Plans[j].Union);
+            var tier = parts.Count == 0 ? null : Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(parts));
+            if (tier is { IsEmpty: false }) tiers.Add(MeshSlicer.Polygonal(tier));
         }
         // A tier's edge shows where nothing higher covers it.
         for (var t = 0; t < tiers.Count; t++)

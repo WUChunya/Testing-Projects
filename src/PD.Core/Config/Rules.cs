@@ -45,6 +45,8 @@ public sealed class CleanupRules
     public double CapPlanarToleranceFt { get; set; }
     public double MinSolidVolumeCf { get; set; }
     public double GapCloseToleranceFt { get; set; }
+    /// <summary>Local coordinates snap to this grid (1 mm): raw Rhino doubles break the 2D overlays. 0 = off.</summary>
+    public double CoordSnapFt { get; set; } = 1 / 304.8;
     public double PlanCutHeightFt { get; set; }
     public double MinLevelOverlapFt { get; set; }
     /// <summary>A mass no thicker than this is a slab-like element (roof garden, terrace, paving): it belongs to the

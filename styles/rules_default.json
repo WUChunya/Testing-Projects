@@ -20,6 +20,7 @@
     "capPlanarToleranceFt": 0.05,
     "minSolidVolumeCf": 1.0,
     "gapCloseToleranceFt": 0.5,
+    "coordSnapFt": 0.00328084,
     "planCutHeightFt": 4.0,
     "minLevelOverlapFt": 4.0,
     "flatMassMaxThicknessFt": 2.0,

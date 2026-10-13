@@ -4,10 +4,17 @@ using PD.Core.Model;
 namespace PD.Core.Analysis;
 
 /// <summary>Model-unit → local-feet transform. XY move to the building bbox min; Z is kept (it is the level datum).</summary>
-public sealed record LocalFrame(double FeetPerUnit, double OriginX, double OriginY)
+/// <remarks>
+/// Local coordinates are snapped to <see cref="SnapFt"/> (rules cleanup.coordSnapFt, 1 mm): Rhino hands over raw doubles
+/// whose near-coincident edges make the 2D overlays fail (user rev 0.8.5: hidden faces left over, blank faces in the
+/// Windows axons) — the test fixtures, stored in whole millimetres, never showed it.
+/// </remarks>
+public sealed record LocalFrame(double FeetPerUnit, double OriginX, double OriginY, double SnapFt = 0)
 {
     public (double x, double y, double z) ToLocal(double x, double y, double z) =>
-        ((x - OriginX) * FeetPerUnit, (y - OriginY) * FeetPerUnit, z * FeetPerUnit);
+        (Snap((x - OriginX) * FeetPerUnit), Snap((y - OriginY) * FeetPerUnit), Snap(z * FeetPerUnit));
+
+    double Snap(double v) => SnapFt > 0 ? Math.Round(v / SnapFt) * SnapFt : v;
 
     public (double x, double y, double z) ToModel(double x, double y, double z) =>
         (x / FeetPerUnit + OriginX, y / FeetPerUnit + OriginY, z / FeetPerUnit);
@@ -28,7 +35,7 @@ public static class Localizer
         if (prog.Count == 0) prog = model.Objects.Where(isProgram).ToList();
         if (prog.Count == 0) prog = model.Objects.ToList();
         var building = RobustUnion(prog.Select(o => o.BBox).ToList(), rules, k);
-        var frame = new LocalFrame(k, building.MinX, building.MinY);
+        var frame = new LocalFrame(k, building.MinX, building.MinY, rules.CoordSnapFt);
 
         var diagFt = Math.Sqrt(Sq(building.MaxX - building.MinX) + Sq(building.MaxY - building.MinY)) * k;
         var limit = Math.Max(rules.OutlierMinDistanceFt, rules.OutlierDistanceFactor * diagFt);

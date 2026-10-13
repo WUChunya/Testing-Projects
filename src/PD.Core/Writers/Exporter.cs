@@ -17,6 +17,7 @@ public static class Exporter
         var drawings = new List<PD.Core.Drawing.Drawing>();
         var wanted = ctx.Settings.Output.Drawings ?? ctx.Rules.Output.Drawings;
         ctx.Style.ApplyColors(ctx.Settings);
+        PD.Core.Axons.AxonFaces.ResetFailures();
 
         // One drawing that fails must not lose the whole export: it is reported and the others are still written.
         void Add(string what, Func<PD.Core.Drawing.Drawing> build)
@@ -53,6 +54,9 @@ public static class Exporter
                      or "AxonExplodedB" or "AxonLevels" or "ProgramChart" or "Pie")))
             notes.Add($"{w}: not a known drawing.");
         foreach (var d in drawings) notes.AddRange(d.Notes);
+        if (PD.Core.Axons.AxonFaces.Failures > 0)
+            notes.Add($"CHECK  axons: {PD.Core.Axons.AxonFaces.Failures} hidden-face overlay(s) failed (NetTopologySuite " +
+                      $"{typeof(NetTopologySuite.Geometries.Geometry).Assembly.GetName().Version}); faces may overlap there");
         return drawings;
     }
 
