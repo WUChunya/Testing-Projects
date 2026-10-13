@@ -65,7 +65,9 @@ public static class SectionDrawing
         var main = g.Levels.Where(l => !l.IsMezzanine).ToList();
         foreach (var l in g.Levels)
         {
-            d.Layer("PD_LEVELS").Items.Add(map.Line(p + "LVL_" + l.Name, new[] { (0.0, l.Elevation), (plane.Length, l.Elevation) }, d.Gray(st.LevelLineStroke), st.LevelLineStrokePt));
+            // With level markers the marker's dashed line runs across the whole drawing instead (same as elevations).
+            if (!st.LevelMarkers)
+                d.Layer("PD_LEVELS").Items.Add(map.Line(p + "LVL_" + l.Name, new[] { (0.0, l.Elevation), (plane.Length, l.Elevation) }, d.Gray(st.LevelLineStroke), st.LevelLineStrokePt));
             if (!st.LevelColumn || st.LevelMarkers) continue;
             var next = main.FirstOrDefault(x => x.Elevation > l.Elevation + 0.01);
             var label = next == null || l.IsRoof ? $"{l.Name} ROOF" : $"{l.Name}  {FeetInches.Format(next.Elevation - l.Elevation)}";
@@ -74,9 +76,9 @@ public static class SectionDrawing
 
         // ▼ markers, level names and elevations in the left column, dashed to the cut (as in elevations).
         if (st.LevelMarkers && !g.Outline.IsEmpty)
-            LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, map.X(g.Outline.EnvelopeInternal.MinX), zMax);
+            LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, x0 + w, zMax);
         if (st.LevelMarkers && Penthouse(ctx, g) is { } top)
-            LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, top.Z1, x0 - colL, map.X(g.Outline.EnvelopeInternal.MinX));
+            LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, top.Z1, x0 - colL, x0 + w);
 
         // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.
         Views.ProjectedView.Draw(d, ctx, map, p + "VIEW_", g.View);

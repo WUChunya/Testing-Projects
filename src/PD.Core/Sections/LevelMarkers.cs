@@ -6,7 +6,7 @@ namespace PD.Core.Sections;
 
 /// <summary>
 /// Left level column shared by sections and elevations: ▼ marker, level name (L3, "L12 ROOF") and elevation, and a
-/// dashed level line from the marker to the building. Sized and styled by style "elevation".
+/// dashed level line from the marker across the whole drawing. Sized and styled by style "elevation".
 /// </summary>
 public static class LevelMarkers
 {

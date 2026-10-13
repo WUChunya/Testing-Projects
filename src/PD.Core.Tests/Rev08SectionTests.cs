@@ -78,4 +78,25 @@ public class Rev08SectionTests
             Assert.False(hit, $"{p.Name} on {l.Name}");
         }
     }
+
+    /// <summary>Elevations use the section's level column, and the dashed level lines of both span the whole drawing.</summary>
+    [Fact]
+    public void Elevation_LevelLinesLikeTheSection_AcrossTheWholeDrawing()
+    {
+        var ctx = DowntownAnalysis.Context();
+        var b = ctx.Result.Building;
+        var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, b.MinY - 60, 0);
+        var (x1, y1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, b.MinY - 60, 0);
+        var el = PD.Core.Elevations.ElevationDrawing.Build(ctx, new SectionSetting { Name = "S", Kind = SectionSetting.ElevationKind, Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
+        foreach (var d in new[] { el, Dt.Value })
+        {
+            var ground = d.Layer("PD_GROUND").Items.Single();
+            var right = ground.Paths![0].Max(q => q[0]);
+            var dashes = d.Layer("PD_LEVELS").Items.Where(i => i.Name.EndsWith("_DASH")).ToList();
+            Assert.True(dashes.Count >= 12);
+            Assert.All(dashes, l => Assert.Equal(right, l.Paths![0].Max(q => q[0]), 1));
+            Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name.EndsWith("_LVL_L11_TXT") && i.Text == "L11 ROOF" && i.ParaStyle == "PD Note");
+            Assert.Contains(d.Layer("PD_ANNOTATION").Items, i => i.Name.EndsWith("PENTHOUSE_TOP_TXT"));
+        }
+    }
 }

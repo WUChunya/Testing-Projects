@@ -66,7 +66,17 @@ public static class ElevationDrawing
         // Level markers: ▼, level name and elevation, dashed line to our building (same column as sections).
         var own = items.Where(i => i.Kind != ViewKind.Context).Select(i => i.Geometry.EnvelopeInternal).ToList();
         if (es.LevelMarkers && own.Count > 0)
-            LevelMarkers.Add(d, ctx, map, p, r.Levels, x0 - colL, map.X(own.Min(e => e.MinX)), zMax);
+            // Same level column as sections; the dashed level line spans the whole drawing (user rev 0.8).
+            LevelMarkers.Add(d, ctx, map, p, r.Levels, x0 - colL, x0 + w, zMax);
+            // Penthouse top, as in sections: the top row is only shell / core / support.
+            var blocks = PD.Core.Analysis.ProgramBlocks.Build(r);
+            var top = blocks.Count == 0 ? -1 : blocks.Max(b => b.LevelIndex);
+            var pent = ctx.Style.Section.PenthousePrograms;
+            if (top > 0 && pent.Count > 0 && blocks.Where(b => b.LevelIndex == top).All(b => pent.Contains(b.ProgramKey, StringComparer.OrdinalIgnoreCase)))
+            {
+                var z = blocks.Where(b => b.LevelIndex == top).Max(b => b.Z1);
+                if (z <= zMax + 0.5) LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", ctx.Style.Section.PenthouseTopLabel, z, x0 - colL, x0 + w);
+            }
 
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, ground), (plane.Length, ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
