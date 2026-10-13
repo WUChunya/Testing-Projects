@@ -30,7 +30,7 @@
 <path id="PLN_B1_B01_CORE_01" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,701.756 L440.94,644.16 L479.339,644.16 L479.339,663.357 L498.541,663.357 L498.541,701.756 Z"/>
 <path id="PLN_B1_B01_CORE_09" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,490.399 L460.462,490.399 L460.462,490.239 L440.94,490.239 L440.94,471.037 L498.541,471.037 L498.541,490.239 L479.339,490.239 Z"/>
 <path id="PLN_B1_B01_BUILDING_SUPPORT_03" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,490.239 L498.541,413.596 L633.26,413.596 L633.26,528.926 L633.1,528.926 L633.1,528.766 L498.861,528.766 L498.861,515.84 L498.861,503.357 L498.861,490.239 Z"/>
-<path id="PLN_B1_B01_BUILDING_SUPPORT_01" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,778.399 L364.302,778.388 L364.302,413.596 L498.541,413.596 L498.541,471.037 L440.94,471.037 L440.94,490.239 L440.94,503.042 L440.94,516.16 L440.94,528.963 L441.1,528.963 L441.1,533.363 L441.101,567.193 L441.101,567.033 L440.94,567.033 L440.94,644.16 L440.94,701.756 L498.541,701.756 Z"/>
+<path id="PLN_B1_B01_BUILDING_SUPPORT_01" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.701,778.399 L364.302,778.388 L364.302,413.596 L498.541,413.596 L498.541,471.037 L440.94,471.037 L440.94,490.239 L440.94,503.042 L440.94,516.16 L440.94,528.963 L441.1,528.963 L441.1,533.363 L441.101,567.033 L440.94,567.033 L440.94,644.16 L440.94,701.756 L498.541,701.756 L498.541,778.399 Z"/>
 <path id="PLN_B1_B01_LAB_03" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,644.16 L440.94,644.16 L440.94,567.033 L441.101,567.033 L441.101,567.193 L537.1,567.192 L537.1,644 L498.861,644 L498.861,643.84 L479.339,643.84 Z"/>
 <path id="PLN_B1_B01_LAB_01" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,778.399 L498.541,663.357 L498.861,663.357 L498.861,663.193 L498.701,663.193 L613.902,663.192 L613.903,778.399 L498.701,778.399 Z"/>
 <path id="PLN_B1_B01_LAB_02" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M805.898,567.357 L805.898,778.399 L633.1,778.394 L633.1,567.357 Z"/>
@@ -107,7 +107,7 @@
 </g>
 <g id="PD_LABELS">
 <text id="PLN_B1_B01_CORE_01_LBL" x="463.44" y="683.808" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="463.44" dy="0">CORE</tspan></text>
-<text id="PLN_B1_B01_BUILDING_SUPPORT_01_LBL" x="409.334" y="716.111" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="12" text-anchor="middle" fill="#333333" transform="rotate(-90 409.334 733.511)"><tspan x="409.334" dy="0">BUILDING</tspan><tspan x="409.334" dy="14.4">SUPPORT /</tspan><tspan x="409.334" dy="14.4">MECHANICAL</tspan><tspan x="409.334" dy="14.4">/ STORAGE</tspan></text>
+<text id="PLN_B1_B01_BUILDING_SUPPORT_01_LBL" x="409.058" y="715.755" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="12" text-anchor="middle" fill="#333333" transform="rotate(-90 409.058 733.155)"><tspan x="409.058" dy="0">BUILDING</tspan><tspan x="409.058" dy="14.4">SUPPORT /</tspan><tspan x="409.058" dy="14.4">MECHANICAL</tspan><tspan x="409.058" dy="14.4">/ STORAGE</tspan></text>
 <text id="PLN_B1_B01_LAB_02_LBL" x="719.499" y="679.525" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 719.499 672.875)"><tspan x="719.499" dy="0">LAB</tspan></text>
 </g>
 <g id="PD_LEGEND">
@@ -129,5 +129,7 @@
 <text id="PLN_B1_SCALEBAR_END" x="1098.2" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="1098.2" dy="0">100&apos;</tspan></text>
 <text id="PLN_B1_SCALE" x="938.2" y="42.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="938.2" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 <text id="PLN_B1_TITLE" x="1114.51" y="1084.849" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333"><tspan x="1114.51" dy="0">B1</tspan></text>
+</g>
+<g id="PD_PROPERTY_LINE">
 </g>
 </svg>

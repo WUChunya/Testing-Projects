@@ -18,7 +18,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.5**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），210 个测试全过，`dist/ProgramDiagram-0.8.5.zip`（dist 下的 zip 随提交入库）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.5**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），216 个测试全过，`dist/ProgramDiagram-0.8.5.zip`（dist 下的 zip 随提交入库）。
 - 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，v0.8.4 = `Rev084Tests.cs`，v0.8.5 = `Rev085Tests.cs`（`Noisy` = 坐标加噪声模拟 Rhino 原始坐标），其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。

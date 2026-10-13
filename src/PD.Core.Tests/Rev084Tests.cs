@@ -29,13 +29,22 @@ public class Rev084Tests
         var f = DowntownAnalysis.Result.Frame;
         var corners = new[] { (b.MinX - 20, b.MinY - 20), (b.MaxX + 20, b.MinY - 20), (b.MaxX + 20, b.MaxY + 20), (b.MinX - 20, b.MaxY + 20), (b.MinX - 20, b.MinY - 20) }
             .Select(c => f.ToModel(c.Item1, c.Item2, 0)).Select(c => new[] { c.x, c.y, 0.0 }).ToArray();
-        var objs = m.Objects.ToList();
+        // The model's own property line (since the 0.8.5 fixture) is left out: only ours, 20 ft out.
+        var objs = m.Objects.Where(o => !o.LayerPath.Equals("property line", StringComparison.OrdinalIgnoreCase)).ToList();
         objs.Add(new SourceObject
         {
             Id = "property", LayerPath = "PROPERTY LINE", GeometryType = "PolylineCurve", IsClosed = true,
             BBox = new BBox3(corners.Min(c => c[0]), corners.Min(c => c[1]), 0, corners.Max(c => c[0]), corners.Max(c => c[1]), 0), Points = corners,
         });
         return Analyzer.Run(new AnalysisInput { Model = new SourceModel { Units = m.Units, Layers = layers, Objects = objs } });
+    });
+
+    /// <summary>Downtown without any property line (the default 04 site around the building).</summary>
+    static readonly Lazy<AnalysisResult> WithoutProperty = new(() =>
+    {
+        var m = DowntownAnalysis.Model;
+        return Analyzer.Run(new AnalysisInput { Model = new SourceModel { Units = m.Units, Layers = m.Layers,
+            Objects = m.Objects.Where(o => !o.LayerPath.Equals("property line", StringComparison.OrdinalIgnoreCase)).ToList() } });
     });
 
     static PD.Core.Drawing.ExportContext PropertyContext()
@@ -169,7 +178,8 @@ public class Rev084Tests
         // 04: the site is the property line grown by 50 ft.
         var ex = AxonDrawing.Build(ctx, AxonKind.Levels);
         var site = ex.Layers.SelectMany(l => l.Items).First(i => i.Name.EndsWith("_SITE") && i.Artboard == 1);
-        var plain = AxonDrawing.Build(DowntownAnalysis.Context(), AxonKind.Levels).Layers.SelectMany(l => l.Items).First(i => i.Name.EndsWith("_SITE") && i.Artboard == 1);
+        var c0 = DowntownAnalysis.Context();
+        var plain = AxonDrawing.Build(new PD.Core.Drawing.ExportContext { Result = WithoutProperty.Value, Settings = c0.Settings, Programs = c0.Programs }, AxonKind.Levels).Layers.SelectMany(l => l.Items).First(i => i.Name.EndsWith("_SITE") && i.Artboard == 1);
         // Property line 20 ft out, + 50 ft = 70 ft around the building (the default site is 40 ft around it).
         var k = ctx.PtPerFt;
         Assert.InRange(Env(site).Width - Env(plain).Width, 0.9 * 2 * 30 * k, 1.6 * 2 * 30 * k * 1.3);

@@ -3,7 +3,7 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 19 (v0.8.5, `Rev085Tests`, fixture = Downtown 2026-10-13 rev B with property line, settings NE view):
+- Rev 19 (v0.8.5, 216 tests, `Rev085Tests`, fixture = Downtown 2026-10-13 rev B with property line, settings NE view):
   local coordinates snapped to 1 mm (`cleanup.coordSnapFt`, raw Rhino doubles broke the overlays → blank screen inside,
   leftover faces, trees through walls on Windows); hidden faces trimmed only by drawn faces, snapped 3rd overlay
   fallback, failures → export_log CHECK; `ExposedSurface.Sky` (no higher block over it) for 03 axons, blocks stop
