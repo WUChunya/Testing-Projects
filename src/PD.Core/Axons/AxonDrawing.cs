@@ -684,7 +684,7 @@ public static class AxonDrawing
             : new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
         var near = new Envelope(own);
         near.ExpandBy(reach.ContextMarginFt);
-        var items = PlanBackground.Collect(r, near, ctx.Style.Plan.TreeDiameterFt);
+        var items = PlanBackground.Collect(ctx, near);
         foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)).Select((b, n) => (b, n)))
         {
             var g = AxonFaces.Safe(() => bg.Geometry.Intersection(ground), bg.Geometry);
@@ -692,6 +692,15 @@ public static class AxonDrawing
             sheet.Paint.Add(("AXON_SITE", outlineOnly
                 ? new Spec($"BG_{n:000}", proj.Plane(g, z), null, hint.Stroke, hint.Pt, hint.Dash, !bg.IsLine)
                 : new Spec($"BG_{n:000}", proj.Plane(g, z), fill, stroke, pt, dash, !bg.IsLine, op * opacity)));
+            // Green and water: hatch over the fill (as in plan).
+            var hatch = PlanBackground.PaintOf(ctx.Style, bg.Role, family).Hatch;
+            if (hatch != null && !bg.IsLine && !outlineOnly)
+            {
+                var lines = PlanBackground.Hatch(g, hatch);
+                if (!lines.IsEmpty)
+                    sheet.Paint.Add(("AXON_SITE", new Spec($"BG_{n:000}_HATCH", proj.Plane(lines, z), null,
+                        d.Swatch(PlanBackground.SwatchName(bg.Role) + "_HATCH", hatch.Stroke), hatch.StrokePt, hatch.Dash, Closed: false, Opacity: hatch.Opacity * opacity)));
+            }
         }
 
         // Other buildings near ours; never over our own footprint.

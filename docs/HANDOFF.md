@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.1）
+# 交接：v0.8.x 测试与微调（2026-10-13，当前 v0.8.2）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.1; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.2; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,8 +18,8 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.1**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），174 个测试全过，`dist/ProgramDiagram-0.8.1.zip`（dist 下的 zip 随提交入库）。
-- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.2**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），179 个测试全过，`dist/ProgramDiagram-0.8.2.zip`（dist 下的 zip 随提交入库）。
+- 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`）。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。
 
@@ -30,6 +30,9 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | NC.Interior / Furniture / Massing / Screen | 角色 `Classification/LayerClassifier.cs Roles`；平面 `Plans/PlanLinework.cs`；剖面 `SectionGeometry.MassingCut`；轴测 `AxonDrawing.ScreensAndMassing`；Screen 在视图中 = `ViewKind.Facade`（`ProjectedView.Kind`） | `roles.NC.*`（plan / axon / view 画法）；关键词 `layer_keywords.json rules`（first 规则） |
 | 配景（公司人物 39 种、树 19 种） | `Entourage/EntourageLibrary.cs`、`EntourageArt.cs`（Symbol）、`Entourage.cs`（`EntouragePlacer`、`EntourageSymbols`）；库由 `tools/entourage_from_ai.py` 从 `assets/entourage/*.ai` 生成 | `entourage.*`（密度、间距、`treeFills`、`treeHeightFt`） |
 | 总平面范围 5 倍、画板上限 | `PlanDrawing.SiteExtent`（只算建筑 siteMarginFt 内的 NC 场地物体；超出画布时以场地为中心裁小） | `plan.siteExtentFactor`、`plan.siteMarginFt`、`page.maxArtboardPt` |
+| 场地曲线（闭合 = 面、开放 = 线、去重） | `PlanBackground.Collect`（平面、总平面、所有轴测共用） | `roles.*.closedCurves`（`"area"` / `"line"`）、`roles.*.plan/axon.line` |
+| 绿地随机植树 | `PlanBackground.PlantGreens`（每块绿地整体种植，按 id 定种子） | `entourage.greenTrees.*`（spacingFt、coverage、edgeInsetFt、roles、maxAboveGroundFt），树冠大小 `plan.treeDiameterFt` |
+| 绿地 / 水体 hatch | `PlanBackground.Hatch`；平面 `PlanDrawing.DrawLevel`，轴测 `AxonDrawing.Site` | `roles.*.plan/axon.hatch`（stroke、strokePt、spacingFt、angleDeg、dash） |
 | 平面铺装 / 道路交界线 | `PlanDrawing.SiteEdges`（图层 `BG_SITE_EDGE`） | `plan.hardscapeEdge`、`plan.roadEdge` |
 | 图例符号画板 | `Plans/PlanLegendSheet.cs`（`01_Plans.ai` 最后一个画板） | — |
 | LEVEL X 标签 | `PlanDrawing.TitleTag` | `plan.titleTagFill`（空 = 无底色），字号 = `fonts.label` |
@@ -37,7 +40,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | 剖面标签居中 / 缩写 | `Sections/SectionBars.cs`（`Fit`、`TextWidth`） | `section.labelSize*`、`labelInsetPt` |
 | Penthouse 灰块、无屋面板、T.O. 标高 | `SectionDrawing.Penthouse / DrawPenthouse`、`LevelMarkers.One` | `section.penthousePrograms / penthouseFill / penthouseLabel / penthouseTopLabel` |
 | 剖面人物随机 | `EntouragePlacer.AlongLine`（随机 + 成对 + 避开文字） | `entourage.densityByProgram`、`minSpacingFt` |
-| 场地轴测 / 叠合轴测：无楼板、层间 2 pt 线、只描外轮廓、不画地下层 | `AxonDrawing.Stacked(site)`、`FullHeight`、`LevelLines`（图层 `AXON_LEVEL_LINE`）、`AboveGrade` | `axon.site.*` 与 `axon.stacked.*` 的 `fullHeightBlocks / levelLinePt / levelLineColor / showBasements`、`axon.stacked.silhouettePt` |
+| 场地轴测 / 叠合轴测：无楼板、层间线（场地 2 pt，叠合 0.5 pt 细线）、只描外轮廓、不画地下层 | `AxonDrawing.Stacked(site)`、`FullHeight`、`LevelLines`（图层 `AXON_LEVEL_LINE`）、`AboveGrade` | `axon.site.*` 与 `axon.stacked.*` 的 `fullHeightBlocks / levelLinePt / levelLineColor / showBasements`、`axon.stacked.silhouettePt` |
 | 屋面核心筒错位 | `AxonFaces.SplitAtNeighbours`（体块在相邻体块顶 / 底处分段后再消隐） | — |
 | 爆炸轴测场地在 L1、地下层整体在场地板下方（A 画挖方墙；B 同样下移） | `AxonDrawing.ExplodedA / ExplodedB`、`DropBasements`、`GroundAndExcavation`、`Site(..., excavation)`、`Excavation` | `axon.exploded.basementClearFt`、`axon.exploded.*` |
 | 分层轴测地下层虚线场地 + 挖方墙 | `AxonDrawing.Levels`、`Excavation`、`Site(..., outlineOnly)` | `axon.excavationFill / Stroke / Pt`、`axon.hidden*` |
@@ -68,5 +71,6 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 - Penthouse 的判定：顶层只含 SHELL / CORE / STAIR / BUILDING_SUPPORT（`section.penthousePrograms`）；模板模型的 L11 设备层也被当作 penthouse。
 - 平面顶视人物是内置简图（公司库只有立面人物）；立面图不画树（剖面画）。
 - 文字宽度是估算值（剖面缩写、图例列宽）；字体换了要校 `SectionBars.TextWidth`。
+- 场地丰富度取决于模型：CADMAPPER 的 PARK / WATER / ROAD LINES 要在第①页设成 BG.Landscape / BG.Water / BG.Road（`CADMAPPER  OUTLINE` 默认忽略）；Linux 夹具里 Downtown 周边绿地较远，场地轴测范围内看不到植树。
 - 尚未做：街道名 / 箭头、流线 / 视线 / 服务图标（画在 `ANNOTATION`）、key plan、Unassigned 斜线。
 - 分支上曾有其他会话同时推送：开工前先 `git fetch` + `git pull`，冲突时以远端为准再合并自己的改动。

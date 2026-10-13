@@ -36,7 +36,7 @@ public static class PlanDrawing
         var env = new Envelope();
         foreach (var i in levels) env.ExpandToInclude(r.Plans[i].Union.EnvelopeInternal);
         env.ExpandBy(ps.ContextMarginFt);
-        var background = PlanBackground.Collect(r, env, ps.TreeDiameterFt);
+        var background = PlanBackground.Collect(ctx, env);
         double w = env.Width * k, h = env.Height * k, m = pg.MarginPt;
 
         // One artboard per level: basements on cut earth, the ground floor on the site, upper floors on the veiled site.
@@ -108,7 +108,7 @@ public static class PlanDrawing
             return d;
         }
         var env = SiteExtent(ctx, i);
-        Sheet(d, ctx, i, env, PlanBackground.Collect(r, env, ps.TreeDiameterFt), "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
+        Sheet(d, ctx, i, env, PlanBackground.Collect(ctx, env), "SITE PLAN", "STP_", ps.SiteTitle, LevelKind.Site);
         return d;
     }
 
@@ -244,6 +244,19 @@ public static class PlanDrawing
             item.Dash = dash;
             item.Opacity = opacity;
             d.Layer(PlanBackground.LayerName(b)).Items.Add(At(item, a));
+            // Green and water: a hatch over the fill instead of an outline.
+            var hatch = PlanBackground.PaintOf(ctx.Style, b.Role, "plan").Hatch;
+            if (hatch != null && !b.IsLine)
+            {
+                var lines = PlanBackground.Hatch(b.Geometry, hatch);
+                if (!lines.IsEmpty)
+                {
+                    var h = map.Geom($"{p}BG_{n:000}_HATCH", lines, null, d.Swatch(PlanBackground.SwatchName(b.Role) + "_HATCH", hatch.Stroke), hatch.StrokePt, false);
+                    h.Dash = hatch.Dash;
+                    h.Opacity = hatch.Opacity;
+                    d.Layer(PlanBackground.LayerName(b)).Items.Add(At(h, a));
+                }
+            }
             // Other buildings cast a hard shadow to the lower right (a copy on the layer below).
             var paint = PlanBackground.PaintOf(ctx.Style, b.Role, "plan");
             if (paint.Shadow != null && paint.ShadowOffsetPt is { Length: 2 } off && !b.IsLine)

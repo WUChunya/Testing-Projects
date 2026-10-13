@@ -479,7 +479,7 @@
     "facadeStroke": "#000000",
     "facadePt": 0.35,
     "facadeOffsetPt": 2.0,
-    "contextMarginFt": 60.0,
+    "contextMarginFt": 150.0,
     "contextBuilding": {
       "fill": "#E6E6E6",
       "stroke": "#8C8C8C",
@@ -534,7 +534,8 @@
       "stroke": "#4A4A4A",
       "strokePt": 1.5,
       "opacity": 0.45
-    }
+    },
+    "siteCurvesComment": "Site curves: closed curves are filled like surfaces (closedCurves \"line\" = kerb lines, e.g. CADMAPPER ROAD LINES); open curves use the role's \"line\" paint. Green / water: no outline, a \"hatch\" over the fill (true-scale spacingFt, angleDeg, dash)."
   },
   "axon": {
     "comment": "PRD 5.4. Shared values from docs/AXON_STYLE.md (styles/axon_style.json); stacked = docs/SITE_STYLE.md §1 site program axon; exploded = AXON_STYLE §7 (A, Atlanta); explodedB = SITE_STYLE §3 (planometric). azimuthDeg = where the viewer stands (225 = south-west).",
@@ -606,10 +607,10 @@
       ],
       "labels": true,
       "fullHeightBlocks": true,
-      "levelLineColor": "#000000",
-      "levelLinePt": 2.0,
+      "levelLineColor": "#333333",
+      "levelLinePt": 0.5,
       "showBasements": false,
-      "comment": "User rev 0.8.1: like the site axon — no slabs (blocks floor to floor), 2 pt level lines on AXON_LEVEL_LINE, the heavy silhouettePt line only on the outer silhouette; basements are not drawn (showBasements)."
+      "comment": "User rev 0.8.1 / 0.8.2: like the site axon — no slabs (blocks floor to floor), the heavy silhouettePt line only on the outer silhouette, and between floors one thin line (levelLinePt on AXON_LEVEL_LINE); basements are not drawn (showBasements)."
     },
     "exploded": {
       "slabThicknessFt": 3.75,
@@ -683,38 +684,107 @@
   "roles": {
     "BG.Hardscape": {
       "plan": {
-        "fill": "#F0F0F0"
+        "fill": "#F0F0F0",
+        "line": {
+          "stroke": "#D2D2D2",
+          "strokePt": 0.35
+        }
       },
       "axon": {
-        "fill": "#F6F6F6"
+        "fill": "#F6F6F6",
+        "line": {
+          "stroke": "#DADADA",
+          "strokePt": 0.3
+        }
       }
     },
     "BG.Road": {
       "plan": {
-        "fill": "#D2D2D2"
+        "fill": "#D2D2D2",
+        "line": {
+          "stroke": "#BEBEBE",
+          "strokePt": 0.5
+        }
       },
       "axon": {
-        "fill": "#FFFFFF"
-      }
+        "fill": "#FFFFFF",
+        "line": {
+          "stroke": "#C8C8C8",
+          "strokePt": 0.4
+        }
+      },
+      "closedCurves": "line"
     },
     "BG.Landscape": {
       "plan": {
-        "fill": "#DCECE4"
+        "fill": "#DCECE4",
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.2,
+            3.6
+          ]
+        },
+        "line": {
+          "stroke": "#9CC4A8",
+          "strokePt": 0.5
+        }
       },
       "axon": {
         "fill": "#D2EAD2",
-        "stroke": "#A8CFA8",
-        "strokePt": 0.5
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 6.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.0,
+            3.6
+          ]
+        },
+        "line": {
+          "stroke": "#9CC4A8",
+          "strokePt": 0.5
+        }
       }
     },
     "BG.Water": {
       "plan": {
-        "fill": "#CFE3EE"
+        "fill": "#CFE3EE",
+        "hatch": {
+          "stroke": "#86B3CC",
+          "strokePt": 0.4,
+          "spacingFt": 4.0,
+          "angleDeg": 0.0,
+          "dash": [
+            6.0,
+            3.0
+          ]
+        },
+        "line": {
+          "stroke": "#8FB8CC",
+          "strokePt": 1.0
+        }
       },
       "axon": {
         "fill": "#CFE3EE",
-        "stroke": "#A6C8DA",
-        "strokePt": 0.5
+        "hatch": {
+          "stroke": "#86B3CC",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 0.0,
+          "dash": [
+            6.0,
+            3.0
+          ]
+        },
+        "line": {
+          "stroke": "#8FB8CC",
+          "strokePt": 1.0
+        }
       }
     },
     "BG.Tree": {
@@ -775,12 +845,38 @@
     },
     "NC.Green": {
       "plan": {
-        "fill": "#DCECE4"
+        "fill": "#DCECE4",
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.2,
+            3.6
+          ]
+        },
+        "line": {
+          "stroke": "#9CC4A8",
+          "strokePt": 0.5
+        }
       },
       "axon": {
         "fill": "#CCECDC",
-        "stroke": "#9CC4B4",
-        "strokePt": 0.5
+        "hatch": {
+          "stroke": "#7FB48C",
+          "strokePt": 0.4,
+          "spacingFt": 6.0,
+          "angleDeg": 45.0,
+          "dash": [
+            1.0,
+            3.6
+          ]
+        },
+        "line": {
+          "stroke": "#9CC4A8",
+          "strokePt": 0.5
+        }
       },
       "view": {
         "fill": "#CCECDC"
@@ -788,12 +884,38 @@
     },
     "NC.Water": {
       "plan": {
-        "fill": "#BFDCEB"
+        "fill": "#BFDCEB",
+        "hatch": {
+          "stroke": "#86B3CC",
+          "strokePt": 0.4,
+          "spacingFt": 4.0,
+          "angleDeg": 0.0,
+          "dash": [
+            6.0,
+            3.0
+          ]
+        },
+        "line": {
+          "stroke": "#8FB8CC",
+          "strokePt": 1.0
+        }
       },
       "axon": {
         "fill": "#BFDCEB",
-        "stroke": "#8FB8CC",
-        "strokePt": 0.5
+        "hatch": {
+          "stroke": "#86B3CC",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 0.0,
+          "dash": [
+            6.0,
+            3.0
+          ]
+        },
+        "line": {
+          "stroke": "#8FB8CC",
+          "strokePt": 1.0
+        }
       },
       "view": {
         "fill": "#BFDCEB"
@@ -1003,6 +1125,20 @@
       20,
       50
     ],
-    "treeDefaultHeightFt": 32
+    "treeDefaultHeightFt": 32,
+    "greenTrees": {
+      "enabled": true,
+      "roles": [
+        "BG.Landscape",
+        "NC.Green"
+      ],
+      "spacingFt": 26.0,
+      "coverage": 0.6,
+      "edgeInsetFt": 6.0,
+      "maxPerArea": 600,
+      "maxTotal": 3000,
+      "maxAboveGroundFt": 3.0,
+      "comment": "Trees planted at random in green areas at grade (site plan, ground floor plan, site / exploded axons), seeded per green so every drawing shows the same trees; canopy size = plan.treeDiameterFt."
+    }
   }
 }

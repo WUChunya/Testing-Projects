@@ -41,6 +41,8 @@ public sealed class RolePaint
     public Paint? Plan { get; set; }
     public Paint? Axon { get; set; }
     public Paint? View { get; set; }
+    /// <summary>Closed curves on this role's layers: "area" (filled like a surface) or "line" (kerb / edge lines).</summary>
+    public string ClosedCurves { get; set; } = "area";
 }
 
 public sealed class Paint
@@ -53,6 +55,38 @@ public sealed class Paint
     public string? Stroke { get; set; }
     public double? StrokePt { get; set; }
     public double[]? Dash { get; set; }
+    /// <summary>Open curves of this role (river edge, kerb, path): stroke only. Missing → a darker shade of the fill.</summary>
+    public Paint? Line { get; set; }
+    /// <summary>Hatch drawn over the fill (green: grass ticks, water: ripples); no outline.</summary>
+    public HatchStyle? Hatch { get; set; }
+}
+
+/// <summary>Parallel lines clipped to an area, at true scale.</summary>
+public sealed class HatchStyle
+{
+    public string Stroke { get; set; } = "#9A9A9A";
+    public double StrokePt { get; set; } = 0.35;
+    public double SpacingFt { get; set; } = 6;
+    public double AngleDeg { get; set; } = 45;
+    public double[]? Dash { get; set; }
+    public double Opacity { get; set; } = 1;
+}
+
+/// <summary>Trees planted at random in green areas (site plan, plans, site axon), like the section entourage.</summary>
+public sealed class GreenTreeStyle
+{
+    public bool Enabled { get; set; } = true;
+    public List<string> Roles { get; set; } = new() { "BG.Landscape", "NC.Green" };
+    /// <summary>Minimum distance between trunks.</summary>
+    public double SpacingFt { get; set; } = 26;
+    /// <summary>Share of the densest packing at that spacing (1 = as many as fit).</summary>
+    public double Coverage { get; set; } = 0.6;
+    /// <summary>Trunks keep this far from the edge of the green and from buildings / water.</summary>
+    public double EdgeInsetFt { get; set; } = 6;
+    public int MaxPerArea { get; set; } = 600;
+    public int MaxTotal { get; set; } = 3000;
+    /// <summary>Only greens at grade (top no higher than ground + this): no planting on roof gardens.</summary>
+    public double MaxAboveGroundFt { get; set; } = 3;
 }
 
 public sealed class Strokes
@@ -398,10 +432,11 @@ public sealed class StackedAxonStyle
     public double FloorLineDarken { get; set; }
     public double[] SideDarken { get; set; } = { 0.06, 0.14 };
     public bool Labels { get; set; }
-    /// <summary>User rev 0.8.1: like the site axon — blocks floor to floor, 2 pt level lines, heavy line only outside.</summary>
+    /// <summary>User rev 0.8.1: like the site axon — blocks floor to floor, heavy line only outside.</summary>
     public bool FullHeightBlocks { get; set; } = true;
-    public string LevelLineColor { get; set; } = "#000000";
-    public double LevelLinePt { get; set; } = 2.0;
+    /// <summary>User rev 0.8.2: one thin line between floors (not the site axon's 2 pt).</summary>
+    public string LevelLineColor { get; set; } = "#333333";
+    public double LevelLinePt { get; set; } = 0.5;
     /// <summary>Basement levels in the stacked axon (user rev 0.8.1: no).</summary>
     public bool ShowBasements { get; set; }
 }
@@ -527,6 +562,7 @@ public sealed class BarStyle
 public sealed class EntourageStyle
 {
     public bool Enabled { get; set; } = true;
+    public GreenTreeStyle GreenTrees { get; set; } = new();
     public string Color { get; set; } = "#9A9A9A";
     public double Opacity { get; set; } = 0.9;
     public double HeightFt { get; set; } = 5.75;

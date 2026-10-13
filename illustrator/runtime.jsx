@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.8.1";
+PD.version = "0.8.2";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -236,6 +236,9 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
         } else {
             item = layer.compoundPathItems.add();
             for (var i = 0; i < it.paths.length; i++) PD.style(PD.pathItem(item.pathItems, it.paths[i], it.closed, rect), it, sw);
+            // A compound path takes its look from its paths; style them all again once complete, so no sub-path keeps
+            // Illustrator's default black stroke (green / water areas read as fill + hatch, never fill + black line).
+            for (var j = 0; j < item.pathItems.length; j++) PD.style(item.pathItems[j], it, sw);
         }
     } else if (it.kind === "RoundRect") {
         var tl = PD.pt(rect, it.x, it.y);
