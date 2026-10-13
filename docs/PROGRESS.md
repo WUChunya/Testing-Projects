@@ -3,38 +3,38 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 13 (v0.7.1, 134 tests). Rev 12 (v0.7.0), from the user's Downtown export (details in `docs/CHANGELOG.md`, PRD v0.9):
-  Illustrator: swatch names ≤ 31 chars (cut names collided → "name was not found"), swatch / style failures fall back
-  and WARN, transient COM faults retried once; elevations look towards our building (`AutoSide`). Tabs 1 / 4: Ctrl /
-  Shift multi-select (`MultiSelect<T>`). New `00_Site_Plan.ai` (`PlanDrawing.BuildSite`) and `03_Site_Axon.ai`
-  (`AxonKind.Site`, `axon.site`). Plans: `LevelKind` ground / upper (site + white veil) / basement (earth); label
-  shrink to `plan.labelMinPt`, once per program. Sections: bars snapped to bands and centred, one slab thickness
-  (`TypicalStory`), one slab per level (`SlabRanges`), `LevelMarkers` shared with elevations. Axons: pairwise hidden
-  faces (`DepthOnPlane`, topological order) + `AxonFaces.Hide` for trees / people. Thin at-grade program = site paving.
-- v0.7.1: office `assets/entourage/*.ai` → `styles/entourage_library.json` (39 people, 19 trees; `tools/entourage_from_ai.py`) as AI symbols.
-- v0.6: S5 charts (`src/PD.Core/Charts`), entourage (`src/PD.Core/Entourage`), NetTopologySuite GeometryCollection fix.
-- Fixtures: `template.json`, `downtown.json` (user model, mm). Goldens incl. site_plan / site_axon and downtown_*.
-- Next: S6 acceptance + docs (`docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, T1–T7).
+- Rev 14 (v0.8.0, 168 tests): user rev 0.8 + **S6 done**. Fixture `downtown.json` = Downtown 2026-10-13 (no roof slab, B1–L11).
+  Fonts Futura PT caps (Heavy/Book, Arial fallback). Roles NC.Interior/Furniture/Massing/Screen (`PlanLinework`, section
+  `MassingCut`, axon `ScreensAndMassing`; screens = `ViewKind.Facade`, never extruded). Site plan extent `plan.siteExtentFactor` 5.
+  Plans: `BG_SITE_EDGE` (hardscape 1 pt / road 1.5 pt), `PlanLegendSheet` artboard, plain level tag, `cleanup.sealGapFt` 0.2
+  (`LevelAssignment.Seal`, areas counted before). Sections: centred labels (`SectionBars.Fit`, 3 letters), `Penthouse` row
+  grey + T.O. marker, random `AlongLine`. Axons: `AxonFaces.SplitAtNeighbours` (roof core fix), site axon `FullHeight` +
+  `AXON_LEVEL_LINE`, exploded / levels site at L1 with excavation (`GroundAndExcavation`, `Excavation`), trees `HideBehind`.
+  Elevations: same `LevelMarkers` as sections, dashed lines across the drawing. S6: `S6AcceptanceTests` (T5–T7; T7 runs
+  runtime.jsx in node on a mock doc), `docs/USER_GUIDE.md`, `docs/MODELING_CONVENTION.md`, PRD v1.0.
+- Next: Windows acceptance of v0.8.0 (`docs/DEV_PROMPT.md` message). Review: `PD_DUMP=<dir> dotnet test --filter DumpForReview`.
 
 ## Decisions (defaults until the user says otherwise — PRD §9)
 - Overlap: smaller volume wins. Span: 2 levels and ≤1.6× story → tall space; else split. Facade veil off.
-- Flat mass ≤ 2 ft: raised = program on the level under its top; at grade = site paving / planting. Stray = NC only.
-- Defaults live in `styles/` (`rules_default.json`, `style_default.json` incl. plan site/veil, axon.site, charts,
-  entourage; `layer_keywords.json` v3). Scales: plans/axons 1" = 45', sections 1" = 16', charts absolute pt.
-- Entourage only outdoors on the site plan / site axon (plus sections / elevations); seed saved with the project.
-- Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` (site axon) / unnamed.
-- Env: apt dotnet-sdk-8.0, pip rhino3dm, node 22 + global playwright (--disable-gpu).
+- Penthouse = top row only SHELL/CORE/STAIR/BUILDING_SUPPORT (`section.penthousePrograms`). Exploded site follows L1 (ground).
+- Defaults in `styles/` (rules, style incl. plan/section/axon.site/entourage/charts/roles). Scales 1" = 45' / sections 16'.
+- Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
+- Env: apt dotnet-sdk-8.0, pip rhino3dm + pypdf, node 22 + global playwright (--disable-gpu).
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.7.1.zip` over the old folder (whole folder: ClosedXML DLLs), restart Rhino.
-2. Tab 1 / 4: Ctrl- or Shift-select rows, untick Use (or change Role / Program) on one → all selected follow
-   (VERIFY-WIN: Eto grid keeps the selection while a cell is edited; else use the "Selected rows" buttons).
-3. Tab 7: elevations with "Auto side" ticked look at the building whichever way the line was drawn.
-4. Export all: `illustrator_log.txt` has no ERROR (03_Axon_Stacked fixed); `export_log.txt` no "not written".
-5. `00_Site_Plan.ai` and `03_Site_Axon.ai` exist; upper plans show the veiled site, basements grey earth.
-6. Section: equal slabs, ▼ markers left; office people / trees = Symbols PD_PERSON_* / PD_TREE_* (VERIFY-WIN symbols.add).
+1. Unzip `ProgramDiagram-0.8.0.zip` over the old folder (whole folder), restart Rhino. Install Futura PT (Book, Heavy).
+2. Tab 1: new roles NC.Screen / Interior / Furniture / Massing in the list; layers named SCREEN, INTERIOR, FURNITURE,
+   NC::MASSING pre-fill. Export: plan lines grey, massing dashed, screen a line (no block) in plans and axons.
+3. Every text Futura PT capitals (WARN in illustrator_log.txt if the font is missing → Arial).
+4. Site plan ≈ 11× the site each way; plans: hardscape / road edges, LEGEND & SYMBOLS artboard, LEVEL X without fill.
+5. Section: names centred, CON/LAB style short names, grey PENTHOUSE without roof slab, T.O. PENTHOUSE marker.
+6. Site axon: no slab gaps, 2 pt black lines between floors (layer AXON_LEVEL_LINE), heavy line only outside.
+7. Exploded / level axons: site at L1, B1 below in the dug-out hole (levels: dashed site + grey walls), roof core upright.
+8. Elevation: level column and dashed lines like the section, across the whole drawing.
+9. Symbols PD_PERSON_* / PD_TREE_* in the Symbols panel (VERIFY-WIN symbols.add / symbolItems.add + transform).
+10. Re-export after editing a mass: `_MANUAL` drawings untouched; send any WARN / ERROR lines.
 
 ## Known issues
+- Plan people = built-in top-view symbol (office library has side views only).
 - Not yet: street names / arrows, flow / view / service icons (draw on `ANNOTATION`), key plan, Unassigned hatch.
-- Plan people = built-in top-view symbol (office library has side views only); tiny at 1" = 45'.
-- Site axon context at real height can hide a low building (template model); lower `axon.site.maxContextHeightFt`.
+- Elevations draw no trees (sections do). Text widths are estimates (centring in AI uses glyph bounds: VERIFY-WIN).

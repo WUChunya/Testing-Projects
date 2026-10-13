@@ -168,11 +168,14 @@ public class DowntownTests
         var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, (b.MinY + b.MaxY) / 2, 0);
         var (x1, y1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, (b.MinY + b.MaxY) / 2, 0);
         ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "DT", Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
-        ctx.Settings.Output.Drawings = new List<string> { "SitePlan", "Plan", "Section", "SiteAxon", "AxonStacked", "ProgramChart", "Pie", "AxonExploded" };
+        var (ex0, ey0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, b.MinY - 60, 0);
+        var (ex1, ey1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, b.MinY - 60, 0);
+        ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "S", Kind = PD.Core.Settings.SectionSetting.ElevationKind, Line = new[] { ex0, ey0, ex1, ey1 }, LookLeft = true, DepthFt = 400 });
+        ctx.Settings.Output.Drawings = new List<string> { "SitePlan", "Plan", "Section", "Elevation", "SiteAxon", "AxonStacked", "ProgramChart", "Pie", "AxonExploded", "AxonLevels" };
 
         var notes = new List<string>();
         var drawings = PD.Core.Writers.Exporter.BuildDrawings(ctx, notes);
-        Assert.Equal(8, drawings.Count);
+        Assert.Equal(10, drawings.Count);
         foreach (var d in drawings)
         {
             Assert.NotEmpty(d.Artboards);
@@ -193,6 +196,8 @@ public class DowntownTests
                      (By("02_Section_DT.ai"), 0, "downtown_section_DT"), (By("03_Axon_Stacked.ai"), 0, "downtown_axon_stacked"),
                      (By("04_Axon_Exploded.ai"), 0, "downtown_axon_exploded"), (By("03_Site_Axon.ai"), 0, "downtown_site_axon"),
                      (By("05_Program_Chart.ai"), 0, "downtown_program_chart"), (By("06_Program_Pie.ai"), 0, "downtown_program_pie"),
+                     (plans, Ab("LEGEND & SYMBOLS"), "downtown_plan_legend"), (By("07_Elevation_S.ai"), 0, "downtown_elevation_S"),
+                     (By("04_Axon_Levels.ai"), 0, "downtown_axon_levels_B1"),
                  })
             File.WriteAllText(Path.Combine(dir, name + ".svg"), PD.Core.Writers.SvgWriter.Write(d, Math.Min(a, d.Artboards.Count - 1)));
     }

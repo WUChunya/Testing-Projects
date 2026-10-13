@@ -1,6 +1,16 @@
 # PRD：Program Diagram Rhino 8 插件
 
-v0.9 · 2026-10-12 · 状态：开发中（S0–S5 完成，插件 v0.7.0；修订过程见 `docs/CHANGELOG.md`）
+v1.0 · 2026-10-13 · 状态：S0–S6 完成，插件 v0.8.0，待 Windows 验收（修订过程见 `docs/CHANGELOG.md`；使用说明 `docs/USER_GUIDE.md`，建模约定 `docs/MODELING_CONVENTION.md`）
+
+**v1.0 主要变化（用户 rev 0.8，Downtown 模型 2026-10-13 版）**
+- 文字：全部 **Futura PT、全大写**；粗体位置用 FuturaPT-Heavy，其余 FuturaPT-Book（未安装时退回 Arial）。
+- 新图层角色：`NC.Interior`（平面中灰线）、`NC.Furniture`（平面浅灰线）、`NC.Massing`（建筑外轮廓，含无 program 的空间，虚线）、`NC.Screen`（围墙 / 装饰墙等表皮，只画一层面，不挤出体块）。配景人物和树用公司 ENTOURAGES.ai / TREES.ai。
+- 总平面范围：NC 场地四周各留场地自身尺寸的 5 倍（`plan.siteExtentFactor`）。
+- 平面：不同硬质铺装交界 1 pt、场地与道路交界 1.5 pt 深灰浅描边；新增 "LEGEND & SYMBOLS" 画板保存全部图例和符号；`LEVEL X` 无底色、字号同最大 program 名；同层体块间 < 0.2 ft 视为贴合（`cleanup.sealGapFt`），白色细线分隔、外轮廓统一。
+- 剖面：人物随机分布并避开文字；program 名在色块正中，每块都写，放不下用前三个字母，再放不下不写；顶层只有 Shell / Core / 设备时画成一个灰色 PENTHOUSE 色块，上方不加楼板，加 T.O. PENTHOUSE 标高。
+- 场地轴测：不画楼板，体块逐层从楼板到楼板拉伸，层间 2 pt 黑线（单独图层 `AXON_LEVEL_LINE`），粗线只描建筑外轮廓。
+- 爆炸 / 分层轴测：场地放在地面层（L1），地下层在挖开的场地下方；分层轴测的地下层场地只用虚线暗示，并画挖方的实墙；树被楼板遮挡；穿出屋面的核心筒按真实体量（体块在相邻体块顶 / 底处分段消隐）。
+- 立面：标高线与剖面完全一致，虚线贯穿整个画面。
 
 **v0.9 主要变化（依据 Downtown 模型试用反馈）**
 - 新增两张场地图（风格按 `docs/SITE_STYLE.md` §1 / §2）：`00_Site_Plan.ai` 总平面（首层放在真实场地上）和 `03_Site_Axon.ai` 场地轴测（本楼体量 + 真实高度的白色周边建筑 + 场地、树、人；`ANNOTATION` 图层留给流线 / 视线 / 卸货图标，插件永不清空）。
@@ -73,6 +83,10 @@ v0.9 · 2026-10-12 · 状态：开发中（S0–S5 完成，插件 v0.7.0；修�
 | `NC.Green` | NC | 本项目绿地：屋顶花园、露台种植、场地草坪 |
 | `NC.Hardscape` | NC | 本项目广场、铺装 |
 | `NC.Tree` / `NC.Water` | NC | 本项目的树、水景 |
+| `NC.Interior` | NC | 室内隔墙：平面中按剖切高度画中灰线（实体剖切，曲线照画） |
+| `NC.Furniture` | NC | 家具：平面中画浅灰线（剖切高度以下的顶视轮廓） |
+| `NC.Massing` | NC | 建筑外轮廓体量（含无 program 的空间）：平面、剖面画虚线，轴测画虚线外轮廓；不计面积 |
+| `NC.Screen` | NC | 围墙、装饰墙、格栅等表皮：只画这一层面（平面一条线、剖面剖切线、轴测薄片），不挤出体块 |
 | `BG.Building` | BG | 周边建筑 |
 | `BG.Road` / `BG.Hardscape` / `BG.Landscape` / `BG.Tree` / `BG.Water` | BG | 道路、街区与人行道、绿地、树、水体 |
 | `BG.Base` | BG | 场地底板、图框底座：地坪参考，不参与剖切 |

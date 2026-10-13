@@ -14,24 +14,20 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: start of S6, after v0.7.1)
+## Next-session message (current: after S6, v0.8.0 — Windows acceptance and fixes)
 
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
-Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.9; S0-S5 are done (plugin v0.7.1, 134 tests green; office entourage in styles/entourage_library.json).
-Style source of truth: docs/SITE_STYLE.md and docs/AXON_STYLE.md, already merged into styles/style_default.json
-(fonts, section, plan, axon incl. axon.site, roles, view, charts, entourage); read styles by key, never whole.
-Outputs now include 00_Site_Plan.ai and 03_Site_Axon.ai (PRD 5.2 / 5.4 v0.9); do not rebuild them.
-Do stage S6 (Acceptance + docs) from docs/DEV_PROMPT.md, reusing what exists - do not rebuild it:
-- Run the Linux part of T1-T7 (PRD 7.3) against tests/fixtures/template.json AND tests/fixtures/downtown.json.
-- Write docs/USER_GUIDE.md (Chinese, short) and docs/MODELING_CONVENTION.md (one page, what a model must look like:
-  PROGRAM:: layers, FLOOR PLATE / slab, CORE / STAIR, GLASS, context on CADMAPPER / CONTEXT, people on an Entourage layer,
-  Make2D output anywhere - it is ignored by path).
-- Finalize the Windows checklist in PROGRESS.md from the user's feedback on v0.6.0.
-Defaults: PRD S9 (listed in PROGRESS.md); ask me only if blocked. Talk to me in Chinese; code/commits in English.
-At the end: run tests, update PROGRESS.md (<=40 lines) and CHANGELOG.md, bump the version, run tools/package.sh,
-commit, push, send me the zip, reply in Chinese in <=10 lines.
+Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections you need
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v1.0; S0-S6 are done (plugin v0.8.0, all tests green).
+Style: styles/style_default.json (fonts = Futura PT caps; roles incl. NC.Interior / Furniture / Massing / Screen; plan,
+section incl. penthouse, axon incl. axon.site / excavation, entourage, charts); read styles by key, never whole.
+Fixtures: tests/fixtures/template.json and downtown.json (rev 2026-10-13, no roof slab). DowntownTests.DumpForReview
+writes every drawing as SVG with PD_DUMP=<dir> (PD_ONLY=Plan,Section,... to limit).
+Task: fix what the Windows test of v0.8.0 shows (results below), reusing what exists. Keep: true scale, stable item
+names, _MANUAL / OVERLAY untouched, NC vs BG drawn differently, every default in styles/*.json.
+Talk to me in Chinese; code/commits in English. At the end: run tests, update PROGRESS.md (<=40 lines) and
+CHANGELOG.md, bump the version, run tools/package.sh, commit, push, send me the zip, reply in Chinese in <=10 lines.
 [Paste Windows test results / screenshots here]
 ```
 
@@ -69,7 +65,7 @@ commit, push, send me the zip, reply in Chinese in <=10 lines.
 | **S3 Output engine + Section** ✅ (+ Elevation, v0.3.x) | §5.0, §5.1, §5.3, F8 notes | `runtime.jsx` (layers, global swatches, para styles, named items, in-place update, `_MANUAL` protection); `SvgWriter`; COM launcher; Section generator (cut bars, slab poche, beyond dashed, ground, property line, height dims, facade) | A golden SVG of Section A from the fixture looks right (one Playwright screenshot, viewed once); JSX passes a syntax check (`node --check` after stripping `#target`) |
 | **S4 Plan + Axon** ✅ | §5.2, §5.4, A3 | Plan per level plus overview sheet, labels (NTS MaximumInscribedCircle), legend, scale bar; stacked and exploded axon (affine projection, painter's sort, facade veil, level leaders) | Golden SVGs for L1, Axon Stacked, Axon Exploded |
 | **S5 Charts + Entourage** ✅ (+ site plan / site axon, v0.7.0) | §5.5, §5.6, §4 | Excel template and reader (ClosedXML); program diagram with shelf packing; donut pie; CSV; entourage (seeded Poisson disk, density by program, `ENTOURAGE` layer, symbols from `entourage.ai` with built-in placeholders) | Golden SVGs; same seed gives the same layout |
-| **S6 Acceptance + docs** | §7.3, §8 | Run T1–T7 (Linux part); write `docs/USER_GUIDE.md` (Chinese, short) and `docs/MODELING_CONVENTION.md` (one page); finalize the Windows checklist | All Linux-checkable criteria pass; the user signs off the Windows checks |
+| **S6 Acceptance + docs** ✅ | §7.3, §8 | Run T1–T7 (Linux part); write `docs/USER_GUIDE.md` (Chinese, short) and `docs/MODELING_CONVENTION.md` (one page); finalize the Windows checklist | All Linux-checkable criteria pass; the user signs off the Windows checks |
 
 ## Token-saving rules (in addition to CLAUDE.md)
 - Before coding a stage, read only that stage's PRD sections and PROGRESS.md. Do not re-read earlier stages' code unless an interface change needs it; use `grep -n` to find signatures.

@@ -15,6 +15,8 @@
 - 字体：**全部图统一为 Arial**（以场地轴测参考图的字体为准），见 §0.1。
 
 ### 0.1 统一字体（所有图共用，`site_style.json › typography`）
+
+> **v1.0（用户 rev 0.8）**：字体改为 **Futura PT、全部大写**——下表中 Bold 的位置用 FuturaPT-Heavy，Regular 用 FuturaPT-Book，字号不变；未安装 Futura PT 时退回 Arial。以 `styles/style_default.json › fonts` 为准。
 | 样式 | 字重 | 字号（ARCH D） | 颜色 | 用在 |
 |---|---|---|---|---|
 | 建筑 / 场所名称 | Arial Bold，全大写 | 24 pt，行距 29.5 | #6C6C6C | 场地轴测、总平面，水平不斜切 |
