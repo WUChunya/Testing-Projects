@@ -62,7 +62,7 @@ public class S3SectionTests
         Assert.Equal("02_Section_A.ai", d.FileName);
         Assert.True(bars.Count >= AnalysisFixture.Result.Levels.Count, $"{bars.Count} bars");
         Assert.All(bars, b => Assert.Equal(ItemKind.RoundRect, b.Kind));
-        Assert.All(bars, b => Assert.StartsWith("PRG_", b.Fill));
+        Assert.All(bars, b => Assert.True(b.Fill!.StartsWith("PRG_") || b.Fill == "PD_PENTHOUSE", b.Fill));
         Assert.NotEmpty(d.Layer("PD_SLAB").Items);
         Assert.Single(d.Layer("PD_OUTLINE").Items, i => i.Name == "SEC_A_OUTLINE");
         // White backing right under the colour blocks hides what is seen beyond through the gaps.
@@ -100,7 +100,9 @@ public class S3SectionTests
         // Labels right-aligned on the glyph box, ≤ 20 pt and ≥ 10 pt; one floor number per level, left in the bar.
         var labels = d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_LBL") && !i.Name.Contains("CONTEXT")).ToList();
         Assert.NotEmpty(labels);
-        Assert.All(labels, t => { Assert.Equal("right", t.GlyphAnchor); Assert.InRange(t.SizePt!.Value, st.LabelSizeMin, st.LabelSizeMax); });
+        // User rev 0.8: every label in the exact centre of its block, one size for the drawing.
+        Assert.All(labels, t => { Assert.True(t.Center); Assert.Equal("center", t.Align); Assert.InRange(t.SizePt!.Value, st.LabelSizeMin, st.LabelSizeMax); });
+        Assert.Single(labels.Select(t => t.SizePt).Distinct());
         var numbers = d.Layer("PD_LABELS").Items.Where(i => i.Name.EndsWith("_NUM")).ToList();
         Assert.Equal(numbers.Count, numbers.Select(n => n.Text).Distinct().Count());
         Assert.Contains(numbers, n => n.Text == "03" && n.GlyphAnchor == "left");

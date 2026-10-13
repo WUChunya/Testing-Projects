@@ -5,13 +5,17 @@ namespace PD.Core.Sections;
 
 /// <summary>
 /// Program section bars (docs/SITE_STYLE.md §4): rounded bars 0.68 × typical floor tall (corner 0.14 × floor, no stroke),
-/// centred between the slabs; label right-aligned (Regular caps ≤ 20 pt = 0.7 × bar, one size per drawing, shrunk only
-/// when too long, dropped under 10 pt); floor number ("01") left in the first bar of each level.
+/// centred between the slabs; label in the exact centre of every block (one size per drawing; user rev 0.8: a block too
+/// narrow for its name shows the first three letters, or nothing); floor number ("01") left in the first bar of each level.
 /// </summary>
 public static class SectionBars
 {
-    public static void Add(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string prefix)
+    /// <param name="skip">Bars drawn elsewhere (the penthouse block).</param>
+    /// <returns>Page boxes (x0, x1, y0, y1) of the labels and floor numbers, kept clear of people.</returns>
+    public static List<(double X0, double X1, double Y0, double Y1)> Add(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string prefix,
+        ICollection<CutBar>? skip = null)
     {
+        var boxes = new List<(double, double, double, double)>();
         var st = ctx.Style.Section;
         var label = ctx.Style.Fonts.SectionLabel;
         var count = new Dictionary<string, int>();
@@ -27,7 +31,7 @@ public static class SectionBars
         var barRef = st.BarHeightRatio * typical * map.K;
         var labelSize = Math.Min(st.LabelSizeMax, st.LabelSizeRatio * barRef);
         var numberSize = Math.Min(st.FloorNumberSizeMax, st.FloorNumberSizeRatio * barRef);
-        foreach (var b in g.Bars.OrderBy(b => b.Z0).ThenBy(b => Math.Min(map.X(b.U0), map.X(b.U1))))
+        foreach (var b in g.Bars.Where(b => skip == null || !skip.Contains(b)).OrderBy(b => b.Z0).ThenBy(b => Math.Min(map.X(b.U0), map.X(b.U1))))
         {
             var x0 = Math.Min(map.X(b.U0), map.X(b.U1));
             var x1 = Math.Max(map.X(b.U0), map.X(b.U1));
@@ -62,14 +66,37 @@ public static class SectionBars
 
             var text = row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
             if (label.AllCaps) text = text.ToUpperInvariant();
-            var room = w - st.LabelInsetPt - (withNumber ? st.FloorNumberInsetPt + 1.4 * numberSize + 8 : st.LabelInsetPt);
-            var size = Math.Min(labelSize, room / Math.Max(1, text.Length * 0.62));
-            if (size < st.LabelSizeMin) continue;
-            var lbl = SectionDrawing.Text(name + "_LBL", x1 - st.LabelInsetPt, cy, text, "PD Section Label", "right");
-            lbl.GlyphAnchor = "right";
-            lbl.SizePt = Math.Round(size, 2);
+            if (withNumber) boxes.Add((x0 + st.FloorNumberInsetPt, x0 + st.FloorNumberInsetPt + 1.4 * numberSize, cy - numberSize / 2, cy + numberSize / 2));
+            // Centred in the block, clear of the floor number on the left (mirrored, so the text stays centred).
+            var side = withNumber ? st.FloorNumberInsetPt + 1.4 * numberSize + 6 : st.LabelInsetPt;
+            if (Fit(text, labelSize, w, side) is not { } shown) continue;
+            var cx = (x0 + x1) / 2;
+            var lbl = SectionDrawing.Text(name + "_LBL", cx, cy, shown, "PD Section Label", "center", center: true);
+            lbl.SizePt = Math.Round(labelSize, 2);
             d.Layer("PD_LABELS").Items.Add(lbl);
+            var half = TextWidth(shown, labelSize) / 2;
+            boxes.Add((cx - half, cx + half, cy - labelSize / 2, cy + labelSize / 2));
         }
+        return boxes;
+    }
+
+    /// <summary>Caps width estimate (Futura PT / Arial capitals): narrow I, punctuation and spaces, wide M / W.</summary>
+    public static double TextWidth(string text, double size) => size * text.Sum(ch => ch switch
+    {
+        ' ' => 0.28,
+        '/' or '.' or ',' or '-' or '\'' or '|' => 0.32,
+        'I' or 'J' or '1' => 0.3,
+        'M' or 'W' => 0.85,
+        _ => 0.64,
+    });
+
+    /// <summary>The name if it fits centred in a block <paramref name="w"/> wide with <paramref name="side"/> kept free on both sides, else its first three letters, else null.</summary>
+    public static string? Fit(string text, double size, double w, double side)
+    {
+        var room = w - 2 * side;
+        if (TextWidth(text, size) <= room) return text;
+        var letters = new string(text.Where(char.IsLetterOrDigit).Take(3).ToArray());
+        return letters.Length > 0 && TextWidth(letters, size) <= room ? letters : null;
     }
 
     /// <summary>"L3" → "03", "L12" → "12"; other names (B1, ROOF) as they are.</summary>

@@ -402,7 +402,16 @@
     "levelColumn": false,
     "levelMarkers": true,
     "heightDimension": false,
-    "titlePrefix": "SECTION"
+    "titlePrefix": "SECTION",
+    "penthousePrograms": [
+      "SHELL",
+      "CORE",
+      "STAIR",
+      "BUILDING_SUPPORT"
+    ],
+    "penthouseFill": "#BDBDBD",
+    "penthouseLabel": "PENTHOUSE",
+    "penthouseTopLabel": "T.O. PENTHOUSE"
   },
   "page": {
     "marginPt": 36.0,

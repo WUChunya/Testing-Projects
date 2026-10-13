@@ -42,28 +42,41 @@ public static class EntouragePlacer
     }
 
     /// <summary>
-    /// Figures standing on a floor line between u0 and u1 (section / elevation): the spacing follows the program's
-    /// density, so a lobby bar fills up and a lab bar stays sparse. Returns the offsets along the line.
+    /// Figures standing on a floor line between u0 and u1 (section / elevation). The count follows the program's density
+    /// (a lobby bar fills up, a lab bar stays sparse); positions are random (user rev 0.8: no even spacing), at least a
+    /// shoulder apart, sometimes in pairs, and never inside <paramref name="blocked"/> (labels). Returns offsets along the line.
     /// </summary>
-    public static List<Figure> AlongLine(ExportContext ctx, double u0, double u1, string programKey, string seedKey, bool outdoors = false)
+    public static List<Figure> AlongLine(ExportContext ctx, double u0, double u1, string programKey, string seedKey, bool outdoors = false,
+        IReadOnlyList<(double A, double B)>? blocked = null)
     {
         var e = ctx.Style.Entourage;
         var density = outdoors ? e.OutdoorDensityPer1000Sf : e.Density(programKey);
         var figures = new List<Figure>();
-        var length = Math.Abs(u1 - u0);
-        if (density <= 0 || length < 6) return figures;
-        // A 30 ft deep strip of floor is what one line of people stands for.
-        var want = Math.Min(e.MaxPerArea, (int)Math.Round(length * 30 / 1000.0 * density));
-        if (want <= 0) return figures;
-        var spacing = Math.Max(3.5, Math.Min(e.MinSpacingFt, length / want));
+        double lo = Math.Min(u0, u1) + 1.5, hi = Math.Max(u0, u1) - 1.5;
+        if (density <= 0 || hi - lo < 3) return figures;
         var rng = new Random(Mix(Seed(ctx), seedKey));
-        var at = Math.Min(u0, u1) + spacing / 2;
-        var end = Math.Max(u0, u1) - spacing / 4;
-        while (at < end && figures.Count < want)
+        // A 30 ft deep strip of floor is what one line of people stands for; stochastic rounding keeps small bars alive.
+        var expected = (hi - lo) * 30 / 1000.0 * density;
+        var want = Math.Min(e.MaxPerArea, (int)Math.Floor(expected + rng.NextDouble()));
+        const double shoulder = 2.4;
+        var gap = Math.Max(shoulder * 1.5, Math.Min(e.MinSpacingFt, (hi - lo) / Math.Max(1, want) * 0.6));
+        var at = new List<double>();
+        bool Free(double u, double minGap) => u >= lo && u <= hi && at.All(x => Math.Abs(x - u) >= minGap)
+            && (blocked == null || !blocked.Any(q => u >= q.A && u <= q.B));
+        for (var t = 0; t < want * 40 && at.Count < want; t++)
         {
-            figures.Add(new Figure(at + (rng.NextDouble() - 0.5) * spacing * 0.4, 0, rng.Next(EntourageSymbols.Variants), rng.Next(2) == 0));
-            at += spacing;
+            var u = lo + rng.NextDouble() * (hi - lo);
+            if (!Free(u, gap)) continue;
+            at.Add(u);
+            // Now and then a companion a shoulder or two away.
+            if (at.Count < want && rng.NextDouble() < 0.3)
+            {
+                var v = u + (rng.Next(2) == 0 ? -1 : 1) * (shoulder + rng.NextDouble() * 1.2);
+                if (Free(v, shoulder)) at.Add(v);
+            }
         }
+        foreach (var u in at.OrderBy(x => x))
+            figures.Add(new Figure(u, 0, rng.Next(EntourageSymbols.Variants), rng.Next(2) == 0));
         return figures;
     }
 

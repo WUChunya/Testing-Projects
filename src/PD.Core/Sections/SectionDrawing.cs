@@ -75,6 +75,8 @@ public static class SectionDrawing
         // ▼ markers, level names and elevations in the left column, dashed to the cut (as in elevations).
         if (st.LevelMarkers && !g.Outline.IsEmpty)
             LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, map.X(g.Outline.EnvelopeInternal.MinX), zMax);
+        if (st.LevelMarkers && Penthouse(ctx, g) is { } top)
+            LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, top.Z1, x0 - colL, map.X(g.Outline.EnvelopeInternal.MinX));
 
         // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.
         Views.ProjectedView.Draw(d, ctx, map, p + "VIEW_", g.View);
@@ -87,7 +89,9 @@ public static class SectionDrawing
         // Opaque white backing behind the colour blocks: the white gaps between blocks must not show what is behind the cut.
         if (!g.Outline.IsEmpty && st.ProgramBackground is { Length: > 0 } bg)
             d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + "PROGRAM_BG", g.Outline, d.Swatch("PD_PROGRAM_BG", bg), null, 0));
-        SectionBars.Add(d, ctx, g, map, p);
+        var pent = Penthouse(ctx, g);
+        var labelBoxes = SectionBars.Add(d, ctx, g, map, p, pent?.Bars);
+        if (pent != null) DrawPenthouse(d, ctx, g, map, p, pent, labelBoxes);
 
         // Envelope: thin light-grey line under the bars; slabs: white strips 0.14 × floor with a dark outline, 2 ft past the bars.
         if (!g.Outline.IsEmpty)
@@ -108,6 +112,8 @@ public static class SectionDrawing
         foreach (var (u0, u1, z) in g.SlabLines.OrderBy(x => x.Z).ThenBy(x => x.U0))
         {
             if (Math.Abs(z - g.Ground) < 0.5) continue; // the ground line is the ground floor's slab
+            // No roof slab over the penthouse (user rev 0.8): its top gets an elevation marker instead.
+            if (pent != null && z > pent.Z0 + 0.5 && pent.Ranges.Any(q => u1 > q.U0 + 0.1 && u0 < q.U1 - 0.1)) continue;
             var half = st.SlabHeightRatio * g.TypicalStory * k / 2; // one thickness for every slab of the drawing
             var xa = Math.Min(map.X(u0), map.X(u1)) - st.SlabOverhangFt * k;
             var xb = Math.Max(map.X(u0), map.X(u1)) + st.SlabOverhangFt * k;
@@ -124,7 +130,7 @@ public static class SectionDrawing
         d.Layer("PD_GROUND").Items.Add(map.Line(p + "GROUND", new[] { (0.0, g.Ground), (plane.Length, g.Ground) }, d.Gray(st.GroundStroke), st.GroundPt));
 
         Trees(d, ctx, map, p, plane, depth, g.Ground);
-        People(d, ctx, g, map, p, plane.Length);
+        People(d, ctx, g, map, p, plane.Length, labelBoxes);
 
         SectionAnnotation.Add(d, ctx, g, map, p, sec, g.Ground, zMax, titleX: x0, titleY: map.Y(zMin) + groundT / 2 + ctx.Pt(40));
         return d;
@@ -158,7 +164,8 @@ public static class SectionDrawing
     /// PRD 4: people stand on the floor of each cut bar (never taller than the bar, so nobody pokes into the level
     /// above) and on the ground outside the building.
     /// </summary>
-    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, double length)
+    static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, double length,
+        List<(double X0, double X1, double Y0, double Y1)> labels)
     {
         if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx)) return;
         var e = ctx.Style.Entourage;
@@ -170,7 +177,12 @@ public static class SectionDrawing
             var floor = b.Z0 + ctx.Style.Section.SlabHeightRatio * g.TypicalStory / 2;
             var h = Math.Min(e.HeightFt, (b.Z1 - floor) * 0.8);
             if (h < 3) continue;
-            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, b.U0, b.U1, b.ProgramKey, p + b.MassId))
+            // Keep clear of this floor's label and number (half a figure either side).
+            var yFeet = map.Y(floor);
+            var half = 0.25 * h;
+            var blocked = labels.Where(q => q.Y1 > yFeet - h * map.K && q.Y0 < yFeet)
+                .Select(q => (map.U(q.X0) - half, map.U(q.X1) + half)).Select(q => (Math.Min(q.Item1, q.Item2), Math.Max(q.Item1, q.Item2))).ToList();
+            foreach (var f in PD.Core.Entourage.EntouragePlacer.AlongLine(ctx, b.U0, b.U1, b.ProgramKey, p + b.MassId, blocked: blocked))
                 layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Standing(d, e, $"{p}PERSON_{++n:000}",
                     map.X(f.X), map.Y(floor), h * map.K, f.Variant, f.Mirror));
         }
@@ -182,6 +194,55 @@ public static class SectionDrawing
                     map.X(f.X), map.Y(g.Ground), e.HeightFt * map.K, f.Variant, f.Mirror));
     }
 
+
+    /// <summary>The penthouse: the top row of bars when all of them are section.penthousePrograms (shell, core…).</summary>
+    public sealed record PenthouseRow(List<CutBar> Bars, List<(double U0, double U1)> Ranges, double Z0, double Z1);
+
+    public static PenthouseRow? Penthouse(ExportContext ctx, SectionGeometry g)
+    {
+        var st = ctx.Style.Section;
+        if (st.PenthousePrograms.Count == 0 || g.Bars.Count == 0) return null;
+        var z0 = g.Bars.Max(b => b.Z0);
+        var row = g.Bars.Where(b => b.Z0 > z0 - 0.5).ToList();
+        if (row.Count == 0 || row.Any(b => !st.PenthousePrograms.Contains(b.ProgramKey, StringComparer.OrdinalIgnoreCase))) return null;
+        // Only when something else is below it (a one-storey building has no penthouse).
+        if (g.Bars.All(b => b.Z0 > z0 - 0.5)) return null;
+        var ranges = new List<(double, double)>();
+        foreach (var (a, b) in row.Select(b => (Math.Min(b.U0, b.U1), Math.Max(b.U0, b.U1))).OrderBy(x => x.Item1))
+            if (ranges.Count > 0 && a <= ranges[^1].Item2 + 1) ranges[^1] = (ranges[^1].Item1, Math.Max(ranges[^1].Item2, b));
+            else ranges.Add((a, b));
+        return new PenthouseRow(row, ranges, z0, row.Max(b => b.Z1));
+    }
+
+    /// <summary>One grey block per continuous stretch of the penthouse, its name centred (or shortened, or none).</summary>
+    static void DrawPenthouse(PD.Core.Drawing.Drawing d, ExportContext ctx, SectionGeometry g, PageMap map, string p, PenthouseRow pent,
+        List<(double X0, double X1, double Y0, double Y1)> labels)
+    {
+        var st = ctx.Style.Section;
+        var typical = g.TypicalStory;
+        var halfSlab = st.SlabHeightRatio * typical / 2;
+        var clear = Math.Max(0, (1 - st.SlabHeightRatio - st.BarHeightRatio) / 2 * typical);
+        var size = Math.Min(st.LabelSizeMax, st.LabelSizeRatio * st.BarHeightRatio * typical * map.K);
+        foreach (var ((u0, u1), i) in pent.Ranges.Select((r, i) => (r, i)))
+        {
+            double xa = Math.Min(map.X(u0), map.X(u1)), xb = Math.Max(map.X(u0), map.X(u1));
+            double yTop = map.Y(pent.Z1), yBot = map.Y(pent.Z0 + halfSlab + clear);
+            if (xb - xa < 1 || yBot - yTop < 1) continue;
+            var name = p + $"PENTHOUSE_{i + 1:00}";
+            d.Layer("PD_PROGRAM").Items.Add(new DItem
+            {
+                Kind = ItemKind.RoundRect, Name = name, X = xa, Y = yTop, W = xb - xa, H = yBot - yTop,
+                R = Math.Min(st.BarCornerRatio * typical * map.K, Math.Min(xb - xa, yBot - yTop) / 2), Fill = d.Swatch("PD_PENTHOUSE", st.PenthouseFill),
+            });
+            if (SectionBars.Fit(st.PenthouseLabel.ToUpperInvariant(), size, xb - xa, st.LabelInsetPt) is not { } text) continue;
+            var cy = (yTop + yBot) / 2;
+            var t = Text(name + "_LBL", (xa + xb) / 2, cy, text, "PD Section Label", "center", center: true);
+            t.SizePt = Math.Round(size, 2);
+            d.Layer("PD_LABELS").Items.Add(t);
+            var half = SectionBars.TextWidth(text, size) / 2;
+            labels.Add(((xa + xb) / 2 - half, (xa + xb) / 2 + half, cy - size / 2, cy + size / 2));
+        }
+    }
 
     static double[][] RectPts(double x0, double y0, double x1, double y1) =>
         new[] { new[] { x0, y0 }, new[] { x1, y0 }, new[] { x1, y1 }, new[] { x0, y1 } };
@@ -215,6 +276,8 @@ public sealed class PageMap
     }
 
     public double X(double u) => _x0 + (_flip ? _len - u : u) * K;
+    /// <summary>Inverse of <see cref="X"/>.</summary>
+    public double U(double x) => _flip ? _len - (x - _x0) / K : (x - _x0) / K;
     public double Y(double z) => _y0 + (_zMax - z) * K;
     public double[] P(double u, double z) => new[] { Math.Round(X(u), 3), Math.Round(Y(z), 3) };
 

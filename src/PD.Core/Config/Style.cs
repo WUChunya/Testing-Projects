@@ -168,6 +168,14 @@ public sealed class SectionStyle
     /// <summary>▼ + level name + elevation in a left column with a dashed line to the building, as in elevations.</summary>
     public bool LevelMarkers { get; set; } = true;
     public bool HeightDimension { get; set; }
+    /// <summary>
+    /// Penthouse (user rev 0.8): a top row made only of these programs is one grey block, no slab over it, with a
+    /// top-of-penthouse elevation marker.
+    /// </summary>
+    public List<string> PenthousePrograms { get; set; } = new();
+    public string PenthouseFill { get; set; } = "#BDBDBD";
+    public string PenthouseLabel { get; set; } = "PENTHOUSE";
+    public string PenthouseTopLabel { get; set; } = "T.O. PENTHOUSE";
     public string TitlePrefix { get; set; } = "";
 }
 
