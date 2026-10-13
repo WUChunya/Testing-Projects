@@ -25,6 +25,8 @@ public sealed class SectionGeometry
     /// <summary>What is seen behind the cut (projected view): our uncut masses/slabs/facade and other buildings.</summary>
     public List<Views.ViewItem> View { get; } = new();
     public List<List<(double X, double Y)>> FacadeCut { get; } = new();
+    /// <summary>NC.Massing (building envelope) cut by the section: drawn dashed.</summary>
+    public List<List<(double X, double Y)>> MassingCut { get; } = new();
     public List<double> PropertyLines { get; } = new();
     public List<Level> Levels { get; init; } = new();
     public double Ground { get; init; }
@@ -61,6 +63,15 @@ public sealed class SectionGeometry
 
         var (massIds, facadeIds) = Views.ProjectedView.Ids(r);
         var glass = Views.ProjectedView.GlassRegex(style.View);
+
+        foreach (var o in r.Local.Objects.Where(o => o.Role == Roles.Massing && !r.Stray.Contains(o.Id) && o.Mesh != null))
+        {
+            var (mw0, mw1) = plane.WRange(o.Mesh!);
+            if (!(mw0 < 0 && mw1 > 0) || !plane.UOverlaps(o.Mesh!)) continue;
+            var open = new List<List<(double X, double Y)>>();
+            foreach (var loop in plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open)) g.MassingCut.Add(loop.Append(loop[0]).ToList());
+            g.MassingCut.AddRange(open);
+        }
 
         foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Mesh != null))
         {

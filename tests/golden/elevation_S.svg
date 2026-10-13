@@ -127,29 +127,29 @@
 <use id="ELV_S_PERSON_001" href="#sym_PD_PERSON_P28" transform="matrix(0.092 -0 0 0.092 123.769 278.362)" opacity="0.9"/>
 </g>
 <g id="PD_ANNOTATION">
-<text id="ELV_S_LVL_L1_TXT" x="49" y="275.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L1</tspan></text>
-<text id="ELV_S_LVL_L1_EL" x="49" y="285.362" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">0&apos;-0&quot;</tspan></text>
-<text id="ELV_S_LVL_L2_TXT" x="49" y="253.322" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L2</tspan></text>
-<text id="ELV_S_LVL_L2_EL" x="49" y="262.822" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">14&apos;-1&quot;</tspan></text>
-<text id="ELV_S_LVL_L3_TXT" x="49" y="227.594" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L3</tspan></text>
-<text id="ELV_S_LVL_L3_EL" x="49" y="237.094" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">30&apos;-2&quot;</tspan></text>
-<text id="ELV_S_LVL_L4_TXT" x="49" y="209.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L4</tspan></text>
-<text id="ELV_S_LVL_L4_EL" x="49" y="218.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">41&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L5_TXT" x="49" y="189.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L5</tspan></text>
-<text id="ELV_S_LVL_L5_EL" x="49" y="198.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">54&apos;-2&quot;</tspan></text>
-<text id="ELV_S_LVL_L6_TXT" x="49" y="169.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L6</tspan></text>
-<text id="ELV_S_LVL_L6_EL" x="49" y="178.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">66&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L7_TXT" x="49" y="149.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L7</tspan></text>
-<text id="ELV_S_LVL_L7_EL" x="49" y="158.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">79&apos;-2&quot;</tspan></text>
-<text id="ELV_S_LVL_L8_TXT" x="49" y="129.196" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L8</tspan></text>
-<text id="ELV_S_LVL_L8_EL" x="49" y="138.696" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">91&apos;-8&quot;</tspan></text>
-<text id="ELV_S_LVL_L9_TXT" x="49" y="109.038" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L9</tspan></text>
-<text id="ELV_S_LVL_L9_EL" x="49" y="118.538" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">104&apos;-3&quot;</tspan></text>
-<text id="ELV_S_LVL_L10_TXT" x="49" y="89.038" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L10</tspan></text>
-<text id="ELV_S_LVL_L10_EL" x="49" y="98.538" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">116&apos;-9&quot;</tspan></text>
-<text id="ELV_S_LVL_L11_TXT" x="49" y="67.437" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L11 ROOF</tspan></text>
-<text id="ELV_S_LVL_L11_EL" x="49" y="76.937" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">130&apos;-3&quot;</tspan></text>
-<text id="ELV_S_TITLE" x="114" y="319.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="start" fill="#333333"><tspan x="114" dy="0">ELEVATION S</tspan></text>
-<text id="ELV_S_SCALE" x="114" y="337.862" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="114" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
+<text id="ELV_S_LVL_L1_TXT" x="49" y="275.862" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L1</tspan></text>
+<text id="ELV_S_LVL_L1_EL" x="49" y="285.362" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">0&apos;-0&quot;</tspan></text>
+<text id="ELV_S_LVL_L2_TXT" x="49" y="253.322" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L2</tspan></text>
+<text id="ELV_S_LVL_L2_EL" x="49" y="262.822" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">14&apos;-1&quot;</tspan></text>
+<text id="ELV_S_LVL_L3_TXT" x="49" y="227.594" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L3</tspan></text>
+<text id="ELV_S_LVL_L3_EL" x="49" y="237.094" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">30&apos;-2&quot;</tspan></text>
+<text id="ELV_S_LVL_L4_TXT" x="49" y="209.196" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L4</tspan></text>
+<text id="ELV_S_LVL_L4_EL" x="49" y="218.696" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">41&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L5_TXT" x="49" y="189.196" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L5</tspan></text>
+<text id="ELV_S_LVL_L5_EL" x="49" y="198.696" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">54&apos;-2&quot;</tspan></text>
+<text id="ELV_S_LVL_L6_TXT" x="49" y="169.196" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L6</tspan></text>
+<text id="ELV_S_LVL_L6_EL" x="49" y="178.696" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">66&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L7_TXT" x="49" y="149.196" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L7</tspan></text>
+<text id="ELV_S_LVL_L7_EL" x="49" y="158.696" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">79&apos;-2&quot;</tspan></text>
+<text id="ELV_S_LVL_L8_TXT" x="49" y="129.196" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L8</tspan></text>
+<text id="ELV_S_LVL_L8_EL" x="49" y="138.696" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">91&apos;-8&quot;</tspan></text>
+<text id="ELV_S_LVL_L9_TXT" x="49" y="109.038" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L9</tspan></text>
+<text id="ELV_S_LVL_L9_EL" x="49" y="118.538" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">104&apos;-3&quot;</tspan></text>
+<text id="ELV_S_LVL_L10_TXT" x="49" y="89.038" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L10</tspan></text>
+<text id="ELV_S_LVL_L10_EL" x="49" y="98.538" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">116&apos;-9&quot;</tspan></text>
+<text id="ELV_S_LVL_L11_TXT" x="49" y="67.437" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L11 ROOF</tspan></text>
+<text id="ELV_S_LVL_L11_EL" x="49" y="76.937" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">130&apos;-3&quot;</tspan></text>
+<text id="ELV_S_TITLE" x="114" y="319.862" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="start" fill="#333333"><tspan x="114" dy="0">ELEVATION S</tspan></text>
+<text id="ELV_S_SCALE" x="114" y="337.862" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="114" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 </g>
 </svg>

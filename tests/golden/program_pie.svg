@@ -14,26 +14,26 @@
 <path id="BAR_INTERACTION" fill="#DFAFBF" stroke="none" stroke-width="0" fill-rule="evenodd" d="M789.352,411 L807,411 L807,445 L789.352,445 Z"/>
 </g>
 <g id="PD_PIE_LEGEND">
-<text id="PIE_TOTAL_LBL" x="404" y="69" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="start" fill="#333333"><tspan x="404" dy="0">TOTAL:</tspan></text>
-<text id="PIE_TOTAL" x="491.2" y="69" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="start" fill="#333333"><tspan x="491.2" dy="0">158,050 GSF</tspan></text>
+<text id="PIE_TOTAL_LBL" x="404" y="69" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="start" fill="#333333"><tspan x="404" dy="0">TOTAL:</tspan></text>
+<text id="PIE_TOTAL" x="491.2" y="69" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="start" fill="#333333"><tspan x="491.2" dy="0">158,050 GSF</tspan></text>
 <path id="PIE_LEG_OFFICE" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M404,98 L417,98 L417,111 L404,111 Z"/>
-<text id="PIE_LEG_OFFICE_TXT" x="425" y="110" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">Office  25,449 SF</tspan></text>
+<text id="PIE_LEG_OFFICE_TXT" x="425" y="110" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">OFFICE  25,449 SF</tspan></text>
 <path id="PIE_LEG_LAB" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M404,119 L417,119 L417,132 L404,132 Z"/>
-<text id="PIE_LEG_LAB_TXT" x="425" y="131" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">Lab  91,871 SF</tspan></text>
+<text id="PIE_LEG_LAB_TXT" x="425" y="131" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">LAB  91,871 SF</tspan></text>
 <path id="PIE_LEG_BUILDING_SUPPORT" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M404,140 L417,140 L417,153 L404,153 Z"/>
-<text id="PIE_LEG_BUILDING_SUPPORT_TXT" x="425" y="152" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">Building Support / Mechanical / Storage  29,102 SF</tspan></text>
+<text id="PIE_LEG_BUILDING_SUPPORT_TXT" x="425" y="152" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE  29,102 SF</tspan></text>
 <path id="PIE_LEG_LOBBY" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M404,161 L417,161 L417,174 L404,174 Z"/>
-<text id="PIE_LEG_LOBBY_TXT" x="425" y="173" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">Lobby / Break  7,750 SF</tspan></text>
+<text id="PIE_LEG_LOBBY_TXT" x="425" y="173" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">LOBBY / BREAK  7,750 SF</tspan></text>
 <path id="PIE_LEG_INTERACTION" fill="#DFAFBF" stroke="none" stroke-width="0" fill-rule="evenodd" d="M404,182 L417,182 L417,195 L404,195 Z"/>
-<text id="PIE_LEG_INTERACTION_TXT" x="425" y="194" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">Interaction / Collab  3,878 SF</tspan></text>
+<text id="PIE_LEG_INTERACTION_TXT" x="425" y="194" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="425" dy="0">INTERACTION / COLLAB  3,878 SF</tspan></text>
 </g>
 <g id="PD_PIE_TEXT">
-<text id="PIE_CENTER" x="198" y="204.396" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="18.275" text-anchor="middle" fill="#333333"><tspan x="198" dy="0">PROGRAM SF</tspan></text>
-<text id="BAR_TITLE" x="48" y="401" font-family="Arial, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="48" dy="0">PROGRAM DEVELOPMENT SUMMARY</tspan></text>
-<text id="BAR_OFFICE_TXT" x="108.686" y="457" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="108.686" dy="0">16%</tspan></text>
-<text id="BAR_LAB_TXT" x="390.758" y="457" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="390.758" dy="0">58%</tspan></text>
-<text id="BAR_BUILDING_SUPPORT_TXT" x="681.613" y="457" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="681.613" dy="0">18%</tspan></text>
-<text id="BAR_LOBBY_TXT" x="770.218" y="457" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="770.218" dy="0">5%</tspan></text>
-<text id="BAR_TOTAL" x="808" y="401" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="end" fill="#333333"><tspan x="808" dy="0">158,050 GSF</tspan></text>
+<text id="PIE_CENTER" x="198" y="204.396" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="18.275" text-anchor="middle" fill="#333333"><tspan x="198" dy="0">PROGRAM SF</tspan></text>
+<text id="BAR_TITLE" x="48" y="401" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="48" dy="0">PROGRAM DEVELOPMENT SUMMARY</tspan></text>
+<text id="BAR_OFFICE_TXT" x="108.686" y="457" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="108.686" dy="0">16%</tspan></text>
+<text id="BAR_LAB_TXT" x="390.758" y="457" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="390.758" dy="0">58%</tspan></text>
+<text id="BAR_BUILDING_SUPPORT_TXT" x="681.613" y="457" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="681.613" dy="0">18%</tspan></text>
+<text id="BAR_LOBBY_TXT" x="770.218" y="457" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#333333"><tspan x="770.218" dy="0">5%</tspan></text>
+<text id="BAR_TOTAL" x="808" y="401" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="end" fill="#333333"><tspan x="808" dy="0">158,050 GSF</tspan></text>
 </g>
 </svg>

@@ -222,37 +222,39 @@
 <path id="SEC_A_SLAB_130&apos;-3&quot;_115" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M620.887,242.491 L1811.146,242.491 L1811.146,250.366 L620.887,250.366 Z"/>
 <path id="SEC_A_SLAB_144&apos;-0&quot;_115" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M620.887,180.689 L1525.777,180.689 L1525.777,188.564 L620.887,188.564 Z"/>
 </g>
+<g id="PD_MASSING">
+</g>
 <g id="PD_GROUND">
 <path id="SEC_A_GROUND" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M114,832.624 L1933.836,832.624"/>
 </g>
 <g id="PD_LABELS">
-<text id="SEC_A_L01_LOBBY_03_NUM" x="480.245" y="806.526" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="480.245" dy="0">01</tspan></text>
-<text id="SEC_A_L01_LOBBY_03_LBL" x="718.899" y="807.926" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="718.899" dy="0">LOBBY / BREAK</tspan></text>
-<text id="SEC_A_L01_OFFICE_02_LBL" x="841.927" y="806.11" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="14.81" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="841.927" dy="0">OFFICE</tspan></text>
-<text id="SEC_A_L01_LOBBY_01_LBL" x="1354.068" y="807.926" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1354.068" dy="0">LOBBY / BREAK</tspan></text>
-<text id="SEC_A_L01_OFFICE_01_LBL" x="1412.813" y="804.948" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11.49" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
-<text id="SEC_A_L02_LOBBY_01_NUM" x="784.839" y="738.65" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="784.839" dy="0">02</tspan></text>
-<text id="SEC_A_L02_OFFICE_02_LBL" x="1092.896" y="737.953" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="14.01" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1092.896" dy="0">OFFICE</tspan></text>
-<text id="SEC_A_L01_OFFICE_01_2_LBL" x="1412.813" y="740.05" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
-<text id="SEC_A_L02_LAB_01_LBL" x="1784.83" y="719.484" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_2_NUM" x="1522.777" y="676.598" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">03</tspan></text>
-<text id="SEC_A_L02_LAB_01_2_LBL" x="1784.83" y="677.998" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_3_NUM" x="1522.777" y="622.599" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">04</tspan></text>
-<text id="SEC_A_L02_LAB_01_3_LBL" x="1784.83" y="623.999" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_4_NUM" x="1522.777" y="566.349" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">05</tspan></text>
-<text id="SEC_A_L02_LAB_01_4_LBL" x="1784.83" y="567.749" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_5_NUM" x="1522.777" y="510.099" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">06</tspan></text>
-<text id="SEC_A_L02_LAB_01_5_LBL" x="1784.83" y="511.499" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_6_NUM" x="1522.777" y="453.849" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">07</tspan></text>
-<text id="SEC_A_L02_LAB_01_6_LBL" x="1784.83" y="455.249" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_7_NUM" x="1522.777" y="397.378" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">08</tspan></text>
-<text id="SEC_A_L02_LAB_01_7_LBL" x="1784.83" y="398.778" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L02_LAB_01_8_NUM" x="1522.777" y="340.906" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">09</tspan></text>
-<text id="SEC_A_L02_LAB_01_8_LBL" x="1784.83" y="342.306" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
-<text id="SEC_A_L10_BUILDING_SUPPORT_01_NUM" x="635.887" y="282.405" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="635.887" dy="0">10</tspan></text>
-<text id="SEC_A_L10_BUILDING_SUPPORT_01_LBL" x="1508.777" y="283.805" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1508.777" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
-<text id="SEC_A_L10_BUILDING_SUPPORT_01_2_NUM" x="635.887" y="221.128" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="635.887" dy="0">11</tspan></text>
-<text id="SEC_A_L10_BUILDING_SUPPORT_01_2_LBL" x="1508.777" y="222.528" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1508.777" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
+<text id="SEC_A_L01_LOBBY_03_NUM" x="480.245" y="806.526" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="480.245" dy="0">01</tspan></text>
+<text id="SEC_A_L01_LOBBY_03_LBL" x="718.899" y="807.926" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="718.899" dy="0">LOBBY / BREAK</tspan></text>
+<text id="SEC_A_L01_OFFICE_02_LBL" x="841.927" y="806.11" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="14.81" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="841.927" dy="0">OFFICE</tspan></text>
+<text id="SEC_A_L01_LOBBY_01_LBL" x="1354.068" y="807.926" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1354.068" dy="0">LOBBY / BREAK</tspan></text>
+<text id="SEC_A_L01_OFFICE_01_LBL" x="1412.813" y="804.948" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11.49" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
+<text id="SEC_A_L02_LOBBY_01_NUM" x="784.839" y="738.65" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="784.839" dy="0">02</tspan></text>
+<text id="SEC_A_L02_OFFICE_02_LBL" x="1092.896" y="737.953" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="14.01" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1092.896" dy="0">OFFICE</tspan></text>
+<text id="SEC_A_L01_OFFICE_01_2_LBL" x="1412.813" y="740.05" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1412.813" dy="0">OFFICE</tspan></text>
+<text id="SEC_A_L02_LAB_01_LBL" x="1784.83" y="719.484" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_2_NUM" x="1522.777" y="676.598" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">03</tspan></text>
+<text id="SEC_A_L02_LAB_01_2_LBL" x="1784.83" y="677.998" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_3_NUM" x="1522.777" y="622.599" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">04</tspan></text>
+<text id="SEC_A_L02_LAB_01_3_LBL" x="1784.83" y="623.999" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_4_NUM" x="1522.777" y="566.349" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">05</tspan></text>
+<text id="SEC_A_L02_LAB_01_4_LBL" x="1784.83" y="567.749" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_5_NUM" x="1522.777" y="510.099" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">06</tspan></text>
+<text id="SEC_A_L02_LAB_01_5_LBL" x="1784.83" y="511.499" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_6_NUM" x="1522.777" y="453.849" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">07</tspan></text>
+<text id="SEC_A_L02_LAB_01_6_LBL" x="1784.83" y="455.249" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_7_NUM" x="1522.777" y="397.378" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">08</tspan></text>
+<text id="SEC_A_L02_LAB_01_7_LBL" x="1784.83" y="398.778" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L02_LAB_01_8_NUM" x="1522.777" y="340.906" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="1522.777" dy="0">09</tspan></text>
+<text id="SEC_A_L02_LAB_01_8_LBL" x="1784.83" y="342.306" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1784.83" dy="0">LAB</tspan></text>
+<text id="SEC_A_L10_BUILDING_SUPPORT_01_NUM" x="635.887" y="282.405" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="635.887" dy="0">10</tspan></text>
+<text id="SEC_A_L10_BUILDING_SUPPORT_01_LBL" x="1508.777" y="283.805" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1508.777" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
+<text id="SEC_A_L10_BUILDING_SUPPORT_01_2_NUM" x="635.887" y="221.128" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="16" text-anchor="start" fill="#1A1A1A"><tspan x="635.887" dy="0">11</tspan></text>
+<text id="SEC_A_L10_BUILDING_SUPPORT_01_2_LBL" x="1508.777" y="222.528" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="20" text-anchor="end" fill="#333333" fill-opacity="0.85"><tspan x="1508.777" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
 </g>
 <g id="ENTOURAGE">
 <use id="SEC_A_PERSON_001" href="#sym_PD_PERSON_P17" transform="matrix(0.259 -0 0 0.259 502.481 828.687)" opacity="0.9"/>
@@ -289,29 +291,29 @@
 <use id="SEC_A_PERSON_032" href="#sym_PD_PERSON_P06" transform="matrix(-0.259 0 0 0.259 141.587 832.624)" opacity="0.9"/>
 </g>
 <g id="PD_ANNOTATION">
-<text id="SEC_A_LVL_L1_TXT" x="49" y="830.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L1</tspan></text>
-<text id="SEC_A_LVL_L1_EL" x="49" y="839.624" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">0&apos;-0&quot;</tspan></text>
-<text id="SEC_A_LVL_L2_TXT" x="49" y="766.728" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L2</tspan></text>
-<text id="SEC_A_LVL_L2_EL" x="49" y="776.228" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">14&apos;-1&quot;</tspan></text>
-<text id="SEC_A_LVL_L3_TXT" x="49" y="694.371" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L3</tspan></text>
-<text id="SEC_A_LVL_L3_EL" x="49" y="703.871" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">30&apos;-2&quot;</tspan></text>
-<text id="SEC_A_LVL_L4_TXT" x="49" y="642.624" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L4</tspan></text>
-<text id="SEC_A_LVL_L4_EL" x="49" y="652.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">41&apos;-8&quot;</tspan></text>
-<text id="SEC_A_LVL_L5_TXT" x="49" y="586.374" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L5</tspan></text>
-<text id="SEC_A_LVL_L5_EL" x="49" y="595.874" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">54&apos;-2&quot;</tspan></text>
-<text id="SEC_A_LVL_L6_TXT" x="49" y="530.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L6</tspan></text>
-<text id="SEC_A_LVL_L6_EL" x="49" y="539.624" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">66&apos;-8&quot;</tspan></text>
-<text id="SEC_A_LVL_L7_TXT" x="49" y="473.874" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L7</tspan></text>
-<text id="SEC_A_LVL_L7_EL" x="49" y="483.374" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">79&apos;-2&quot;</tspan></text>
-<text id="SEC_A_LVL_L8_TXT" x="49" y="417.624" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L8</tspan></text>
-<text id="SEC_A_LVL_L8_EL" x="49" y="427.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">91&apos;-8&quot;</tspan></text>
-<text id="SEC_A_LVL_L9_TXT" x="49" y="360.931" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L9</tspan></text>
-<text id="SEC_A_LVL_L9_EL" x="49" y="370.431" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">104&apos;-3&quot;</tspan></text>
-<text id="SEC_A_LVL_L10_TXT" x="49" y="304.681" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L10</tspan></text>
-<text id="SEC_A_LVL_L10_EL" x="49" y="314.181" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">116&apos;-9&quot;</tspan></text>
-<text id="SEC_A_LVL_L11_TXT" x="49" y="243.928" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L11 ROOF</tspan></text>
-<text id="SEC_A_LVL_L11_EL" x="49" y="253.428" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">130&apos;-3&quot;</tspan></text>
-<text id="SEC_A_TITLE" x="114" y="874.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="start" fill="#333333"><tspan x="114" dy="0">SECTION A</tspan></text>
-<text id="SEC_A_SCALE" x="114" y="892.124" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="114" dy="0">SCALE 1&quot; = 16&apos;-0&quot;</tspan></text>
+<text id="SEC_A_LVL_L1_TXT" x="49" y="830.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L1</tspan></text>
+<text id="SEC_A_LVL_L1_EL" x="49" y="839.624" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">0&apos;-0&quot;</tspan></text>
+<text id="SEC_A_LVL_L2_TXT" x="49" y="766.728" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L2</tspan></text>
+<text id="SEC_A_LVL_L2_EL" x="49" y="776.228" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">14&apos;-1&quot;</tspan></text>
+<text id="SEC_A_LVL_L3_TXT" x="49" y="694.371" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L3</tspan></text>
+<text id="SEC_A_LVL_L3_EL" x="49" y="703.871" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">30&apos;-2&quot;</tspan></text>
+<text id="SEC_A_LVL_L4_TXT" x="49" y="642.624" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L4</tspan></text>
+<text id="SEC_A_LVL_L4_EL" x="49" y="652.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">41&apos;-8&quot;</tspan></text>
+<text id="SEC_A_LVL_L5_TXT" x="49" y="586.374" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L5</tspan></text>
+<text id="SEC_A_LVL_L5_EL" x="49" y="595.874" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">54&apos;-2&quot;</tspan></text>
+<text id="SEC_A_LVL_L6_TXT" x="49" y="530.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L6</tspan></text>
+<text id="SEC_A_LVL_L6_EL" x="49" y="539.624" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">66&apos;-8&quot;</tspan></text>
+<text id="SEC_A_LVL_L7_TXT" x="49" y="473.874" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L7</tspan></text>
+<text id="SEC_A_LVL_L7_EL" x="49" y="483.374" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">79&apos;-2&quot;</tspan></text>
+<text id="SEC_A_LVL_L8_TXT" x="49" y="417.624" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L8</tspan></text>
+<text id="SEC_A_LVL_L8_EL" x="49" y="427.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">91&apos;-8&quot;</tspan></text>
+<text id="SEC_A_LVL_L9_TXT" x="49" y="360.931" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L9</tspan></text>
+<text id="SEC_A_LVL_L9_EL" x="49" y="370.431" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">104&apos;-3&quot;</tspan></text>
+<text id="SEC_A_LVL_L10_TXT" x="49" y="304.681" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L10</tspan></text>
+<text id="SEC_A_LVL_L10_EL" x="49" y="314.181" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">116&apos;-9&quot;</tspan></text>
+<text id="SEC_A_LVL_L11_TXT" x="49" y="243.928" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">L11 ROOF</tspan></text>
+<text id="SEC_A_LVL_L11_EL" x="49" y="253.428" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="49" dy="0">130&apos;-3&quot;</tspan></text>
+<text id="SEC_A_TITLE" x="114" y="874.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="start" fill="#333333"><tspan x="114" dy="0">SECTION A</tspan></text>
+<text id="SEC_A_SCALE" x="114" y="892.124" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="114" dy="0">SCALE 1&quot; = 16&apos;-0&quot;</tspan></text>
 </g>
 </svg>

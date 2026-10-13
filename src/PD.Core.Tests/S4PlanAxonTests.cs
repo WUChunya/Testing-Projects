@@ -117,7 +117,7 @@ public class S4PlanAxonTests
         var labels = d.Layer("PD_LABELS").Items.Where(i => i.Matrix != null).ToList();
         Assert.NotEmpty(labels);
         Assert.All(labels, t => Assert.StartsWith("PD Plane Label", t.ParaStyle));
-        Assert.Equal("Arial-BoldMT", d.ParaStyles.Single(p => p.Name == "PD Plane Label").Font);
+        Assert.Equal("FuturaPT-Heavy", d.ParaStyles.Single(p => p.Name == "PD Plane Label").Font);
         Assert.Equal(0.7, d.ParaStyles.Single(p => p.Name == "PD Plane Label").Opacity);
         UniqueNamesInsideArtboards(d);
     }

@@ -150,6 +150,14 @@
 <path id="PLN_L5_STRUCTURE_067" fill="#4A4A4A" stroke="none" stroke-width="0" fill-rule="evenodd" d="M135.197,346.399 L135.194,346.472 L135.183,346.547 L135.13,346.834 L135.111,346.912 L135.087,346.987 L135.052,347.062 L135.011,347.132 L134.837,347.396 L134.786,347.466 L134.73,347.528 L134.668,347.584 L134.598,347.635 L134.334,347.809 L134.262,347.85 L134.189,347.885 L134.111,347.911 L134.036,347.928 L133.746,347.984 L133.671,347.995 L133.596,348 L133.523,347.995 L133.448,347.984 L133.161,347.928 L133.086,347.911 L133.008,347.885 L132.933,347.85 L132.863,347.809 L132.599,347.635 L132.529,347.584 L132.467,347.528 L132.411,347.466 L132.36,347.396 L132.186,347.132 L132.145,347.062 L132.11,346.987 L132.083,346.912 L132.067,346.834 L132.013,346.547 L132.003,346.472 L132,346.399 L132.003,346.324 L132.013,346.248 L132.067,345.959 L132.083,345.884 L132.11,345.806 L132.145,345.733 L132.186,345.661 L132.36,345.397 L132.411,345.33 L132.467,345.265 L132.529,345.209 L132.599,345.16 L132.863,344.986 L132.933,344.943 L133.008,344.908 L133.086,344.884 L133.161,344.865 L133.448,344.811 L133.523,344.801 L133.596,344.798 L133.671,344.801 L133.746,344.811 L134.036,344.865 L134.111,344.884 L134.189,344.908 L134.262,344.943 L134.334,344.986 L134.598,345.16 L134.668,345.209 L134.73,345.265 L134.786,345.33 L134.837,345.397 L135.011,345.661 L135.052,345.733 L135.087,345.806 L135.111,345.884 L135.13,345.959 L135.183,346.248 L135.194,346.324 Z"/>
 <path id="PLN_L5_STRUCTURE_068" fill="#4A4A4A" stroke="none" stroke-width="0" fill-rule="evenodd" d="M135.197,308 L135.194,308.073 L135.183,308.148 L135.13,308.435 L135.111,308.51 L135.087,308.588 L135.052,308.661 L135.011,308.733 L134.837,308.997 L134.786,309.067 L134.73,309.129 L134.668,309.185 L134.598,309.236 L134.334,309.41 L134.262,309.451 L134.189,309.486 L134.111,309.512 L134.036,309.529 L133.746,309.582 L133.671,309.593 L133.596,309.596 L133.523,309.593 L133.448,309.582 L133.161,309.529 L133.086,309.512 L133.008,309.486 L132.933,309.451 L132.863,309.41 L132.599,309.236 L132.529,309.185 L132.467,309.129 L132.411,309.067 L132.36,308.997 L132.186,308.733 L132.145,308.661 L132.11,308.588 L132.083,308.51 L132.067,308.435 L132.013,308.148 L132.003,308.073 L132,308 L132.003,307.925 L132.013,307.849 L132.067,307.56 L132.083,307.485 L132.11,307.407 L132.145,307.334 L132.186,307.262 L132.36,306.998 L132.411,306.928 L132.467,306.866 L132.529,306.81 L132.599,306.759 L132.863,306.584 L132.933,306.544 L133.008,306.509 L133.086,306.482 L133.161,306.466 L133.448,306.412 L133.523,306.402 L133.596,306.399 L133.671,306.402 L133.746,306.412 L134.036,306.466 L134.111,306.482 L134.189,306.509 L134.262,306.544 L134.334,306.584 L134.598,306.759 L134.668,306.81 L134.73,306.866 L134.786,306.928 L134.837,306.998 L135.011,307.262 L135.052,307.334 L135.087,307.407 L135.111,307.485 L135.13,307.56 L135.183,307.849 L135.194,307.925 Z"/>
 </g>
+<g id="PD_FURNITURE">
+</g>
+<g id="PD_INTERIOR">
+</g>
+<g id="PD_SCREEN">
+</g>
+<g id="PD_MASSING">
+</g>
 <g id="PD_VOID">
 </g>
 <g id="PD_OUTLINE">
@@ -158,26 +166,26 @@
 <g id="FACADE">
 </g>
 <g id="PD_LABELS">
-<text id="PLN_L5_L05_LAB_01_LBL" x="295.348" y="429.097" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 295.348 422.447)"><tspan x="295.348" dy="0">LAB</tspan></text>
-<text id="PLN_L5_B01_CORE_09_LBL" x="237.598" y="322.148" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="237.598" dy="0">CORE</tspan></text>
+<text id="PLN_L5_L05_LAB_01_LBL" x="295.348" y="429.097" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 295.348 422.447)"><tspan x="295.348" dy="0">LAB</tspan></text>
+<text id="PLN_L5_B01_CORE_09_LBL" x="237.598" y="322.148" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="237.598" dy="0">CORE</tspan></text>
 </g>
 <g id="PD_LEGEND">
 <path id="PLN_L5_LEGEND_LAB" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,754.399 L44,754.399 L44,762.399 L36,762.399 Z"/>
-<text id="PLN_L5_LEGEND_LAB_TXT" x="48" y="760.799" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">Lab</tspan></text>
+<text id="PLN_L5_LEGEND_LAB_TXT" x="48" y="760.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">LAB</tspan></text>
 <path id="PLN_L5_LEGEND_CORE" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M156,754.399 L164,754.399 L164,762.399 L156,762.399 Z"/>
-<text id="PLN_L5_LEGEND_CORE_TXT" x="168" y="760.799" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">Core</tspan></text>
+<text id="PLN_L5_LEGEND_CORE_TXT" x="168" y="760.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">CORE</tspan></text>
 </g>
 <g id="PD_ANNOTATION">
-<text id="PLN_L5_NORTH_TXT" x="660.596" y="42.3" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="660.596" dy="0">N</tspan></text>
+<text id="PLN_L5_NORTH_TXT" x="660.596" y="42.3" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="660.596" dy="0">N</tspan></text>
 <path id="PLN_L5_NORTH" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M660.596,45 L665.996,61.2 L660.596,57.6 L655.196,61.2 Z"/>
 <path id="PLN_L5_SCALEBAR_1" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M473.596,46.8 L513.596,46.8 L513.596,50.8 L473.596,50.8 Z"/>
 <path id="PLN_L5_SCALEBAR_2" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M513.596,46.8 L553.596,46.8 L553.596,50.8 L513.596,50.8 Z"/>
 <path id="PLN_L5_SCALEBAR_3" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M553.596,46.8 L593.596,46.8 L593.596,50.8 L553.596,50.8 Z"/>
 <path id="PLN_L5_SCALEBAR_4" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M593.596,46.8 L633.596,46.8 L633.596,50.8 L593.596,50.8 Z"/>
-<text id="PLN_L5_SCALEBAR_0" x="473.596" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="473.596" dy="0">0</tspan></text>
-<text id="PLN_L5_SCALEBAR_END" x="633.596" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="633.596" dy="0">100&apos;</tspan></text>
-<text id="PLN_L5_SCALE" x="473.596" y="42.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="473.596" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
+<text id="PLN_L5_SCALEBAR_0" x="473.596" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="473.596" dy="0">0</tspan></text>
+<text id="PLN_L5_SCALEBAR_END" x="633.596" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="633.596" dy="0">100&apos;</tspan></text>
+<text id="PLN_L5_SCALE" x="473.596" y="42.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="473.596" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 <path id="PLN_L5_TITLE_TAG" fill="#F6F0E4" stroke="none" stroke-width="0" fill-rule="evenodd" d="M538.926,754.399 L669.596,754.399 L669.596,811.599 L538.926,811.599 Z"/>
-<text id="PLN_L5_TITLE" x="604.261" y="793.849" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="604.261" dy="0">Level 5</tspan></text>
+<text id="PLN_L5_TITLE" x="604.261" y="793.849" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="604.261" dy="0">LEVEL 5</tspan></text>
 </g>
 </svg>

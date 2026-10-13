@@ -34,6 +34,14 @@
 </g>
 <g id="PD_STRUCTURE">
 </g>
+<g id="PD_FURNITURE">
+</g>
+<g id="PD_INTERIOR">
+</g>
+<g id="PD_SCREEN">
+</g>
+<g id="PD_MASSING">
+</g>
 <g id="PD_VOID">
 </g>
 <g id="PD_OUTLINE">
@@ -68,30 +76,30 @@
 <g id="BG_CONTEXT_LABELS">
 </g>
 <g id="PD_LABELS">
-<text id="STP_L01_LOBBY_03_LBL" x="350.761" y="421.604" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 350.761 426.354)"><tspan x="350.761" dy="0">LOBBY /</tspan><tspan x="350.761" dy="22.8">BREAK</tspan></text>
+<text id="STP_L01_LOBBY_03_LBL" x="350.761" y="421.604" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 350.761 426.354)"><tspan x="350.761" dy="0">LOBBY /</tspan><tspan x="350.761" dy="22.8">BREAK</tspan></text>
 <path id="STP_L01_OFFICE_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M437.982,712.132 L460.151,767.187"/>
-<text id="STP_L01_OFFICE_01_LBL" x="462.151" y="769.687" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="start" fill="#333333"><tspan x="462.151" dy="0">OFFICE</tspan></text>
-<text id="STP_L01_LAB_01_LBL" x="427.813" y="752.664" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333"><tspan x="427.813" dy="0">LAB</tspan></text>
+<text id="STP_L01_OFFICE_01_LBL" x="462.151" y="769.687" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="start" fill="#333333"><tspan x="462.151" dy="0">OFFICE</tspan></text>
+<text id="STP_L01_LAB_01_LBL" x="427.813" y="752.664" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333"><tspan x="427.813" dy="0">LAB</tspan></text>
 </g>
 <g id="PD_LEGEND">
 <path id="STP_LEGEND_OFFICE" fill="#7CBECD" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,1046.688 L44,1046.688 L44,1054.688 L36,1054.688 Z"/>
-<text id="STP_LEGEND_OFFICE_TXT" x="48" y="1053.088" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">Office</tspan></text>
+<text id="STP_LEGEND_OFFICE_TXT" x="48" y="1053.088" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">OFFICE</tspan></text>
 <path id="STP_LEGEND_LAB" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M156,1046.688 L164,1046.688 L164,1054.688 L156,1054.688 Z"/>
-<text id="STP_LEGEND_LAB_TXT" x="168" y="1053.088" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">Lab</tspan></text>
+<text id="STP_LEGEND_LAB_TXT" x="168" y="1053.088" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">LAB</tspan></text>
 <path id="STP_LEGEND_LOBBY" fill="#EFB7D7" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M276,1046.688 L284,1046.688 L284,1054.688 L276,1054.688 Z"/>
-<text id="STP_LEGEND_LOBBY_TXT" x="288" y="1053.088" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="288" dy="0">Lobby / Break</tspan></text>
+<text id="STP_LEGEND_LOBBY_TXT" x="288" y="1053.088" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="288" dy="0">LOBBY / BREAK</tspan></text>
 </g>
 <g id="PD_ANNOTATION">
-<text id="STP_NORTH_TXT" x="700.428" y="42.3" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="700.428" dy="0">N</tspan></text>
+<text id="STP_NORTH_TXT" x="700.428" y="42.3" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="700.428" dy="0">N</tspan></text>
 <path id="STP_NORTH" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M700.428,45 L705.828,61.2 L700.428,57.6 L695.028,61.2 Z"/>
 <path id="STP_SCALEBAR_1" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M513.428,46.8 L553.428,46.8 L553.428,50.8 L513.428,50.8 Z"/>
 <path id="STP_SCALEBAR_2" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M553.428,46.8 L593.428,46.8 L593.428,50.8 L553.428,50.8 Z"/>
 <path id="STP_SCALEBAR_3" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M593.428,46.8 L633.428,46.8 L633.428,50.8 L593.428,50.8 Z"/>
 <path id="STP_SCALEBAR_4" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M633.428,46.8 L673.428,46.8 L673.428,50.8 L633.428,50.8 Z"/>
-<text id="STP_SCALEBAR_0" x="513.428" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="513.428" dy="0">0</tspan></text>
-<text id="STP_SCALEBAR_END" x="673.428" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="673.428" dy="0">100&apos;</tspan></text>
-<text id="STP_SCALE" x="513.428" y="42.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="513.428" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
+<text id="STP_SCALEBAR_0" x="513.428" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="513.428" dy="0">0</tspan></text>
+<text id="STP_SCALEBAR_END" x="673.428" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="673.428" dy="0">100&apos;</tspan></text>
+<text id="STP_SCALE" x="513.428" y="42.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="513.428" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 <path id="STP_TITLE_TAG" fill="#F6F0E4" stroke="none" stroke-width="0" fill-rule="evenodd" d="M547.138,1046.688 L709.428,1046.688 L709.428,1103.888 L547.138,1103.888 Z"/>
-<text id="STP_TITLE" x="628.283" y="1086.138" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="628.283" dy="0">Site Plan</tspan></text>
+<text id="STP_TITLE" x="628.283" y="1086.138" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="628.283" dy="0">SITE PLAN</tspan></text>
 </g>
 </svg>

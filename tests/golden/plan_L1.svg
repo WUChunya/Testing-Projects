@@ -30,6 +30,14 @@
 </g>
 <g id="PD_STRUCTURE">
 </g>
+<g id="PD_FURNITURE">
+</g>
+<g id="PD_INTERIOR">
+</g>
+<g id="PD_SCREEN">
+</g>
+<g id="PD_MASSING">
+</g>
 <g id="PD_VOID">
 </g>
 <g id="PD_OUTLINE">
@@ -38,30 +46,30 @@
 <g id="FACADE">
 </g>
 <g id="PD_LABELS">
-<text id="PLN_L1_L01_LOBBY_03_LBL" x="335.354" y="332.47" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 335.354 337.22)"><tspan x="335.354" dy="0">LOBBY /</tspan><tspan x="335.354" dy="22.8">BREAK</tspan></text>
+<text id="PLN_L1_L01_LOBBY_03_LBL" x="335.354" y="332.47" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 335.354 337.22)"><tspan x="335.354" dy="0">LOBBY /</tspan><tspan x="335.354" dy="22.8">BREAK</tspan></text>
 <path id="PLN_L1_L01_OFFICE_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M422.575,622.998 L444.744,678.054"/>
-<text id="PLN_L1_L01_OFFICE_01_LBL" x="446.744" y="680.554" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="start" fill="#333333"><tspan x="446.744" dy="0">OFFICE</tspan></text>
-<text id="PLN_L1_L01_LAB_01_LBL" x="412.406" y="663.53" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333"><tspan x="412.406" dy="0">LAB</tspan></text>
+<text id="PLN_L1_L01_OFFICE_01_LBL" x="446.744" y="680.554" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="start" fill="#333333"><tspan x="446.744" dy="0">OFFICE</tspan></text>
+<text id="PLN_L1_L01_LAB_01_LBL" x="412.406" y="663.53" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333"><tspan x="412.406" dy="0">LAB</tspan></text>
 </g>
 <g id="PD_LEGEND">
 <path id="PLN_L1_LEGEND_OFFICE" fill="#7CBECD" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,892.157 L44,892.157 L44,900.157 L36,900.157 Z"/>
-<text id="PLN_L1_LEGEND_OFFICE_TXT" x="48" y="898.557" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">Office</tspan></text>
+<text id="PLN_L1_LEGEND_OFFICE_TXT" x="48" y="898.557" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">OFFICE</tspan></text>
 <path id="PLN_L1_LEGEND_LAB" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M156,892.157 L164,892.157 L164,900.157 L156,900.157 Z"/>
-<text id="PLN_L1_LEGEND_LAB_TXT" x="168" y="898.557" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">Lab</tspan></text>
+<text id="PLN_L1_LEGEND_LAB_TXT" x="168" y="898.557" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="168" dy="0">LAB</tspan></text>
 <path id="PLN_L1_LEGEND_LOBBY" fill="#EFB7D7" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M276,892.157 L284,892.157 L284,900.157 L276,900.157 Z"/>
-<text id="PLN_L1_LEGEND_LOBBY_TXT" x="288" y="898.557" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="288" dy="0">Lobby / Break</tspan></text>
+<text id="PLN_L1_LEGEND_LOBBY_TXT" x="288" y="898.557" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="288" dy="0">LOBBY / BREAK</tspan></text>
 </g>
 <g id="PD_ANNOTATION">
-<text id="PLN_L1_NORTH_TXT" x="647" y="42.3" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="647" dy="0">N</tspan></text>
+<text id="PLN_L1_NORTH_TXT" x="647" y="42.3" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="647" dy="0">N</tspan></text>
 <path id="PLN_L1_NORTH" fill="#000000" stroke="none" stroke-width="0" fill-rule="evenodd" d="M647,45 L652.4,61.2 L647,57.6 L641.6,61.2 Z"/>
 <path id="PLN_L1_SCALEBAR_1" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M540,46.8 L560,46.8 L560,50.8 L540,50.8 Z"/>
 <path id="PLN_L1_SCALEBAR_2" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M560,46.8 L580,46.8 L580,50.8 L560,50.8 Z"/>
 <path id="PLN_L1_SCALEBAR_3" fill="#000000" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M580,46.8 L600,46.8 L600,50.8 L580,50.8 Z"/>
 <path id="PLN_L1_SCALEBAR_4" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" fill-rule="evenodd" d="M600,46.8 L620,46.8 L620,50.8 L600,50.8 Z"/>
-<text id="PLN_L1_SCALEBAR_0" x="540" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="540" dy="0">0</tspan></text>
-<text id="PLN_L1_SCALEBAR_END" x="620" y="58.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="620" dy="0">50&apos;</tspan></text>
-<text id="PLN_L1_SCALE" x="540" y="42.8" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="540" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
+<text id="PLN_L1_SCALEBAR_0" x="540" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="540" dy="0">0</tspan></text>
+<text id="PLN_L1_SCALEBAR_END" x="620" y="58.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="620" dy="0">50&apos;</tspan></text>
+<text id="PLN_L1_SCALE" x="540" y="42.8" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="540" dy="0">SCALE 1&quot; = 45&apos;-0&quot;</tspan></text>
 <path id="PLN_L1_TITLE_TAG" fill="#F6F0E4" stroke="none" stroke-width="0" fill-rule="evenodd" d="M525.33,892.157 L656,892.157 L656,949.357 L525.33,949.357 Z"/>
-<text id="PLN_L1_TITLE" x="590.665" y="931.607" font-family="Arial, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="590.665" dy="0">Level 1</tspan></text>
+<text id="PLN_L1_TITLE" x="590.665" y="931.607" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="31" text-anchor="middle" fill="#333333"><tspan x="590.665" dy="0">LEVEL 1</tspan></text>
 </g>
 </svg>

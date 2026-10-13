@@ -197,6 +197,29 @@ public class DowntownTests
             File.WriteAllText(Path.Combine(dir, name + ".svg"), PD.Core.Writers.SvgWriter.Write(d, Math.Min(a, d.Artboards.Count - 1)));
     }
 
+    /// <summary>Review helper: with PD_DUMP=&lt;dir&gt; writes every Downtown drawing / artboard as SVG (no-op otherwise).</summary>
+    [Fact]
+    public void DumpForReview()
+    {
+        var dir = Environment.GetEnvironmentVariable("PD_DUMP");
+        if (string.IsNullOrEmpty(dir)) return;
+        var ctx = DowntownAnalysis.Context();
+        var b = ctx.Result.Building;
+        var (x0, y0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, (b.MinY + b.MaxY) / 2, 0);
+        var (x1, y1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, (b.MinY + b.MaxY) / 2, 0);
+        var (ex0, ey0, _) = ctx.Result.Frame.ToModel(b.MinX - 40, b.MinY - 60, 0);
+        var (ex1, ey1, _) = ctx.Result.Frame.ToModel(b.MaxX + 40, b.MinY - 60, 0);
+        ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "DT", Line = new[] { x0, y0, x1, y1 }, LookLeft = true, DepthFt = 400 });
+        ctx.Settings.Sections.Add(new PD.Core.Settings.SectionSetting { Name = "S", Kind = PD.Core.Settings.SectionSetting.ElevationKind, Line = new[] { ex0, ey0, ex1, ey1 }, LookLeft = true, DepthFt = 400 });
+        File.WriteAllLines(Path.Combine(dir, "roles.txt"), ctx.Result.Roles.Values.Where(g => !g.LayerPath.Contains("::Visible") && !g.LayerPath.StartsWith("NE ISO"))
+            .Select(g => $"{g.LayerPath} -> {g.Role} {g.ProgramKey}"));
+        var only = Environment.GetEnvironmentVariable("PD_ONLY");
+        if (!string.IsNullOrEmpty(only)) ctx.Settings.Output.Drawings = only.Split(',').ToList();
+        foreach (var d in PD.Core.Writers.Exporter.BuildDrawings(ctx, new List<string>()))
+            for (var a = 0; a < d.Artboards.Count; a++)
+                File.WriteAllText(Path.Combine(dir, PD.Core.Writers.Exporter.PreviewName(d, a)), PD.Core.Writers.SvgWriter.Write(d, a));
+    }
+
     /// <summary>
     /// The whole export of the user's model, every drawing on: an elevation used to die with
     /// "Operation does not support GeometryCollection arguments" because a clipped projection came back as a

@@ -28,7 +28,7 @@ public static class SectionDrawing
         // Level lines run over everything behind the cut (incl. cut context) but under our colour blocks.
         Views.ProjectedView.AddLayers(d, g.View);
         // Trees stand beyond the cut: behind the cut colour blocks, in front of what is seen further away.
-        foreach (var n in new[] { "BG_TREE", "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_GROUND", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_TREE", "FACADE", "PD_CONTEXT_CUT", "PD_PROGRAM_BG", "PD_LEVELS", "PD_OUTLINE", "PD_PROGRAM", "PD_SLAB", "PD_MASSING", "PD_GROUND", "PD_LABELS", PD.Core.Entourage.EntouragePlacer.Layer, "PD_ANNOTATION" })
             d.Layer(n);
 
         // True scale always. Text and annotation spacing scale with the drawing (style reference scale = 1).
@@ -94,6 +94,14 @@ public static class SectionDrawing
             d.Layer("PD_OUTLINE").Items.Add(map.Poly(p + "OUTLINE", g.Outline, null, d.Gray(st.EnvelopeStroke), st.EnvelopePt));
         foreach (var (c, i) in g.FacadeCut.Select((c, i) => (c, i)))
             d.Layer("FACADE").Items.Add(map.Line(p + $"FACADE_CUT_{i:000}", c, d.Gray("#000000"), st.FacadeCutPt));
+        // Building envelope (NC.Massing): dashed cut outline over everything of ours.
+        var mPaint = Plans.PlanBackground.PaintOf(ctx.Style, PD.Core.Classification.Roles.Massing, "view");
+        foreach (var (c, i) in g.MassingCut.Select((c, i) => (c, i)))
+        {
+            var line = map.Line(p + $"MASSING_CUT_{i:000}", c, d.Swatch("NC_MASSING", mPaint.Stroke ?? "#4A4A4A"), mPaint.StrokePt ?? 0.75);
+            line.Dash = mPaint.Dash;
+            d.Layer("PD_MASSING").Items.Add(line);
+        }
         var slab = d.Swatch("PD_SLAB", st.SlabFill);
         var slabLine = d.Gray(st.SlabStroke);
         var slabNames = new HashSet<string>();

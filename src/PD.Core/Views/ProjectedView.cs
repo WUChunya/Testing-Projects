@@ -30,6 +30,8 @@ public static class ProjectedView
         if (o.Mesh == null) return null;
         if (o.Role == Roles.Building) return ViewKind.Context;
         if (massIds.Contains(o.Id)) return ViewKind.Mass;
+        // Screens are facade surfaces: cut as lines, seen as thin panels, never filled as a block.
+        if (o.Role == Roles.Screen) return ViewKind.Facade;
         if (facadeIds.Contains(o.Id)) return glass.IsMatch(OwnName(o.LayerPath)) ? ViewKind.Glass : ViewKind.Facade;
         if (o.Role is Roles.Slab or Roles.Structure or Roles.Green or Roles.NcHardscape or Roles.NcWater) return ViewKind.Element;
         return null;

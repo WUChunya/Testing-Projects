@@ -24,6 +24,14 @@ public class RoleTests
     [InlineData("SITE BLOCKS", Roles.Hardscape)]
     [InlineData("CONTEXT BUILDINGS", Roles.Building)]
     [InlineData("LAB", Roles.Program)]
+    [InlineData("NC::INTERIOR", Roles.Interior)]
+    [InlineData("PARTITIONS", Roles.Interior)]
+    [InlineData("NC FURNITURE", Roles.Furniture)]
+    [InlineData("NC::MASSING", Roles.Massing)]
+    [InlineData("NC MASSING", Roles.Massing)]
+    [InlineData("MASSING", Roles.Building)]
+    [InlineData("NC::SCREEN", Roles.Screen)]
+    [InlineData("FENCE", Roles.Screen)]
     public void Keywords(string path, string role)
     {
         Assert.Equal(role, LayerClassifier.Default().Guess(new LayerInfo(0, path, true, "#000000")).Role);

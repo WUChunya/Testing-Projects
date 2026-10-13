@@ -115,11 +115,11 @@
     }
   },
   "fonts": {
-    "comment": "Unified typography, docs/SITE_STYLE.md §0.1 (styles/site_style.json › typography). All Arial; sizes in pt at page.textReferenceScale (1\" = 45'-0\").",
+    "comment": "Unified typography (user rev 0.8): every text Futura PT in capitals — FuturaPT-Heavy where the text is bold (titles of tags, plane labels, headings, chart titles), FuturaPT-Book elsewhere; Arial is the fallback when Futura PT is not installed. Sizes in pt at page.textReferenceScale (1\" = 45'-0\").",
     "label": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 19,
       "allCaps": true,
       "weight": "normal",
@@ -129,11 +129,11 @@
       "leadingPt": 0
     },
     "title": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 31,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#333333",
       "opacity": 1.0,
@@ -141,11 +141,11 @@
       "leadingPt": 0
     },
     "note": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 11,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#444444",
       "opacity": 1.0,
@@ -153,11 +153,11 @@
       "leadingPt": 0
     },
     "chart": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 11,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#444444",
       "opacity": 1.0,
@@ -165,11 +165,11 @@
       "leadingPt": 0
     },
     "level": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 14.8,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#333333",
       "opacity": 1.0,
@@ -177,9 +177,9 @@
       "leadingPt": 0
     },
     "levelTag": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 17,
       "allCaps": true,
       "weight": "bold",
@@ -189,9 +189,9 @@
       "leadingPt": 0
     },
     "planeLabel": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 20,
       "allCaps": true,
       "weight": "bold",
@@ -201,9 +201,9 @@
       "leadingPt": 0
     },
     "planeLabelSmall": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 16,
       "allCaps": true,
       "weight": "bold",
@@ -213,9 +213,9 @@
       "leadingPt": 0
     },
     "planeLabelB": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 26,
       "allCaps": true,
       "weight": "bold",
@@ -225,9 +225,9 @@
       "leadingPt": 0
     },
     "planeLabelBSmall": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 13,
       "allCaps": true,
       "weight": "bold",
@@ -237,9 +237,9 @@
       "leadingPt": 0
     },
     "coreLabel": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 14.8,
       "allCaps": true,
       "weight": "bold",
@@ -249,9 +249,9 @@
       "leadingPt": 0
     },
     "contextLabel": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 24,
       "allCaps": true,
       "weight": "bold",
@@ -261,9 +261,9 @@
       "leadingPt": 29.5
     },
     "street": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 22,
       "allCaps": true,
       "weight": "normal",
@@ -273,9 +273,9 @@
       "leadingPt": 0
     },
     "heading": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 19,
       "allCaps": true,
       "weight": "bold",
@@ -285,9 +285,9 @@
       "leadingPt": 0
     },
     "sectionLabel": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 20,
       "allCaps": true,
       "weight": "normal",
@@ -297,11 +297,11 @@
       "leadingPt": 0
     },
     "floorNumber": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 16,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#1A1A1A",
       "opacity": 1.0,
@@ -309,9 +309,9 @@
       "leadingPt": 0
     },
     "chartTitle": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 13,
       "allCaps": true,
       "weight": "bold",
@@ -321,11 +321,11 @@
       "leadingPt": 0
     },
     "chartGroup": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 11,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#5A5A5A",
       "opacity": 1.0,
@@ -333,11 +333,11 @@
       "leadingPt": 0
     },
     "chartTotal": {
-      "family": "Arial",
-      "postScript": "Arial-BoldMT",
-      "fallbackPostScript": "Helvetica-Bold",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
       "sizePt": 22,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "bold",
       "color": "#333333",
       "opacity": 1.0,
@@ -345,11 +345,11 @@
       "leadingPt": 0
     },
     "chartLegend": {
-      "family": "Arial",
-      "postScript": "ArialMT",
-      "fallbackPostScript": "Helvetica",
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Book",
+      "fallbackPostScript": "ArialMT",
       "sizePt": 11,
-      "allCaps": false,
+      "allCaps": true,
       "weight": "normal",
       "color": "#333333",
       "opacity": 1.0,
@@ -808,6 +808,61 @@
       },
       "view": {
         "fill": "#9A9A9A"
+      }
+    },
+    "NC.Interior": {
+      "plan": {
+        "stroke": "#8C8C8C",
+        "strokePt": 0.5
+      }
+    },
+    "NC.Furniture": {
+      "plan": {
+        "stroke": "#C8C8C8",
+        "strokePt": 0.35
+      }
+    },
+    "NC.Massing": {
+      "plan": {
+        "stroke": "#4A4A4A",
+        "strokePt": 0.75,
+        "dash": [
+          4,
+          3
+        ]
+      },
+      "axon": {
+        "stroke": "#4A4A4A",
+        "strokePt": 0.75,
+        "dash": [
+          4,
+          3
+        ]
+      },
+      "view": {
+        "stroke": "#4A4A4A",
+        "strokePt": 0.75,
+        "dash": [
+          4,
+          3
+        ]
+      }
+    },
+    "NC.Screen": {
+      "plan": {
+        "stroke": "#4A4A4A",
+        "strokePt": 1.0
+      },
+      "axon": {
+        "fill": "#FFFFFF",
+        "opacity": 0.7,
+        "stroke": "#4A4A4A",
+        "strokePt": 0.5
+      },
+      "view": {
+        "fill": "#E6E6E6",
+        "stroke": "#6E6E6E",
+        "strokePt": 0.35
       }
     }
   },

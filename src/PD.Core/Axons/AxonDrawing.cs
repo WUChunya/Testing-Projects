@@ -106,6 +106,7 @@ public static class AxonDrawing
                 // Faces carry the floor lines: 0.5 pt in their own colour, 35 % darker.
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, FloorLine(d, f.Fill, st.FloorLineDarken), st.FloorLinePt)));
         }
+        ScreensAndMassing(d, ctx, proj, sheet, faces);
         var mine = faces.Where(f => f.Prism.Group == "PRG").ToList();
         var folds = AxonFaces.Folds(mine);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
@@ -134,6 +135,37 @@ public static class AxonDrawing
             }
         }
         return sheet;
+    }
+
+    /// <summary>
+    /// NC.Screen objects as the thin surfaces they are (projected, trimmed where a nearer face hides them — never
+    /// extruded) and the NC.Massing envelope as a dashed silhouette over the drawing.
+    /// </summary>
+    static void ScreensAndMassing(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces)
+    {
+        var r = ctx.Result;
+        var n = 0;
+        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && o.Role is Roles.Screen or Roles.Massing))
+        {
+            var shape = AxonFaces.Safe(() => MeshProjection.Union(o.Mesh!, proj.Project), MeshSlicer.Factory.CreatePolygon());
+            if (shape.IsEmpty) continue;
+            var paint = PlanBackground.PaintOf(ctx.Style, o.Role, "axon");
+            var b = o.BBox;
+            if (o.Role == Roles.Screen)
+            {
+                var depth = proj.Depth((b.MinX + b.MaxX) / 2, (b.MinY + b.MaxY) / 2, (b.MinZ + b.MaxZ) / 2);
+                var seen = AxonFaces.Hide(proj, shape, depth, faces);
+                if (seen == null || seen.IsEmpty) continue;
+                sheet.Paint.Add(("AXON_SCREEN", new Spec($"SCREEN_{++n:000}", seen, d.Swatch("NC_SCREEN", paint.Fill), d.Swatch("NC_SCREEN_LINE", paint.Stroke),
+                    paint.StrokePt ?? 0.5, Opacity: paint.Opacity)));
+            }
+            else
+            {
+                var shells = MeshSlicer.Factory.BuildGeometry(AxonFaces.Polygons(shape).Select(p => (NtsGeometry)p.ExteriorRing).ToList());
+                sheet.Paint.Add(("AXON_MASSING", new Spec($"MASSING_{++n:000}", shells, null, d.Swatch("NC_MASSING", paint.Stroke ?? "#4A4A4A"),
+                    paint.StrokePt ?? 0.75, paint.Dash, Closed: false)));
+            }
+        }
     }
 
     // ---------------------------------------------------------------- exploded A (Atlanta)
@@ -624,7 +656,7 @@ public static class AxonDrawing
         // Layer order (AXON_STYLE §9, bottom → top): site, context, hidden below, program / plates, lines, trees, facade, hidden above, labels, annotation.
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
         string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LINE" };
-        string[] last = { "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE" };
+        string[] last = { "AXON_SCREEN", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE", "AXON_MASSING" };
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);
         foreach (var n in last.Where(used.Contains)) d.Layer(n);

@@ -105,7 +105,9 @@ public class S3SectionTests
         Assert.Equal(numbers.Count, numbers.Select(n => n.Text).Distinct().Count());
         Assert.Contains(numbers, n => n.Text == "03" && n.GlyphAnchor == "left");
         var font = d.ParaStyles.Single(x => x.Name == "PD Section Label");
-        Assert.Equal("ArialMT", font.Font);
+        Assert.Equal("FuturaPT-Book", font.Font);
+        Assert.Equal("ArialMT", font.FallbackFont);
+        Assert.True(font.AllCaps);
         Assert.Equal(0.85, font.Opacity);
         // Behind the cut: other buildings white, 1 pt #555555 dashed; our building as an opaque grey elevation.
         Assert.All(d.Layer("PD_BEYOND").Items, i => { Assert.Equal("VIEW_CONTEXT", i.Fill); Assert.Equal(new[] { 6.0, 4.0 }, i.Dash); });

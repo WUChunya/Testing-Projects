@@ -83,7 +83,7 @@ public sealed class Font
 }
 
 /// <summary>
-/// Unified typography (docs/SITE_STYLE.md §0.1, styles/site_style.json › typography): one family (Arial) for every
+/// Unified typography (user rev 0.8, was docs/SITE_STYLE.md §0.1 Arial): Futura PT Heavy / Book, all capitals, for every
 /// drawing. Sizes are pt at the text reference scale (1" = 45'-0"); sections use their own absolute sizes.
 /// </summary>
 public sealed class Fonts

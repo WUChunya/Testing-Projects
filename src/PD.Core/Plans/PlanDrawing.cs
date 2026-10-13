@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -94,7 +94,7 @@ public static class PlanDrawing
         var d = new PD.Core.Drawing.Drawing { FileName = "00_Site_Plan.ai" };
         ctx.AddStandardStyles(d);
         foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE",
-                     "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+                     "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
         var i = GroundIndex(ctx);
         if (r.Plans.Count == 0 || r.Plans[i].Union.IsEmpty)
@@ -207,6 +207,7 @@ public static class PlanDrawing
             if (cut.IsEmpty) cut = MeshProjection.TopDown(o.Mesh!);
             d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STRUCTURE_{n:000}", cut, d.Swatch("NC_STRUCTURE", sPaint.Fill), null, 0), a));
         }
+        PlanLinework.Add(d, ctx, a, map, i, p);
 
         var count = new Dictionary<string, int>();
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
