@@ -651,14 +651,17 @@
     "titleExplodedB": "EXPLODED AXON B",
     "titleLevels": "FLOOR KEY AXON",
     "site": {
-      "comment": "03_Site_Axon.ai (SITE_STYLE §1, reference 'Question 4'): our massing with floor lines among white context at real height, the whole surrounding site (ground, roads, landscape, trees, people). Flow / view / service graphics go on the ANNOTATION layer, which the plugin never clears.",
+      "comment": "03_Site_Axon.ai (SITE_STYLE §1, reference 'Question 4'): our massing with floor lines among white context at real height, the whole surrounding site (ground, roads, landscape, trees, people). Flow / view / service graphics go on the ANNOTATION layer, which the plugin never clears. User rev 0.8: no slabs — blocks run floor to floor (fullHeightBlocks); a 2 pt black line between floors on its own layer AXON_LEVEL_LINE; the heavy line only on the building's outer silhouette; screens stay thin surfaces.",
       "siteMarginFt": 220.0,
       "contextMarginFt": 240.0,
       "contextHeightFt": 0.0,
       "maxContextHeightFt": 400.0,
       "people": true,
       "title": "SITE AXON",
-      "annotationLayer": "ANNOTATION"
+      "annotationLayer": "ANNOTATION",
+      "fullHeightBlocks": true,
+      "levelLineColor": "#000000",
+      "levelLinePt": 2.0
     },
     "titleSite": "SITE AXON"
   },

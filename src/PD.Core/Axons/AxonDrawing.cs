@@ -93,7 +93,8 @@ public static class AxonDrawing
             ? new SiteReach(ax.Site.SiteMarginFt, ax.Site.ContextMarginFt, ax.Site.ContextHeightFt, ax.Site.MaxContextHeightFt, ax.Site.People)
             : SiteReach.Of(ax);
         var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach);
-        var program = ProgramPrisms(d, ctx, blocks, b => (b.Z0, b.Z1), st.SideDarken, coreOverride: false).ToList();
+        Func<ProgramBlock, (double, double)> band = site && ax.Site.FullHeightBlocks ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
+        var program = ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList();
         var faces = AxonFaces.Render(proj, context.Concat(program));
         HideBehind(sheet, proj, faces);
         var line = d.Gray(ax.LineColor);
@@ -111,6 +112,13 @@ public static class AxonDrawing
         var folds = AxonFaces.Folds(mine);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
         var outline = AxonFaces.Union(mine.Select(f => f.Screen));
+        if (site)
+        {
+            // The heavy line only on the outer silhouette (no holes, no hairline gaps between faces).
+            outline = AxonFaces.Safe(() => outline.Buffer(0.05).Buffer(-0.05), outline);
+            outline = MeshSlicer.Factory.BuildGeometry(AxonFaces.Polygons(outline).Select(p => (NtsGeometry)MeshSlicer.Factory.CreatePolygon(p.Shell)).ToList());
+            LevelLines(d, ctx, proj, sheet, mine, ctx.Rules.Levels.GroundElevationFt);
+        }
         if (!outline.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", outline, null, line, st.SilhouettePt)));
         if (st.Labels) CentredLabels(ctx, proj, mine, sheet, "PD_LABELS", "PD Plane Label", "PD Plane Label Small");
 
@@ -135,6 +143,57 @@ public static class AxonDrawing
             }
         }
         return sheet;
+    }
+
+    /// <summary>
+    /// Site axon block band (user rev 0.8, no slabs): from the level line to the next level line whenever the mass
+    /// reaches within 3 ft of them (the slab), else the mass's own bottom / top (a penthouse top, a low pavilion).
+    /// </summary>
+    public static (double Z0, double Z1) FullHeight(AnalysisResult r, ProgramBlock b)
+    {
+        var lv = r.Levels;
+        var z0 = Math.Abs(b.Z0 - lv[b.LevelIndex].Elevation) <= 3 ? lv[b.LevelIndex].Elevation : b.Z0;
+        var next = lv.FirstOrDefault(l => !l.IsMezzanine && l.Elevation > b.Z1 - 3 && l.Elevation > z0 + 1);
+        var z1 = next != null && next.Elevation - b.Z1 <= 3 ? next.Elevation : b.Z1;
+        return (z0, Math.Max(z1, z0 + 0.1));
+    }
+
+    /// <summary>
+    /// 2 pt line between floors (own layer): the bottom edge of every visible wall of a block that stands above the
+    /// ground, kept where that wall is seen.
+    /// </summary>
+    static void LevelLines(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> mine, double ground)
+    {
+        var st = ctx.Style.Axon.Site;
+        var lines = new List<NtsGeometry>();
+        foreach (var f in mine.Where(f => !f.IsTop && f.Prism.Z0 > ground + 0.5))
+        {
+            var len = Math.Sqrt(f.Normal.X * f.Normal.X + f.Normal.Y * f.Normal.Y);
+            if (len < 1e-9) continue;
+            foreach (var poly in AxonFaces.Polygons(AxonFaces.Simplify(f.Prism.Plan)))
+            foreach (var ring in AxonFaces.Rings(poly))
+            {
+                var pts = ring.Coordinates;
+                for (var i = 0; i + 1 < pts.Length; i++)
+                {
+                    var (a, q) = (pts[i], pts[i + 1]);
+                    var n = (q.Y - a.Y, a.X - q.X);
+                    var nl = Math.Sqrt(n.Item1 * n.Item1 + n.Item2 * n.Item2);
+                    if (nl < 1e-9) continue;
+                    // The wall this face belongs to: same direction and same plane.
+                    if (Math.Abs(n.Item1 / nl - f.Normal.X / len) > 1e-3 || Math.Abs(n.Item2 / nl - f.Normal.Y / len) > 1e-3) continue;
+                    if (Math.Abs((n.Item1 * a.X + n.Item2 * a.Y) / nl - f.D0 / len) > 0.05) continue;
+                    var (ax, ay) = proj.Project(a.X, a.Y, f.Prism.Z0);
+                    var (qx, qy) = proj.Project(q.X, q.Y, f.Prism.Z0);
+                    var seg = MeshSlicer.Factory.CreateLineString(new[] { new Coordinate(ax, ay), new Coordinate(qx, qy) });
+                    var seen = AxonFaces.Safe(() => seg.Intersection(f.Screen.Buffer(0.05)), seg);
+                    if (!seen.IsEmpty) lines.Add(seen);
+                }
+            }
+        }
+        if (lines.Count == 0) return;
+        var all = AxonFaces.Safe(() => NetTopologySuite.Operation.Union.UnaryUnionOp.Union(lines), MeshSlicer.Factory.BuildGeometry(lines));
+        sheet.Paint.Add(("AXON_LEVEL_LINE", new Spec("LEVEL_LINES", MeshSlicer.Lineal(all), null, d.Gray(st.LevelLineColor), st.LevelLinePt, Closed: false)));
     }
 
     /// <summary>
@@ -655,7 +714,7 @@ public static class AxonDrawing
 
         // Layer order (AXON_STYLE §9, bottom → top): site, context, hidden below, program / plates, lines, trees, facade, hidden above, labels, annotation.
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
-        string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LINE" };
+        string[] first = { "AXON_SITE", "AXON_CONTEXT", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
         string[] last = { "AXON_SCREEN", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE", "AXON_MASSING" };
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);

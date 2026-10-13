@@ -212,7 +212,7 @@ public static class AxonFaces
     }
 
     /// <summary>Shell counter-clockwise, holes clockwise, so (dy, −dx) is always the outward normal of an edge.</summary>
-    static IEnumerable<LineString> Rings(Polygon p)
+    public static IEnumerable<LineString> Rings(Polygon p)
     {
         yield return Orientation.IsCCW(p.ExteriorRing.CoordinateSequence) ? p.ExteriorRing : (LineString)p.ExteriorRing.Reverse();
         foreach (var h in p.InteriorRings)

@@ -359,6 +359,11 @@ public sealed class SiteAxonStyle
     public string Title { get; set; } = "SITE AXON";
     /// <summary>Layer for flows, view lines and service icons: created empty, never cleared by the plugin.</summary>
     public string AnnotationLayer { get; set; } = "ANNOTATION";
+    /// <summary>User rev 0.8: no slab gaps — each block runs from its floor to the next floor (pure stacked massing).</summary>
+    public bool FullHeightBlocks { get; set; } = true;
+    /// <summary>Line between two floors on the faces (own layer AXON_LEVEL_LINE).</summary>
+    public string LevelLineColor { get; set; } = "#000000";
+    public double LevelLinePt { get; set; } = 2.0;
 }
 
 /// <summary>Lollipop trees (SITE_STYLE §1).</summary>

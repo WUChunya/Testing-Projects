@@ -215,9 +215,11 @@ public class DowntownTests
             .Select(g => $"{g.LayerPath} -> {g.Role} {g.ProgramKey}"));
         var only = Environment.GetEnvironmentVariable("PD_ONLY");
         if (!string.IsNullOrEmpty(only)) ctx.Settings.Output.Drawings = only.Split(',').ToList();
-        foreach (var d in PD.Core.Writers.Exporter.BuildDrawings(ctx, new List<string>()))
+        var dumpNotes = new List<string>();
+        foreach (var d in PD.Core.Writers.Exporter.BuildDrawings(ctx, dumpNotes))
             for (var a = 0; a < d.Artboards.Count; a++)
                 File.WriteAllText(Path.Combine(dir, PD.Core.Writers.Exporter.PreviewName(d, a)), PD.Core.Writers.SvgWriter.Write(d, a));
+        File.WriteAllLines(Path.Combine(dir, "notes.txt"), dumpNotes);
     }
 
     /// <summary>
