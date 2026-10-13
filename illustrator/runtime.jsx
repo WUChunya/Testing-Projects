@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.5.0";
+PD.version = "0.7.1";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -60,6 +60,7 @@ PD.drawFile = function (dw, opts, warnings) {
             warnings.push("WARN " + dw.fileName + " paragraph style " + dw.paraStyles[p].name + ": " + ep);
         }
     }
+    PD.syms = PD.symbols(doc, dw.symbols, sw);
 
     var rects = [];
     for (var a = 0; a < doc.artboards.length; a++) rects.push(doc.artboards[a].artboardRect);
@@ -254,6 +255,8 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
         }
         var spec = PD.specs[it.paraStyle];
         if (spec && spec.opacity !== undefined && spec.opacity < 1 && !(it.opacity < 1)) item.opacity = spec.opacity * 100;
+    } else if (it.kind === "Symbol") {
+        item = PD.symbolItem(layer, it, rect, sw);
     } else {
         return;
     }
@@ -303,6 +306,68 @@ PD.centerOnGlyphs = function (tf, target) {
     var b = outlined.geometricBounds; // [left, top, right, bottom]
     outlined.remove();
     tf.translate(target[0] - (b[0] + b[2]) / 2, target[1] - (b[1] + b[3]) / 2);
+};
+
+// Entourage symbols: defined once per document from the drawing's art. A same-named symbol already in the file is
+// kept, so art the office replaces in Illustrator survives every re-export. VERIFY-WIN: symbols.add / symbolItems.add.
+PD.symbols = function (doc, defs, sw) {
+    var out = {};
+    if (!defs) return out;
+    for (var i = 0; i < defs.length; i++) {
+        var def = defs[i], sym = null;
+        try { sym = doc.symbols.getByName(def.name); } catch (e) { sym = null; }
+        if (!sym) {
+            var tmp = null;
+            try {
+                tmp = doc.layers.add();
+                var g = PD.symbolArt(tmp, def, [0, 0], [1, 0, 0, 1], [0, 0], sw);
+                sym = doc.symbols.add(g);
+                sym.name = def.name;
+            } catch (e2) {
+                sym = null;
+            }
+            if (tmp) tmp.remove();
+        }
+        out[def.name] = { sym: sym, def: def };
+    }
+    return out;
+};
+
+// Symbol art as a group of compound paths: symbol point p → (x, y) + M·p on the artboard.
+PD.symbolArt = function (layer, def, at, m, rect, sw) {
+    var g = layer.groupItems.add();
+    for (var p = 0; p < def.parts.length; p++) {
+        var cp = g.compoundPathItems.add();
+        for (var r = 0; r < def.parts[p].length; r++) {
+            var ring = def.parts[p][r], pts = [];
+            for (var k = 0; k < ring.length; k++)
+                pts.push([at[0] + m[0] * ring[k][0] + m[2] * ring[k][1], at[1] + m[1] * ring[k][0] + m[3] * ring[k][1]]);
+            PD.style(PD.pathItem(cp.pathItems, pts, true, rect), { fill: def.fill }, sw);
+        }
+    }
+    return g;
+};
+
+// Symbol instance: scaled / mirrored / rotated by the item's matrix, then moved so its centre matches the plugin's.
+// Falls back to plain grouped paths when the document has no symbol for it.
+PD.symbolItem = function (layer, it, rect, sw) {
+    var s = PD.syms[it.symbol];
+    if (!s) throw "symbol " + it.symbol + " missing";
+    var m = it.matrix, b = s.def.bounds;
+    if (!s.sym) return PD.symbolArt(layer, s.def, [it.x, it.y], m, rect, sw);
+    // Centre of the symbol's bounds on the page (exact under scale, mirror and rotation of centred art).
+    var bx = (b[0] + b[2]) / 2, by = (b[1] + b[3]) / 2;
+    var target = PD.pt(rect, it.x + m[0] * bx + m[2] * by, it.y + m[1] * bx + m[3] * by);
+    var item = layer.symbolItems.add(s.sym);
+    var t = app.getIdentityMatrix();
+    t.mValueA = m[0];
+    t.mValueB = -m[1];
+    t.mValueC = -m[2];
+    t.mValueD = m[3];
+    item.transform(t, true, true, true, true, 1, Transformation.CENTER);
+    var g = item.geometricBounds;
+    item.translate(target[0] - (g[0] + g[2]) / 2, target[1] - (g[1] + g[3]) / 2);
+    return item;
 };
 
 PD.pathItem = function (collection, pts, closed, rect) {

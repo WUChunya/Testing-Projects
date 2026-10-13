@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace PD.Core.Drawing;
 
-public enum ItemKind { Path, RoundRect, Text }
+public enum ItemKind { Path, RoundRect, Text, Symbol }
 
 /// <summary>
 /// One drawn element. Coordinates are points on the artboard, origin top-left, y down.
@@ -54,6 +54,26 @@ public sealed class DItem
     /// vertically on Y (section bar labels and floor numbers). Null = <see cref="Center"/> / baseline placement.
     /// </summary>
     public string? GlyphAnchor { get; set; }
+
+    /// <summary>
+    /// Symbol: instance of <see cref="Drawing.Symbols"/> by name. (X, Y) is where the symbol origin (feet / trunk foot)
+    /// lands and <see cref="Matrix"/> [a, b, c, d] maps symbol space (pt, y down) to the page (scale, mirror).
+    /// </summary>
+    public string? Symbol { get; set; }
+}
+
+/// <summary>
+/// Symbol art (entourage people and trees): parts are compound paths in symbol space (pt, y down, origin at the
+/// foot), all filled with <see cref="Fill"/>. Illustrator keeps a same-named symbol already in the file, so the office
+/// can replace the art once and every re-export reuses it.
+/// </summary>
+public sealed class DSymbol
+{
+    public string Name { get; set; } = "";
+    public string? Fill { get; set; }
+    public List<List<double[][]>> Parts { get; set; } = new();
+    /// <summary>[minX, minY, maxX, maxY] in symbol space.</summary>
+    public double[] Bounds { get; set; } = new double[4];
 }
 
 public sealed class DLayer
@@ -90,6 +110,7 @@ public sealed class Drawing
     public List<DLayer> Layers { get; set; } = new();
     public List<Swatch> Swatches { get; set; } = new();
     public List<ParaStyle> ParaStyles { get; set; } = new();
+    public List<DSymbol> Symbols { get; set; } = new();
     /// <summary>Layers the script must never clear (PRD 5.0); created empty if missing.</summary>
     public List<string> ProtectedLayers { get; set; } = new() { "_MANUAL", "OVERLAY" };
     [JsonIgnore] public List<string> Notes { get; } = new();

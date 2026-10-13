@@ -14,12 +14,12 @@ Do stage S0 from docs/DEV_PROMPT.md now. Follow the token rules in CLAUDE.md. Us
 At the end: run tests, update docs/PROGRESS.md, commit, push, and reply in Chinese in ≤10 lines.
 ```
 
-## Next-session message (current: start of S6, after v0.7.0)
+## Next-session message (current: start of S6, after v0.7.1)
 
 ```
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 Read, in this order and only these: CLAUDE.md, docs/PROGRESS.md, docs/CHANGELOG.md, then the PRD sections for the stage
-(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.9; S0-S5 are done (plugin v0.7.0, 133 tests green).
+(grep -n '^#' docs/PRD.md, then sed -n). PRD is v0.9; S0-S5 are done (plugin v0.7.1, 134 tests green; office entourage in styles/entourage_library.json).
 Style source of truth: docs/SITE_STYLE.md and docs/AXON_STYLE.md, already merged into styles/style_default.json
 (fonts, section, plan, axon incl. axon.site, roles, view, charts, entourage); read styles by key, never whole.
 Outputs now include 00_Site_Plan.ai and 03_Site_Axon.ai (PRD 5.2 / 5.4 v0.9); do not rebuild them.

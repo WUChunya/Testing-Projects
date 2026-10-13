@@ -109,7 +109,7 @@ public static class EntouragePlacer
     }
 
     /// <summary>Stable per-drawing seed: the project seed mixed with the drawing / level / program name.</summary>
-    static int Mix(int seed, string key)
+    public static int Mix(int seed, string key)
     {
         unchecked
         {
@@ -121,94 +121,47 @@ public static class EntouragePlacer
 }
 
 /// <summary>
-/// Built-in placeholder figures (PRD 4: replaced by the company's entourage.ai symbols later). Plan = head and
-/// shoulders seen from above; elevation = a 5'-9" silhouette. Coordinates are returned in page points.
+/// Office entourage (styles/entourage_library.json from ENTOURAGES.ai / TREES.ai, tools/entourage_from_ai.py): standing
+/// people and trees are AI symbols (<see cref="EntourageArt"/>); plans use the built-in top-view figure; axons draw the
+/// same people outlines in the projected frame (they are clipped by the hidden-face pass).
 /// </summary>
 public static class EntourageSymbols
 {
-    public const int Variants = 4;
+    /// <summary>One variant per office figure.</summary>
+    public static int Variants => Math.Max(1, EntourageLibrary.Default.People.Count);
 
-    /// <summary>Head-and-shoulders seen from above, centred on (x, y) in points.</summary>
-    public static DItem Plan(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double x, double y, double ptPerFt, int variant)
-    {
-        var r = e.PlanRadiusFt * ptPerFt;
-        var s = e.PlanShoulderFt * ptPerFt / 2;
-        var turn = variant * Math.PI / 2;
-        var ring = new List<double[]>();
-        for (var i = 0; i < 20; i++)
-        {
-            var a = 2 * Math.PI * i / 20;
-            // An egg: shoulders wider across than deep, turned per variant.
-            double px = s * Math.Cos(a), py = r * Math.Sin(a);
-            ring.Add(new[] { x + px * Math.Cos(turn) - py * Math.Sin(turn), y + px * Math.Sin(turn) + py * Math.Cos(turn) });
-        }
-        return new DItem
-        {
-            Kind = ItemKind.Path, Name = name, Fill = d.Swatch("ENTOURAGE", e.Color), Opacity = e.Opacity, Paths = new() { ring.ToArray() },
-        };
-    }
+    static LibraryFigure Person(int variant) => EntourageLibrary.Default.People[((variant % Variants) + Variants) % Variants];
+
+    /// <summary>Head-and-shoulders seen from above, centred on (x, y) in points, turned per variant.</summary>
+    public static DItem Plan(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double x, double y, double ptPerFt, int variant) =>
+        EntourageArt.Place(name, EntourageArt.PersonTop(d, e.Color), x, y, e.PlanShoulderFt * ptPerFt, false, e.Opacity, variant * 360.0 / Variants);
+
+    /// <summary>Office figure <paramref name="variant"/> standing on (x, y) (the feet) in points, <paramref name="h"/> tall.</summary>
+    public static DItem Standing(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double x, double y, double h, int variant, bool mirror) =>
+        EntourageArt.Place(name, EntourageArt.Person(d, Person(variant), e.Color), x, y, h, mirror, e.Opacity);
 
     /// <summary>
-    /// Silhouette standing on (x, y) (the feet) in points, <paramref name="h"/> tall; four poses, optionally
-    /// mirrored. Simple and readable at small sizes, like the reference drawings.
+    /// The figure's rings in a projected (axon) frame: <paramref name="up"/> is one figure height in projected units
+    /// and the width runs along the perpendicular, so people stand upright on the site plane.
     /// </summary>
-    public static DItem Standing(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double x, double y, double h, int variant, bool mirror)
-    {
-        var pts = Points(variant, mirror).Select(q => new[] { x + q[0] * h, y - q[1] * h }).ToArray();
-        return Shape(d, e, name, pts);
-    }
-
-    /// <summary>
-    /// The same silhouette drawn in a projected (axon) frame: <paramref name="up"/> is one figure height in
-    /// projected units and the width runs along the perpendicular, so people stand upright on the site plane.
-    /// </summary>
-    public static double[][] Projected(double x, double y, (double X, double Y) up, int variant, bool mirror)
+    public static List<double[][]> Projected(double x, double y, (double X, double Y) up, int variant, bool mirror)
     {
         var len = Math.Sqrt(up.X * up.X + up.Y * up.Y);
-        if (len < 1e-9) return Array.Empty<double[]>();
+        if (len < 1e-9) return new();
         double rx = up.Y / len, ry = -up.X / len;  // screen-right, same length as one height unit
-        return Points(variant, mirror).Select(q => new[]
-        {
-            x + up.X * q[1] + rx * q[0] * len,
-            y + up.Y * q[1] + ry * q[0] * len,
-        }).ToArray();
-    }
-
-    /// <summary>
-    /// Silhouette outline in figure units (x across, y up: 0 = feet … 1 = head top), a simple polygon (legs as an
-    /// inverted V, arms along the body) so it fills cleanly; four poses (stride, arms), optionally mirrored.
-    /// </summary>
-    static List<double[]> Points(int variant, bool mirror)
-    {
-        var stride = variant % 2 == 0 ? 0.03 : 0.07;
-        var arm = variant >= 2 ? 0.035 : 0.0;
         var sx = mirror ? -1 : 1;
-        double[] P(double x, double y) => new[] { sx * x, y };
-        return new List<double[]>
+        return Person(variant).Parts.SelectMany(p => p).Select(r => r.Select(q => new[]
         {
-            P(-0.11 - stride, 0.0),   // left foot, outer
-            P(-0.045 - stride, 0.0),  // left foot, inner
-            P(0.0, 0.40),             // crotch
-            P(0.045 + stride, 0.0),   // right foot, inner
-            P(0.11 + stride, 0.0),    // right foot, outer
-            P(0.075, 0.47),           // right hip
-            P(0.095 + arm, 0.49),     // right hand
-            P(0.125, 0.76),           // right shoulder
-            P(0.055, 0.83),
-            P(0.04, 0.87),            // neck
-            P(0.055, 0.94),
-            P(0.0, 1.0),              // head top
-            P(-0.055, 0.94),
-            P(-0.04, 0.87),
-            P(-0.055, 0.83),
-            P(-0.125, 0.76),          // left shoulder
-            P(-0.095 - arm, 0.49),    // left hand
-            P(-0.075, 0.47),          // left hip
-        };
+            x + up.X * q[1] + rx * sx * q[0] * len,
+            y + up.Y * q[1] + ry * sx * q[0] * len,
+        }).ToArray()).ToList();
     }
 
-    static DItem Shape(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double[][] pts) => new()
+    /// <summary>A tree silhouette, chosen and coloured by the tree's own seed, trunk foot at (x, y), <paramref name="h"/> tall (points).</summary>
+    public static DItem Tree(PD.Core.Drawing.Drawing d, EntourageStyle e, string name, double x, double y, double h, Random rng)
     {
-        Kind = ItemKind.Path, Name = name, Fill = d.Swatch("ENTOURAGE", e.Color), Opacity = e.Opacity, Paths = new() { pts },
-    };
+        var trees = EntourageLibrary.Default.Trees;
+        var fill = e.TreeFills.Count > 0 ? e.TreeFills[rng.Next(e.TreeFills.Count)] : "#9CC078";
+        return EntourageArt.Place(name, EntourageArt.Tree(d, trees[rng.Next(trees.Count)], fill), x, y, h, rng.Next(2) == 0, e.TreeOpacity);
+    }
 }

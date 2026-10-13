@@ -17,6 +17,19 @@ public static class SvgWriter
         var sb = new StringBuilder();
         sb.Append($"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{F(ab.W)}\" height=\"{F(ab.H)}\" viewBox=\"0 0 {F(ab.W)} {F(ab.H)}\">\n");
         sb.Append($"<title>{Esc(ab.Name)}</title>\n<rect width=\"100%\" height=\"100%\" fill=\"#FFFFFF\"/>\n");
+        var used = d.Layers.SelectMany(l => l.Items).Where(i => i.Artboard == artboard && i.Kind == ItemKind.Symbol).Select(i => i.Symbol).ToHashSet();
+        if (used.Count > 0)
+        {
+            sb.Append("<defs>\n");
+            foreach (var sym in d.Symbols.Where(x => used.Contains(x.Name)))
+            {
+                sb.Append($"<g id=\"{Esc(SymbolId(sym.Name))}\" fill=\"{Paint(sym.Fill)}\">");
+                foreach (var part in sym.Parts)
+                    sb.Append($"<path fill-rule=\"evenodd\" d=\"{PathData(part, true)}\"/>");
+                sb.Append("</g>\n");
+            }
+            sb.Append("</defs>\n");
+        }
         foreach (var layer in d.Layers)
         {
             sb.Append($"<g id=\"{Esc(layer.Name)}\">\n");
@@ -28,9 +41,11 @@ public static class SvgWriter
                 switch (it.Kind)
                 {
                     case ItemKind.Path when it.Paths is { Count: > 0 }:
-                        var dd = string.Join(" ", it.Paths.Where(p => p.Length > 0)
-                            .Select(p => "M" + string.Join(" L", p.Select(q => $"{F(q[0])},{F(q[1])}")) + (it.Closed ? " Z" : "")));
-                        sb.Append($"<path {common} fill-rule=\"evenodd\" d=\"{dd}\"/>\n");
+                        sb.Append($"<path {common} fill-rule=\"evenodd\" d=\"{PathData(it.Paths, it.Closed)}\"/>\n");
+                        break;
+                    case ItemKind.Symbol when it.Symbol != null && it.Matrix is { Length: 4 } m:
+                        sb.Append($"<use id=\"{Esc(it.Name)}\" href=\"#{Esc(SymbolId(it.Symbol))}\" transform=\"matrix({F(m[0])} {F(m[1])} {F(m[2])} {F(m[3])} {F(it.X)} {F(it.Y)})\""
+                            + (it.Opacity < 1 ? $" opacity=\"{F(it.Opacity)}\"" : "") + "/>\n");
                         break;
                     case ItemKind.RoundRect:
                         sb.Append($"<rect {common} x=\"{F(it.X)}\" y=\"{F(it.Y)}\" width=\"{F(it.W)}\" height=\"{F(it.H)}\" rx=\"{F(it.R)}\"/>\n");
@@ -45,6 +60,11 @@ public static class SvgWriter
         sb.Append("</svg>\n");
         return sb.ToString();
     }
+
+    static string PathData(IEnumerable<double[][]> rings, bool closed) => string.Join(" ", rings.Where(p => p.Length > 0)
+        .Select(p => "M" + string.Join(" L", p.Select(q => $"{F(q[0])},{F(q[1])}")) + (closed ? " Z" : "")));
+
+    static string SymbolId(string name) => "sym_" + name;
 
     static string Text(DItem it, ParaStyle? ps, Func<string?, string> paint)
     {

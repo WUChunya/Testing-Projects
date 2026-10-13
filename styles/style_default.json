@@ -862,7 +862,7 @@
     }
   },
   "entourage": {
-    "comment": "PRD 4: seeded Poisson-disk people. Density is people per 1,000 SF of resolved program area; 0 = none.",
+    "comment": "PRD 4: seeded Poisson-disk people. Density is people per 1,000 SF of resolved program area; 0 = none. Art: styles/entourage_library.json (office assets/entourage/ENTOURAGES.ai = 39 people, TREES.ai = 19 trees; rebuild with tools/entourage_from_ai.py) as AI symbols PD_PERSON_*, PD_TREE_* (a same-named symbol already in the .ai is kept).",
     "enabled": true,
     "color": "#9A9A9A",
     "opacity": 0.9,
@@ -898,6 +898,18 @@
       "SHELL": 0.0,
       "VOID": 0.0,
       "UNASSIGNED": 0.0
-    }
+    },
+    "treeFills": [
+      "#9CC078",
+      "#B8D49A",
+      "#7FA866",
+      "#C4CCC0"
+    ],
+    "treeOpacity": 0.85,
+    "treeHeightFt": [
+      20,
+      50
+    ],
+    "treeDefaultHeightFt": 32
   }
 }

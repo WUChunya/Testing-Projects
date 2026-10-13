@@ -553,11 +553,16 @@ public static class AxonDrawing
         {
             var (px, py) = proj.Project(f.X, f.Y, z);
             var (hx, hy) = proj.Project(f.X, f.Y, z + e.HeightFt);
-            var pts = PD.Core.Entourage.EntourageSymbols.Projected(px, py, (hx - px, hy - py), f.Variant, f.Mirror);
-            if (pts.Length == 0) continue;
-            NtsGeometry ring = MeshSlicer.Factory.CreatePolygon(pts.Select(q => new Coordinate(q[0], q[1]))
-                .Append(new Coordinate(pts[0][0], pts[0][1])).ToArray());
-            if (!ring.IsValid) ring = ring.Buffer(0); // the silhouette's legs cross: make it a clean shape for the overlays
+            var rings = PD.Core.Entourage.EntourageSymbols.Projected(px, py, (hx - px, hy - py), f.Variant, f.Mirror);
+            if (rings.Count == 0) continue;
+            // Office figure rings (holes between arm and body, or two people) → one clean shape for the overlays.
+            NtsGeometry ring = MeshSlicer.Factory.CreatePolygon();
+            foreach (var r in rings.Where(r => r.Length >= 3))
+            {
+                var poly = MeshSlicer.Factory.CreatePolygon(r.Select(q => new Coordinate(q[0], q[1])).Append(new Coordinate(r[0][0], r[0][1])).ToArray()).Buffer(0);
+                ring = AxonFaces.Safe(() => ring.SymmetricDifference(poly), ring);
+            }
+            if (ring.IsEmpty) continue;
             sheet.Paint.Add((PD.Core.Entourage.EntouragePlacer.Layer,
                 new Spec($"PERSON_{++n:000}", ring, d.Swatch("ENTOURAGE", e.Color), null, 0, Opacity: e.Opacity, Depth: proj.Depth(f.X, f.Y, z))));
         }

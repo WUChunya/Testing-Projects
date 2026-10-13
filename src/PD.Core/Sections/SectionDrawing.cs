@@ -123,39 +123,26 @@ public static class SectionDrawing
     }
 
     /// <summary>
-    /// Lollipop trees in front of the section (SITE_STYLE §4 配景): trunk line on the ground, canopy ellipse,
-    /// near ones drawn last. Uses the same tree style as the axons.
+    /// Trees behind the cut (SITE_STYLE §4 配景): office tree silhouettes (TREES.ai) standing on the ground at each
+    /// NC/BG.Tree object, as tall as the object (flat plan trees get the default height), far ones first.
     /// </summary>
     static void Trees(PD.Core.Drawing.Drawing d, ExportContext ctx, PageMap map, string p, Geometry.SectionPlane plane, double depth, double ground)
     {
-        var tr = ctx.Style.Axon.Trees;
-        if (tr.CanopyWFt <= 0) return;
+        var e = ctx.Style.Entourage;
+        if (!PD.Core.Entourage.EntouragePlacer.Enabled(ctx) || PD.Core.Entourage.EntourageLibrary.Default.Trees.Count == 0) return;
         var layer = d.Layer("BG_TREE");
-        var n = 0;
         var trees = ctx.Result.Local.Objects
             .Where(o => o.Role is PD.Core.Classification.Roles.Tree or PD.Core.Classification.Roles.NcTree && !ctx.Result.Stray.Contains(o.Id))
-            .Select(o => (x: (o.BBox.MinX + o.BBox.MaxX) / 2, y: (o.BBox.MinY + o.BBox.MaxY) / 2))
-            .Select(c => (u: plane.U(c.x, c.y), w: plane.W(c.x, c.y)))
-            .Where(c => c.w > 0 && c.w <= depth && c.u > -tr.CanopyWFt && c.u < plane.Length + tr.CanopyWFt)
-            .OrderByDescending(c => c.w)
+            .Select(o => (o, u: plane.U((o.BBox.MinX + o.BBox.MaxX) / 2, (o.BBox.MinY + o.BBox.MaxY) / 2), w: plane.W((o.BBox.MinX + o.BBox.MaxX) / 2, (o.BBox.MinY + o.BBox.MaxY) / 2)))
+            .Where(c => c.w > 0 && c.w <= depth && c.u > -20 && c.u < plane.Length + 20)
+            .OrderByDescending(c => c.w).ThenBy(c => c.o.Id, StringComparer.Ordinal)
             .ToList();
-        foreach (var (u, _) in trees)
+        var n = 0;
+        foreach (var (o, u, _) in trees)
         {
-            var x = map.X(u);
-            var top = map.Y(ground + tr.TrunkHFt);
-            layer.Items.Add(new DItem
-            {
-                Kind = ItemKind.Path, Name = $"{p}TREE_{++n:000}_TRUNK", Stroke = d.Gray(tr.Trunk), StrokePt = tr.TrunkPt, Closed = false,
-                Paths = new() { new[] { new[] { x, map.Y(ground) }, new[] { x, top } } },
-            });
-            var cy = map.Y(ground + tr.TrunkHFt + tr.CanopyHFt / 2);
-            double rx = tr.CanopyWFt / 2 * map.K, ry = tr.CanopyHFt / 2 * map.K;
-            var canopy = tr.Canopies.Count > 0 ? tr.Canopies[n % tr.Canopies.Count] : "#C4ECBC";
-            layer.Items.Add(new DItem
-            {
-                Kind = ItemKind.Path, Name = $"{p}TREE_{n:000}", Fill = d.Swatch("TREE_" + canopy.TrimStart('#'), canopy), Opacity = tr.Opacity,
-                Paths = new() { Enumerable.Range(0, 24).Select(j => new[] { x + rx * Math.Cos(2 * Math.PI * j / 24), cy + ry * Math.Sin(2 * Math.PI * j / 24) }).ToArray() },
-            });
+            var h = o.BBox.SizeZ >= 8 ? Math.Clamp(o.BBox.SizeZ, e.TreeHeightFt[0], e.TreeHeightFt[1]) : e.TreeDefaultHeightFt;
+            var rng = new Random(PD.Core.Entourage.EntouragePlacer.Mix(PD.Core.Entourage.EntouragePlacer.Seed(ctx), "TREE_" + o.Id));
+            layer.Items.Add(PD.Core.Entourage.EntourageSymbols.Tree(d, e, $"{p}TREE_{++n:000}", map.X(u), map.Y(ground), h * map.K, rng));
         }
     }
 

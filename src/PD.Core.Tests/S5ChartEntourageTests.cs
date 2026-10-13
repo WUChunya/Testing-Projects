@@ -104,12 +104,12 @@ public class S5ChartEntourageTests
         Assert.NotEmpty(pa);
         Assert.Equal(pa.Count, pb.Count);
         for (var i = 0; i < pa.Count; i++)
-            Assert.Equal(pa[i].Paths![0][0], pb[i].Paths![0][0]);
+            Assert.Equal((pa[i].X, pa[i].Y, pa[i].Symbol), (pb[i].X, pb[i].Y, pb[i].Symbol));
 
         // A different seed moves them.
         ctx.Settings.Output.EntourageSeed = EntouragePlacer.Seed(ctx) + 1;
         var moved = PlanDrawing.BuildSite(ctx).Layer(EntouragePlacer.Layer).Items;
-        Assert.NotEqual(pa[0].Paths![0][0], moved[0].Paths![0][0]);
+        Assert.NotEqual((pa[0].X, pa[0].Y), (moved[0].X, moved[0].Y));
         ctx.Settings.Output.EntourageSeed = null;
 
         // Density 0 programs (Core, Stair, Shell, Mechanical) stay empty.
@@ -130,11 +130,13 @@ public class S5ChartEntourageTests
         var ab = d.Artboards[0];
         foreach (var p in people)
         {
-            var ys = p.Paths![0].Select(q => q[1]).ToList();
-            Assert.InRange(ys.Max() - ys.Min(), 1, ctx.ForSection().PtPerFt * ctx.Style.Entourage.HeightFt + 0.5);
-            Assert.All(p.Paths![0], q => { Assert.InRange(q[0], -1, ab.W + 1); Assert.InRange(q[1], -1, ab.H + 1); });
+            // Office symbol, never taller than 5'-9" at the section scale, feet inside the artboard.
+            Assert.InRange(p.Matrix![3] * EntourageArt.UnitPt, 1, ctx.ForSection().PtPerFt * ctx.Style.Entourage.HeightFt + 0.5);
+            Assert.InRange(p.X, -1, ab.W + 1);
+            Assert.InRange(p.Y, -1, ab.H + 1);
         }
-        Assert.All(people, p => Assert.Equal("ENTOURAGE", p.Fill));
+        Assert.All(people, p => Assert.StartsWith("PD_PERSON_P", p.Symbol));
+        Assert.All(d.Symbols.Where(s => s.Name.StartsWith("PD_PERSON")), s => Assert.Equal("PD_PEOPLE", s.Fill));
     }
 
     [Fact]
@@ -164,9 +166,9 @@ public class S5ChartEntourageTests
         _out.WriteLine($"bars people={d.Layer(EntouragePlacer.Layer).Items.Count} trees={d.Layer("BG_TREE").Items.Count}");
         Assert.NotEmpty(d.Layer(EntouragePlacer.Layer).Items);
         Assert.NotEmpty(d.Layer("BG_TREE").Items);
-        // Trunks come in pairs with their canopy, and the canopy carries the tree style's opacity.
-        Assert.All(d.Layer("BG_TREE").Items.Where(i => i.Name.EndsWith("_TRUNK")), i => Assert.False(i.Closed));
-        Assert.Contains(d.Layer("BG_TREE").Items, i => i.Opacity == ctx.Style.Axon.Trees.Opacity);
+        // Office tree silhouettes (TREES.ai) as symbols, at the entourage tree opacity.
+        Assert.All(d.Layer("BG_TREE").Items, i => Assert.StartsWith("PD_TREE_T", i.Symbol));
+        Assert.All(d.Layer("BG_TREE").Items, i => Assert.Equal(ctx.Style.Entourage.TreeOpacity, i.Opacity));
     }
 
     /// <summary>The Downtown model carries its own people (role Entourage); those are used instead of generated ones.</summary>
@@ -180,18 +182,49 @@ public class S5ChartEntourageTests
         Assert.Equal(155, r.Local.Objects.Count(o => o.Role == PD.Core.Classification.Roles.Entourage && o.Mesh != null));
     }
 
-    /// <summary>Every silhouette is a simple polygon (Illustrator fills it cleanly, overlays accept it).</summary>
+    /// <summary>Office people (ENTOURAGES.ai) are placed as AI symbols, every variant a library figure, mirrored on request.</summary>
     [Fact]
-    public void Entourage_SilhouettesAreSimple()
+    public void Entourage_StandingPeopleAreOfficeSymbols()
     {
         var d = new PD.Core.Drawing.Drawing();
         var e = new PD.Core.Config.EntourageStyle();
+        Assert.Equal(39, EntourageSymbols.Variants);
         for (var v = 0; v < EntourageSymbols.Variants; v++)
             foreach (var mirror in new[] { false, true })
             {
                 var it = EntourageSymbols.Standing(d, e, "P", 0, 0, 10, v, mirror);
-                var ring = it.Paths![0].Append(it.Paths[0][0]).Select(q => new NetTopologySuite.Geometries.Coordinate(q[0], q[1])).ToArray();
-                Assert.True(new NetTopologySuite.Geometries.GeometryFactory().CreatePolygon(ring).IsValid, $"variant {v} mirror {mirror}");
+                Assert.Equal(PD.Core.Drawing.ItemKind.Symbol, it.Kind);
+                Assert.Equal(mirror ? -0.1 : 0.1, it.Matrix![0], 6);
+                Assert.Equal(0.1, it.Matrix[3], 6);
+                Assert.Contains(d.Symbols, s => s.Name == it.Symbol);
             }
+        Assert.Equal(39, d.Symbols.Count);
+    }
+
+    /// <summary>The library holds the office figures normalised to height 1 with the feet at the origin.</summary>
+    [Fact]
+    public void Entourage_LibraryFromOfficeFiles()
+    {
+        var lib = EntourageLibrary.Default;
+        Assert.Equal(39, lib.People.Count);
+        Assert.Equal(19, lib.Trees.Count);
+        foreach (var f in lib.People.Concat(lib.Trees))
+        {
+            var pts = f.Parts.SelectMany(p => p).SelectMany(r => r).ToList();
+            Assert.InRange(pts.Min(q => q[1]), -0.01, 0.01);
+            Assert.InRange(pts.Max(q => q[1]), 0.99, 1.01);
+        }
+        var d = new PD.Core.Drawing.Drawing();
+        var tree = EntourageSymbols.Tree(d, new PD.Core.Config.EntourageStyle { TreeFills = { "#9CC078" } }, "T", 0, 0, 100, new Random(1));
+        Assert.Matches("^PD_TREE_T\\d\\d_9CC078$", tree.Symbol!);
+        var svg = PD.Core.Writers.SvgWriter.Write(WithArtboard(d, tree));
+        Assert.Contains("<use id=\"T\" href=\"#sym_PD_TREE_", svg);
+    }
+
+    static PD.Core.Drawing.Drawing WithArtboard(PD.Core.Drawing.Drawing d, PD.Core.Drawing.DItem item)
+    {
+        d.Artboards.Add(new PD.Core.Drawing.Artboard("A", 200, 200));
+        d.Layer("ENTOURAGE").Items.Add(item);
+        return d;
     }
 }

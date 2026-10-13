@@ -504,6 +504,12 @@ public sealed class EntourageStyle
     public double OutdoorDensityPer1000Sf { get; set; } = 0.3;
     public double OutdoorMinSpacingFt { get; set; } = 26;
     public Dictionary<string, double> DensityByProgram { get; set; } = new();
+    /// <summary>Section / elevation trees (office TREES.ai silhouettes, SITE_STYLE §4 colours).</summary>
+    public List<string> TreeFills { get; set; } = new();
+    public double TreeOpacity { get; set; } = 0.85;
+    /// <summary>Height from the tree object, clamped to this range; flat tree objects (plan circles) use the default.</summary>
+    public double[] TreeHeightFt { get; set; } = { 20, 50 };
+    public double TreeDefaultHeightFt { get; set; } = 32;
 
     /// <summary>People per 1,000 SF for a program (PRD 4: Lobby high, Lab/Office medium, Core / Shell / Mechanical 0).</summary>
     public double Density(string programKey) =>
