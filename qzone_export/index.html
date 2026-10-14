@@ -105,10 +105,15 @@
     const s = document.createElement('script');
     const saved = FIXED_CALLBACKS.map(n => [n, window[n]]);
     let finished = false;
+    const onScriptError = e => {
+      if (e.filename && e.filename.indexOf(url) === 0) done(new Error('返回的不是数据（' + e.message + '），可能是登录页或验证页'));
+    };
+    window.addEventListener('error', onScriptError);
     const done = (err, data) => {
       if (finished) return;
       finished = true;
       clearTimeout(timer);
+      window.removeEventListener('error', onScriptError);
       delete window[cb];
       for (const [n, v] of saved) window[n] = v;
       s.remove();
@@ -122,6 +127,7 @@
     s.onload = () => setTimeout(() => done(new Error('已返回内容，但格式无法识别')), 1500);
     params.set('callback', cb);
     s.src = url + '?' + params;
+    console.log('[QQ空间导出] 请求地址：', s.src);
     (document.head || document.documentElement).appendChild(s);
   });
   const viaFetch = async (url, params) => {
@@ -162,7 +168,8 @@
         }
       }
       if (firstReply) return firstReply;
-      throw new Error('所有接口都访问失败\n' + errors.join('\n'));
+      throw new Error('所有接口都访问失败\n' + errors.join('\n')
+        + '\n\n排查：按 F12 看控制台里打印的第一个“请求地址”，在新标签页打开它，把页面显示的内容截图。');
     }
     for (let attempt = 0; ; attempt++) {
       try {
