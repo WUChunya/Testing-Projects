@@ -21,6 +21,7 @@
   code { background:var(--bg); padding:1px 6px; border-radius:4px; font-size:14px; }
   .note { color:var(--muted); font-size:14px; }
   details { margin-top:18px; }
+  textarea { display:block; width:100%; height:90px; margin-top:10px; font:12px/1.4 ui-monospace, Menlo, Consolas, monospace; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--muted); padding:8px; resize:vertical; }
 </style>
 </head>
 <body>
@@ -29,28 +30,35 @@
   <p class="sub">导出某个QQ号的全部说说，按时间从早到晚排好，存成一个可以直接用 Chrome 打开的网页。</p>
 
   <div class="step">
-    <h2><span>1</span>把按钮拖到书签栏</h2>
-    <p>按 <code>Ctrl+Shift+B</code>（Mac 为 <code>⌘+Shift+B</code>）显示书签栏，然后把下面的橙色按钮<b>拖</b>到书签栏上。</p>
-    <a id="bm" href="#" onclick="alert('请把这个按钮拖到书签栏，不要直接点击。');return false;">导出QQ空间说说</a>
+    <h2><span>1</span>登录并打开对方的QQ空间</h2>
+    <p>在 Chrome 里登录QQ空间，打开对方的空间页面：<a href="https://user.qzone.qq.com/350904191/311" target="_blank" rel="noopener">user.qzone.qq.com/350904191</a>，确认能看到说说。</p>
   </div>
 
   <div class="step">
-    <h2><span>2</span>登录并打开对方的QQ空间</h2>
-    <p>在 Chrome 里登录QQ空间，打开对方的空间页面，例如 <a href="https://user.qzone.qq.com/350904191/311" target="_blank" rel="noopener">user.qzone.qq.com/350904191</a>。</p>
+    <h2><span>2</span>复制导出代码</h2>
+    <button id="copy">复制代码</button> <span id="copied" class="note"></span>
+    <textarea id="code" readonly></textarea>
   </div>
 
   <div class="step">
-    <h2><span>3</span>点击书签</h2>
-    <p>在对方空间页面上点击刚才的书签，确认QQ号后，页面右上角会显示抓取进度。</p>
+    <h2><span>3</span>在对方空间页面运行</h2>
+    <p>回到对方的QQ空间页面，按 <code>F12</code>（Mac 为 <code>⌥+⌘+J</code>），切到 <b>Console（控制台）</b>，粘贴代码后按回车。</p>
+    <p class="note">如果 Chrome 提示不能粘贴（Warning: Don't paste code…），先在控制台输入 <code>allow pasting</code> 回车，再粘贴一次。</p>
+    <p>确认QQ号后，页面右上角会显示读取进度。</p>
+  </div>
+
+  <div class="step">
+    <h2><span>4</span>打开下载的文件</h2>
     <p>完成后浏览器会自动下载 <code>qzone_QQ号_日期.html</code>，双击就能在 Chrome 里阅读：按年份分组，可以搜索，可以切换正序和倒序。</p>
   </div>
 
   <p class="note">只能导出你的账号本来就有权限看到的说说。数据只在你自己的浏览器里处理，不会上传到任何地方。导出的网页里，图片仍从QQ的服务器加载。</p>
 
   <details>
-    <summary>书签用不了？改用控制台</summary>
-    <p>在对方空间页面按 <code>F12</code> 打开 Console（控制台），粘贴下面复制的代码后回车。第一次粘贴时 Chrome 可能会要求先输入 <code>allow pasting</code>。</p>
-    <button id="copy">复制代码</button> <span id="copied" class="note"></span>
+    <summary>想用书签一键运行？</summary>
+    <p>把下面的按钮<b>拖</b>到书签栏（<code>Ctrl+Shift+B</code> 显示书签栏）。以后在对方空间页面上<b>直接左键点击</b>这个书签即可。</p>
+    <p class="note">如果出现 <code>about:blank#blocked</code>，说明 Chrome 拦截了书签：不要在新标签页里点它，也不要用中键或右键“在新标签页中打开”。如果仍被拦截，用上面的控制台方法。</p>
+    <a id="bm" href="#" onclick="alert('请把这个按钮拖到书签栏，不要直接点击。');return false;">导出QQ空间说说</a>
   </details>
 </main>
 
@@ -319,9 +327,16 @@
 <script>
   const src = document.getElementById('src').textContent;
   document.getElementById('bm').href = 'javascript:' + encodeURIComponent(src);
+  const code = document.getElementById('code');
+  code.value = src.trim();
+  code.addEventListener('focus', () => code.select());
   document.getElementById('copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(src); document.getElementById('copied').textContent = '已复制'; }
-    catch (e) { document.getElementById('copied').textContent = '复制失败，请手动选择'; }
+    const msg = document.getElementById('copied');
+    try { await navigator.clipboard.writeText(code.value); msg.textContent = '已复制'; }
+    catch (e) {
+      code.focus(); code.select();
+      msg.textContent = document.execCommand('copy') ? '已复制' : '请在下面的框里按 Ctrl+A、Ctrl+C 手动复制';
+    }
   });
 </script>
 </body>
