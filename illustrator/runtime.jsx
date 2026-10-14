@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.8.7";
+PD.version = "0.8.8";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -13,20 +13,74 @@ PD.run = function (drawings, opts) {
     app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
     var oldCoords = app.coordinateSystem;
     app.coordinateSystem = CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
+    // Progress is appended to illustrator_progress.txt as it goes, so a run that takes Illustrator down (COM reports
+    // RPC_E_SERVERFAULT) can be resumed: files already saved are kept, the file it died on is skipped and named in the
+    // log with its last step, and the rest is drawn (user rev 0.8.7).
+    PD.progressPath = opts.outDir + "/illustrator_progress.txt";
+    var prev = PD.readProgress(PD.progressPath);
+    for (var c = 0; c < prev.log.length; c++) log.push(prev.log[c]);
+    if (prev.crashed) {
+        var msg = "ERROR " + prev.crashed + ": Illustrator crashed while drawing it (last step: " + prev.step + "); skipped";
+        log.push(msg);
+        PD.progress("LOG " + msg);
+        PD.progress("DONE " + prev.crashed);
+        prev.done[prev.crashed] = true;
+    }
     for (var i = 0; i < drawings.length; i++) {
+        if (prev.done[drawings[i].fileName]) continue;
+        PD.progress("START " + drawings[i].fileName);
+        var lines = [];
         try {
             var warnings = [];
             PD.drawFile(drawings[i], opts, warnings);
-            log.push("OK " + drawings[i].fileName + (warnings.length ? " (" + warnings.length + " item warnings)" : ""));
-            for (var w = 0; w < warnings.length && w < 20; w++) log.push("  " + warnings[w]);
+            lines.push("OK " + drawings[i].fileName + (warnings.length ? " (" + warnings.length + " item warnings)" : ""));
+            for (var w = 0; w < warnings.length && w < 20; w++) lines.push("  " + warnings[w]);
         } catch (e) {
-            log.push("ERROR " + drawings[i].fileName + ": " + e + (e.line ? " (line " + e.line + ")" : ""));
+            lines.push("ERROR " + drawings[i].fileName + ": " + e + (e.line ? " (line " + e.line + ")" : ""));
         }
+        for (var n = 0; n < lines.length; n++) {
+            log.push(lines[n]);
+            PD.progress("LOG " + lines[n]);
+        }
+        PD.progress("DONE " + drawings[i].fileName);
     }
     app.coordinateSystem = oldCoords;
     app.userInteractionLevel = oldLevel;
     PD.writeLog(opts.outDir + "/illustrator_log.txt", log);
+    var pf = new File(PD.progressPath);
+    if (pf.exists) pf.remove();
     return log.join("\n");
+};
+
+// One line appended to the progress file (opened and closed each time: it must survive a crash).
+PD.progress = function (line) {
+    if (!PD.progressPath) return;
+    var f = new File(PD.progressPath);
+    f.encoding = "UTF-8";
+    if (f.open("a")) {
+        f.writeln(line);
+        f.close();
+    }
+};
+
+// What an earlier, crashed run left: the files it finished, their log lines, and the file it was drawing.
+PD.readProgress = function (path) {
+    var res = { done: {}, log: [], crashed: null, step: "" };
+    var f = new File(path);
+    if (!f.exists) return res;
+    f.encoding = "UTF-8";
+    if (!f.open("r")) return res;
+    var current = null;
+    while (!f.eof) {
+        var line = f.readln();
+        if (line.indexOf("START ") === 0) { current = line.substring(6); res.step = "start"; }
+        else if (line.indexOf("AT ") === 0) res.step = line.substring(3);
+        else if (line.indexOf("LOG ") === 0) res.log.push(line.substring(4));
+        else if (line.indexOf("DONE ") === 0) { res.done[line.substring(5)] = true; current = null; }
+    }
+    f.close();
+    res.crashed = current;
+    return res;
 };
 
 PD.writeLog = function (path, lines) {
@@ -40,9 +94,12 @@ PD.writeLog = function (path, lines) {
 
 PD.drawFile = function (dw, opts, warnings) {
     var file = new File(opts.outDir + "/" + dw.fileName);
+    PD.progress("AT open");
     var doc = file.exists ? app.open(file)
         : app.documents.add(DocumentColorSpace.RGB, dw.artboards[0].w, dw.artboards[0].h);
+    PD.progress("AT artboards");
     PD.setupArtboards(doc, dw.artboards);
+    PD.progress("AT swatches and styles");
     // A swatch or style that cannot be made must not stop the file: fall back to a plain colour and log it.
     var sw = {};
     for (var s = 0; s < dw.swatches.length; s++) {
@@ -60,6 +117,7 @@ PD.drawFile = function (dw, opts, warnings) {
             warnings.push("WARN " + dw.fileName + " paragraph style " + dw.paraStyles[p].name + ": " + ep);
         }
     }
+    PD.progress("AT symbols");
     PD.syms = PD.symbols(doc, dw.symbols, sw);
 
     var rects = [];
@@ -67,6 +125,7 @@ PD.drawFile = function (dw, opts, warnings) {
 
     for (var l = 0; l < dw.layers.length; l++) {
         var spec = dw.layers[l];
+        PD.progress("AT layer " + spec.name);
         var layer = PD.layer(doc, spec.name);
         var wasLocked = layer.locked, wasVisible = layer.visible;
         layer.locked = false;
@@ -74,6 +133,7 @@ PD.drawFile = function (dw, opts, warnings) {
         PD.clearNamed(layer);
         for (var k = 0; k < spec.items.length; k++) {
             var it = spec.items[k];
+            if (k > 0 && k % 200 === 0) PD.progress("AT layer " + spec.name + " item " + k + " " + it.name);
             try {
                 PD.drawItem(layer, it, rects[it.artboard || 0], sw, ps);
             } catch (e) {
@@ -89,7 +149,9 @@ PD.drawFile = function (dw, opts, warnings) {
     PD.purgeStaleLayers(doc, dw);
     PD.removeDefaultLayer(doc, dw);
 
+    PD.progress("AT save");
     doc.saveAs(file, new IllustratorSaveOptions());
+    if (opts.png) PD.progress("AT png");
     if (opts.png) PD.exportPng(doc, opts.outDir + "/" + dw.fileName.replace(/\.ai$/i, ""), opts.pngScale || 300);
     doc.close(SaveOptions.DONOTSAVECHANGES);
 };

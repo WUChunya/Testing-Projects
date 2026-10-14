@@ -1,4 +1,5 @@
 using PD.Core.Axons;
+using PD.Core.Writers;
 using Xunit;
 
 namespace PD.Core.Tests;
@@ -53,5 +54,62 @@ public class Rev087Tests
         ctx = DowntownAnalysis.UserContext();
         ctx.Style.Facade.ExplodedAxon = "hidden";
         Assert.DoesNotContain(AxonDrawing.Build(ctx, AxonKind.Exploded).Layers.SelectMany(l => l.Items), i => i.Name.Contains("FACADE_GLASS"));
+    }
+}
+
+/// <summary>User rev 0.8.7: Illustrator died in the script (RPC_E_SERVERFAULT twice) and left no log at all.</summary>
+public class Rev087RuntimeTests
+{
+    /// <summary>
+    /// A run that takes Illustrator down is resumed: the files saved before are kept, the file it died on is skipped and
+    /// named with its last step in illustrator_log.txt, the rest is drawn; the progress file goes once a run finishes.
+    /// </summary>
+    [Fact]
+    public void CrashedRun_ResumesAfterTheFileItDiedOn()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "pd_resume_" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(dir);
+        var harness = """
+            var fs = require("fs");
+            function File(p) { this.p = p; this.encoding = ""; this.lines = null; this.i = 0; this.mode = ""; }
+            Object.defineProperty(File.prototype, "exists", { get: function () { return fs.existsSync(this.p); } });
+            Object.defineProperty(File.prototype, "eof", { get: function () { return this.i >= this.lines.length; } });
+            File.prototype.open = function (m) { this.mode = m; if (m === "r") { this.lines = fs.readFileSync(this.p, "utf8").split("\n").filter(function (l) { return l.length; }); this.i = 0; } else if (m === "w") fs.writeFileSync(this.p, ""); return true; };
+            File.prototype.readln = function () { return this.lines[this.i++]; };
+            File.prototype.writeln = function (t) { fs.appendFileSync(this.p, t + "\n"); };
+            File.prototype.close = function () { };
+            File.prototype.remove = function () { fs.unlinkSync(this.p); };
+            var app = { userInteractionLevel: 0, coordinateSystem: 0 };
+            var UserInteractionLevel = { DONTDISPLAYALERTS: 1 }, CoordinateSystem = { DOCUMENTCOORDINATESYSTEM: 1 };
+            var crashOn = process.argv[2];
+            PD.drawFile = function (dw, opts, warnings) {
+                PD.progress("AT layer PD_PROGRAM");
+                if (dw.fileName === crashOn) process.exit(3); // Illustrator gone mid-file
+                fs.appendFileSync(opts.outDir + "/drawn.txt", dw.fileName + "\n");
+            };
+            var out = process.argv[3];
+            PD.run([{ fileName: "A.ai" }, { fileName: "B.ai" }, { fileName: "C.ai" }], { outDir: out });
+            """;
+        var js = Path.Combine(dir, "resume.js");
+        File.WriteAllText(js, JsxWriter.Runtime() + "\n" + harness);
+        int Node(string crash)
+        {
+            var psi = new System.Diagnostics.ProcessStartInfo("node", $"\"{js}\" {crash} \"{dir.Replace('\\', '/')}\"") { UseShellExecute = false, RedirectStandardError = true };
+            System.Diagnostics.Process? p;
+            try { p = System.Diagnostics.Process.Start(psi); }
+            catch (System.ComponentModel.Win32Exception) { return -1; }
+            p!.WaitForExit();
+            return p.ExitCode;
+        }
+        if (Node("B.ai") == -1) return; // node not installed
+        Assert.False(File.Exists(Path.Combine(dir, "illustrator_log.txt")));
+        Assert.Equal(0, Node("none"));
+        Assert.Equal(new[] { "A.ai", "C.ai" }, File.ReadAllLines(Path.Combine(dir, "drawn.txt")));
+        var log = File.ReadAllLines(Path.Combine(dir, "illustrator_log.txt"));
+        Assert.Equal("OK A.ai", log[0]);
+        Assert.Equal("ERROR B.ai: Illustrator crashed while drawing it (last step: layer PD_PROGRAM); skipped", log[1]);
+        Assert.Equal("OK C.ai", log[2]);
+        Assert.False(File.Exists(Path.Combine(dir, "illustrator_progress.txt")));
+        Directory.Delete(dir, true);
     }
 }

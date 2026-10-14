@@ -25,17 +25,28 @@ public static class IllustratorLauncher
 
     /// <summary>
     /// Blocks until Illustrator has run the script; call it off the UI thread. Returns an error message or null.
-    /// A transient COM failure (Illustrator still starting, or it crashed in the call) is retried once after a pause:
-    /// the script only rewrites the files of this export folder, so running it again is safe.
+    /// A transient COM failure (Illustrator still starting, or it crashed in the call) is retried after a pause: the
+    /// script resumes from its illustrator_progress.txt, keeping the files already saved and skipping the one Illustrator
+    /// died on (named in illustrator_log.txt, user rev 0.8.7), so retries go on while each one gets further.
     /// </summary>
-    public static string? Run(string jsxPath, bool quitWhenDone = true)
+    public static string? Run(string jsxPath, bool quitWhenDone = true, int maxAttempts = 12)
     {
-        var error = RunOnce(jsxPath, quitWhenDone, out var hresult);
-        if (error == null || !Transient.Contains(hresult)) return error;
-        Thread.Sleep(TimeSpan.FromSeconds(8));
-        var retry = RunOnce(jsxPath, quitWhenDone, out _);
-        return retry == null ? null : $"{retry} (also failed on the first try: {error})";
+        var progress = Path.Combine(Path.GetDirectoryName(jsxPath) ?? "", "illustrator_progress.txt");
+        var first = RunOnce(jsxPath, quitWhenDone, out var hresult);
+        var error = first;
+        for (var attempt = 2; error != null && Transient.Contains(hresult) && attempt <= maxAttempts; attempt++)
+        {
+            var before = Length(progress);
+            // After the first retry, go on only while the script gets further each time (a crash at start-up repeats).
+            if (attempt > 2 && before == 0) break;
+            Thread.Sleep(TimeSpan.FromSeconds(8));
+            error = RunOnce(jsxPath, quitWhenDone, out hresult);
+            if (error != null && attempt > 2 && Length(progress) <= before) break;
+        }
+        return error == null || error == first ? error : $"{error} (first try: {first})";
     }
+
+    static long Length(string path) => File.Exists(path) ? new FileInfo(path).Length : 0;
 
     static string? RunOnce(string jsxPath, bool quitWhenDone, out int hresult)
     {

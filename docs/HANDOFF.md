@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.8.7）
+# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.8.8）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.7; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.8.8; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,7 +18,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.7**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），223 个测试全过（全套约 7 分钟），`dist/ProgramDiagram-0.8.7.zip`（dist 下的 zip 随提交入库）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.8.8**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），224 个测试全过（全套约 7 分钟），`dist/ProgramDiagram-0.8.8.zip`（dist 下的 zip 随提交入库）。
 - 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，v0.8.4 = `Rev084Tests.cs`，v0.8.6 = `Rev086Tests.cs`，v0.8.7 = `Rev087Tests.cs`，v0.8.5 = `Rev085Tests.cs`（`Noisy` = 坐标加噪声模拟 Rhino 原始坐标），其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。
@@ -44,6 +44,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | 设置保存 | `PdSettings.FromJson`（逐项容错）、`Newest`；Rhino `PdSession.Save / SidePath`；导出包 `pd_settings.json` | — |
 | 03 轴测楼板（本层露天 `Area`，退台楼层的楼板边同 Rhino）、体块在楼板下切开 | `AxonDrawing.Stacked / Levels`、`UnderPlates`、`UnderScreens` | `exposed.*` |
 | 玻璃透明 50%、立面玻璃（幕墙）在 03 轴测中显示 | `AxonDrawing.FacadeGlass / PaintGlass`（单独一遍消隐，图层 `FACADE`）；平面 `ExposedItems / BelowItems` | `exposed.glassOpacity`、`facade.stackedAxonOpacity`、`axon.facadeVeil*` |
+| Illustrator 崩溃（RPC_E_SERVERFAULT）后续跑：进度文件、跳过崩溃文件、Rhino 端按进展重试 | `runtime.jsx PD.run / PD.progress / PD.readProgress`；`PD.Rhino/Output/IllustratorLauncher.Run`；`OutputTab`（消息框显示最后几步） | — |
 | 消隐排序（循环只在真正的循环里取最近面；共面只相接的面不排序） | `AxonFaces.Render`、`CycleBreaker`、`InFront` | — |
 | 薄体块（≤ 2 ft，如 B1 地面 circulation 板）切片落空时在半高再切 | `Cleanup/LevelAssignment.Run` | `rules_default.json cleanup.flatMassMaxThicknessFt` |
 | 04 爆炸 / 分层轴测的立面玻璃（每层楼板上立本层玻璃 / 画到本层顶）与平面玻璃 50% | `AxonDrawing.ExplodedA / Levels`、`GlassBand`、`PaintGlass(…, layer)` | `facade.explodedAxon`（"storey" / "hidden"）、`facade.stackedAxonOpacity`、`exposed.glassOpacity` |
@@ -104,6 +105,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 - 场地丰富度取决于模型：街区来自 LOT FILL 等 BG.Hardscape / 公园 BG.Landscape / 闭合的道路曲线（ROAD LINES），没有街区就没有人行道和行道树。用户 0.8.2 的 preview 里没有 LOT FILL 与公园填色，应检查第①页这些图层的角色。
 - 屋面 screen 在 Linux 上只用合成模型验证过（`ScreenModel`）；真实模型的 screen 若是多段曲面或有缺口，`screen.closeGapFt` 控制视为闭合的缝宽。
 - 轴测 V 形视点、"Load settings…"、模型旁 `.programdiagram.json` 都是 Rhino 端（VERIFY-WIN）。
+- v0.8.8：v0.8.7 在 Windows 上（11x17 画板）Illustrator 两次 RPC_E_SERVERFAULT、无日志。原因未定位（JSX 在 Linux 检查无异常；之前 Fit content 的 20 MB JSX 成功过）。已让脚本可续跑并记录崩溃位置——下一轮请用户发 `illustrator_log.txt`（含 "crashed while drawing it (last step: …)"）或 `illustrator_progress.txt`，据此定位到文件 / 图层 / 200 个图元内。可疑方向：11x17 时 01_Plans 11.7 MB / 1.2 万图元（总览画板把各层再画一遍）、PNG 300% 导出。
 - v0.8.7：用户把 v0.8.6 的四项原文再次发来（附 v0.8.6 预览，无截图）。03 的根因（消隐循环处理）和 B1 circulation 丢失已修；04 图层顺序 v0.8.6 已是 场地 › 地下连接带 › B1（若用户指的是别的"circulation layer"，请其截图说明）；00_Site_Plan 首层 24×48 ft 楼板洞在 v0.8.6 预览中已画出（虚线 + X + OPEN TO BELOW，1/64" 下很小）——若用户说的"镂空"是首层架空 / 中庭（塔楼与 LAB SUPPORT 之间、上有楼板的露天地面），需确认是否要在总平面画上层楼板投影虚线；已在回复中询问。04 爆炸 B（平面斜轴测）未加立面玻璃。
 - v0.8.6：坐标吸附后 Windows 端 screen 正常、export_log 无 overlay 失败。玻璃（平面玻璃、立面幕墙）不参与遮挡，单独一遍消隐后以 50% 画在 `FACADE` 层；04 爆炸 / 分层轴测的立面玻璃未加（玻璃跨多层）。
 - v0.8.5：用户 Windows 预览里 03 / 分层轴测的 screen 内部空白、核心筒残留面、树穿墙在 Linux 上无法用 fixture 复现（fixture 坐标是整毫米）；加噪声后连分析都会失败 → 坐标在 `Localizer` 吸附到 1 mm。若 export_log 仍有 "CHECK axons: … overlay(s) failed"，记下其中的 NTS 版本（Rhino 里可能加载了别的 NetTopologySuite）。

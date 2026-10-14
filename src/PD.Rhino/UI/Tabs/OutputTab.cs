@@ -266,12 +266,17 @@ internal sealed class OutputTab : TabBase
             var error = IllustratorLauncher.Run(res.JsxPath, Session.Rules.Output.QuitIllustratorWhenDone);
             var log = Path.Combine(res.Folder, "illustrator_log.txt");
             var summary = File.Exists(log) ? File.ReadAllText(log) : "(no illustrator_log.txt)";
+            // Where a crashed run stopped (illustrator_progress.txt, user rev 0.8.7): the file and step to report.
+            var progress = Path.Combine(res.Folder, "illustrator_progress.txt");
+            var stopped = File.Exists(progress)
+                ? "\nLast steps (illustrator_progress.txt):\n" + string.Join("\n", File.ReadAllLines(progress).TakeLast(4))
+                : "";
             Application.Instance.AsyncInvoke(() =>
             {
                 _status.Text = error == null ? "Illustrator finished." : "Illustrator failed.";
                 MessageBox.Show(this, error == null
                     ? $"Done:\n{summary}\nFolder: {res.Folder}{notes}"
-                    : $"Illustrator could not run the script: {error}\nRun it manually: {res.JsxPath}", error == null ? MessageBoxType.Information : MessageBoxType.Warning);
+                    : $"Illustrator could not run the script: {error}{stopped}\nRun it again manually (it resumes where it stopped): {res.JsxPath}", error == null ? MessageBoxType.Information : MessageBoxType.Warning);
             });
         });
     }
