@@ -121,11 +121,12 @@
     };
     const timer = setTimeout(() => done(new Error('等待 10 秒无响应')), 10000);
     window[cb] = d => done(null, d);
-    for (const n of FIXED_CALLBACKS) window[n] = d => done(null, d);
+    for (const n of FIXED_CALLBACKS) window[n] = d => { console.log('[QQ空间导出] 服务器调用了回调', n); done(null, d); };
     s.charset = 'utf-8';
     s.onerror = () => done(new Error('脚本加载失败'));
     s.onload = () => setTimeout(() => done(new Error('已返回内容，但格式无法识别')), 1500);
-    params.set('callback', cb);
+    // The CGI rejects unfamiliar callback names with -10004, so use QZone's own.
+    params.set('callback', params.get('callback') || '_preloadCallback');
     s.src = url + '?' + params;
     console.log('[QQ空间导出] 请求地址：', s.src);
     (document.head || document.documentElement).appendChild(s);
@@ -146,6 +147,7 @@
       clearTimeout(timer);
     }
   };
+  console.log('[QQ空间导出] 登录QQ：', (cookie('p_uin') || cookie('uin')).replace(/^o0*/, ''), ' qzonetoken：', qzonetoken ? '有' : '无');
   const myUin = (cookie('p_uin') || cookie('uin')).replace(/^o0*/, '');
   // Parameter sets seen in QZone's own requests; tried in order until one is accepted.
   const PARAM_SETS = [
