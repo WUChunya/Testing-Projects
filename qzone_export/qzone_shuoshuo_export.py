@@ -48,6 +48,11 @@ def parse_cookie(raw: str) -> dict:
 def fetch_page(session, target, pos, gtk):
     params = {
         "uin": target,
+        "hostUin": target,
+        "inCharset": "utf-8",
+        "outCharset": "utf-8",
+        "notice": 0,
+        "cgi_host": "http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6",
         "ftype": 0,
         "sort": 0,
         "pos": pos,

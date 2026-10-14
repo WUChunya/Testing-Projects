@@ -146,9 +146,17 @@
       clearTimeout(timer);
     }
   };
-  const callOnce = ([kind, url], pos) => {
-    const params = new URLSearchParams({ uin, ftype: 0, sort: 0, pos, num: NUM, replynum: 100, g_tk: gtk,
-      code_version: 1, format: 'jsonp', need_private_comment: 1 });
+  const myUin = (cookie('p_uin') || cookie('uin')).replace(/^o0*/, '');
+  // Parameter sets seen in QZone's own requests; tried in order until one is accepted.
+  const PARAM_SETS = [
+    { uin, hostUin: uin, inCharset: 'utf-8', outCharset: 'utf-8', notice: 0, ftype: 0, sort: 0,
+      cgi_host: 'http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6' },
+    { uin, hostUin: uin, inCharset: 'utf-8', outCharset: 'utf-8', notice: 0, sort: 0 },
+    { uin: myUin || uin, hostUin: uin, inCharset: 'utf-8', outCharset: 'utf-8', notice: 0, ftype: 0, sort: 0 }
+  ];
+  const callOnce = ([kind, url, set], pos) => {
+    const params = new URLSearchParams(Object.assign({}, PARAM_SETS[set],
+      { pos, num: NUM, replynum: 100, g_tk: gtk, code_version: 1, format: 'jsonp', need_private_comment: 1 }));
     if (qzonetoken) params.set('qzonetoken', qzonetoken);
     return kind === 'jsonp' ? jsonp(url, params) : viaFetch(url, params);
   };
@@ -156,17 +164,27 @@
     if (!working) {
       const errors = [];
       let firstReply = null;
-      for (const [i, m] of METHODS.entries()) {
-        say('正在读取说说…\n尝试接口 ' + (i + 1) + ' / ' + METHODS.length);
+      const tries = [];
+      for (const m of METHODS) for (let k = 0; k < PARAM_SETS.length; k++) tries.push([m[0], m[1], k]);
+      for (const [i, t] of tries.entries()) {
+        say('正在读取说说…\n尝试 ' + (i + 1) + ' / ' + tries.length);
         try {
-          const d = await callOnce(m, pos);
-          if (d && d.code === 0) { working = m; return d; }
-          if (d && typeof d.code !== 'undefined') { firstReply = firstReply || d; errors.push(m[1] + '：code=' + d.code); }
-          else errors.push(m[1] + '：返回格式不对');
+          const d = await callOnce(t, pos);
+          console.log('[QQ空间导出] 方式', t[0], t[1], '参数组', t[2] + 1, '返回：', d);
+          if (d && d.code === 0) { working = t; return d; }
+          if (d && typeof d.code !== 'undefined') {
+            firstReply = firstReply || d;
+            errors.push(t[0] + ' ' + t[1] + ' 参数组' + (t[2] + 1) + '：code=' + d.code + ' ' + (d.message || ''));
+            continue; // server answered: try the next parameter set on this endpoint
+          }
+          errors.push(t[0] + ' ' + t[1] + '：返回格式不对');
         } catch (e) {
-          errors.push(m[0] + ' ' + m[1] + '：' + e.message);
+          errors.push(t[0] + ' ' + t[1] + '：' + e.message);
         }
+        // endpoint itself failed: skip its remaining parameter sets
+        while (i + 1 < tries.length && tries[i + 1][1] === t[1] && tries[i + 1][0] === t[0]) tries.splice(i + 1, 1);
       }
+      if (firstReply) console.warn('[QQ空间导出] 所有尝试：\n' + errors.join('\n'));
       if (firstReply) return firstReply;
       throw new Error('所有接口都访问失败\n' + errors.join('\n')
         + '\n\n排查：按 F12 看控制台里打印的第一个“请求地址”，在新标签页打开它，把页面显示的内容截图。');
@@ -204,7 +222,7 @@
     for (let pos = 0; ; pos += NUM) {
       const d = await fetchPage(pos);
       if (d.code !== 0) {
-        say('QQ空间返回错误（code=' + d.code + '）：' + (d.message || '') + '\n可能是没有查看权限或登录已过期。');
+        say('QQ空间返回错误（code=' + d.code + '）：' + (d.message || '') + '\n可能是没有查看权限或登录已过期。\n请把控制台里 [QQ空间导出] 开头的几行截图发给我。');
         return;
       }
       if (pos === 0) { total = d.total || 0; owner = (d.usrinfo && d.usrinfo.name) || ''; }
