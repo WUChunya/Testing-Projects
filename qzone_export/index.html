@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QQ空间说说导出</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --ink:#1f2328; --muted:#6b7280; --line:#e5e3dd; --accent:#d9480f; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#16171a; --card:#1f2125; --ink:#e8e6e1; --muted:#9aa0a6; --line:#2e3036; --accent:#ff8a4c; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.7 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:40px 16px 64px; }
+  h1 { font-size:26px; margin:0 0 6px; }
+  .sub { color:var(--muted); margin:0 0 28px; }
+  .step { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:14px; }
+  .step h2 { font-size:16px; margin:0 0 6px; }
+  .step h2 span { display:inline-block; width:24px; height:24px; line-height:24px; text-align:center; border-radius:50%; background:var(--accent); color:#fff; font-size:13px; margin-right:8px; }
+  .step p { margin:6px 0; }
+  #bm { display:inline-block; margin:10px 0 4px; padding:10px 18px; border-radius:999px; background:var(--accent); color:#fff; text-decoration:none; font-weight:600; cursor:grab; }
+  button { font:inherit; padding:6px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; }
+  code { background:var(--bg); padding:1px 6px; border-radius:4px; font-size:14px; }
+  .note { color:var(--muted); font-size:14px; }
+  details { margin-top:18px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>QQ空间说说导出</h1>
+  <p class="sub">导出某个QQ号的全部说说，按时间从早到晚排好，存成一个可以直接用 Chrome 打开的网页。</p>
+
+  <div class="step">
+    <h2><span>1</span>把按钮拖到书签栏</h2>
+    <p>按 <code>Ctrl+Shift+B</code>（Mac 为 <code>⌘+Shift+B</code>）显示书签栏，然后把下面的橙色按钮<b>拖</b>到书签栏上。</p>
+    <a id="bm" href="#" onclick="alert('请把这个按钮拖到书签栏，不要直接点击。');return false;">导出QQ空间说说</a>
+  </div>
+
+  <div class="step">
+    <h2><span>2</span>登录并打开对方的QQ空间</h2>
+    <p>在 Chrome 里登录QQ空间，打开对方的空间页面，例如 <a href="https://user.qzone.qq.com/350904191/311" target="_blank" rel="noopener">user.qzone.qq.com/350904191</a>。</p>
+  </div>
+
+  <div class="step">
+    <h2><span>3</span>点击书签</h2>
+    <p>在对方空间页面上点击刚才的书签，确认QQ号后，页面右上角会显示抓取进度。</p>
+    <p>完成后浏览器会自动下载 <code>qzone_QQ号_日期.html</code>，双击就能在 Chrome 里阅读：按年份分组，可以搜索，可以切换正序和倒序。</p>
+  </div>
+
+  <p class="note">只能导出你的账号本来就有权限看到的说说。数据只在你自己的浏览器里处理，不会上传到任何地方。导出的网页里，图片仍从QQ的服务器加载。</p>
+
+  <details>
+    <summary>书签用不了？改用控制台</summary>
+    <p>在对方空间页面按 <code>F12</code> 打开 Console（控制台），粘贴下面复制的代码后回车。第一次粘贴时 Chrome 可能会要求先输入 <code>allow pasting</code>。</p>
+    <button id="copy">复制代码</button> <span id="copied" class="note"></span>
+  </details>
+</main>
+
+<script type="text/plain" id="src">
+(async () => {
+  if (location.hostname !== 'user.qzone.qq.com') {
+    alert('请先打开对方的QQ空间页面（user.qzone.qq.com/QQ号），再点这个书签。');
+    return;
+  }
+  const m = location.pathname.match(/^\/(\d{5,})/);
+  const uin = (prompt('要导出说说的QQ号：', m ? m[1] : '') || '').trim();
+  if (!/^\d{5,}$/.test(uin)) return;
+
+  const cookie = k => (document.cookie.match('(?:^|;\\s*)' + k + '=([^;]*)') || [])[1] || '';
+  const skey = cookie('p_skey') || cookie('skey');
+  if (!skey) { alert('没有找到登录信息，请先登录QQ空间。'); return; }
+  let h = 5381;
+  for (let i = 0; i < skey.length; i++) h += (h << 5) + skey.charCodeAt(i);
+  const gtk = h & 0x7fffffff;
+
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483647;background:#fff;color:#222;border:1px solid #ddd;border-radius:10px;padding:14px 18px;font:14px/1.6 sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.15);max-width:320px';
+  document.body.appendChild(box);
+  const say = t => { box.textContent = t; };
+  say('正在读取说说…');
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const NUM = 20;
+  const fetchPage = async pos => {
+    const qs = new URLSearchParams({ uin, ftype: 0, sort: 0, pos, num: NUM, replynum: 100, g_tk: gtk,
+      callback: '_preloadCallback', code_version: 1, format: 'jsonp', need_private_comment: 1 });
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const r = await fetch('/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?' + qs, { credentials: 'include' });
+        const text = await r.text();
+        return JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+      } catch (e) {
+        if (attempt === 2) throw e;
+        await sleep(2000);
+      }
+    }
+  };
+
+  const norm = p => ({
+    tid: p.tid,
+    t: p.created_time || 0,
+    content: p.content || '',
+    rt: (p.rt_con && p.rt_con.content) || '',
+    rtName: p.rt_uinname || '',
+    loc: (p.lbs && (p.lbs.name || p.lbs.idname)) || '',
+    src: p.source_name || '',
+    pics: (p.pic || []).map(x => x.url3 || x.url2 || x.url1 || x.smallurl).filter(Boolean),
+    videos: (p.video || []).map(x => x.url3 || x.url1).filter(Boolean),
+    cmt: p.cmtnum || 0,
+    comments: (p.commentlist || []).map(c => ({
+      n: c.name || '', ts: c.createTime2 || c.createTime || '', c: c.content || '',
+      r: (c.list_3 || []).map(x => ({ n: x.name || '', ts: x.createTime2 || '', c: x.content || '' }))
+    }))
+  });
+
+  const posts = [], seen = new Set();
+  let total = 0, owner = '';
+  try {
+    for (let pos = 0; ; pos += NUM) {
+      const d = await fetchPage(pos);
+      if (d.code !== 0) {
+        say('QQ空间返回错误（code=' + d.code + '）：' + (d.message || '') + '\n可能是没有查看权限或登录已过期。');
+        return;
+      }
+      if (pos === 0) { total = d.total || 0; owner = (d.usrinfo && d.usrinfo.name) || ''; }
+      const list = d.msglist || [];
+      for (const p of list) if (!seen.has(p.tid)) { seen.add(p.tid); posts.push(norm(p)); }
+      say('正在读取说说… ' + posts.length + ' / ' + total);
+      if (!list.length || pos + NUM >= total) break;
+      await sleep(1200);
+    }
+  } catch (e) {
+    say('读取失败：' + e.message);
+    return;
+  }
+  posts.sort((a, b) => a.t - b.t);
+
+  function viewer() {
+    const D = JSON.parse(document.getElementById('data').textContent);
+    const $ = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+    const pad = n => String(n).padStart(2, '0');
+    const fmtTime = t => { const d = new Date(t * 1000); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+    const rich = text => {
+      const f = document.createDocumentFragment();
+      const re = /\[em\](e\d+)\[\/em\]|@\{uin:\d+,nick:([^,}]*)[^}]*\}/g;
+      let last = 0, m;
+      while ((m = re.exec(text))) {
+        f.append(text.slice(last, m.index));
+        if (m[1]) { const i = $('img', 'em'); i.src = 'https://qzonestyle.gtimg.cn/qzone/em/' + m[1] + '.gif'; i.alt = ''; f.append(i); }
+        else f.append($('span', 'at', '@' + m[2]));
+        last = re.lastIndex;
+      }
+      f.append(text.slice(last));
+      return f;
+    };
+
+    document.getElementById('title').textContent = (D.owner ? D.owner + '（' + D.uin + '）' : D.uin) + '的说说';
+    const meta = document.getElementById('meta');
+    const list = document.getElementById('list');
+    const years = document.getElementById('years');
+    const q = document.getElementById('q');
+    const orderBtn = document.getElementById('order');
+    let asc = true;
+
+    const card = p => {
+      const c = $('article', 'post');
+      c.id = 'p' + p.tid;
+      c.append($('time', null, fmtTime(p.t)));
+      if (p.content) { const b = $('div', 'body'); b.append(rich(p.content)); c.append(b); }
+      if (p.rt) { const b = $('blockquote'); if (p.rtName) b.append($('b', null, p.rtName + '：')); b.append(rich(p.rt)); c.append(b); }
+      if (p.pics.length) {
+        const g = $('div', 'pics' + (p.pics.length === 1 ? ' one' : ''));
+        for (const u of p.pics) { const a = $('a'); a.href = u; a.target = '_blank'; const i = $('img'); i.src = u; i.loading = 'lazy'; i.alt = ''; a.append(i); g.append(a); }
+        c.append(g);
+      }
+      for (const v of p.videos) { const a = $('a', 'video', '▶ 视频'); a.href = v; a.target = '_blank'; c.append(a); }
+      const info = [p.loc && '📍 ' + p.loc, p.src].filter(Boolean).join(' · ');
+      if (info) c.append($('div', 'info', info));
+      if (p.comments.length) {
+        const box = $('div', 'cmts');
+        box.append($('div', 'cmt-h', '评论 ' + p.cmt));
+        for (const cm of p.comments) {
+          const row = $('div', 'cmt');
+          row.append($('b', null, cm.n + '：'));
+          row.append(rich(cm.c));
+          row.append($('span', 'ts', ' ' + cm.ts));
+          for (const r of cm.r) {
+            const rr = $('div', 'reply');
+            rr.append($('b', null, r.n + '：'));
+            rr.append(rich(r.c));
+            row.append(rr);
+          }
+          box.append(row);
+        }
+        c.append(box);
+      }
+      return c;
+    };
+
+    const render = () => {
+      const kw = q.value.trim().toLowerCase();
+      const hay = p => (p.content + ' ' + p.rt + ' ' + p.loc + ' ' + p.comments.map(c => c.n + c.c).join(' ')).toLowerCase();
+      let ps = kw ? D.posts.filter(p => hay(p).includes(kw)) : D.posts.slice();
+      if (!asc) ps.reverse();
+      list.textContent = '';
+      years.textContent = '';
+      let yr = null;
+      for (const p of ps) {
+        const y = new Date(p.t * 1000).getFullYear();
+        if (y !== yr) {
+          yr = y;
+          const h = $('h2', 'year', y + ' 年');
+          h.id = 'y' + y;
+          list.append(h);
+          const a = $('a', null, String(y));
+          a.href = '#y' + y;
+          years.append(a);
+        }
+        list.append(card(p));
+      }
+      if (!ps.length) list.append($('p', 'empty', '没有符合条件的说说'));
+      meta.textContent = '共 ' + D.posts.length + ' 条' + (kw ? '，匹配 ' + ps.length + ' 条' : '') + ' · 导出于 ' + D.exported;
+    };
+    q.addEventListener('input', render);
+    orderBtn.addEventListener('click', () => { asc = !asc; orderBtn.textContent = asc ? '从早到晚' : '从晚到早'; render(); });
+    render();
+  }
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const now = new Date();
+  const p2 = n => String(n).padStart(2, '0');
+  const stamp = now.getFullYear() + p2(now.getMonth() + 1) + p2(now.getDate());
+  const data = { uin, owner, total, exported: now.toLocaleString(), posts };
+  const css = ':root{--bg:#f6f5f2;--card:#fff;--ink:#1f2328;--muted:#6b7280;--line:#e5e3dd;--accent:#d9480f;--soft:#f3f1ec}'
+    + '@media (prefers-color-scheme:dark){:root{--bg:#16171a;--card:#1f2125;--ink:#e8e6e1;--muted:#9aa0a6;--line:#2e3036;--accent:#ff8a4c;--soft:#26282d}}'
+    + '*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}'
+    + 'header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}'
+    + '.wrap{max-width:720px;margin:0 auto;padding:0 16px}header .wrap{padding-top:14px;padding-bottom:10px}'
+    + 'h1{font-size:20px;margin:0}#meta{color:var(--muted);font-size:13px}'
+    + '.bar{display:flex;gap:8px;margin-top:8px}#q{flex:1;min-width:0;font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}'
+    + 'button{font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}'
+    + '#years{display:flex;gap:6px;overflow-x:auto;margin-top:8px;font-size:13px}#years a{color:var(--accent);text-decoration:none;padding:2px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}'
+    + '.year{font-size:18px;margin:28px 0 10px;color:var(--accent);scroll-margin-top:140px}'
+    + '.post{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:12px}'
+    + '.post time{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}'
+    + '.body{white-space:pre-wrap;word-break:break-word}blockquote{margin:8px 0;padding:8px 12px;background:var(--soft);border-radius:8px;white-space:pre-wrap;word-break:break-word}'
+    + '.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.pics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;display:block;background:var(--soft)}'
+    + '.pics.one{grid-template-columns:1fr;max-width:360px}.pics.one img{aspect-ratio:auto;max-height:480px}'
+    + '.em{width:20px;height:20px;vertical-align:-4px}.at{color:var(--accent)}.video{display:inline-block;margin-top:8px;color:var(--accent)}'
+    + '.info{color:var(--muted);font-size:13px;margin-top:8px}'
+    + '.cmts{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px}.cmt-h{color:var(--muted);font-size:13px}'
+    + '.cmt{margin:4px 0;word-break:break-word}.ts{color:var(--muted);font-size:12px}.reply{margin-left:16px;color:var(--muted)}'
+    + '.empty{color:var(--muted);text-align:center;padding:40px 0}';
+  const html = '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">'
+    + '<title>' + esc((owner || uin) + ' 的说说') + '</title><style>' + css + '</style></head><body>'
+    + '<header><div class="wrap"><h1 id="title"></h1><div id="meta"></div>'
+    + '<div class="bar"><input id="q" type="search" placeholder="搜索内容、地点、评论…"><button id="order">从早到晚</button></div>'
+    + '<nav id="years"></nav></div></header><main class="wrap" id="list"></main>'
+    + '<script type="application/json" id="data">' + JSON.stringify(data).replace(/</g, '\\u003c') + '<\/script>'
+    + '<script>(' + viewer.toString() + ')();<\/script></body></html>';
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
+  a.download = 'qzone_' + uin + '_' + stamp + '.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  say('完成！共 ' + posts.length + ' 条说说，已下载 ' + a.download);
+  setTimeout(() => box.remove(), 15000);
+})();
+</script>
+
+<script>
+  const src = document.getElementById('src').textContent;
+  document.getElementById('bm').href = 'javascript:' + encodeURIComponent(src);
+  document.getElementById('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(src); document.getElementById('copied').textContent = '已复制'; }
+    catch (e) { document.getElementById('copied').textContent = '复制失败，请手动选择'; }
+  });
+</script>
+</body>
+</html>
