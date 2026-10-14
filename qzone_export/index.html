@@ -87,14 +87,14 @@
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const NUM = 20;
-  const CGI = 'proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6';
-  // QZone's own pages load this API as JSONP via <script>, which is not subject
-  // to CORS; plain fetch is tried too in case it works on this page.
+  const CGI = 'proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_msglist_v6';
+  const OLD_CGI = 'proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6';
+  // Same-origin fetch first; JSONP via <script> (as QZone's own pages do) as fallback.
   const METHODS = [
+    ['fetch', '/' + CGI],
     ['jsonp', 'https://user.qzone.qq.com/' + CGI],
     ['jsonp', 'https://h5.qzone.qq.com/' + CGI],
-    ['jsonp', 'https://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6'],
-    ['fetch', '/' + CGI]
+    ['jsonp', 'https://user.qzone.qq.com/' + OLD_CGI]
   ];
   let working = null;
   const qzonetoken = typeof window.g_qzonetoken === 'string' ? window.g_qzonetoken : '';

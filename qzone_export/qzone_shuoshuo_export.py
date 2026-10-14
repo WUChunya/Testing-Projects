@@ -24,7 +24,7 @@ from datetime import datetime
 import requests
 
 LIST_URL = (
-    "https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6"
+    "https://user.qzone.qq.com/proxy/domain/taotao.qzone.qq.com/cgi-bin/emotion_cgi_msglist_v6"
 )
 PAGE_SIZE = 20
 
