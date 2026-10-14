@@ -98,23 +98,47 @@
   ];
   let working = null;
   const qzonetoken = typeof window.g_qzonetoken === 'string' ? window.g_qzonetoken : '';
+  // The CGI may ignore our callback name and call a fixed one, so catch those too.
+  const FIXED_CALLBACKS = ['_preloadCallback', '_Callback', 'callback'];
   const jsonp = (url, params) => new Promise((resolve, reject) => {
     const cb = '__qzExport' + Date.now() + Math.floor(Math.random() * 1e6);
     const s = document.createElement('script');
-    const done = (err, data) => { clearTimeout(timer); delete window[cb]; s.remove(); err ? reject(err) : resolve(data); };
-    const timer = setTimeout(() => done(new Error('超时')), 20000);
+    const saved = FIXED_CALLBACKS.map(n => [n, window[n]]);
+    let finished = false;
+    const done = (err, data) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      delete window[cb];
+      for (const [n, v] of saved) window[n] = v;
+      s.remove();
+      err ? reject(err) : resolve(data);
+    };
+    const timer = setTimeout(() => done(new Error('等待 10 秒无响应')), 10000);
     window[cb] = d => done(null, d);
+    for (const n of FIXED_CALLBACKS) window[n] = d => done(null, d);
     s.charset = 'utf-8';
     s.onerror = () => done(new Error('脚本加载失败'));
+    s.onload = () => setTimeout(() => done(new Error('已返回内容，但格式无法识别')), 1500);
     params.set('callback', cb);
     s.src = url + '?' + params;
     (document.head || document.documentElement).appendChild(s);
   });
   const viaFetch = async (url, params) => {
     params.set('callback', '_preloadCallback');
-    const r = await fetch(url + '?' + params, { credentials: 'include' });
-    const text = await r.text();
-    return JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    try {
+      const r = await fetch(url + '?' + params, { credentials: 'include', signal: ctrl.signal });
+      const text = await r.text();
+      const i = text.indexOf('{');
+      if (i < 0) throw new Error('HTTP ' + r.status + '，返回：' + text.slice(0, 80));
+      return JSON.parse(text.slice(i, text.lastIndexOf('}') + 1));
+    } catch (e) {
+      throw e.name === 'AbortError' ? new Error('等待 10 秒无响应') : e;
+    } finally {
+      clearTimeout(timer);
+    }
   };
   const callOnce = ([kind, url], pos) => {
     const params = new URLSearchParams({ uin, ftype: 0, sort: 0, pos, num: NUM, replynum: 100, g_tk: gtk,
@@ -126,7 +150,8 @@
     if (!working) {
       const errors = [];
       let firstReply = null;
-      for (const m of METHODS) {
+      for (const [i, m] of METHODS.entries()) {
+        say('正在读取说说…\n尝试接口 ' + (i + 1) + ' / ' + METHODS.length);
         try {
           const d = await callOnce(m, pos);
           if (d && d.code === 0) { working = m; return d; }
