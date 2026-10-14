@@ -65,6 +65,10 @@ public static class LevelAssignment
             {
                 var z = Math.Clamp(main[i].Elevation + r.PlanCutHeightFt, b.MinZ + 0.05, b.MaxZ - 0.05);
                 var poly = MeshSlicer.SliceToPolygon(m.Source.Mesh!, z, r.WeldToleranceFt, r.GapCloseToleranceFt, m.Status == MassStatus.SectionClosed);
+                // A cut just under the top of a thin mass can miss it (a top face a hair lower than its bounding box,
+                // user rev 0.8.7: the B1 circulation plate vanished); its mid-height always cuts it.
+                if (poly.IsEmpty && b.SizeZ <= r.FlatMassMaxThicknessFt && Math.Abs(z - (b.MinZ + b.MaxZ) / 2) > 0.05)
+                    poly = MeshSlicer.SliceToPolygon(m.Source.Mesh!, (b.MinZ + b.MaxZ) / 2, r.WeldToleranceFt, r.GapCloseToleranceFt, m.Status == MassStatus.SectionClosed);
                 if (poly.IsEmpty) continue;
                 plans[i].Footprints.Add(new Footprint
                 {

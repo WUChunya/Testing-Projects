@@ -82,6 +82,7 @@ public static class AxonFaces
             }
         var order = new List<int>(faces.Count);
         var done = new bool[faces.Count];
+        List<List<int>>? fronts = null;
         var ready = new SortedSet<(double Key, int I)>(Enumerable.Range(0, faces.Count).Where(i => inDegree[i] == 0).Select(i => (-faces[i].Depth, i)));
         while (order.Count < faces.Count)
         {
@@ -91,8 +92,8 @@ public static class AxonFaces
                 next = ready.Min.I;
                 ready.Remove(ready.Min);
             }
-            else // a cycle: take the nearest face left by its centre
-                next = Enumerable.Range(0, faces.Count).Where(i => !done[i]).OrderByDescending(i => faces[i].Depth).First();
+            else // a cycle: take the nearest face of the cycle itself by its centre
+                next = CycleBreaker(faces, fronts ??= Fronts(behind), done);
             if (done[next]) continue;
             done[next] = true;
             order.Add(next);
@@ -115,6 +116,37 @@ public static class AxonFaces
             taken = taken == null ? g : Robust(taken, g, SpatialFunction.Union) ?? taken;
         }
         return visible.OrderBy(v => v.Depth).ToList(); // far → near
+    }
+
+    /// <summary>
+    /// The face to take when every face left is hidden by another one left: the nearest face (by centre) of an actual
+    /// cycle. Taking the nearest face of all instead let a face that merely waits behind the cycle jump the queue and
+    /// cover the faces in front of it (user rev 0.8.7: an L3 roof drawn over the L4 floor plate edge).
+    /// </summary>
+    static int CycleBreaker(List<Face> faces, List<List<int>> front, bool[] done)
+    {
+        // Walk towards the viewer (to a face left in front of the current one) until a face repeats: that loop is a cycle.
+        var v = Enumerable.Range(0, faces.Count).Where(i => !done[i]).OrderByDescending(i => faces[i].Depth).First();
+        var seen = new Dictionary<int, int>();
+        var path = new List<int>();
+        while (!seen.ContainsKey(v))
+        {
+            seen[v] = path.Count;
+            path.Add(v);
+            var ahead = front[v].Where(i => !done[i]).ToList();
+            if (ahead.Count == 0) return v;
+            v = ahead.MaxBy(i => faces[i].Depth);
+        }
+        return path.Skip(seen[v]).MaxBy(i => faces[i].Depth);
+    }
+
+    /// <summary>For every face, the faces in front of it (the inverse of <c>behind</c>).</summary>
+    static List<List<int>> Fronts(List<List<int>> behind)
+    {
+        var front = behind.Select(_ => new List<int>()).ToList();
+        for (var i = 0; i < behind.Count; i++)
+            foreach (var j in behind[i]) front[j].Add(i);
+        return front;
     }
 
     /// <summary>
@@ -168,7 +200,13 @@ public static class AxonFaces
         var da = proj.DepthOnPlane(pt.X, pt.Y, a.Normal, a.D0);
         var db = proj.DepthOnPlane(pt.X, pt.Y, b.Normal, b.D0);
         if (double.IsNaN(da) || double.IsNaN(db) || Math.Abs(da - db) < 1e-6)
+        {
+            // Coplanar faces that only touch (a sliver along a shared edge): no order between them. Ordering them by
+            // their centres made false cycles — a block top beside a floor plate "in front" of it — and the cycle
+            // breaker then let the floor under the plate cover the plate (user rev 0.8.7: L4 plate edge missing).
+            if (overlap.Area < 0.06 * overlap.Length) return 0;
             return a.Depth >= b.Depth ? 1 : -1; // edge-on or coplanar: fall back to the face centres
+        }
         return da > db ? 1 : -1;
     }
 
@@ -244,12 +282,12 @@ public static class AxonFaces
         // NTS refuses a GeometryCollection argument outright, so both sides are reduced to their polygons first.
         (a, b) = (MeshSlicer.Polygonal(a), MeshSlicer.Polygonal(b));
         try { return OverlayNG.Overlay(a, b, op); }
-        catch (Exception e) when (e is TopologyException or ArgumentException) { }
+        catch (Exception e) when (e is TopologyException or ArgumentException or NetTopologySuite.Utilities.AssertionFailedException) { }
         try { return OverlayNGRobust.Overlay(a, b, op); }
-        catch (Exception e) when (e is TopologyException or ArgumentException) { }
+        catch (Exception e) when (e is TopologyException or ArgumentException or NetTopologySuite.Utilities.AssertionFailedException) { }
         // Last resort: snap-rounded to 0.001 page ft, which never fails on valid input.
         try { return OverlayNG.Overlay(Fix(a), Fix(b), op, new PrecisionModel(1000)); }
-        catch (Exception e) when (e is TopologyException or ArgumentException) { }
+        catch (Exception e) when (e is TopologyException or ArgumentException or NetTopologySuite.Utilities.AssertionFailedException) { }
         System.Threading.Interlocked.Increment(ref failures);
         return null;
     }
@@ -293,7 +331,7 @@ public static class AxonFaces
     public static NtsGeometry Safe(Func<NtsGeometry> op, NtsGeometry fallback)
     {
         try { return op(); }
-        catch (Exception e) when (e is TopologyException or ArgumentException) { return fallback; }
+        catch (Exception e) when (e is TopologyException or ArgumentException or NetTopologySuite.Utilities.AssertionFailedException) { return fallback; }
         catch (ArgumentException) { return fallback; }
     }
 }

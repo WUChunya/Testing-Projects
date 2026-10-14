@@ -139,7 +139,7 @@ public class S4PlanAxonTests
         {
             Assert.Single(l.Items, i => i.Name.EndsWith("_OUTLINE") && i.StrokePt == ax.SlabSilhouettePt);
             Assert.DoesNotContain(l.Items, i => i.Name.EndsWith("_FOLDS"));
-            var plate = l.Items.Where(i => !i.Name.Contains("_TALL_") && !i.Name.Contains("_CONNECTOR_") && !i.Name.Contains("EXPOSED") && !i.Name.Contains("SCREEN")
+            var plate = l.Items.Where(i => !i.Name.Contains("_TALL_") && !i.Name.Contains("_CONNECTOR_") && !i.Name.Contains("EXPOSED") && !i.Name.Contains("SCREEN") && !i.Name.Contains("GLASS")
                 && i.Kind == ItemKind.Path && !i.Name.EndsWith("_OUTLINE")).ToList();
             Assert.All(plate, i => { Assert.Equal(ax.Levels.EdgePt, i.StrokePt); Assert.Equal("PD_FFFFFF", i.Stroke); });
         });

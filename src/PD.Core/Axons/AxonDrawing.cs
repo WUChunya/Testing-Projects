@@ -410,8 +410,25 @@ public static class AxonDrawing
         }
     }
 
+    /// <summary>
+    /// The part of the facade glass between <paramref name="z0"/> and <paramref name="z1"/>, moved up by
+    /// <paramref name="dz"/> (a storey on its exploded plate, user rev 0.8.7).
+    /// </summary>
+    static IEnumerable<Prism> GlassBand(IEnumerable<Prism> glass, double z0, double z1, double dz, string prefix)
+    {
+        foreach (var g in glass)
+        {
+            double a = Math.Max(g.Z0, z0), b = Math.Min(g.Z1, z1);
+            if (b - a < 0.5) continue;
+            yield return g with { Name = prefix + g.Name, Z0 = a + dz, Z1 = b + dz };
+        }
+    }
+
+    /// <summary>Facade glass in the exploded / floor key axons (facade.explodedAxon: "storey" = each storey's glass, "hidden").</summary>
+    static bool GlassInExploded(ExportContext ctx) => ctx.Style.Axon.FacadeVeil && !string.Equals(ctx.Style.Facade.ExplodedAxon, "hidden", StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Glass faces over the drawing at axon.facadeVeil* / exposed.glassOpacity, flat glass with its hatch.</summary>
-    static void PaintGlass(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces)
+    static void PaintGlass(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces, string layer = "FACADE")
     {
         var ax = ctx.Style.Axon;
         var ex = ctx.Style.Exposed;
@@ -420,12 +437,12 @@ public static class AxonDrawing
             if (f.Prism.Group == "GLS")
             {
                 if (f.IsTop) continue; // a curtain wall shows its faces, not its 0.2 ft top
-                sheet.Paint.Add(("FACADE", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: ctx.Style.Facade.StackedAxonOpacity)));
+                sheet.Paint.Add((layer, new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: ctx.Style.Facade.StackedAxonOpacity)));
             }
             else
-                sheet.Paint.Add(("FACADE", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ex.LineColor), ex.LinePt, Opacity: ex.GlassOpacity)));
+                sheet.Paint.Add((layer, new Spec(f.Name, f.Screen, f.Fill, d.Gray(ex.LineColor), ex.LinePt, Opacity: ex.GlassOpacity)));
         }
-        GlassHatch(d, ctx, proj, sheet, "FACADE", faces);
+        GlassHatch(d, ctx, proj, sheet, layer, faces);
     }
 
     /// <summary>
@@ -535,6 +552,7 @@ public static class AxonDrawing
             Excavation(d, ctx, proj, sheet, dig, lifted[basements[0]] - t, grade);
         }
         var allFaces = new List<VisibleFace>();
+        var facade = GlassInExploded(ctx) ? FacadeGlass(d, ctx, blocks).ToList() : null;
         var joined = 0;
         foreach (var (i, n) in levels.Select((i, n) => (i, n)))
         {
@@ -549,10 +567,17 @@ public static class AxonDrawing
             prisms.AddRange(ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i), _ => z - t, floorThicknessFt: t));
             // Open slabs / glass of this level (terrace, canopy) as part of its plate (user rev 0.8.4).
             prisms.AddRange(Exposed(d, ctx, mine, _ => (z - t, z)));
+            // Glass is see-through (user rev 0.8.7, as in 03): flat glass of the plate and the facade glass of this
+            // storey standing on it at its real height, drawn over the plate at their opacity.
+            var ceil = levels.Where(j => r.Levels[j].Elevation > lvl.Elevation + 1).Select(j => r.Levels[j].Elevation).DefaultIfEmpty(lvl.Elevation + 15).Min();
+            var glass = prisms.Where(IsGlass).Concat(facade == null ? Enumerable.Empty<Prism>()
+                : GlassBand(facade, lvl.Elevation, ceil, z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_")).ToList();
+            prisms = prisms.Where(q => !IsGlass(q)).ToList();
             var faces = AxonFaces.Render(proj, prisms);
             allFaces.AddRange(faces);
             PlateFaces(d, ctx, faces, sheet, layer, $"{SectionDrawing.Safe(lvl.Name)}_");
-            GlassHatch(d, ctx, proj, sheet, layer, faces);
+            if (glass.Count > 0)
+                PaintGlass(d, ctx, proj, sheet, AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList(), layer);
             FrontCornerLabels(ctx, proj, faces, sheet, layer);
             sheet.Tags.Add((i, z));
 
@@ -720,6 +745,7 @@ public static class AxonDrawing
         var line = d.Gray(ax.LineColor);
         var gradeElev = r.Levels[siteLevel].Elevation;
         var propSite = PropertySite(ctx);
+        var facade = GlassInExploded(ctx) ? FacadeGlass(d, ctx, blocks).ToList() : null;
         var sheets = new List<Sheet>();
         foreach (var i in levels)
         {
@@ -750,6 +776,12 @@ public static class AxonDrawing
             prisms.AddRange(plates);
             // Screens standing on this floor (or on a roof below it): solid walls, white floor, open top.
             prisms.AddRange(ScreenPrisms(d, ctx, screens.Where(e => e.LevelIndex == i || lower.Contains(e.LevelIndex))));
+            // Glass is see-through (user rev 0.8.7): this floor's flat glass, and the facade glass up to its ceiling.
+            var ceiling = band.Where(kv => kv.Key.LevelIndex == i).Select(kv => kv.Value.Z1).DefaultIfEmpty(lvl.Elevation).Max();
+            var floor = lower.Select(j => r.Levels[j].Elevation).Append(lvl.Elevation).Min();
+            var glass = prisms.Where(q => IsGlass(q) && q.Group != "BELOW").Concat(facade == null ? Enumerable.Empty<Prism>()
+                : GlassBand(facade, floor, ceiling, 0, "")).ToList();
+            prisms = prisms.Where(q => !(IsGlass(q) && q.Group != "BELOW")).ToList();
             var faces = AxonFaces.Render(proj, prisms);
             foreach (var f in faces)
                 sheet.Paint.Add(("PD_PROGRAM", f.Prism.Group switch
@@ -760,6 +792,9 @@ public static class AxonDrawing
                     _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
                 }));
             GlassHatch(d, ctx, proj, sheet, "PD_PROGRAM", faces);
+            var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
+                : AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
+            PaintGlass(d, ctx, proj, sheet, glassFaces);
             var stack = AxonFaces.Union(faces.Select(f => f.Screen));
             var silhouette = Shells(stack);
             if (!silhouette.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", silhouette, null, line, lv.SilhouettePt)));

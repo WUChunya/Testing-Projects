@@ -19,21 +19,22 @@
 <g id="BG_VEIL">
 </g>
 <g id="PD_PROGRAM">
-<path id="PLN_B1_B01_BUILDING_SUPPORT_02" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M633.26,413.596 L805.898,413.596 L805.898,567.357 L633.1,567.357 L633.1,528.926 L633.26,528.926 Z"/>
-<path id="PLN_B1_B01_CORE_08" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,490.239 L498.861,490.239 L498.861,503.357 L479.499,503.357 L479.499,490.399 L479.339,490.399 Z"/>
-<path id="PLN_B1_B01_CORE_06" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.861,503.357 L498.861,515.84 L479.499,515.84 L479.499,503.357 Z"/>
-<path id="PLN_B1_B01_CORE_04" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.499,515.84 L498.861,515.84 L498.861,528.766 L498.701,528.766 L498.701,528.798 L479.499,528.798 Z"/>
-<path id="PLN_B1_B01_CORE_07" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,490.239 L460.462,490.239 L460.462,490.399 L460.302,490.399 L460.302,503.042 L440.94,503.042 Z"/>
-<path id="PLN_B1_B01_CORE_05" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,503.042 L460.302,503.042 L460.302,516.16 L440.94,516.16 Z"/>
-<path id="PLN_B1_B01_CORE_03" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M460.302,516.16 L460.302,528.803 L441.1,528.803 L441.1,528.963 L440.94,528.963 L440.94,516.16 Z"/>
-<path id="PLN_B1_B01_CORE_02" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.861,663.357 L479.339,663.357 L479.339,643.84 L498.861,643.84 L498.861,644 L498.701,644 L498.701,663.193 L498.861,663.193 Z"/>
+<path id="PLN_B1_B01_BUILDING_SUPPORT_02" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M633.26,413.596 L805.898,413.596 L805.898,567.357 L633.26,567.357 L633.26,528.643 Z"/>
+<path id="PLN_B1_B01_CORE_08" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.659,490.239 L498.861,490.239 L498.861,503.357 L479.659,503.357 Z"/>
+<path id="PLN_B1_B01_CORE_06" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.861,503.357 L498.861,515.84 L479.659,515.84 L479.659,503.357 Z"/>
+<path id="PLN_B1_B01_CORE_04" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.659,515.84 L498.861,515.84 L498.861,528.643 L479.659,528.643 Z"/>
+<path id="PLN_B1_B01_CORE_07" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,490.239 L460.142,490.239 L460.142,503.042 L440.94,503.042 Z"/>
+<path id="PLN_B1_B01_CORE_05" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,503.042 L460.142,503.042 L460.142,516.16 L440.94,516.16 Z"/>
+<path id="PLN_B1_B01_CORE_03" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,528.643 L440.94,516.16 L460.142,516.16 L460.142,528.643 Z"/>
+<path id="PLN_B1_B01_CORE_02" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.861,663.357 L479.339,663.357 L479.339,643.84 L498.552,643.84 L498.546,663.352 L498.861,663.352 Z"/>
 <path id="PLN_B1_B01_CORE_01" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,701.756 L440.94,644.16 L479.339,644.16 L479.339,663.357 L498.541,663.357 L498.541,701.756 Z"/>
-<path id="PLN_B1_B01_CORE_09" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,490.399 L460.462,490.399 L460.462,490.239 L440.94,490.239 L440.94,471.037 L498.541,471.037 L498.541,490.239 L479.339,490.239 Z"/>
-<path id="PLN_B1_B01_BUILDING_SUPPORT_03" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,490.239 L498.541,413.596 L633.26,413.596 L633.26,528.926 L633.1,528.926 L633.1,528.766 L498.861,528.766 L498.861,515.84 L498.861,503.357 L498.861,490.239 Z"/>
-<path id="PLN_B1_B01_BUILDING_SUPPORT_01" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.701,778.399 L364.302,778.388 L364.302,413.596 L498.541,413.596 L498.541,471.037 L440.94,471.037 L440.94,490.239 L440.94,503.042 L440.94,516.16 L440.94,528.963 L441.1,528.963 L441.1,533.363 L441.101,567.033 L440.94,567.033 L440.94,644.16 L440.94,701.756 L498.541,701.756 L498.541,778.399 Z"/>
-<path id="PLN_B1_B01_LAB_03" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,644.16 L440.94,644.16 L440.94,567.033 L441.101,567.033 L441.101,567.193 L537.1,567.192 L537.1,644 L498.861,644 L498.861,643.84 L479.339,643.84 Z"/>
-<path id="PLN_B1_B01_LAB_01" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,778.399 L498.541,663.357 L498.861,663.357 L498.861,663.193 L498.701,663.193 L613.902,663.192 L613.903,778.399 L498.701,778.399 Z"/>
-<path id="PLN_B1_B01_LAB_02" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M805.898,567.357 L805.898,778.399 L633.1,778.394 L633.1,567.357 Z"/>
+<path id="PLN_B1_B01_CORE_09" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M440.94,490.239 L440.94,471.037 L498.541,471.037 L498.541,490.239 L479.659,490.239 L460.142,490.239 Z"/>
+<path id="PLN_B1_B01_BUILDING_SUPPORT_03" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,490.239 L498.541,413.596 L633.26,413.596 L633.26,528.643 L498.861,528.643 L498.861,515.84 L498.861,503.357 L498.861,490.239 Z"/>
+<path id="PLN_B1_B01_BUILDING_SUPPORT_01" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.701,778.399 L364.302,778.388 L364.302,413.596 L498.541,413.596 L498.541,471.037 L440.94,471.037 L440.94,490.239 L440.94,503.042 L440.94,516.16 L440.94,528.643 L440.94,567.357 L440.94,644.16 L440.94,701.756 L498.541,701.756 L498.541,778.399 Z"/>
+<path id="PLN_B1_B01_LAB_03" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.339,644.16 L440.94,644.16 L440.94,567.357 L498.712,567.357 L519.794,567.354 L536.94,567.352 L536.94,643.84 L498.552,643.84 L479.339,643.84 Z"/>
+<path id="PLN_B1_B01_LAB_01" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M498.541,778.399 L498.541,663.357 L498.861,663.357 L498.861,663.352 L613.743,663.352 L613.743,778.399 L498.701,778.399 Z"/>
+<path id="PLN_B1_B01_LAB_02" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M805.898,567.357 L805.898,778.399 L633.26,778.394 L633.26,567.357 Z"/>
+<path id="PLN_B1_B01_CIRCULATION_01" fill="#FDF5D1" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M479.659,528.643 L633.26,528.643 L633.26,778.394 L633.1,778.394 L633.1,778.388 L613.903,778.399 L613.743,778.399 L613.743,663.352 L498.546,663.352 L498.552,643.84 L536.94,643.84 L536.94,567.352 L519.794,567.354 L498.712,567.357 L440.94,567.357 L440.94,528.643 L460.142,528.643 L460.142,490.239 L479.659,490.239 Z"/>
 </g>
 <g id="PD_STRUCTURE">
 <path id="PLN_B1_STRUCTURE_000" fill="#4A4A4A" stroke="none" stroke-width="0" fill-rule="evenodd" d="M572.302,720.798 L572.411,720.216 L572.767,719.667 L573.304,719.315 L573.895,719.197 L574.485,719.311 L575.027,719.66 L575.386,720.204 L575.498,720.792 L575.39,721.383 L575.036,721.922 L574.494,722.282 L573.904,722.398 L573.316,722.285 L572.774,721.931 L572.414,721.389 Z"/>
@@ -101,22 +102,25 @@
 <g id="PD_VOID">
 </g>
 <g id="PD_OUTLINE">
-<path id="PLN_B1_OUTLINE" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M460.302,490.399 L460.302,528.803 L441.1,528.803 L441.1,533.363 L441.101,567.193 L537.1,567.192 L537.1,644 L498.701,644 L498.701,663.193 L613.902,663.192 L613.903,778.399 L498.701,778.399 L364.302,778.388 L364.302,413.596 L805.898,413.596 L805.898,778.399 L633.1,778.394 L633.1,528.766 L498.701,528.766 L498.701,528.798 L479.499,528.798 L479.499,490.399 Z"/>
+<path id="PLN_B1_OUTLINE" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M633.1,778.394 L633.1,778.388 L613.903,778.399 L498.701,778.399 L364.302,778.388 L364.302,413.596 L805.898,413.596 L805.898,778.399 Z"/>
 </g>
 <g id="FACADE">
 </g>
 <g id="PD_LABELS">
 <text id="PLN_B1_B01_CORE_01_LBL" x="463.44" y="683.808" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="463.44" dy="0">CORE</tspan></text>
 <text id="PLN_B1_B01_BUILDING_SUPPORT_01_LBL" x="409.058" y="715.755" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="12" text-anchor="middle" fill="#333333" transform="rotate(-90 409.058 733.155)"><tspan x="409.058" dy="0">BUILDING</tspan><tspan x="409.058" dy="14.4">SUPPORT /</tspan><tspan x="409.058" dy="14.4">MECHANICAL</tspan><tspan x="409.058" dy="14.4">/ STORAGE</tspan></text>
-<text id="PLN_B1_B01_LAB_02_LBL" x="719.499" y="679.525" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 719.499 672.875)"><tspan x="719.499" dy="0">LAB</tspan></text>
+<text id="PLN_B1_B01_LAB_02_LBL" x="719.579" y="679.525" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 719.579 672.875)"><tspan x="719.579" dy="0">LAB</tspan></text>
+<text id="PLN_B1_B01_CIRCULATION_01_LBL" x="585.1" y="612.248" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(59.032 585.1 605.598)"><tspan x="585.1" dy="0">CIRCULATION</tspan></text>
 </g>
 <g id="PD_LEGEND">
 <path id="PLN_B1_LEGEND_LAB" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,1042.399 L44,1042.399 L44,1050.399 L36,1050.399 Z"/>
 <text id="PLN_B1_LEGEND_LAB_TXT" x="48" y="1048.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">LAB</tspan></text>
-<path id="PLN_B1_LEGEND_BUILDING_SUPPORT" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M315.4,1042.399 L323.4,1042.399 L323.4,1050.399 L315.4,1050.399 Z"/>
-<text id="PLN_B1_LEGEND_BUILDING_SUPPORT_TXT" x="327.4" y="1048.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="327.4" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
-<path id="PLN_B1_LEGEND_CORE" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M594.8,1042.399 L602.8,1042.399 L602.8,1050.399 L594.8,1050.399 Z"/>
-<text id="PLN_B1_LEGEND_CORE_TXT" x="606.8" y="1048.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="606.8" dy="0">CORE</tspan></text>
+<path id="PLN_B1_LEGEND_CIRCULATION" fill="#FDF5D1" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M315.4,1042.399 L323.4,1042.399 L323.4,1050.399 L315.4,1050.399 Z"/>
+<text id="PLN_B1_LEGEND_CIRCULATION_TXT" x="327.4" y="1048.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="327.4" dy="0">CIRCULATION</tspan></text>
+<path id="PLN_B1_LEGEND_BUILDING_SUPPORT" fill="#D8D8D6" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M594.8,1042.399 L602.8,1042.399 L602.8,1050.399 L594.8,1050.399 Z"/>
+<text id="PLN_B1_LEGEND_BUILDING_SUPPORT_TXT" x="606.8" y="1048.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="606.8" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
+<path id="PLN_B1_LEGEND_CORE" fill="#999999" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,1054.399 L44,1054.399 L44,1062.399 L36,1062.399 Z"/>
+<text id="PLN_B1_LEGEND_CORE_TXT" x="48" y="1060.799" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="48" dy="0">CORE</tspan></text>
 </g>
 <g id="PD_ANNOTATION">
 <text id="PLN_B1_NORTH_TXT" x="1125.2" y="42.3" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="middle" fill="#444444"><tspan x="1125.2" dy="0">N</tspan></text>

@@ -1,11 +1,12 @@
 # PRD：Program Diagram Rhino 8 插件
 
-v1.0 · 2026-10-13 · 状态：S0–S6 完成，插件 v0.8.6，Windows 测试微调中（修订过程见 `docs/CHANGELOG.md`；使用说明 `docs/USER_GUIDE.md`，建模约定 `docs/MODELING_CONVENTION.md`）
+v1.0 · 2026-10-13 · 状态：S0–S6 完成，插件 v0.8.7，Windows 测试微调中（修订过程见 `docs/CHANGELOG.md`；使用说明 `docs/USER_GUIDE.md`，建模约定 `docs/MODELING_CONVENTION.md`）
 
 **v1.0 主要变化（用户 rev 0.8，Downtown 模型 2026-10-13 版）**
 - 文字：全部 **Futura PT、全大写**；粗体位置用 FuturaPT-Heavy，其余 FuturaPT-Book（未安装时退回 Arial）。
 - 新图层角色：`NC.Interior`（平面中灰线）、`NC.Furniture`（平面浅灰线）、`NC.Massing`（建筑外轮廓，含无 program 的空间，虚线）、`NC.Screen`（围墙 / 装饰墙等表皮，只画一层面，不挤出体块）。配景人物和树用公司 ENTOURAGES.ai / TREES.ai。
 - 总平面范围：NC 场地四周各留场地自身尺寸的 5 倍（`plan.siteExtentFactor`）；只算建筑附近（`plan.siteMarginFt` 内）的 NC 场地物体，画板最大 `page.maxArtboardPt`（Illustrator 画布 16383 pt，超出时 AI 建不出总平面）。
+- v0.8.7：轴测消隐的循环只在真正的循环内处理（03 楼板与模型一致）；B1 薄 circulation 板不再丢失；04 爆炸 / 分层轴测显示立面玻璃，玻璃 50%。
 - v0.8.6：03 轴测楼板同 Rhino（退台楼板边）、体块在板下切开；玻璃 50% 且不遮挡，立面幕墙在 03 轴测中显示；洞口按楼板 + 体块判断；爆炸轴测地下层在地下连接带之下。
 - v0.8.5：坐标吸附 1 mm（Windows 消隐失败）；平面画出下层顶视与首层洞口；露天屋顶分本层 / 对天，03 轴测体块停在屋顶板下；爆炸轴测地下连接带在场地后。
 - v0.8.4：露天楼板 / 平面玻璃按屋顶 / 玻璃 hatch 显示（`exposed.*`）；NC.PropertyLine（平面点划线、04 场地边缘外扩 50 ft、剖面虚线）；平面 / 轴测图例符号与轴测比例、指北针（`annotation.*`）；树 / 配景颜色可设；03 层线 0.5 pt；绿化带两端退 20 ft；场地轴测范围加倍；固定画板时平面 / 剖面 / 立面铺满。

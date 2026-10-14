@@ -250,6 +250,9 @@ public class DowntownTests
             var uc = DowntownAnalysis.UserContext();
             var only0 = Environment.GetEnvironmentVariable("PD_ONLY");
             if (!string.IsNullOrEmpty(only0)) uc.Settings.Output.Drawings = only0.Split(',').ToList();
+            // PD_ARTBOARD="Fit content": the user's other artboard choice (e.g. for the whole exploded axon).
+            var ab0 = Environment.GetEnvironmentVariable("PD_ARTBOARD");
+            if (!string.IsNullOrEmpty(ab0)) uc.Settings.Output.Artboard = ab0;
             var n0 = new List<string>();
             foreach (var d in PD.Core.Writers.Exporter.BuildDrawings(uc, n0))
                 for (var a = 0; a < d.Artboards.Count; a++)

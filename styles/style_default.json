@@ -359,8 +359,8 @@
   },
   "facade": {
     "stackedAxonOpacity": 0.5,
-    "explodedAxon": "hidden",
-    "comment": "User rev 0.8.6 — facade glass (NC.Facade surfaces standing up: curtain walls, the building envelope) shows in the stacked and site axons at stackedAxonOpacity over the program, hidden only by what stands in front of it (axon.facadeVeil*: fill / stroke). Flat glass uses exposed.glassOpacity."
+    "explodedAxon": "storey",
+    "comment": "User rev 0.8.6 — facade glass (NC.Facade surfaces standing up: curtain walls, the building envelope) shows in the stacked and site axons at stackedAxonOpacity over the program, hidden only by what stands in front of it (axon.facadeVeil*: fill / stroke). Flat glass uses exposed.glassOpacity. User rev 0.8.7 — the exploded (A) and floor key axons show it too (explodedAxon: \"storey\" = each storey's glass standing on its plate at its real height / up to the key floor's ceiling; \"hidden\" = off), see-through like the flat glass."
   },
   "section": {
     "comment": "Program section, docs/SITE_STYLE.md §4 (styles/site_style.json › program_section). Drawn at output.defaultSectionScale (1\" = 16'-0\"); sizes are absolute pt; *Ratio = × floor height. What is seen behind the cut uses \"view\".",
