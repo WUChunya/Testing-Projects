@@ -72,21 +72,68 @@
   const gtk = h & 0x7fffffff;
 
   const box = document.createElement('div');
-  box.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483647;background:#fff;color:#222;border:1px solid #ddd;border-radius:10px;padding:14px 18px;font:14px/1.6 sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.15);max-width:320px';
+  box.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483647;background:#fff;color:#222;border:1px solid #ddd;border-radius:10px;padding:14px 18px;font:14px/1.6 sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.15);max-width:420px;white-space:pre-wrap;word-break:break-all';
   document.body.appendChild(box);
   const say = t => { box.textContent = t; };
   say('正在读取说说…');
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const NUM = 20;
+  const CGI = 'proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6';
+  // QZone's own pages load this API as JSONP via <script>, which is not subject
+  // to CORS; plain fetch is tried too in case it works on this page.
+  const METHODS = [
+    ['jsonp', 'https://user.qzone.qq.com/' + CGI],
+    ['jsonp', 'https://h5.qzone.qq.com/' + CGI],
+    ['jsonp', 'https://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6'],
+    ['fetch', '/' + CGI]
+  ];
+  let working = null;
+  const qzonetoken = typeof window.g_qzonetoken === 'string' ? window.g_qzonetoken : '';
+  const jsonp = (url, params) => new Promise((resolve, reject) => {
+    const cb = '__qzExport' + Date.now() + Math.floor(Math.random() * 1e6);
+    const s = document.createElement('script');
+    const done = (err, data) => { clearTimeout(timer); delete window[cb]; s.remove(); err ? reject(err) : resolve(data); };
+    const timer = setTimeout(() => done(new Error('超时')), 20000);
+    window[cb] = d => done(null, d);
+    s.charset = 'utf-8';
+    s.onerror = () => done(new Error('脚本加载失败'));
+    params.set('callback', cb);
+    s.src = url + '?' + params;
+    (document.head || document.documentElement).appendChild(s);
+  });
+  const viaFetch = async (url, params) => {
+    params.set('callback', '_preloadCallback');
+    const r = await fetch(url + '?' + params, { credentials: 'include' });
+    const text = await r.text();
+    return JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+  };
+  const callOnce = ([kind, url], pos) => {
+    const params = new URLSearchParams({ uin, ftype: 0, sort: 0, pos, num: NUM, replynum: 100, g_tk: gtk,
+      code_version: 1, format: 'jsonp', need_private_comment: 1 });
+    if (qzonetoken) params.set('qzonetoken', qzonetoken);
+    return kind === 'jsonp' ? jsonp(url, params) : viaFetch(url, params);
+  };
   const fetchPage = async pos => {
-    const qs = new URLSearchParams({ uin, ftype: 0, sort: 0, pos, num: NUM, replynum: 100, g_tk: gtk,
-      callback: '_preloadCallback', code_version: 1, format: 'jsonp', need_private_comment: 1 });
-    for (let attempt = 0; attempt < 3; attempt++) {
+    if (!working) {
+      const errors = [];
+      let firstReply = null;
+      for (const m of METHODS) {
+        try {
+          const d = await callOnce(m, pos);
+          if (d && d.code === 0) { working = m; return d; }
+          if (d && typeof d.code !== 'undefined') { firstReply = firstReply || d; errors.push(m[1] + '：code=' + d.code); }
+          else errors.push(m[1] + '：返回格式不对');
+        } catch (e) {
+          errors.push(m[0] + ' ' + m[1] + '：' + e.message);
+        }
+      }
+      if (firstReply) return firstReply;
+      throw new Error('所有接口都访问失败\n' + errors.join('\n'));
+    }
+    for (let attempt = 0; ; attempt++) {
       try {
-        const r = await fetch('/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?' + qs, { credentials: 'include' });
-        const text = await r.text();
-        return JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+        return await callOnce(working, pos);
       } catch (e) {
         if (attempt === 2) throw e;
         await sleep(2000);
