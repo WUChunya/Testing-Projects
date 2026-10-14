@@ -79,16 +79,30 @@ public class Rev085Tests
     [Fact]
     public void Stacked_PodiumBlocksStopUnderTheirRoof()
     {
-        var ctx = DowntownAnalysis.UserContext();
-        var r = ctx.Result;
-        var lobby = ProgramBlocks.Build(r).Where(b => b.LevelIndex == 3 && b.Footprint.Mass.ProgramKey == "LOBBY").ToList();
-        Assert.NotEmpty(lobby);
-        var roofBottom = r.Local.Objects.Single(o => o.Id == PodiumRoof).BBox.MinZ;
-        foreach (var b in lobby)
+        // A block stretched to the level line under a plate lying there: only the part under the plate is lowered.
+        var f = new GeometryFactory();
+        Polygon Rect(double x0, double x1) => f.CreatePolygon(new[] { new Coordinate(x0, 0), new Coordinate(x1, 0), new Coordinate(x1, 10), new Coordinate(x0, 10), new Coordinate(x0, 0) });
+        var block = new Prism("B", Rect(0, 20), 0, 20, "T", "S", "S", "PRG", "LAB");
+        var plate = new Prism("R", Rect(10, 30), 19, 20, "T", "S", "S", "EXP");
+        var parts = AxonDrawing.UnderPlates(new List<Prism> { block }, new[] { plate });
+        Assert.Equal(2, parts.Count);
+        Assert.Contains(parts, x => x.Name == "B" && x.Z1 == 20 && x.Label == "LAB" && Math.Abs(x.Plan.Area - 100) < 1e-6);
+        Assert.Contains(parts, x => x.Name == "B_U1" && x.Z1 == 19 && Math.Abs(x.Plan.Area - 100) < 1e-6);
+        // Downtown: the L3 lobbies under the podium roof never show their tops through it.
+        var d = AxonDrawing.Build(DowntownAnalysis.UserContext(), AxonKind.Stacked);
+        // (Since 0.8.6 the glass canopy is see-through: tops may show under it, nowhere else.)
+        static Envelope Env(PD.Core.Drawing.DItem i)
         {
-            var full = AxonDrawing.FullHeight(r, b);
-            Assert.True(full.Z1 > roofBottom + 0.5); // floor to floor would run into the roof slab…
-            Assert.Equal(roofBottom, AxonDrawing.UnderRoofs(ctx, b, full).Z1, 3); // …so it stops under it
+            var e = new Envelope();
+            foreach (var q in i.Paths!.SelectMany(x => x)) e.ExpandToInclude(q[0], q[1]);
+            return e;
+        }
+        var glass = d.Layer("FACADE").Items.Where(i => i.Name.Contains("EXPOSED_GLASS") && i.Paths != null).Select(Env).ToList();
+        foreach (var top in d.Layer("PD_PROGRAM").Items.Where(i => i.Name.Contains("_L3_") && i.Name.Contains("LOBBY") && i.Name.Contains("_TOP")))
+        {
+            var e = Env(top);
+            e.ExpandBy(-0.5);
+            Assert.True(glass.Any(g => { var x = new Envelope(g); x.ExpandBy(1); return x.Contains(e); }), $"{top.Name} shows outside the glass");
         }
     }
 

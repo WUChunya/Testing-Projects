@@ -39,6 +39,8 @@ public static class AxonDrawing
         public List<(string Layer, Spec Spec)> Paint { get; } = new();
         /// <summary>Level column entries: level index, drawn height of its plate.</summary>
         public List<(int Level, double Z)> Tags { get; } = new();
+        /// <summary>Layers drawn under everything, the site included (exploded basements, user rev 0.8.6).</summary>
+        public List<string> UnderSite { get; } = new();
     }
 
     public static string FileName(AxonKind kind) => kind switch
@@ -113,11 +115,20 @@ public static class AxonDrawing
             area.ExpandBy(10);
         }
         var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach, area: area);
-        Func<ProgramBlock, (double, double)> band = full ? b => UnderRoofs(ctx, b, FullHeight(ctx.Result, b)) : b => (b.Z0, b.Z1);
-        var program = ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList();
+        Func<ProgramBlock, (double, double)> band = full ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
+        // Open slabs and glass at their real height (user rev 0.8.6: every floor edge the model shows, as in Rhino);
+        // the blocks stretched under them stop at their underside.
+        var plates = UnderScreens(ctx, Exposed(d, ctx, blocks, band: null));
+        var program = UnderPlates(ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList(), plates);
         // Screens as solid walls with a white floor, open on top (user rev 0.8.3).
         var screens = ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => blocks.Any(b => b.LevelIndex == e.LevelIndex))).ToList();
-        var faces = AxonFaces.Render(proj, context.Concat(program).Concat(screens).Concat(Exposed(d, ctx, blocks, band: null, shape: e => e.Sky)));
+        // Glass (flat canopies and the facade glass) is see-through (user rev 0.8.6): it hides nothing, so it is left
+        // out of the opaque pass and drawn over it at its own opacity where nothing opaque stands in front of it.
+        var glass = plates.Where(IsGlass).Concat(ax.FacadeVeil ? FacadeGlass(d, ctx, blocks) : Enumerable.Empty<Prism>()).ToList();
+        var solid = context.Concat(program).Concat(screens).Concat(plates.Where(q => !IsGlass(q))).ToList();
+        var faces = AxonFaces.Render(proj, solid);
+        var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
+            : AxonFaces.Render(proj, solid.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
         // Trees stop short of the building by axon.treeClearPt (user rev 0.8.4: room for the black outline).
         HideBehind(sheet, proj, faces, ax.TreeClearPt / ctx.PtPerFt);
         var line = d.Gray(ax.LineColor);
@@ -134,13 +145,14 @@ public static class AxonDrawing
                 // Faces carry the floor lines: 0.5 pt in their own colour, 35 % darker.
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, FloorLine(d, f.Fill, st.FloorLineDarken), st.FloorLinePt)));
         }
-        GlassHatch(d, ctx, proj, sheet, "PD_PROGRAM", faces);
+        PaintGlass(d, ctx, proj, sheet, glassFaces);
         ScreensAndMassing(d, ctx, proj, sheet, faces);
         var withScreens = faces.Where(f => f.Prism.Group is "PRG" or "SCR" or "EXP").ToList();
         var mine = faces.Where(f => f.Prism.Group == "PRG").ToList();
         var folds = AxonFaces.Folds(withScreens);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
-        var outline = AxonFaces.Union(withScreens.Select(f => f.Screen));
+        // The glass is part of the envelope: the outline runs round it too.
+        var outline = AxonFaces.Union(withScreens.Concat(glassFaces).Select(f => f.Screen));
         if (full)
         {
             // The heavy line only on the outer silhouette (no holes, no hairline gaps between faces).
@@ -162,18 +174,6 @@ public static class AxonDrawing
 
         if (frame != null) ClipToFrame(sheet, frame);
 
-        if (ax.FacadeVeil && ctx.Style.Facade.StackedAxonOpacity > 0)
-        {
-            var ids = ctx.Result.FacadeIds.ToHashSet();
-            foreach (var group in ctx.Result.Local.Objects.Where(o => ids.Contains(o.Id) && o.Mesh != null && !ctx.Result.Stray.Contains(o.Id))
-                         .GroupBy(o => o.LayerPath).OrderBy(g => g.Key, StringComparer.Ordinal))
-            {
-                var veil = AxonFaces.Union(group.Select(o => MeshProjection.Union(o.Mesh!, proj.Project, proj.Faces)));
-                if (veil.IsEmpty) continue;
-                sheet.Paint.Add(("FACADE", new Spec("FACADE_" + SectionDrawing.Safe(group.Key).ToUpperInvariant(), veil, d.Swatch("AXON_FACADE_VEIL", ax.FacadeVeilFill),
-                    d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: ctx.Style.Facade.StackedAxonOpacity)));
-            }
-        }
         return sheet;
     }
 
@@ -256,16 +256,32 @@ public static class AxonDrawing
     }
 
     /// <summary>
-    /// A block stretched floor to floor stops under an open roof slab lying on it (user rev 0.8.5: the podium's
-    /// program showed through its roof where both tops met at the level line).
+    /// A block stretched floor to floor stops under an open slab or glass lying at its top, only where that plate is
+    /// (user rev 0.8.5 / 0.8.6: two tops at the level line let the program show through the roof). The block is split:
+    /// the part under the plate ends at the plate's underside, the rest keeps its height (and the label).
     /// </summary>
-    public static (double Z0, double Z1) UnderRoofs(ExportContext ctx, ProgramBlock b, (double Z0, double Z1) full)
+    public static List<Prism> UnderPlates(List<Prism> blocks, IReadOnlyList<Prism> plates)
     {
-        var z1 = full.Z1;
-        foreach (var e in ExposedSurfaces.For(ctx).Where(e => !e.IsGlass && e.Z0 >= full.Z1 - 2 && e.Z0 < full.Z1 && !e.Sky.IsEmpty))
-            if (e.Sky.EnvelopeInternal.Intersects(b.Geometry.EnvelopeInternal) && AxonFaces.Safe(() => e.Sky.Intersection(b.Geometry), MeshSlicer.Factory.CreatePolygon()).Area > 1)
-                z1 = e.Z0;
-        return (full.Z0, Math.Max(z1, full.Z0 + 0.1));
+        var res = new List<Prism>();
+        var empty = MeshSlicer.Factory.CreatePolygon();
+        foreach (var p in blocks)
+        {
+            var rest = p.Plan;
+            var pieces = new List<Prism>();
+            foreach (var q in plates.Where(q => q.Z0 >= p.Z1 - 2 && q.Z0 < p.Z1 - 0.01 && q.Z0 > p.Z0 + 0.1
+                         && q.Plan.EnvelopeInternal.Intersects(p.Plan.EnvelopeInternal)))
+            {
+                var under = AxonFaces.Safe(() => MeshSlicer.Polygonal(rest.Intersection(q.Plan)), empty);
+                if (under.IsEmpty || under.Area < 1) continue;
+                pieces.Add(p with { Name = $"{p.Name}_U{pieces.Count + 1}", Plan = under, Z1 = q.Z0, Label = null });
+                rest = AxonFaces.Safe(() => MeshSlicer.Polygonal(rest.Difference(q.Plan)), rest);
+            }
+            if (pieces.Count == 0) { res.Add(p); continue; }
+            if (!rest.IsEmpty && rest.Area >= 1) res.Add(p with { Plan = rest });
+            else pieces[0] = pieces[0] with { Label = p.Label };
+            res.AddRange(pieces);
+        }
+        return res;
     }
 
     /// <summary>Blocks of the levels at or above grade (the ground-floor plate and up; see <see cref="GroundAndExcavation"/>).</summary>
@@ -345,6 +361,71 @@ public static class AxonDrawing
                     paint.StrokePt ?? 0.75, paint.Dash, Closed: false)));
             }
         }
+    }
+
+    /// <summary>
+    /// A roof plate under a screen's floor loses that part: the white floor lies on it, and two tops a few inches apart
+    /// let the hidden-face order pick the wrong one (user rev 0.8.6, the L11 roof over the penthouse floor).
+    /// </summary>
+    static List<Prism> UnderScreens(ExportContext ctx, IEnumerable<Prism> plates)
+    {
+        var floors = ScreenEnclosures.For(ctx).Where(e => e.Encloses && !e.Floor.IsEmpty).ToList();
+        var res = new List<Prism>();
+        foreach (var q in plates)
+        {
+            var plan = q.Plan;
+            foreach (var e in floors.Where(e => Math.Abs(e.Z0 - q.Z1) <= 1.5 && e.Floor.EnvelopeInternal.Intersects(plan.EnvelopeInternal)))
+                plan = AxonFaces.Safe(() => MeshSlicer.Polygonal(plan.Difference(e.Floor)), plan);
+            if (!plan.IsEmpty && plan.Area >= 1) res.Add(q with { Plan = plan });
+        }
+        return res;
+    }
+
+    static bool IsGlass(Prism p) => p.Group == "GLS" || p.Group == "EXP" && p.Name.Contains("EXPOSED_GLASS");
+
+    /// <summary>
+    /// The facade glass standing on the drawn levels (NC.Facade surfaces, curtain walls: user rev 0.8.6) as thin walls
+    /// along their plan trace, from their foot to their top. Flat glass is an exposed surface, not here.
+    /// </summary>
+    static IEnumerable<Prism> FacadeGlass(PD.Core.Drawing.Drawing d, ExportContext ctx, List<ProgramBlock> blocks)
+    {
+        var r = ctx.Result;
+        var ax = ctx.Style.Axon;
+        if (blocks.Count == 0) yield break;
+        var bottom = blocks.Min(b => b.Z0) - 1;
+        var ids = r.FacadeIds.ToHashSet();
+        var fill = d.Swatch("AXON_GLASS", ax.FacadeVeilFill);
+        var n = 0;
+        foreach (var o in r.Local.Objects.Where(o => (o.Role == Roles.Facade || ids.Contains(o.Id)) && o.Mesh != null && !r.Stray.Contains(o.Id)
+                     && o.BBox.SizeZ > 2 && o.BBox.MaxZ > bottom))
+        {
+            var trace = ScreenEnclosures.Trace(o.Mesh!);
+            if (trace.IsEmpty) continue;
+            var wall = AxonFaces.Safe(() => MeshSlicer.Polygonal(trace.Buffer(0.1, new NetTopologySuite.Operation.Buffer.BufferParameters
+            {
+                EndCapStyle = NetTopologySuite.Operation.Buffer.EndCapStyle.Flat,
+            })), MeshSlicer.Factory.CreatePolygon());
+            if (wall.IsEmpty) continue;
+            yield return new Prism($"FACADE_GLASS_{++n:00}", wall, Math.Max(o.BBox.MinZ, bottom), o.BBox.MaxZ, fill, fill, fill, "GLS");
+        }
+    }
+
+    /// <summary>Glass faces over the drawing at axon.facadeVeil* / exposed.glassOpacity, flat glass with its hatch.</summary>
+    static void PaintGlass(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces)
+    {
+        var ax = ctx.Style.Axon;
+        var ex = ctx.Style.Exposed;
+        foreach (var f in faces)
+        {
+            if (f.Prism.Group == "GLS")
+            {
+                if (f.IsTop) continue; // a curtain wall shows its faces, not its 0.2 ft top
+                sheet.Paint.Add(("FACADE", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ax.FacadeVeilStroke), ax.FacadeVeilStrokePt, Opacity: ctx.Style.Facade.StackedAxonOpacity)));
+            }
+            else
+                sheet.Paint.Add(("FACADE", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ex.LineColor), ex.LinePt, Opacity: ex.GlassOpacity)));
+        }
+        GlassHatch(d, ctx, proj, sheet, "FACADE", faces);
     }
 
     /// <summary>
@@ -459,6 +540,8 @@ public static class AxonDrawing
         {
             var lvl = r.Levels[i];
             var layer = "AXON_" + SectionDrawing.Safe(lvl.Name).ToUpperInvariant();
+            // Basements lie under the shafts that rise from them, and both under the site (ground › shafts › basements).
+            if (basements.Contains(i)) sheet.UnderSite.Add(layer);
             var z = lifted[i];
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
             var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), ax.SideDarken, coreOverride: true).ToList();
@@ -625,7 +708,7 @@ public static class AxonDrawing
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var levels = Plates(blocks);
         var (siteLevel, dig) = GroundAndExcavation(r, blocks, levels, ground);
-        var band = blocks.ToDictionary(b => b, b => UnderRoofs(ctx, b, FullHeight(r, b)));
+        var band = blocks.ToDictionary(b => b, b => FullHeight(r, b));
         // The building's total outline: every block, floor to floor.
         var screens = ScreenEnclosures.For(ctx);
         var all = AxonFaces.Render(proj, blocks.Select((b, n) => new Prism($"G{n:000}", b.Geometry, band[b].Z0, band[b].Z1, null, null, null, "G"))
@@ -658,12 +741,15 @@ public static class AxonDrawing
                     if (!shape.IsEmpty) prisms.Add(new Prism($"{SectionDrawing.Safe(r.Levels[j].Name)}_BELOW_{k + 1:00}", shape, g.Key.Item1, g.Key.Item2, white, white, white, "BELOW"));
                 }
             prisms.AddRange(ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), b => band[b], ax.SideDarken, coreOverride: true));
+            // Open slabs / glass of this floor in their paint, those of the floors below in white (user rev 0.8.4);
+            // the blocks stretched under them stop at their underside (user rev 0.8.6).
+            var plates = UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null));
+            plates.AddRange(UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null))
+                .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
+            prisms = UnderPlates(prisms, plates);
+            prisms.AddRange(plates);
             // Screens standing on this floor (or on a roof below it): solid walls, white floor, open top.
             prisms.AddRange(ScreenPrisms(d, ctx, screens.Where(e => e.LevelIndex == i || lower.Contains(e.LevelIndex))));
-            // Open slabs / glass of this floor in their paint, those of the floors below in white (user rev 0.8.4).
-            prisms.AddRange(Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null));
-            prisms.AddRange(Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null, shape: e => ExposedSurfaces.SkyUpTo(ctx, e, i))
-                .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             var faces = AxonFaces.Render(proj, prisms);
             foreach (var f in faces)
                 sheet.Paint.Add(("PD_PROGRAM", f.Prism.Group switch
@@ -1126,6 +1212,7 @@ public static class AxonDrawing
         var used = sheets.SelectMany(s => s.Paint.Select(x => x.Layer)).Distinct().ToList();
         string[] first = { "AXON_CONNECTOR_BELOW", "AXON_SITE", "AXON_CONTEXT", "AXON_EXCAVATION", "AXON_GHOST_BELOW", "PD_PROGRAM", "AXON_LEVEL_LINE", "AXON_LINE" };
         string[] last = { "AXON_SCREEN", "AXON_TREE", PD.Core.Entourage.EntouragePlacer.Layer, "FACADE", "AXON_GHOST_ABOVE", "AXON_MASSING" };
+        foreach (var n in sheets.SelectMany(s => s.UnderSite).Distinct().Where(used.Contains)) d.Layer(n);
         foreach (var n in first.Where(used.Contains)) d.Layer(n);
         foreach (var n in used.Where(n => !first.Contains(n) && !last.Contains(n) && n != "PD_LABELS")) d.Layer(n);
         foreach (var n in last.Where(used.Contains)) d.Layer(n);

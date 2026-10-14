@@ -95,7 +95,8 @@ public class Rev084Tests
         Assert.DoesNotContain(plans.Layer("PD_LABELS").Items, i => i.Name.Contains("EXPOSED"));
         var ax = AxonDrawing.Build(ctx, AxonKind.Stacked);
         Assert.Contains(ax.Layer("PD_PROGRAM").Items, i => i.Name.Contains("EXPOSED_ROOF"));
-        Assert.Contains(ax.Layer("PD_PROGRAM").Items, i => i.Name.Contains("EXPOSED_GLASS") && i.Name.EndsWith("_HATCH"));
+        // Glass is see-through since 0.8.6: drawn with its hatch over the program, on FACADE.
+        Assert.Contains(ax.Layer("FACADE").Items, i => i.Name.Contains("EXPOSED_GLASS") && i.Name.EndsWith("_HATCH"));
     }
 
     // ------------------------------------------------------------------ (3) screen box: no diagonal wall

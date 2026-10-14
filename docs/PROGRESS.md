@@ -3,19 +3,14 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
-- Rev 19 (v0.8.5, 216 tests, `Rev085Tests`, fixture = Downtown 2026-10-13 rev B with property line, settings NE view):
-  local coordinates snapped to 1 mm (`cleanup.coordSnapFt`, raw Rhino doubles broke the overlays → blank screen inside,
-  leftover faces, trees through walls on Windows); hidden faces trimmed only by drawn faces, snapped 3rd overlay
-  fallback, failures → export_log CHECK; `ExposedSurface.Sky` (no higher block over it) for 03 axons, blocks stop
-  under open roof slabs (`AxonDrawing.UnderRoofs`); plans draw lower floors as top views + openings to below
-  (`Plans/SeenBelow`); roof view tiers include roof slabs; exploded shafts under the site on `AXON_CONNECTOR_BELOW`.
-- Rev 18 (v0.8.4, 210 tests, `Rev084Tests`, user settings fixture `downtown_settings.json` + `PD_USER=1`):
-  exposed slabs / flat glass as roof / canopy (`Analysis/ExposedSurfaces`, style `exposed`) in plans and axons;
-  NC.PropertyLine role (plan dash-dot, 04 site = property + 50 ft, section dashes); legend symbols
-  (`Drawing/AnnotationSymbols`, style `annotation`) on plan / site legends + axon LEGEND artboard + north/scale;
-  screen trace skips flat faces; 03 level line 0.5 pt, tree gap 1 pt; medians end 20 ft back; 04 exploded strokes
-  per level; site axon range ×2; tree / people colours (`Style.ApplyColors`); fixed artboards fit plans / sections;
-  `Localizer` ignores curves (Break Room section lines). Context style in plans = axon (white, grey outline).
+- Rev 20 (v0.8.6, 220 tests, `Rev086Tests`): 03 axons draw every open slab at its level (`Area`, floor edges of
+  recessed floors as in Rhino), blocks split under plates (`AxonDrawing.UnderPlates`), roof plates lose what a screen
+  floor covers (`UnderScreens`); glass see-through (own pass, `FACADE` layer, 50 %: `exposed.glassOpacity`,
+  `facade.stackedAxonOpacity`), facade glass walls in 03 axons (`FacadeGlass`, `axon.facadeVeil*`); slivers dropped in
+  `AxonFaces.Render`; exploded basements under `AXON_CONNECTOR_BELOW` (`Sheet.UnderSite`); openings = holes of
+  slabs + blocks (`SeenBelow.OpeningsAt`, the L1 plate hole).
+- Rev 19 (v0.8.5): coordinates snapped to 1 mm (Windows overlay failures), `SeenBelow` plans, roof view tiers.
+- Rev 18 (v0.8.4): exposed slabs / glass, NC.PropertyLine, legend symbols, tree / people colours, artboard fit.
 - Rev 17 (v0.8.3): streetscape `Plans/SiteLayout`, roof-view site plan, solid screens (`ScreenEnclosures`), floor key cutaway.
 - Rev 16 (v0.8.2): site curves, trees in greens, hatches. Rev 14–15 (v0.8.0–1): user rev 0.8 + S6.
 - Next: next Windows round — opening message, feature map, tuning keys, review workflow and open questions in
@@ -28,11 +23,10 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.8.5.zip` over the old folder (whole folder), restart Rhino.
-2. 03 axons: podium roof covers its program; roof screen open with white floor; no trees on the building.
-3. Plans: L1 opening = OPEN TO BELOW; L4+ show the podium roof / glass / lower plates; SITE PLAN ROOF outline.
-4. 04 exploded: shafts B1 → L1 behind the site plate.
-5. export_log.txt: any "CHECK axons: … overlay(s) failed" line → send it (with the NTS version it names).
+1. Unzip `ProgramDiagram-0.8.6.zip` over the old folder (whole folder), restart Rhino.
+2. 03 axons: floor plates round recessed floors (L4, L7) as in Rhino; podium glass walls 50 %; no overlaps.
+3. 04 exploded: site over the B1 → L1 shafts, shafts over B1. Site plan / L1: the plate hole = OPEN TO BELOW.
+4. Plans: canopy glass 50 %. export_log "CHECK axons: … failed" lines → send them.
 
 ## Known issues
 - Plan people = built-in top-view symbol (office library has side views only).

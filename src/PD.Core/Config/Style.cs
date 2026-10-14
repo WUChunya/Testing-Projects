@@ -139,6 +139,8 @@ public sealed class ExposedStyle
     public string GlassFill { get; set; } = "#EEF6FB";
     public HatchStyle GlassHatch { get; set; } = new() { Stroke = "#A9CBE3", StrokePt = 0.35, SpacingFt = 3, AngleDeg = 45 };
     public string LineColor { get; set; } = "#9A9A9A";
+    /// <summary>Opacity of flat glass fills in plans and axons (user rev 0.8.6: 50 %).</summary>
+    public double GlassOpacity { get; set; } = 0.5;
     public double LinePt { get; set; } = 0.35;
 }
 

@@ -418,7 +418,7 @@ public static class PlanDrawing
     /// <summary>
     /// Lower floors seen from this plan's cut, as top views (user rev 0.8.5, <see cref="SeenBelow"/>): roof paint for
     /// plates and roofs, the glass hatch for flat glass, under this level's blocks. What shows through an opening in the
-    /// floors at grade also gets the open-to-below dashes, cross and label.
+    /// floor itself (<see cref="SeenBelow.OpeningsAt"/>) gets the open-to-below dashes, cross and label.
     /// </summary>
     static void BelowItems(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, int i, double sizeFt, Coordinate? centre,
         NtsGeometry outline)
@@ -436,17 +436,18 @@ public static class PlanDrawing
                 items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_ROOF_PLAN", roof.Fill ?? "#EFEFEF"), d.Gray(roof.Stroke ?? "#B4B4B4"), roof.StrokePt ?? 0.5));
                 continue;
             }
-            items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt));
+            var pane = map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt);
+            pane.Opacity = st.GlassOpacity;
+            items.Add(pane);
             var lines = PlanBackground.Hatch(e.Area, st.GlassHatch);
             if (!lines.IsEmpty) items.Add(map.Geom(name + "_HATCH", lines, null, d.Swatch("EXPOSED_GLASS_HATCH", st.GlassHatch.Stroke), st.GlassHatch.StrokePt, false));
         }
         // Inserted at the bottom one by one, nearest level first: deeper levels end up under nearer ones, fills under hatches.
         foreach (var it in items) d.Layer("PD_PROGRAM").Items.Insert(0, At(it, a));
 
-        var open = seen.Where(e => e.ThroughOpening).Select(e => e.Area).ToList();
-        if (open.Count == 0) return;
-        var all = Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(open));
-        if (all == null || all.IsEmpty) return;
+        // The openings in this floor itself (a hole in the ground floor plate down to the basement, user rev 0.8.6).
+        var all = SeenBelow.OpeningsAt(ctx, i);
+        if (all.IsEmpty) return;
         var v = d.Layer("PD_VOID");
         var stroke = d.Gray(ps.VoidStroke);
         foreach (var (hole, k) in Enumerable.Range(0, all.NumGeometries).Select(k => (all.GetGeometryN(k), k)).Where(x => x.Item1 is Polygon))
@@ -484,7 +485,9 @@ public static class PlanDrawing
                 items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_ROOF_PLAN", roof.Fill ?? "#EFEFEF"), d.Gray(roof.Stroke ?? "#B4B4B4"), roof.StrokePt ?? 0.5));
                 continue;
             }
-            items.Add(map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt));
+            var pane = map.Poly(name, e.Area, d.Swatch("EXPOSED_GLASS", st.GlassFill), d.Gray(st.GlassHatch.Stroke), st.LinePt);
+            pane.Opacity = st.GlassOpacity;
+            items.Add(pane);
             var lines = PlanBackground.Hatch(e.Area, st.GlassHatch);
             if (!lines.IsEmpty) items.Add(map.Geom(name + "_HATCH", lines, null, d.Swatch("EXPOSED_GLASS_HATCH", st.GlassHatch.Stroke), st.GlassHatch.StrokePt, false));
         }

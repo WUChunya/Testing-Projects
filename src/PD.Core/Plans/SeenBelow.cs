@@ -33,17 +33,9 @@ public static class SeenBelow
         var found = new List<SeenSurface>();
         if (i <= 0 || i >= r.Plans.Count) return found;
         var g = PlanDrawing.GroundIndex(ctx);
-        var flats = ExposedSurfaces.FlatsFor(ctx);
         var minArea = ctx.Style.Exposed.MinAreaSf;
 
-        NtsGeometry Floor(int j, bool glass)
-        {
-            var parts = flats.Where(f => f.LevelIndex == j && f.IsGlass == glass).Select(f => f.Top).ToList();
-            if (!glass && !r.Plans[j].Union.IsEmpty) parts.Add(r.Plans[j].Union);
-            return Union(parts);
-        }
-
-        var covered = Union(new[] { Floor(i, false), Floor(i, true) });
+        var covered = Cover(ctx, i);
         for (var j = i - 1; j >= 0; j--)
         {
             if (covered.IsEmpty && j < g) break;
@@ -52,16 +44,68 @@ public static class SeenBelow
             if (within is { IsEmpty: true }) break;
             foreach (var glass in new[] { false, true })
             {
-                var seen = Minus(Floor(j, glass), covered);
+                // Slabs at or below grade are the ground: seen only through an opening (the basement floor).
+                var seen = Minus(Floor(ctx, j, glass, groundSlabs: j < g), covered);
                 if (within != null) seen = Clip(seen, within);
                 seen = Clean(seen);
                 if (!seen.IsEmpty && seen.Area >= minArea)
-                {
                     found.Add(new SeenSurface(j, glass, seen, j < g));
-                    covered = Union(new[] { covered, seen });
-                }
             }
+            covered = Union(new[] { covered, Cover(ctx, j) });
         }
+        return found;
+    }
+
+    /// <summary>
+    /// Openings in level <paramref name="i"/>'s floor (its slabs and blocks together): a hole in the ground floor
+    /// plate down to the basement (user rev 0.8.6), an atrium. Drawn open to below in its plan.
+    /// </summary>
+    public static NtsGeometry OpeningsAt(ExportContext ctx, int i)
+    {
+        var key = $"Openings{i}";
+        if (ctx.Cache.TryGetValue(key, out var c) && c is NtsGeometry g0) return g0;
+        var holes = i <= 0 || i >= ctx.Result.Plans.Count ? MeshSlicer.Factory.CreatePolygon() : Clean(Openings(Cover(ctx, i)));
+        var min = ctx.Style.Exposed.MinAreaSf;
+        var parts = Enumerable.Range(0, holes.NumGeometries).Select(holes.GetGeometryN).Where(h => h.Area >= min).ToList();
+        var res = parts.Count == 0 ? MeshSlicer.Factory.CreatePolygon() : Union(parts);
+        ctx.Cache[key] = res;
+        return res;
+    }
+
+    /// <summary>What a level's floor is made of: its blocks, its slabs (every one, grade included) and its flat glass.</summary>
+    static NtsGeometry Cover(ExportContext ctx, int j) =>
+        Union(new[] { Floor(ctx, j, false, groundSlabs: true), Floor(ctx, j, true, groundSlabs: true) });
+
+    /// <summary>A level's tops: blocks and slabs (plates, roofs) or its flat glass.</summary>
+    static NtsGeometry Floor(ExportContext ctx, int j, bool glass, bool groundSlabs)
+    {
+        var r = ctx.Result;
+        var parts = ExposedSurfaces.FlatsFor(ctx).Where(f => f.LevelIndex == j && f.IsGlass == glass).Select(f => f.Top).ToList();
+        if (!glass)
+        {
+            if (!r.Plans[j].Union.IsEmpty) parts.Add(r.Plans[j].Union);
+            if (groundSlabs) parts.AddRange(GroundSlabs(ctx).Where(x => x.Level == j).Select(x => x.Top));
+        }
+        return Union(parts);
+    }
+
+    /// <summary>Slabs at or below grade (not exposed surfaces), with their level: the ground floor plate, basement floors.</summary>
+    static List<(int Level, NtsGeometry Top)> GroundSlabs(ExportContext ctx)
+    {
+        if (ctx.Cache.TryGetValue("GroundSlabs", out var c) && c is List<(int, NtsGeometry)> s) return s;
+        var r = ctx.Result;
+        var ground = ctx.Rules.Levels.GroundElevationFt;
+        var found = new List<(int, NtsGeometry)>();
+        foreach (var o in r.Local.Objects.Where(o => o.Role == PD.Core.Classification.Roles.Slab && o.Mesh != null && !r.Stray.Contains(o.Id)
+                     && o.BBox.SizeZ <= 4 && o.BBox.MaxZ <= ground + 1))
+        {
+            var lv = r.Levels.Select((l, k) => (l, k)).Where(x => Math.Abs(x.l.Elevation - o.BBox.MaxZ) <= 3).OrderBy(x => Math.Abs(x.l.Elevation - o.BBox.MaxZ))
+                .Select(x => (int?)x.k).FirstOrDefault();
+            if (lv == null) continue;
+            var top = MeshSlicer.Polygonal(Safe(() => MeshProjection.TopDown(o.Mesh!)));
+            if (!top.IsEmpty) found.Add((lv.Value, top));
+        }
+        ctx.Cache["GroundSlabs"] = found;
         return found;
     }
 

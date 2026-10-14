@@ -108,7 +108,8 @@ public static class AxonFaces
             var g = f.Screen;
             if (taken != null && taken.EnvelopeInternal.Intersects(g.EnvelopeInternal)) g = Robust(g, taken, SpatialFunction.Difference) ?? g;
             g = MeshSlicer.Polygonal(g);
-            if (g.IsEmpty || g.Area <= 1e-3) continue;
+            // Slivers left along shared edges (mean width under ~0.1 ft) are no faces: dropped, the face behind fills in.
+            if (g.IsEmpty || g.Area <= 1e-3 || g.Area < 0.06 * g.Length) continue;
             visible.Add(new VisibleFace(f.Prism, f.Name, f.IsTop, g, f.Fill, f.Side, f.Normal, f.D0) { Depth = f.Depth });
             // Only what is drawn covers what comes later: a face dropped here never leaves a blank hole behind it.
             taken = taken == null ? g : Robust(taken, g, SpatialFunction.Union) ?? taken;
