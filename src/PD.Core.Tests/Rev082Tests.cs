@@ -60,7 +60,7 @@ public class Rev082Tests
     [Fact]
     public void Hatch_ParallelLinesInsideTheArea()
     {
-        var f = new GeometryFactory();
+        var f = PD.Core.Geometry.MeshSlicer.Factory;
         var sq = f.CreatePolygon(new[] { new Coordinate(0, 0), new Coordinate(40, 0), new Coordinate(40, 40), new Coordinate(0, 40), new Coordinate(0, 0) });
         var h = PlanBackground.Hatch(sq, new Config.HatchStyle { SpacingFt = 5, AngleDeg = 0 });
         Assert.InRange(h.NumGeometries, 7, 9);

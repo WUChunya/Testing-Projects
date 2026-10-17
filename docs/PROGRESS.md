@@ -3,6 +3,8 @@
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 
 ## Status
+- Rev 23 (v0.8.9, 225 tests, `Rev089Tests`): RIVER model export threw "non-noded intersection" (skewed shared wall →
+  sliver holes). `MeshSlicer.Factory` = GeometryOverlay.NG, so every overlay is OverlayNGRobust. Mixing factories throws.
 - Rev 22 (v0.8.8, 224 tests, `Rev087RuntimeTests`): Windows export (11x17) died twice with RPC_E_SERVERFAULT, no log.
   Runtime now resumable (`illustrator_progress.txt`: skips saved files and the one Illustrator died on, logs its last
   step); Rhino retries while each run gets further. Root cause still unknown → need the user's log (HANDOFF §7).
@@ -26,7 +28,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.8.8.zip` over the old folder (whole folder), restart Rhino.
+1. Unzip `ProgramDiagram-0.8.9.zip` over the old folder (whole folder), restart Rhino.
 2. 03 axons: L4 plate edge all round the recessed L4, L2 plate over the L1 lobby, no fragments by the podium.
 3. 04 exploded: B1 complete (circulation corridor, no hole); glass walls 50 % on the plates; floor keys show the glass.
 4. If Illustrator crashes again: send illustrator_log.txt / illustrator_progress.txt. Site plan: is the L1 opening (OPEN TO BELOW, small at 1/64") what "镂空" meant? Screenshot if not.

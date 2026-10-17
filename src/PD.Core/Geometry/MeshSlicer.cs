@@ -1,3 +1,4 @@
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 using PD.Core.Model;
@@ -7,7 +8,14 @@ namespace PD.Core.Geometry;
 /// <summary>Cuts a mesh with a horizontal plane and returns closed XY loops (gaps closed within tolerance).</summary>
 public static class MeshSlicer
 {
-    public static readonly GeometryFactory Factory = new();
+    /// <summary>
+    /// Shared factory. Its services select OverlayNG (OverlayNGRobust: floating, then snapping, then snap-rounding), so
+    /// Union / Difference / Intersection on any geometry built from it do not throw "found non-noded intersection" on
+    /// near-coincident edges (classic overlay did on the RIVER model: two masses sharing a slightly skewed wall).
+    /// </summary>
+    public static readonly GeometryFactory Factory = new NtsGeometryServices(
+        NtsGeometryServices.Instance.DefaultCoordinateSequenceFactory, NtsGeometryServices.Instance.DefaultPrecisionModel,
+        NtsGeometryServices.Instance.DefaultSRID, GeometryOverlay.NG, NtsGeometryServices.Instance.CoordinateEqualityComparer).CreateGeometryFactory();
 
     /// <summary>
     /// Only the polygonal parts of a geometry. An overlay (Intersection / Difference) can return a
