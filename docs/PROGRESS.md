@@ -5,6 +5,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 ## Status
 - Rev 23 (v0.8.9, 225 tests, `Rev089Tests`): RIVER model export threw "non-noded intersection" (skewed shared wall →
   sliver holes). `MeshSlicer.Factory` = GeometryOverlay.NG, so every overlay is OverlayNGRobust. Mixing factories throws.
+  RIVER site from the user's .ai + axon view + 30-page PDF: `deliverables/2026-10-17_RIVER/` (README, scripts).
 - Rev 22 (v0.8.8, 224 tests, `Rev087RuntimeTests`): Windows export (11x17) died twice with RPC_E_SERVERFAULT, no log.
   Runtime now resumable (`illustrator_progress.txt`: skips saved files and the one Illustrator died on, logs its last
   step); Rhino retries while each run gets further. Root cause still unknown → need the user's log (HANDOFF §7).
