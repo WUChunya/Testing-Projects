@@ -94,6 +94,18 @@ public static class EntouragePlacer
             .ToList();
     }
 
+    /// <summary>
+    /// The generated figures plus the modelled ones standing inside <paramref name="area"/>; a generated figure closer than
+    /// <paramref name="clearFt"/> to a modelled one gives way (the modelled people replace the generated ones where they exist).
+    /// </summary>
+    public static List<Figure> WithModelled(ExportContext ctx, IEnumerable<Figure> generated, NtsGeometry area, double clearFt = 4)
+    {
+        var mine = Modelled(ctx, area.EnvelopeInternal)
+            .Where(f => area.Contains(MeshSlicer.Factory.CreatePoint(new Coordinate(f.X, f.Y)))).ToList();
+        if (mine.Count == 0) return generated.ToList();
+        return generated.Where(g => mine.All(m => Math.Abs(m.X - g.X) + Math.Abs(m.Y - g.Y) > clearFt)).Concat(mine).ToList();
+    }
+
     /// <summary>Bridson-style Poisson-disk sampling in the geometry's envelope, keeping the points inside it.</summary>
     static List<Figure> Scatter(NtsGeometry area, double densityPer1000Sf, double minSpacingFt, int max, int seed)
     {

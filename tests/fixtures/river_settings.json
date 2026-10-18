@@ -1,0 +1,824 @@
+{
+ "version": 2,
+ "savedUtc": "2026-10-17T00:40:51.0970514Z",
+ "layers": {
+  "PROGRAM::Break Room": {
+   "use": true,
+   "role": "Program",
+   "programKey": "LOBBY",
+   "mode": ""
+  },
+  "PROGRAM::Circulation": {
+   "use": true,
+   "role": "Program",
+   "programKey": "CIRCULATION",
+   "mode": ""
+  },
+  "PROGRAM::Conference": {
+   "use": true,
+   "role": "Program",
+   "programKey": "CONFERENCE",
+   "mode": ""
+  },
+  "PROGRAM::Lab": {
+   "use": true,
+   "role": "Program",
+   "programKey": "LAB",
+   "mode": ""
+  },
+  "PROGRAM::Seminar Room": {
+   "use": true,
+   "role": "Program",
+   "programKey": "ASSEMBLY",
+   "mode": ""
+  },
+  "PROGRAM::Support": {
+   "use": true,
+   "role": "Program",
+   "programKey": "BUILDING_SUPPORT",
+   "mode": ""
+  },
+  "PROGRAM::Stair": {
+   "use": true,
+   "role": "NC.Structure",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "DETAIL::TREADS": {
+   "use": true,
+   "role": "NC.Structure",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "PROGRAM::Glass": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "2D SPACES::L1": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "2D SPACES::EAVE OUTLINE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "2D SPACES::GLASS OUTLINE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROGRAM::Enclosed Office": {
+   "use": true,
+   "role": "Program",
+   "programKey": "OFFICE",
+   "mode": ""
+  },
+  "PROGRAM::Lab Support": {
+   "use": true,
+   "role": "Program",
+   "programKey": "LAB_SUPPORT",
+   "mode": ""
+  },
+  "PROGRAM::Open Office": {
+   "use": true,
+   "role": "Program",
+   "programKey": "OPEN_OFFICE",
+   "mode": ""
+  },
+  "2D SPACES::L2": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "2D SPACES::L3": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "2D SPACES::L4": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "CANOPY": {
+   "use": true,
+   "role": "NC.Roof",
+   "programKey": "",
+   "mode": "color"
+  },
+  "FLOOR PLATE": {
+   "use": true,
+   "role": "NC.Slab",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "PROGRAM::Core": {
+   "use": true,
+   "role": "NC.Core",
+   "programKey": "",
+   "mode": ""
+  },
+  "COLUMNS": {
+   "use": true,
+   "role": "NC.Structure",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "property line": {
+   "use": true,
+   "role": "NC.PropertyLine",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SETBACK": {
+   "use": true,
+   "role": "BG.Line",
+   "programKey": "",
+   "mode": "line"
+  },
+  "PROGRAM": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "Plats::MX3": {
+   "use": true,
+   "role": "NC.PropertyLine",
+   "programKey": "",
+   "mode": "color"
+  },
+  "GRID": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE BASE": {
+   "use": true,
+   "role": "BG.Base",
+   "programKey": "",
+   "mode": ""
+  },
+  "SITE LANDSCAPE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "greens": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "ROAD": {
+   "use": true,
+   "role": "BG.Road",
+   "programKey": "",
+   "mode": "color"
+  },
+  "DETAIL::CUTLINE": {
+   "use": false,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "SITE CONTEXT::CITY BLOCKS": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::STREET": {
+   "use": true,
+   "role": "BG.Road",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::SIDEWALK": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::WALKWAY": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::BANK LANDSCAPE": {
+   "use": true,
+   "role": "BG.Landscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::RIVER": {
+   "use": true,
+   "role": "BG.Water",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::CONTEXT BUILDINGS": {
+   "use": true,
+   "role": "BG.Building",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::TREES": {
+   "use": true,
+   "role": "BG.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROGRAM::Parking": {
+   "use": true,
+   "role": "Program",
+   "programKey": "PARKING",
+   "mode": ""
+  },
+  "PROJECT SITE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE::ROAD": {
+   "use": true,
+   "role": "BG.Road",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::GREEN SPACE": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PLAZA": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PARKING BELOW": {
+   "use": true,
+   "role": "NC.Massing",
+   "programKey": "",
+   "mode": "line"
+  },
+  "PROJECT SITE::RIVERFRONT PARK": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PROMENADE": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::GARDEN WALK": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PLAZA": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::RIVER STEPS": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::KAYAK LAUNCH": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::RAIN GARDEN": {
+   "use": true,
+   "role": "NC.Water",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::LAWN": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::GROVE": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::FLOWERING TREES": {
+   "use": true,
+   "role": "NC.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PEOPLE": {
+   "use": true,
+   "role": "Entourage",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROGRAM::Pavilion": {
+   "use": true,
+   "role": "Program",
+   "programKey": "INTERACTION",
+   "mode": ""
+  }
+ },
+ "spanModes": {
+  "8afa857a-ea68-46f1-ac96-4236b815b166": "KeepTall",
+  "6a7d478e-c896-4c1c-a190-d1ff7372e75f": "KeepTall",
+  "a475fac7-70ee-49ba-b3ff-f91b21257c3b": "KeepTall"
+ },
+ "singleSurfaces": {},
+ "keepStray": [],
+ "levels": [
+  {
+   "name": "L1M",
+   "elevation": 0,
+   "isMezzanine": false
+  },
+  {
+   "name": "L2",
+   "elevation": 20.0,
+   "isMezzanine": false
+  },
+  {
+   "name": "L3",
+   "elevation": 36.0,
+   "isMezzanine": false
+  },
+  {
+   "name": "L4",
+   "elevation": 52.0,
+   "isMezzanine": false
+  },
+  {
+   "name": "L5",
+   "elevation": 77.07,
+   "isMezzanine": false
+  }
+ ],
+ "names": {
+  "6f6e3c58-f64d-6042-89a0-f66527835638": "L1_PREFUNCTION_16",
+  "d01a91c3-e321-b44b-9ba1-573c3e6aa386": "FLEXIBLE LAB OFFICE",
+  "5082a761-4eb6-2749-9d71-052deefd790d": "FLEXIBLE LAB OFFICE",
+  "9dc9827b-cbbc-424b-9d02-2b41dcec5eac": "FLEXIBLE LAB OFFICE",
+  "a5374af3-86dc-1540-bdbb-977428a8e59e": "FLEXIBLE LAB OFFICE",
+  "95ac1a36-2169-1745-85c6-d037b38454e7": "FLEXIBLE LAB OFFICE",
+  "bb938567-eaa0-8b4e-83b6-e9177d54b7ae": "L2_FLEXIBLE_LAB__OFFICE_16",
+  "c23806fb-44bd-a143-aebd-aa145ad1a70b": "FLEXIBLE LAB OFFICE",
+  "ee76e665-d622-2942-b460-b72e3484faff": "FLEXIBLE LAB OFFICE",
+  "e862788f-22d1-7140-b0a4-7f63b7c77da5": "FLEXIBLE LAB OFFICE",
+  "a5f1dd8c-0ea7-8140-83d0-83e74dc064dc": "FLEXIBLE LAB OFFICE",
+  "37a18eff-fe34-3348-a0f7-dca758949acc": "FLEXIBLE LAB OFFICE",
+  "2db4bc33-8ad9-4ec3-b0e5-70e237faed16": "DINING",
+  "8d27f5b4-c241-46ac-9c52-2530ede7e9b9": "ASSEMBLY / AUDITORIUM / BOARDROOM",
+  "9170451e-9c19-44b4-9bc7-ca83cdf9db0b": "PARKING GARAGE",
+  "7ba11b92-7ecb-4b5d-badc-509f21056514": "PARKING GARAGE",
+  "e08ab609-dab9-436a-a176-74ad167a889d": "PARKING GARAGE",
+  "76901b23-93ac-4703-8866-6c8cbbf009e0": "PARKING GARAGE",
+  "747fa666-d2a7-4fdd-85bd-965429dd7108": "PARKING GARAGE",
+  "f44c5e3e-6fef-42a5-a64a-22023904c5ab": "CORE LAB",
+  "d7cd610a-2850-4ebe-973f-12db8dcaee66": "CORE LAB",
+  "496299c6-3e31-4c7e-b379-1a5331917533": "CORE LAB",
+  "8afa857a-ea68-46f1-ac96-4236b815b166": "CORE LAB",
+  "6a7d478e-c896-4c1c-a190-d1ff7372e75f": "CORE LAB",
+  "a475fac7-70ee-49ba-b3ff-f91b21257c3b": "CORE LAB",
+  "00c1890d-878e-40f8-aca9-7a03e2811e82": "PROTOTYPING",
+  "886ab6e2-4ec7-41f9-b0cb-237177914f51": "PROTOTYPING",
+  "260d04ad-76b2-4a29-a3a3-9d8dd51d1e39": "PROTOTYPING",
+  "67c4556b-f9f1-4fa5-a02e-257cec36550e": "GALLERY",
+  "afff09b1-63c9-40e7-980d-98691612ef73": "SERVICE CORRIDOR",
+  "1bf4208d-879e-4f60-aa75-ffa59aa912e2": "SERVICE CORRIDOR",
+  "cd50a6a0-d804-4749-b5cc-5532d59d37ba": "SERVICE CORRIDOR",
+  "2b213a9d-4f92-4b89-b14c-76846586e377": "GENERAL SUPPORT",
+  "8693bb1e-97e0-46d4-9718-0cfe922b113f": "EVENT SUPPORT",
+  "ca67f388-78f4-3b46-99a5-d4614a5100cf": "RIVER PAVILION"
+ },
+ "objectPrograms": {},
+ "programs": [
+  {
+   "key": "OFFICE",
+   "label": "Office",
+   "fill": "#7CBECD",
+   "order": 0,
+   "isCustom": false,
+   "aliases": [
+    "OFFICE",
+    "ENCLOSED OFFICE",
+    "PRIVATE OFFICE"
+   ]
+  },
+  {
+   "key": "OPEN_OFFICE",
+   "label": "Open Office / Office Support",
+   "fill": "#B1D7DE",
+   "order": 1,
+   "isCustom": false,
+   "aliases": [
+    "OPEN OFFICE",
+    "OFFICE SUPPORT"
+   ]
+  },
+  {
+   "key": "LAB",
+   "label": "Lab",
+   "fill": "#F7A238",
+   "order": 2,
+   "isCustom": false,
+   "aliases": [
+    "LAB"
+   ]
+  },
+  {
+   "key": "LAB_SUPPORT",
+   "label": "Lab Support / Core Lab",
+   "fill": "#F5CB78",
+   "order": 3,
+   "isCustom": false,
+   "aliases": [
+    "LAB SUPPORT",
+    "CORE LAB"
+   ]
+  },
+  {
+   "key": "CIRCULATION",
+   "label": "Circulation",
+   "fill": "#FDF5D1",
+   "order": 4,
+   "isCustom": false,
+   "aliases": [
+    "CIRCULATION",
+    "CORRIDOR",
+    "LOBBY CIRC"
+   ]
+  },
+  {
+   "key": "BUILDING_SUPPORT",
+   "label": "Building Support / Mechanical / Storage",
+   "fill": "#D8D8D6",
+   "order": 5,
+   "isCustom": false,
+   "aliases": [
+    "BUILDING SUPPORT",
+    "MECHANICAL",
+    "MEP",
+    "STORAGE",
+    "UTILITY",
+    "SUPPORT",
+    "SERVICE"
+   ]
+  },
+  {
+   "key": "VIVARIUM",
+   "label": "Vivarium",
+   "fill": "#AF885D",
+   "order": 6,
+   "isCustom": false,
+   "aliases": [
+    "VIVARIUM"
+   ]
+  },
+  {
+   "key": "VIVARIUM_SUPPORT",
+   "label": "Vivarium Support",
+   "fill": "#BDA78D",
+   "order": 7,
+   "isCustom": false,
+   "aliases": [
+    "VIVARIUM SUPPORT"
+   ]
+  },
+  {
+   "key": "VIVARIUM_PROCEDURE",
+   "label": "Vivarium Procedure",
+   "fill": "#EAE3C7",
+   "order": 8,
+   "isCustom": false,
+   "aliases": [
+    "VIVARIUM PROCEDURE"
+   ]
+  },
+  {
+   "key": "CONFERENCE",
+   "label": "Conference",
+   "fill": "#C97CA6",
+   "order": 9,
+   "isCustom": false,
+   "aliases": [
+    "CONFERENCE",
+    "MEETING"
+   ]
+  },
+  {
+   "key": "LOBBY",
+   "label": "Lobby / Break",
+   "fill": "#EFB7D7",
+   "order": 10,
+   "isCustom": false,
+   "aliases": [
+    "LOBBY",
+    "BREAK",
+    "BREAK ROOM",
+    "RECEPTION"
+   ]
+  },
+  {
+   "key": "INTERACTION",
+   "label": "Interaction / Collab",
+   "fill": "#DFAFBF",
+   "order": 11,
+   "isCustom": false,
+   "aliases": [
+    "INTERACTION",
+    "COLLAB",
+    "LOUNGE"
+   ]
+  },
+  {
+   "key": "ASSEMBLY",
+   "label": "Assembly / Auditorium / Boardroom",
+   "fill": "#A16C9B",
+   "order": 12,
+   "isCustom": false,
+   "aliases": [
+    "ASSEMBLY",
+    "AUDITORIUM",
+    "BOARDROOM",
+    "SEMINAR",
+    "SEMINAR ROOM",
+    "LECTURE"
+   ]
+  },
+  {
+   "key": "CLINIC",
+   "label": "Clinic",
+   "fill": "#888DB3",
+   "order": 13,
+   "isCustom": false,
+   "aliases": [
+    "CLINIC"
+   ]
+  },
+  {
+   "key": "CLINIC_SUPPORT",
+   "label": "Clinic Support",
+   "fill": "#BCC0DB",
+   "order": 14,
+   "isCustom": false,
+   "aliases": [
+    "CLINIC SUPPORT"
+   ]
+  },
+  {
+   "key": "GREEN_ROOF",
+   "label": "Green Roof / Sky Garden",
+   "fill": "#DCE9AE",
+   "order": 15,
+   "isCustom": false,
+   "aliases": [
+    "GREEN ROOF",
+    "ROOF GARDEN",
+    "SKY GARDEN",
+    "TERRACE",
+    "GARDEN",
+    "GREEN TERRACE"
+   ]
+  },
+  {
+   "key": "CORE",
+   "label": "Core",
+   "fill": "#999999",
+   "order": 16,
+   "isCustom": false,
+   "aliases": [
+    "CORE"
+   ]
+  },
+  {
+   "key": "STAIR",
+   "label": "Stair / Transportation",
+   "fill": "#E4BA3C",
+   "order": 17,
+   "isCustom": false,
+   "aliases": [
+    "STAIR",
+    "ELEVATOR",
+    "TRANSPORTATION"
+   ]
+  },
+  {
+   "key": "SHELL",
+   "label": "Shell / Penthouse",
+   "fill": "#FFFFFF",
+   "order": 18,
+   "isCustom": false,
+   "aliases": [
+    "SHELL",
+    "PENTHOUSE",
+    "SHELL SPACE",
+    "FUTURE"
+   ]
+  },
+  {
+   "key": "VOID",
+   "label": "Void",
+   "fill": null,
+   "order": 19,
+   "isCustom": false,
+   "aliases": [
+    "VOID",
+    "OPEN TO BELOW"
+   ]
+  },
+  {
+   "key": "UNASSIGNED",
+   "label": "Unassigned",
+   "fill": "#BFBFBF",
+   "order": 20,
+   "isCustom": false,
+   "aliases": []
+  },
+  {
+   "key": "PARKING",
+   "label": "Parking",
+   "fill": "#C3CBD3",
+   "order": 21,
+   "isCustom": true,
+   "aliases": [
+    "PARKING",
+    "GARAGE",
+    "PARKING GARAGE"
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "name": "E1",
+   "kind": "Elevation",
+   "isElevation": true,
+   "objectId": "1bef20a5-f94a-4ece-8f2a-4d2175b3b402",
+   "line": [
+    -158.67220777103782,
+    -109.7485680533938,
+    991.8632655900946,
+    -103.38498689542286
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "E2",
+   "kind": "Elevation",
+   "isElevation": true,
+   "objectId": "1d077ca8-0b2e-4baf-a400-969a82389201",
+   "line": [
+    676.2296401547394,
+    806.6071186944107,
+    -229.94431674031156,
+    104.06775885442738
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "A",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "2aa111d9-63ac-4ea4-8de7-9e8bfafc29db",
+   "line": [
+    944.77276502111,
+    364.97458633123273,
+    -228.67160050871726,
+    366.2473025628269
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "B",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "6dbbce17-d2ce-4343-9621-153bab8bc8bc",
+   "line": [
+    15.689915957363809,
+    -137.74832514846554,
+    746.229032892419,
+    840.9704569474534
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  }
+ ],
+ "output": {
+  "saveIn": "",
+  "lastFolder": "",
+  "runIllustrator": true,
+  "scheme": "OPT-1",
+  "drawings": [
+   "SitePlan",
+   "Plan",
+   "Section",
+   "Elevation",
+   "SiteAxon",
+   "AxonStacked",
+   "AxonExploded",
+   "AxonExplodedB",
+   "AxonLevels",
+   "ProgramChart",
+   "Pie"
+  ],
+  "scale": "1/64\" = 1'-0\"",
+  "sectionScale": "1/64\" = 1'-0\"",
+  "artboard": "Fit content",
+  "exportPng": true,
+  "axonViewDirection": [
+   -0.2563,
+   -0.6039,
+   -0.7547
+  ],
+  "axonFromViewport": true,
+  "axonView": "Viewport",
+  "axonViewPoint": null,
+  "programExcel": "",
+  "entourage": true,
+  "entourageSeed": null
+ },
+ "confirmed": {
+  "cleanup": false,
+  "levels": false,
+  "names": false,
+  "output": false,
+  "section": true,
+  "elevation": true,
+  "colors": false
+ },
+ "recheck": {
+  "output": {
+   "reason": "1 object(s) changed on PROGRAM::Core.",
+   "fromModel": true
+  },
+  "colors": {
+   "reason": "Layers were added, deleted or renamed in the model.",
+   "fromModel": true
+  },
+  "names": {
+   "reason": "1 object(s) changed on PROGRAM::Core.",
+   "fromModel": true
+  },
+  "levels": {
+   "reason": "1 object(s) changed on PROGRAM::Core.",
+   "fromModel": true
+  },
+  "cleanup": {
+   "reason": "1 object(s) changed on PROGRAM::Core.",
+   "fromModel": true
+  }
+ },
+ "modelChanged": "1 object(s) changed on PROGRAM::Core",
+ "ignoredIssues": [
+  "SitePaving:1df55ee5-01d9-8b40-9db4-8951be36a151,2820dffc-09af-974f-8b78-682847243f71,66ee92b3-55a0-4c40-a7d7-597dbaa11b3f,7b585f48-4c85-424f-a0d6-266d08e3a070:",
+  "Mezzanine:054226cf-5b6c-214a-a3af-f360f7210cf7,13342683-325c-e343-bde6-09cd1c453a6d,1386964b-8cd8-7c43-b9f2-fc9c48d110b3,1396d536-019a-c449-b116-1e498e82fe67:0.00",
+  "LevelSingleSource:3936f4b8-f98b-9c49-91ba-0d14cebc7de4,57c5b39d-4eca-3e4a-9712-d2fee8709cb7,93813284-f465-be4a-ac29-9ce7e6d94a45,94ffe93a-4fae-c747-9320-ed6d5aae178a:73.00",
+  "LevelNoSlab:0168d62a-50f0-8345-98bd-06e5853633f3,09a2e00d-10e8-c047-8001-afe78effc4f8,42ddda32-95c7-d34b-8500-c31aba154c4e,59a94b6a-f6a8-e44c-a1ef-ef8ef3ace7c9:-1.00"
+ ],
+ "treeColor": null,
+ "peopleColor": null
+}

@@ -232,6 +232,8 @@ public sealed class GreenTreeStyle
     public int MaxTotal { get; set; } = 3000;
     /// <summary>Only greens at grade (top no higher than ground + this): no planting on roof gardens.</summary>
     public double MaxAboveGroundFt { get; set; } = 3;
+    /// <summary>Greens whose object name contains one of these words are open lawns: never planted.</summary>
+    public List<string> OpenNameKeywords { get; set; } = new();
 }
 
 public sealed class Strokes
@@ -473,6 +475,10 @@ public sealed class PlanStyle
     public bool LabelOncePerProgram { get; set; } = true;
     /// <summary>Site plan: names of the other buildings (numeric GIS ids are never shown).</summary>
     public bool ContextNames { get; set; } = true;
+    /// <summary>Ground floor and site plans: names of our own site areas with these roles (MAIN ENTRANCE, RIVER STEPS).</summary>
+    public List<string> SiteNameRoles { get; set; } = new();
+    /// <summary>Size of those names (pt at the reference scale; the context label's own size when 0).</summary>
+    public double SiteNamePt { get; set; }
 }
 
 /// <summary>

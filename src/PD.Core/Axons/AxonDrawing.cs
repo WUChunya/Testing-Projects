@@ -678,6 +678,7 @@ public static class AxonDrawing
             plane: (eb.SitePlaneFill, eb.SitePlaneStroke, eb.SitePlaneStrokePt), shape: propSite);
 
         var white = d.Gray(eb.EdgeStroke);
+        var allFaces = new List<VisibleFace>();
         foreach (var (i, n) in levels.Select((i, n) => (i, n)))
         {
             var lvl = r.Levels[i];
@@ -691,6 +692,7 @@ public static class AxonDrawing
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
             var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), eb.SideDarken, coreOverride: false).ToList();
             var faces = AxonFaces.Render(proj, prisms);
+            allFaces.AddRange(faces);
             foreach (var f in faces)
                 sheet.Paint.Add((layer, new Spec(f.Name, f.Screen, f.Fill, white, eb.EdgePt, Opacity: eb.PlateOpacity)));
             CentredLabels(ctx, proj, faces, sheet, layer, "PD Plane Label B", "PD Plane Label B Small");
@@ -714,6 +716,8 @@ public static class AxonDrawing
                     d.Swatch("AXON_SHAFT", eb.ShaftStroke), eb.ShaftPt, Closed: false)));
             }
         }
+        // Site trees and people are drawn on top of the plates; the lifted plates in front of them must hide them.
+        HideBehind(sheet, proj, allFaces, ax.TreeClearPt / ctx.PtPerFt);
         return sheet;
     }
 
@@ -1114,7 +1118,9 @@ public static class AxonDrawing
         // Lollipop trees (site axon), far → near, on top.
         var tr = ax.Trees;
         var rng = new Random(17);
+        // A site shape (exploded B: the property line grown) keeps only the trees standing on it, not the whole envelope.
         foreach (var (tree, n) in items.Where(_ => !outlineOnly).Where(IsTree).Where(b => site.Intersects(b.Geometry.EnvelopeInternal))
+                     .Where(b => shape == null || shape.Contains(b.Geometry.Centroid))
                      .OrderBy(b => proj.Depth(b.Geometry.Centroid.X, b.Geometry.Centroid.Y, z)).Select((b, n) => (b, n)))
         {
             var c = tree.Geometry.Centroid.Coordinate;
@@ -1145,7 +1151,8 @@ public static class AxonDrawing
         var near = AxonFaces.Safe(() => ours.Buffer(ctx.Style.Plan.ContextMarginFt).Intersection(site), site);
         var open = MeshSlicer.Polygonal(AxonFaces.Safe(() => near.Difference(ours), near));
         var n = 0;
-        foreach (var f in PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, sheet.Prefix + "SITE")
+        var standing = MeshSlicer.Polygonal(AxonFaces.Safe(() => site.Difference(ours), site));
+        foreach (var f in PD.Core.Entourage.EntouragePlacer.WithModelled(ctx, PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open, sheet.Prefix + "SITE"), standing)
                      .OrderBy(f => proj.Depth(f.X, f.Y, z)))
         {
             var (px, py) = proj.Project(f.X, f.Y, z);

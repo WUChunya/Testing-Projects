@@ -82,7 +82,8 @@ public static class PlanBackground
             if (!g.IsEmpty && g.Area > 0.5)
             {
                 items.Add(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ));
-                if (greenTrees is { Enabled: true } && greenTrees.Roles.Contains(o.Role) && b.MaxZ <= ground + greenTrees.MaxAboveGroundFt)
+                if (greenTrees is { Enabled: true } && greenTrees.Roles.Contains(o.Role) && b.MaxZ <= ground + greenTrees.MaxAboveGroundFt
+                    && !greenTrees.OpenNameKeywords.Any(k => o.Name.Contains(k, StringComparison.OrdinalIgnoreCase)))
                     greens.Add((full, o.Role, o.Id));
             }
         }

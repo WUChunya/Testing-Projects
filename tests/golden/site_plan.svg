@@ -565,6 +565,8 @@
 </g>
 <g id="BG_CONTEXT_LABELS">
 </g>
+<g id="BG_SITE_LABELS">
+</g>
 <g id="PD_LABELS">
 <text id="STP_L01_LOBBY_03_LBL" x="901.9" y="2139.043" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 901.9 2143.793)"><tspan x="901.9" dy="0">LOBBY /</tspan><tspan x="901.9" dy="22.8">BREAK</tspan></text>
 <path id="STP_L01_OFFICE_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M989.255,2429.898 L1011.29,2484.62"/>

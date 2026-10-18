@@ -61,11 +61,61 @@ def mesh_of(geom, step):
             if brep is not None:
                 for i in range(len(brep.Faces)):
                     append_mesh(brep.Faces[i].GetMesh(r.MeshType.Render), step, verts, faces)
+        if not faces:  # written by rhino3dm (no meshes at all): mesh the profiles along the path
+            extrusion_mesh(geom, step, verts, faces)
     elif kind == "Mesh":
         append_mesh(geom, step, verts, faces)
     if not faces:
         return None
     return {"v": verts, "f": faces}
+
+
+def profile_points(crv):
+    if type(crv).__name__ == "PolylineCurve":
+        pts = [crv.Point(i) for i in range(crv.PointCount)]
+    else:
+        dom = crv.Domain
+        pts = [crv.PointAt(dom.T0 + (dom.T1 - dom.T0) * i / CURVE_SAMPLES) for i in range(CURVE_SAMPLES + 1)]
+    if len(pts) > 1 and pts[0].DistanceTo(pts[-1]) < 1e-9:
+        pts = pts[:-1]
+    return pts
+
+
+def extrusion_mesh(geom, step, verts, faces):
+    """Closed mesh of an extrusion from its profiles (outer + holes), caps triangulated with shapely if present."""
+    try:
+        import shapely
+        from shapely.geometry import Polygon
+    except ImportError:
+        return
+    rings = [profile_points(geom.Profile3d(i, 0.0)) for i in range(geom.ProfileCount)]
+    if not rings or len(rings[0]) < 3:
+        return
+    p0, p1 = geom.PathStart, geom.PathEnd
+    d = r.Vector3d(p1.X - p0.X, p1.Y - p0.Y, p1.Z - p0.Z)
+    poly = Polygon([(p.X, p.Y) for p in rings[0]], [[(p.X, p.Y) for p in h] for h in rings[1:]])
+    if not poly.is_valid:
+        return
+    z0 = rings[0][0].Z
+
+    def vid(x, y, z):
+        verts.extend((rnd(x, step), rnd(y, step), rnd(z, step)))
+        return len(verts) // 3 - 1
+
+    for tri in shapely.constrained_delaunay_triangles(poly).geoms:
+        c = list(tri.exterior.coords)[:3]
+        if not Polygon(c).is_valid or Polygon(c).area < 1e-9:
+            continue
+        bottom = [vid(x, y, z0) for x, y in c]
+        top = [vid(x + d.X, y + d.Y, z0 + d.Z) for x, y in c]
+        faces.append(bottom[::-1])
+        faces.append(top)
+    for ring in rings:
+        n = len(ring)
+        for i in range(n):
+            a, b = ring[i], ring[(i + 1) % n]
+            q = [vid(a.X, a.Y, a.Z), vid(b.X, b.Y, b.Z), vid(b.X + d.X, b.Y + d.Y, b.Z + d.Z), vid(a.X + d.X, a.Y + d.Y, a.Z + d.Z)]
+            faces.append(q)
 
 
 def box_mesh(bb):

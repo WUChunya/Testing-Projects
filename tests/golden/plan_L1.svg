@@ -115,6 +115,8 @@
 </g>
 <g id="FACADE">
 </g>
+<g id="BG_SITE_LABELS">
+</g>
 <g id="PD_LABELS">
 <text id="PLN_L1_L01_LOBBY_03_LBL" x="358.703" y="476.47" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(14.129 358.703 481.22)"><tspan x="358.703" dy="0">LOBBY /</tspan><tspan x="358.703" dy="22.8">BREAK</tspan></text>
 <path id="PLN_L1_L01_OFFICE_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M446.059,767.326 L468.094,822.048"/>

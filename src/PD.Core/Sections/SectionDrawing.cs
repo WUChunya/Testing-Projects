@@ -85,9 +85,11 @@ public static class SectionDrawing
             LevelMarkers.Add(d, ctx, map, p, g.Levels, x0 - colL, x0 + w, zMax);
         // Roof screens cut by the section (user rev 0.8.3) replace the grey penthouse block of that level.
         var screenCuts = ScreenCuts(ctx, plane);
-        if (st.LevelMarkers && screenCuts.Count > 0)
+        // A level already marked at that height (the roof level on the penthouse roof) is not marked twice.
+        bool Marked(double z) => g.Levels.Any(l => Math.Abs(l.Elevation - z) < 1.0);
+        if (st.LevelMarkers && screenCuts.Count > 0 && !Marked(screenCuts.Max(c => c.E.Z1)))
             LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, screenCuts.Max(c => c.E.Z1), x0 - colL, x0 + w);
-        else if (st.LevelMarkers && Penthouse(ctx, g) is { } top)
+        else if (st.LevelMarkers && screenCuts.Count == 0 && Penthouse(ctx, g) is { } top && !Marked(top.Z1))
             LevelMarkers.One(d, ctx, map, p, "PENTHOUSE_TOP", st.PenthouseTopLabel, top.Z1, x0 - colL, x0 + w);
 
         // Behind the cut: our building as an opaque grey Make2D-like elevation, other buildings white with a dashed outline.

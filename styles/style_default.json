@@ -526,6 +526,12 @@
     "labelMinPt": 8.0,
     "labelOncePerProgram": true,
     "contextNames": true,
+    "siteNameRoles": [
+      "NC.Hardscape",
+      "NC.Green",
+      "NC.Water"
+    ],
+    "siteNamePt": 11,
     "hardscapeEdge": {
       "stroke": "#4A4A4A",
       "strokePt": 1.0,
@@ -1235,6 +1241,10 @@
       "roles": [
         "BG.Landscape",
         "NC.Green"
+      ],
+      "openNameKeywords": [
+        "LAWN",
+        "MEADOW"
       ],
       "spacingFt": 26.0,
       "coverage": 0.6,

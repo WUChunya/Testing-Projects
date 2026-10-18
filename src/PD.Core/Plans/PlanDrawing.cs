@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "BG_SITE_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -102,7 +102,7 @@ public static class PlanDrawing
         var d = new PD.Core.Drawing.Drawing { FileName = "00_Site_Plan.ai" };
         ctx.AddStandardStyles(d);
         foreach (var n in new[] { "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "PD_PROGRAM", "PD_STRUCTURE",
-                     "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+                     "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", PD.Core.Entourage.EntouragePlacer.Layer, "BG_CONTEXT_LABELS", "BG_SITE_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
         var i = GroundIndex(ctx);
         if (r.Plans.Count == 0 || r.Plans[i].Union.IsEmpty)
@@ -315,6 +315,7 @@ public static class PlanDrawing
             d.Layer("BG_VEIL").Items.Add(veil);
         }
         if (kind is LevelKind.Site or LevelKind.Roof && ps.ContextNames) ContextNames(d, ctx, a, map, p, background);
+        if (kind is LevelKind.Ground or LevelKind.Site or LevelKind.Roof && ps.SiteNameRoles.Count > 0) SiteNames(d, ctx, a, map, p, background);
 
         if (kind == LevelKind.Roof)
         {
@@ -575,6 +576,33 @@ public static class PlanDrawing
         }
     }
 
+    /// <summary>Names of our own named site areas (plan.siteNameRoles), centred on the area when they fit; each name once.</summary>
+    static void SiteNames(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background)
+    {
+        var ps = ctx.Style.Plan;
+        var roles = ps.SiteNameRoles;
+        var size = ctx.Pt(ps.SiteNamePt > 0 ? ps.SiteNamePt : ctx.Style.Fonts.ContextLabel.SizePt);
+        var placed = new List<Envelope>();
+        var n = 0;
+        // Largest areas first; a name that would overlap one already placed is left out.
+        foreach (var g in background.Where(b => !b.IsLine && roles.Contains(b.Role) && SectionDrawing.IsDisplayName(b.Name))
+                     .GroupBy(b => b.Name.Trim().ToUpperInvariant())
+                     .OrderByDescending(g => g.Max(x => x.Geometry.Area)))
+        {
+            var b = g.OrderByDescending(x => x.Geometry.Area).First();
+            var e = b.Geometry.EnvelopeInternal;
+            var w = TextFit.Width(g.Key, size);
+            if (w > Math.Max(e.Width, e.Height) * map.K * 1.4) continue;
+            var c = b.Geometry.InteriorPoint.Coordinate;
+            var box = new Envelope(map.X(c.X) - w / 2 - 2, map.X(c.X) + w / 2 + 2, map.Y(c.Y) - size * 0.7, map.Y(c.Y) + size * 0.7);
+            if (placed.Any(q => q.Intersects(box))) continue;
+            placed.Add(box);
+            var t = SectionDrawing.Text($"{p}SITE_{++n:000}_LBL", map.X(c.X), map.Y(c.Y), g.Key, "PD Context Label", "center", center: true);
+            t.SizePt = size;
+            d.Layer("BG_SITE_LABELS").Items.Add(At(t, a));
+        }
+    }
+
     /// <summary>PRD 4: people in the program footprints (density per program) and on our own plaza outside.</summary>
     static void People(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, PD.Core.Cleanup.LevelPlan plan,
         List<BackgroundItem> background)
@@ -594,8 +622,13 @@ public static class PlanDrawing
         var near = MeshSlicer.Polygonal(Safe(() => PlanBackground.Footprint(ctx.Result).Buffer(ctx.Style.Plan.ContextMarginFt)));
         var walk = PlanBackground.Walkable(background, plan.Union);
         var open = MeshSlicer.Polygonal(Safe(() => walk.Intersection(near)));
-        foreach (var (part, i) in Enumerable.Range(0, open.NumGeometries).Select(i => (open.GetGeometryN(i), i)))
-            Draw(PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, part, $"{p}PLAZA{i}"));
+        var generated = Enumerable.Range(0, open.NumGeometries)
+            .SelectMany(i => PD.Core.Entourage.EntouragePlacer.Outdoors(ctx, open.GetGeometryN(i), $"{p}PLAZA{i}")).ToList();
+        // People the user placed (picnics on a lawn, a crowd on the river steps) wherever they stand outside the building.
+        var drawn = new Envelope();
+        foreach (var b in background) drawn.ExpandToInclude(b.Geometry.EnvelopeInternal);
+        var outside = MeshSlicer.Polygonal(Safe(() => MeshSlicer.Factory.ToGeometry(drawn).Difference(plan.Union)));
+        Draw(drawn.IsNull || outside.IsEmpty ? generated : PD.Core.Entourage.EntouragePlacer.WithModelled(ctx, generated, outside));
     }
 
     static string LabelText(ExportContext ctx, PD.Core.Cleanup.Footprint f) => f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel
