@@ -160,9 +160,9 @@
   },
   "GRID": {
    "use": true,
-   "role": "NC.Hardscape",
+   "role": "Ignore",
    "programKey": "",
-   "mode": "color"
+   "mode": ""
   },
   "SITE BASE": {
    "use": true,
@@ -350,17 +350,18 @@
    "programKey": "",
    "mode": "color"
   },
-  "PROGRAM::Pavilion": {
+  "PROJECT SITE::RIVERFRONT PARK::PAVILION": {
    "use": true,
-   "role": "Program",
-   "programKey": "INTERACTION",
-   "mode": ""
+   "role": "BG.Building",
+   "programKey": "",
+   "mode": "color"
   }
  },
  "spanModes": {
   "8afa857a-ea68-46f1-ac96-4236b815b166": "KeepTall",
   "6a7d478e-c896-4c1c-a190-d1ff7372e75f": "KeepTall",
-  "a475fac7-70ee-49ba-b3ff-f91b21257c3b": "KeepTall"
+  "a475fac7-70ee-49ba-b3ff-f91b21257c3b": "KeepTall",
+  "5da817b3-2730-bb4e-88c1-e3dc65104285": "KeepTall"
  },
  "singleSurfaces": {},
  "keepStray": [],
@@ -405,7 +406,6 @@
   "a5f1dd8c-0ea7-8140-83d0-83e74dc064dc": "FLEXIBLE LAB OFFICE",
   "37a18eff-fe34-3348-a0f7-dca758949acc": "FLEXIBLE LAB OFFICE",
   "2db4bc33-8ad9-4ec3-b0e5-70e237faed16": "DINING",
-  "8d27f5b4-c241-46ac-9c52-2530ede7e9b9": "ASSEMBLY / AUDITORIUM / BOARDROOM",
   "9170451e-9c19-44b4-9bc7-ca83cdf9db0b": "PARKING GARAGE",
   "7ba11b92-7ecb-4b5d-badc-509f21056514": "PARKING GARAGE",
   "e08ab609-dab9-436a-a176-74ad167a889d": "PARKING GARAGE",
@@ -426,9 +426,21 @@
   "cd50a6a0-d804-4749-b5cc-5532d59d37ba": "SERVICE CORRIDOR",
   "2b213a9d-4f92-4b89-b14c-76846586e377": "GENERAL SUPPORT",
   "8693bb1e-97e0-46d4-9718-0cfe922b113f": "EVENT SUPPORT",
-  "ca67f388-78f4-3b46-99a5-d4614a5100cf": "RIVER PAVILION"
+  "577eebe2-e5a3-42b8-ba49-d8a2e129502f": "GYM",
+  "2ddc96f4-5c8e-4902-a91d-434503dc60ed": "EXECUTIVE OFFICE",
+  "b4893c25-85a5-464f-8858-8bdfa88901c9": "OFFICE",
+  "289abcc6-78a6-424b-b012-fe28a6dfb217": "OFFICE",
+  "b4db92bc-9763-ab42-9a42-fbe6ef1af8c0": "MAIN ENTRANCE",
+  "415f7fb2-4b4f-df4b-83c7-91a24f7bf118": "PENTHOUSE",
+  "9cd47707-5f92-524d-b5d6-daa14af19217": "PENTHOUSE",
+  "c2e5a03b-ee16-1c43-b78d-ff6570680f61": "PENTHOUSE",
+  "5da817b3-2730-bb4e-88c1-e3dc65104285": "ASSEMBLY / AUDITORIUM / BOARDROOM"
  },
- "objectPrograms": {},
+ "objectPrograms": {
+  "2ddc96f4-5c8e-4902-a91d-434503dc60ed": "OFFICE",
+  "b4893c25-85a5-464f-8858-8bdfa88901c9": "OFFICE",
+  "289abcc6-78a6-424b-b012-fe28a6dfb217": "OFFICE"
+ },
  "programs": [
   {
    "key": "OFFICE",
@@ -741,6 +753,36 @@
     -137.74832514846554,
     746.229032892419,
     840.9704569474534
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "C",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "09cea3ec-1f84-bf48-92f7-76572bc269b1",
+   "line": [
+    270.0,
+    -90.0,
+    690.0,
+    470.0
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "D",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "245ea8f2-57e2-b147-9e57-5d83e0f2d036",
+   "line": [
+    590.0,
+    -100.0,
+    590.0,
+    700.0
    ],
    "lookLeft": true,
    "autoSide": true,

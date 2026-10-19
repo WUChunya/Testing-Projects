@@ -24,7 +24,7 @@ public static class PlanDrawing
         var k = ctx.PtPerFt;
         var d = new PD.Core.Drawing.Drawing { FileName = "01_Plans.ai" };
         ctx.AddStandardStyles(d);
-        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_OUTLINE", "FACADE", "BG_SITE_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
+        foreach (var n in new[] { "BG_EARTH", "BG_SITE", "BG_PROJECT_SITE", "BG_SITE_EDGE", "BG_CONTEXT_SHADOW", "BG_CONTEXT", "BG_TREE", "BG_VEIL", "PD_PROGRAM", "PD_STRUCTURE", "PD_FURNITURE", "PD_INTERIOR", "PD_SCREEN", "PD_MASSING", "PD_VOID", "PD_GRID", "PD_OVERHEAD", "PD_OUTLINE", "FACADE", "BG_SITE_LABELS", "PD_LABELS", "PD_LEGEND", "PD_ANNOTATION" })
             d.Layer(n);
 
         var levels = Enumerable.Range(0, r.Plans.Count).Where(i => r.Plans[i].Footprints.Any(x => !x.Resolved.IsEmpty)).ToList();
@@ -396,6 +396,39 @@ public static class PlanDrawing
         }
 
         if (kind == LevelKind.Site) People(d, ctx, a, map, p, plan, background);
+
+        // Blocks sharing a name (three PROTOTYPING labs) read as one room on a grid: dashed lines where they meet.
+        if (ps.GridPt > 0)
+        {
+            var g = 0;
+            foreach (var same in plan.Footprints.Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty).GroupBy(f => LabelText(ctx, f)).Where(x => x.Count() > 1))
+            {
+                var list = same.ToList();
+                for (var u = 0; u < list.Count; u++)
+                for (var v = u + 1; v < list.Count; v++)
+                {
+                    if (!list[u].Resolved.EnvelopeInternal.Intersects(list[v].Resolved.EnvelopeInternal)) continue;
+                    var shared = MeshSlicer.Lineal(Safe(() => list[u].Resolved.Boundary.Intersection(list[v].Resolved.Buffer(0.3))));
+                    if (shared.IsEmpty || shared.Length < 2) continue;
+                    var line = At(map.Geom($"{p}GRID_{++g:000}", shared, null, d.Gray(ps.GridStroke), ps.GridPt, false), a);
+                    line.Dash = ps.GridDash;
+                    d.Layer("PD_GRID").Items.Add(line);
+                }
+            }
+        }
+
+        // The floor above where it overhangs this one (an open ground floor under it): its outline dashed.
+        if (ps.OverheadPt > 0 && kind is LevelKind.Ground or LevelKind.Upper && i + 1 < r.Plans.Count && !outline.IsEmpty)
+        {
+            var over = MeshSlicer.Polygonal(Safe(() => r.Plans[i + 1].Union.Difference(outline.Buffer(1))));
+            var n = 0;
+            foreach (var part in Enumerable.Range(0, over.NumGeometries).Select(over.GetGeometryN).Where(x => x.Area >= ps.OverheadMinAreaSf))
+            {
+                var edge = At(map.Poly($"{p}OVERHEAD_{++n:00}", part, null, d.Gray(ps.OverheadStroke), ps.OverheadPt), a);
+                edge.Dash = ps.OverheadDash;
+                d.Layer("PD_OVERHEAD").Items.Add(edge);
+            }
+        }
 
         if (!outline.IsEmpty)
         {

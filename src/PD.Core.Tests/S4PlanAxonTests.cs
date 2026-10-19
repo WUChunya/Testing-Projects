@@ -148,11 +148,16 @@ public class S4PlanAxonTests
         Assert.NotEmpty(labels);
         Assert.All(labels, t => { Assert.NotNull(t.Matrix); Assert.True(t.Matrix![0] > 0); Assert.Contains(t.Align, new[] { "left", "right", "center" }); });
         Assert.Contains(labels, t => t.Align != "center");
-        // Level tags: marker + "Level 1" + leader along the drawing; the tall space at L2 is a translucent connector.
+        // Level tags: marker + "Level 1" + leader along the drawing.
         var anno = d.Layer("PD_ANNOTATION").Items;
         Assert.Equal(plates.Count, anno.Count(i => i.Name.EndsWith("_LDR")));
         Assert.Contains(anno, i => i.Text == "Level 1" && i.ParaStyle == "PD Level");
-        Assert.Contains(d.Layers.SelectMany(l => l.Items), i => i.Name.Contains("_TALL_") && i.Opacity == ax.ConnectorOpacity);
+        // The tall space at L2 leaves the plate above open (CW markup V2); axon.exploded.tallConnectors brings back the
+        // translucent link.
+        Assert.DoesNotContain(d.Layers.SelectMany(l => l.Items), i => i.Name.Contains("_TALL_"));
+        var linked = new ExportContext { Result = ctx.Result, Settings = ctx.Settings, Programs = ctx.Programs, Style = PD.Core.Config.Style.Default() };
+        linked.Style.Axon.Exploded.TallConnectors = true;
+        Assert.Contains(AxonDrawing.Build(linked, AxonKind.Exploded).Layers.SelectMany(l => l.Items), i => i.Name.Contains("_TALL_") && i.Opacity == ax.ConnectorOpacity);
         UniqueNamesInsideArtboards(d);
     }
 

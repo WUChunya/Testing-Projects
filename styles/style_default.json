@@ -370,6 +370,15 @@
     "programBackground": "#FFFFFF",
     "slabHeightRatio": 0.14,
     "slabFill": "#FFFFFF",
+    "siteCutRoles": [
+      "NC.Hardscape",
+      "NC.Green",
+      "BG.Road"
+    ],
+    "siteCutMinAboveGroundFt": 2.0,
+    "siteCutFill": "#D9D9D9",
+    "siteCutStroke": "#000000",
+    "siteCutPt": 0.75,
     "slabStroke": "#4A4A4A",
     "slabStrokePt": 1.0,
     "slabOverhangFt": 2.0,
@@ -532,6 +541,19 @@
       "NC.Water"
     ],
     "siteNamePt": 11,
+    "gridStroke": "#6E6E6E",
+    "gridPt": 0.6,
+    "gridDash": [
+      3.0,
+      2.0
+    ],
+    "overheadStroke": "#555555",
+    "overheadPt": 0.75,
+    "overheadDash": [
+      6.0,
+      3.0
+    ],
+    "overheadMinAreaSf": 200.0,
     "hardscapeEdge": {
       "stroke": "#4A4A4A",
       "strokePt": 1.0,
@@ -639,6 +661,7 @@
       "leaderPt": 0.35,
       "columnOffsetPt": 108,
       "basementClearFt": 12.0,
+      "tallConnectors": false,
       "basementComment": "User rev 0.8.1: the site follows Level 1; basements hang below the whole site plate (basementClearFt of drawn height under its front edge) with the dug-out hole shown in the site, never drawn over the site."
     },
     "explodedB": {
@@ -679,6 +702,7 @@
       "contextHeightFt": 0.0,
       "maxContextHeightFt": 400.0,
       "people": true,
+      "massing": false,
       "title": "SITE AXON",
       "annotationLayer": "ANNOTATION",
       "fullHeightBlocks": true,

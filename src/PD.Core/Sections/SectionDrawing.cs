@@ -103,6 +103,23 @@ public static class SectionDrawing
         // Opaque white backing behind the colour blocks: the white gaps between blocks must not show what is behind the cut.
         if (!g.Outline.IsEmpty && st.ProgramBackground is { Length: > 0 } bg)
             d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + "PROGRAM_BG", g.Outline, d.Swatch("PD_PROGRAM_BG", bg), null, 0));
+        // A massing outside the bars (parking under a ramp) is backed too, so trees behind do not show through it, and
+        // carries its name when it fits.
+        foreach (var (loop, mname, i) in g.MassingAreas.Where(x => x.Loop.Count >= 4).Select((x, i) => (x.Loop, x.Name, i)))
+        {
+            var area = MeshSlicer().CreatePolygon(loop.Select(q => new Coordinate(q.X, q.Y)).ToArray()).Buffer(0);
+            if (area.IsEmpty || area.Area < 4) continue;
+            if (st.ProgramBackground is { Length: > 0 } mb)
+                d.Layer("PD_PROGRAM_BG").Items.Add(map.Poly(p + $"MASSING_BG_{i:000}", area, d.Swatch("PD_PROGRAM_BG", mb), null, 0));
+            if (!IsDisplayName(mname)) continue;
+            var e = area.EnvelopeInternal;
+            var size = ctx.Pt(ctx.Style.Fonts.Label.SizePt) * 0.8;
+            if (TextFit.Width(mname.ToUpperInvariant(), size) > e.Width * map.K * 0.8 || e.Height * map.K < size * 1.2) continue;
+            var c = area.InteriorPoint.Coordinate;
+            var t = Text(p + $"MASSING_{i:000}_LBL", map.X(c.X), map.Y(c.Y), mname.ToUpperInvariant(), "PD Section Label", "center", center: true);
+            t.SizePt = size;
+            d.Layer("PD_LABELS").Items.Add(t);
+        }
         var pent = Penthouse(ctx, g);
         if (pent != null && screenCuts.Any(c => Math.Abs(c.E.Z0 - pent.Z0) < 3)) pent = null;
         var labelBoxes = SectionBars.Add(d, ctx, g, map, p, pent?.Bars);
@@ -114,6 +131,13 @@ public static class SectionDrawing
             d.Layer("PD_OUTLINE").Items.Add(map.Poly(p + "OUTLINE", g.Outline, null, d.Gray(st.EnvelopeStroke), st.EnvelopePt));
         foreach (var (c, i) in g.FacadeCut.Select((c, i) => (c, i)))
             d.Layer("FACADE").Items.Add(map.Line(p + $"FACADE_CUT_{i:000}", c, d.Gray("#000000"), st.FacadeCutPt));
+        // Raised site parts of ours (a ramp over parking, a podium plaza): their cut, filled like earth.
+        foreach (var (c, i) in g.SiteCut.Where(c => c.Count >= 4).Select((c, i) => (c, i)))
+        {
+            var poly = MeshSlicer().CreatePolygon(c.Select(q => new Coordinate(q.X, q.Y)).ToArray()).Buffer(0);
+            if (poly.IsEmpty || poly.Area < 0.5) continue;
+            d.Layer("PD_SITE_CUT").Items.Add(map.Poly(p + $"SITE_CUT_{i:000}", poly, d.Swatch("PD_SITE_CUT", st.SiteCutFill), d.Gray(st.SiteCutStroke), st.SiteCutPt));
+        }
         // Building envelope (NC.Massing): dashed cut outline over everything of ours.
         var mPaint = Plans.PlanBackground.PaintOf(ctx.Style, PD.Core.Classification.Roles.Massing, "view");
         foreach (var (c, i) in g.MassingCut.Select((c, i) => (c, i)))

@@ -39,6 +39,7 @@ public class Rev089Tests
     {
         var r = RiverAnalysis.Result;
         Assert.Equal(new[] { 0.0, 20.0, 36.0, 52.0 }, r.Levels.Take(4).Select(l => Math.Round(l.Elevation, 1)));
+        Assert.Equal(0, r.Plans.Sum(p => p.AreaByProgram.GetValueOrDefault("INTERACTION"))); // the pavilion is a context building
         // L1 inside the glass is circulation; the stairs are structure (no program, no area).
         Assert.True(r.Plans[0].AreaByProgram.GetValueOrDefault("CIRCULATION") > 10000);
         Assert.DoesNotContain(r.Masses, m => m.ProgramKey == "STAIR");
@@ -67,7 +68,7 @@ public class Rev089Tests
     {
         var d = PlanDrawing.Build(RiverAnalysis.Context());
         var labels = d.Layer("BG_SITE_LABELS").Items;
-        Assert.Contains(labels, i => i.Text == "MAIN ENTRANCE");
+        Assert.Contains(labels, i => i.Text == "ENTRANCE PLAZA");
         Assert.Contains(labels, i => i.Text == "LOADING AND BOH SERVICE");
         Assert.Contains(labels, i => i.Text == "RIVER PROMENADE");
         foreach (var g in labels.GroupBy(i => i.Artboard))
@@ -105,6 +106,49 @@ public class Rev089Tests
             Assert.False(texts.Any(i => i.Name.Contains("PENTHOUSE_TOP")) && texts.Any(i => i.Text!.Contains("ROOF")),
                 string.Join(", ", texts.Select(i => i.Text)));
         }
+    }
+
+    // ------------------------------------------------------------------ CW markup V2
+
+    [Fact]
+    public void ExplodedA_TallSpacesOpenThePlate_NoLinks()
+    {
+        // "auditorium不是core，lab两层通高也不是core，楼板正常挖开就可以，不需要core的引线"
+        var d = AxonDrawing.Build(RiverAnalysis.Context(), AxonKind.Exploded);
+        var items = d.Layers.SelectMany(l => l.Items).ToList();
+        Assert.DoesNotContain(items, i => i.Name.Contains("_TALL_"));
+        Assert.Contains(items, i => i.Name.Contains("_CONNECTOR_"));
+    }
+
+    [Fact]
+    public void SiteAxon_NoMassingOutlines()
+    {
+        // "这是什么线，应该不需要请删除": the parking-under-the-ramp massing drew a dashed outline over the site.
+        var ctx = RiverAnalysis.Context();
+        Assert.Empty(AxonDrawing.Build(ctx, AxonKind.Site).Layers.Where(l => l.Name == "AXON_MASSING").SelectMany(l => l.Items));
+    }
+
+    [Fact]
+    public void Plans_GridLinesAndOverhangOutline()
+    {
+        // Three PROTOTYPING blocks read as one room on a dashed grid; the L2 overhang over the open ground floor is dashed.
+        var d = PlanDrawing.Build(RiverAnalysis.Context());
+        Assert.True(d.Layer("PD_GRID").Items.Count(i => i.Artboard == 0) >= 2);
+        Assert.All(d.Layer("PD_GRID").Items, i => Assert.NotNull(i.Dash));
+        Assert.Contains(d.Layer("PD_OVERHEAD").Items, i => i.Artboard == 0 && i.Dash != null);
+    }
+
+    [Fact]
+    public void Sections_ShowTheRampOverParking()
+    {
+        // New section C runs up the ramp: the ramp slab is cut, the parking under it is backed and named.
+        var ctx = RiverAnalysis.Context();
+        var sec = ctx.Settings.Sections.Single(s => s.Name == "C");
+        var d = PD.Core.Sections.SectionDrawing.Build(ctx, sec);
+        Assert.NotEmpty(d.Layer("PD_SITE_CUT").Items);
+        Assert.Contains(d.Layers.SelectMany(l => l.Items), i => i.Text == "PARKING");
+        // A small context building far behind (the pavilion) is not named over our building.
+        Assert.DoesNotContain(d.Layers.SelectMany(l => l.Items), i => i.Text == "RIVER PAVILION");
     }
 
     static NetTopologySuite.Geometries.Geometry Poly(PD.Core.Drawing.DItem i)

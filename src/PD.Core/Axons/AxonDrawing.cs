@@ -146,7 +146,7 @@ public static class AxonDrawing
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, FloorLine(d, f.Fill, st.FloorLineDarken), st.FloorLinePt)));
         }
         PaintGlass(d, ctx, proj, sheet, glassFaces);
-        ScreensAndMassing(d, ctx, proj, sheet, faces);
+        ScreensAndMassing(d, ctx, proj, sheet, faces, massing: !site || ax.Site.Massing);
         var withScreens = faces.Where(f => f.Prism.Group is "PRG" or "SCR" or "EXP").ToList();
         var mine = faces.Where(f => f.Prism.Group == "PRG").ToList();
         var folds = AxonFaces.Folds(withScreens);
@@ -335,12 +335,13 @@ public static class AxonDrawing
     /// NC.Screen objects as the thin surfaces they are (projected, trimmed where a nearer face hides them — never
     /// extruded) and the NC.Massing envelope as a dashed silhouette over the drawing.
     /// </summary>
-    static void ScreensAndMassing(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces)
+    static void ScreensAndMassing(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, Sheet sheet, List<VisibleFace> faces, bool massing = true)
     {
         var r = ctx.Result;
         var n = 0;
         var solid = ScreenEnclosures.For(ctx).SelectMany(e => e.ObjectIds).ToHashSet();
-        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && o.Role is Roles.Screen or Roles.Massing && !solid.Contains(o.Id)))
+        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && (o.Role == Roles.Screen || massing && o.Role == Roles.Massing)
+                     && !solid.Contains(o.Id)))
         {
             var shape = AxonFaces.Safe(() => MeshProjection.Union(o.Mesh!, proj.Project), MeshSlicer.Factory.CreatePolygon());
             if (shape.IsEmpty) continue;
@@ -419,7 +420,8 @@ public static class AxonDrawing
         foreach (var g in glass)
         {
             double a = Math.Max(g.Z0, z0), b = Math.Min(g.Z1, z1);
-            if (b - a < 0.5) continue;
+            // A storey shows its own facade: the next storey's glass reaching 2 ft down past the slab is not it.
+            if (b - a < Math.Max(0.5, Math.Min(4.0, 0.3 * (g.Z1 - g.Z0)))) continue;
             yield return g with { Name = prefix + g.Name, Z0 = a + dz, Z1 = b + dz };
         }
     }
@@ -585,7 +587,7 @@ public static class AxonDrawing
             if (n + 1 >= levels.Count) continue;
             var up = levels[n + 1];
             var fill = d.Swatch("AXON_CONNECTOR", ax.ConnectorFill);
-            foreach (var (shape, top, name) in Connectors(ctx, blocks, i, up, Lift))
+            foreach (var (shape, top, name) in Connectors(ctx, blocks, i, up, Lift).Where(c => ax.Exploded.TallConnectors || !c.Name.StartsWith("TALL")))
             {
                 var z1 = Math.Max(z + 1, top - t);
                 // Under the site plate the link goes on its own layer behind the site (user rev 0.8.5): the shafts from

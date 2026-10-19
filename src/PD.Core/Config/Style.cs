@@ -319,6 +319,13 @@ public sealed class SectionStyle
     public string? ProgramBackground { get; set; }
     public double SlabHeightRatio { get; set; }
     public string SlabFill { get; set; } = "";
+    /// <summary>Our raised site parts cut by the section (a ramp over parking, an entrance plaza on a podium): these roles…</summary>
+    public List<string> SiteCutRoles { get; set; } = new();
+    /// <summary>…when their top is at least this far above the ground (flat paving stays the ground line).</summary>
+    public double SiteCutMinAboveGroundFt { get; set; } = 2;
+    public string SiteCutFill { get; set; } = "#D9D9D9";
+    public string SiteCutStroke { get; set; } = "#000000";
+    public double SiteCutPt { get; set; } = 0.75;
     public string SlabStroke { get; set; } = "";
     public double SlabStrokePt { get; set; }
     public double SlabOverhangFt { get; set; }
@@ -479,6 +486,15 @@ public sealed class PlanStyle
     public List<string> SiteNameRoles { get; set; } = new();
     /// <summary>Size of those names (pt at the reference scale; the context label's own size when 0).</summary>
     public double SiteNamePt { get; set; }
+    /// <summary>Lines where blocks of the same name meet (a lab row on its grid): dashed; 0 = none.</summary>
+    public string GridStroke { get; set; } = "#7A7A7A";
+    public double GridPt { get; set; }
+    public double[]? GridDash { get; set; }
+    /// <summary>The floor above where it overhangs this one (open ground floor under an upper floor): dashed outline; 0 = none.</summary>
+    public string OverheadStroke { get; set; } = "#555555";
+    public double OverheadPt { get; set; }
+    public double[]? OverheadDash { get; set; }
+    public double OverheadMinAreaSf { get; set; } = 200;
 }
 
 /// <summary>
@@ -558,6 +574,8 @@ public sealed class SiteAxonStyle
     /// <summary>Taller context (a merged mesh, a tower far away) is cut at this height.</summary>
     public double MaxContextHeightFt { get; set; } = 400;
     public bool People { get; set; } = true;
+    /// <summary>Dashed NC.Massing outlines (parking under a ramp, an envelope) in the site axon; the other axons keep them.</summary>
+    public bool Massing { get; set; }
     public string Title { get; set; } = "SITE AXON";
     /// <summary>Layer for flows, view lines and service icons: created empty, never cleared by the plugin.</summary>
     public string AnnotationLayer { get; set; } = "ANNOTATION";
@@ -637,6 +655,8 @@ public sealed class ExplodedAxonStyle
     /// (drawn height) under the site plate's front edge, so no basement plate is drawn over the site.
     /// </summary>
     public double BasementClearFt { get; set; } = 12;
+    /// <summary>Tall spaces (double-height lab, auditorium) as translucent links to the plate above; false = the plate above is simply open.</summary>
+    public bool TallConnectors { get; set; }
     /// <summary>Pitch (top to top) = max(gapFactor × floor height, minTopVisible × projected top depth).</summary>
     public double GapFactor { get; set; }
     public double MinTopVisible { get; set; }

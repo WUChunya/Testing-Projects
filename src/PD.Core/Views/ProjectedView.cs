@@ -115,8 +115,10 @@ public static class ProjectedView
             };
             if (it.Kind == ViewKind.Context) item.Dash = v.ContextDash;
             d.Layer(LayerName(it)).Items.Add(item);
-            if (it.Kind == ViewKind.Context && PD.Core.Sections.SectionDrawing.IsDisplayName(it.Label))
+            if (it.Kind == ViewKind.Context && PD.Core.Sections.SectionDrawing.IsDisplayName(it.Label)
+                && TextFit.Width(it.Label, ctx.Pt(ctx.Style.Fonts.Note.SizePt)) <= g.EnvelopeInternal.Width * map.K)
             {
+                // Only on a building whose visible part is wider than its name (a small one far behind stays unnamed).
                 var e = g.EnvelopeInternal;
                 d.Layer("PD_LABELS").Items.Add(PD.Core.Sections.SectionDrawing.Text(name + "_LBL", map.X((e.MinX + e.MaxX) / 2), map.Y(e.MaxY) - ctx.Pt(4), it.Label, "PD Note", "center"));
             }

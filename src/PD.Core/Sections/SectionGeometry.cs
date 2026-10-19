@@ -27,6 +27,10 @@ public sealed class SectionGeometry
     public List<List<(double X, double Y)>> FacadeCut { get; } = new();
     /// <summary>NC.Massing (building envelope) cut by the section: drawn dashed.</summary>
     public List<List<(double X, double Y)>> MassingCut { get; } = new();
+    /// <summary>The closed massing cuts with the object's name (parking under a ramp), for their backing and label.</summary>
+    public List<(List<(double X, double Y)> Loop, string Name)> MassingAreas { get; } = new();
+    /// <summary>Raised site parts of ours cut by the plane (section.siteCutRoles): closed loops in (u, z).</summary>
+    public List<List<(double X, double Y)>> SiteCut { get; } = new();
     public List<double> PropertyLines { get; } = new();
     public List<Level> Levels { get; init; } = new();
     public double Ground { get; init; }
@@ -69,8 +73,21 @@ public sealed class SectionGeometry
             var (mw0, mw1) = plane.WRange(o.Mesh!);
             if (!(mw0 < 0 && mw1 > 0) || !plane.UOverlaps(o.Mesh!)) continue;
             var open = new List<List<(double X, double Y)>>();
-            foreach (var loop in plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open)) g.MassingCut.Add(loop.Append(loop[0]).ToList());
+            foreach (var loop in plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt, open))
+            {
+                g.MassingCut.Add(loop.Append(loop[0]).ToList());
+                g.MassingAreas.Add((loop.Append(loop[0]).ToList(), o.Name));
+            }
             g.MassingCut.AddRange(open);
+        }
+
+        var st = style.Section;
+        foreach (var o in r.Local.Objects.Where(o => st.SiteCutRoles.Contains(o.Role) && !r.Stray.Contains(o.Id) && o.Mesh != null
+                     && o.BBox.MaxZ >= g.Ground + st.SiteCutMinAboveGroundFt))
+        {
+            var (sw0, sw1) = plane.WRange(o.Mesh!);
+            if (!(sw0 < 0 && sw1 > 0) || !plane.UOverlaps(o.Mesh!)) continue;
+            foreach (var loop in plane.Cut(o.Mesh!, c.WeldToleranceFt, c.GapCloseToleranceFt)) g.SiteCut.Add(loop.Append(loop[0]).ToList());
         }
 
         foreach (var o in r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && o.Mesh != null))
