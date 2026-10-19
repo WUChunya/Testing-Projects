@@ -4,6 +4,7 @@
 |---|---|
 | `CAMPUS_Program_Diagrams_261019.pdf` | 33 页，按插件编号排序。11x17 横向，按用地红线居中；平面 / 轴测 / 立面 1" = 100'-0"，剖面 1" = 50'-0"；爆炸轴测和分层轴测放不下，按 Fit content 出图（比例不变）。 |
 | `CAMPUS_261019_AI_Export.zip` | AI 原图：解压后在 Illustrator 中运行 `ProgramDiagram.jsx`，在同一文件夹生成分层 .ai。附面积表 CSV、export_log、插件设置。 |
+| `CAMPUS_261019_Illustrator_Editable.zip` | 不跑脚本也能直接编辑：每张图一个 SVG（按 AI 图层名分组）和一个矢量 PDF，Illustrator 打开后另存为 .ai。 |
 | `CAMPUS_261019_PD.3dm` | 加了场地、停车楼和插件设置的模型（原物件都在，只移了图层）。 |
 | `scripts/` | `build_campus2.sh <261019_Campus_Layouts.3dm> <Town .ai> <repo> <工作目录> scripts/campus2_base_settings.json` 从原始文件重建。 |
 
