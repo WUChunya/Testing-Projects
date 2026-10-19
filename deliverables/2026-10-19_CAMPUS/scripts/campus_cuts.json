@@ -1,0 +1,6 @@
+[
+ {"name": "A", "label": "SECTION A", "from": [3180, 2150], "to": [3180, 2900]},
+ {"name": "B", "label": "SECTION B", "from": [3640, 2300], "to": [2990, 2300]},
+ {"name": "E1", "label": "ELEVATION E1", "from": [2990, 2170], "to": [3640, 2170]},
+ {"name": "E2", "label": "ELEVATION E2", "from": [3560, 2150], "to": [3560, 2900]}
+]
