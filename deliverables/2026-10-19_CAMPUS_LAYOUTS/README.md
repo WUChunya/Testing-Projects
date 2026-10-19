@@ -13,8 +13,8 @@
 - **用地**：Town 总平面的 4 块实线地块 = MX3 用地红线（建筑、停车楼、河边、南侧小块），虚线 = 退线；地块内画项目场地，周边街道、河、背景建筑、行道树同前。
 - **停车楼**：模型里只有平面线（FLOR-OTLN），按其外轮廓建 5 层 × 10'-6" 的体量（PROGRAM::Parking，program PARKING，约 50,400 sf/层，5 层合计约 252,000 sf）。面积表按建筑楼层统计，只落在 L1–L3。
 - **房间名**按 layouts：MEP SUPPORT、STORAGE、LOADING DOCK、CORE LABS、COMBINABLE CLASSROOMS、AUDITORIUM、FITNESS、QUANTUM HIGH MIP、SECURITY、COFFEE KIOSK、PROTOTYPING / FABRICATION、PARTNER / INCUBATOR、CONFERENCE、DINING PREP、RESEARCH、SEMINAR、EXECUTIVE BRIEFING。礼堂和 Prototyping 两层通高。
-- 1 ft 高 / 单面的开放式 program 拉成整层；场地外的柱子和远处的幕墙 block 副本、重复的 Shell Space 移到 `OUTSIDE BUILDING (LEFTOVERS)`。
+- 1 ft 高 / 单面的开放式 program 拉成整层，面上的开洞保留为体块里的洞（L2–L4 中庭、礼堂挑空）；场地外的柱子和远处的幕墙 block 副本、重复的 Shell Space 移到 `OUTSIDE BUILDING (LEFTOVERS)`。
 
 ## 已知问题（下一版修）
-- L3 中庭开洞（圆角洞口）被整层 circulation 填满；L2、L4 的开洞正常。
+- 爆炸轴测右侧楼层标签的顺序在这个视角下错位（LEVEL 6 / 3 / 5 …），插件问题，下一版修。
 - 剖面中的停车楼按一个 5 层体量画，没有分层。

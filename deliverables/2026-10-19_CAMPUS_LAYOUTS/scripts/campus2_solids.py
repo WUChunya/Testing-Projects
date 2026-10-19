@@ -13,8 +13,6 @@ import json, sys
 import rhino3dm as r
 from shapely.geometry import Polygon, MultiPolygon, MultiPoint, LineString
 from shapely.ops import unary_union, polygonize
-sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from inv import no_holes
 
 fx = json.load(open(sys.argv[1]))
 m = r.File3dm.Read(sys.argv[2])
@@ -46,11 +44,22 @@ def hull(o):
     return MultiPoint([(v[i] / FT, v[i + 1] / FT) for i in range(0, len(v), 3)]).convex_hull
 
 def solid(poly, z0, z1):
+    """Capped extrusion of a polygon; its holes (the atrium opening) become inner profiles, so the room stays one
+    solid with an opening (inner profiles are given in the profile plane's own coordinates)."""
     pl = r.Polyline(0)
     for x, y in poly.exterior.coords: pl.Add(x, y, z0)
     ext = r.Extrusion.Create(r.PolylineCurve(pl), z1 - z0, True)
     if ext.GetBoundingBox().Max.Z < z0 + 0.01:
         ext = r.Extrusion.Create(r.PolylineCurve(pl), -(z1 - z0), True)
+    pln = ext.GetProfilePlane(0.0)
+    o, ax, ay = pln.Origin, pln.XAxis, pln.YAxis
+    for ring in poly.interiors:
+        h = r.Polyline(0)
+        for x, y in ring.coords:
+            dx, dy, dz = x - o.X, y - o.Y, z0 - o.Z
+            h.Add(dx * ax.X + dy * ax.Y + dz * ax.Z, dx * ay.X + dy * ay.Y + dz * ay.Z, 0)
+        if not ext.AddInnerProfile(r.PolylineCurve(h)):
+            print("inner profile refused", poly.bounds)
     return ext
 
 def layer(path, color=(160, 160, 160)):
@@ -69,11 +78,10 @@ def move_left(oid):
     by_id[oid].Attributes.LayerIndex = LEFT
 
 def add(poly, z0, z1, path, name=""):
-    """Extruded solid(s); a surface with an opening (the atrium) becomes hole-free pieces. Returns the first id."""
+    """Extruded solid (openings kept as holes)."""
     a = r.ObjectAttributes(); a.LayerIndex = layer(path)
     if name: a.Name = name
-    ids = [str(m.Objects.AddExtrusion(solid(q, z0, z1), a)) for q in [poly]]
-    return ids[0]
+    return str(m.Objects.AddExtrusion(solid(poly, z0, z1), a))
 
 objs = fx["objects"]
 plates = [bbox(o) for o in objs if o["layer"] == "FLOOR PLATE"]
