@@ -1,0 +1,347 @@
+[
+ {
+  "key": "OFFICE",
+  "label": "Office",
+  "fill": "#7CBECD",
+  "order": 0,
+  "isCustom": false,
+  "aliases": [
+   "OFFICE",
+   "ENCLOSED OFFICE",
+   "PRIVATE OFFICE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "OPEN_OFFICE",
+  "label": "Open Office / Office Support",
+  "fill": "#B1D7DE",
+  "order": 1,
+  "isCustom": false,
+  "aliases": [
+   "OPEN OFFICE",
+   "OFFICE SUPPORT"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "LAB",
+  "label": "Lab",
+  "fill": "#F7A238",
+  "order": 2,
+  "isCustom": false,
+  "aliases": [
+   "LAB"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "LAB_SUPPORT",
+  "label": "Lab Support / Core Lab",
+  "fill": "#F5CB78",
+  "order": 3,
+  "isCustom": false,
+  "aliases": [
+   "LAB SUPPORT",
+   "CORE LAB"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "CIRCULATION",
+  "label": "Circulation",
+  "fill": "#FDF5D1",
+  "order": 4,
+  "isCustom": false,
+  "aliases": [
+   "CIRCULATION",
+   "CORRIDOR",
+   "LOBBY CIRC"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "BUILDING_SUPPORT",
+  "label": "Building Support / Mechanical / Storage",
+  "fill": "#D8D8D6",
+  "order": 5,
+  "isCustom": false,
+  "aliases": [
+   "BUILDING SUPPORT",
+   "MECHANICAL",
+   "MEP",
+   "STORAGE",
+   "UTILITY",
+   "SUPPORT",
+   "SERVICE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "VIVARIUM",
+  "label": "Vivarium",
+  "fill": "#AF885D",
+  "order": 6,
+  "isCustom": false,
+  "aliases": [
+   "VIVARIUM"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "VIVARIUM_SUPPORT",
+  "label": "Vivarium Support",
+  "fill": "#BDA78D",
+  "order": 7,
+  "isCustom": false,
+  "aliases": [
+   "VIVARIUM SUPPORT"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "VIVARIUM_PROCEDURE",
+  "label": "Vivarium Procedure",
+  "fill": "#EAE3C7",
+  "order": 8,
+  "isCustom": false,
+  "aliases": [
+   "VIVARIUM PROCEDURE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "CONFERENCE",
+  "label": "Conference",
+  "fill": "#C97CA6",
+  "order": 9,
+  "isCustom": false,
+  "aliases": [
+   "CONFERENCE",
+   "MEETING"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "LOBBY",
+  "label": "Lobby / Break",
+  "fill": "#EFB7D7",
+  "order": 10,
+  "isCustom": false,
+  "aliases": [
+   "LOBBY",
+   "BREAK",
+   "BREAK ROOM",
+   "RECEPTION"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "INTERACTION",
+  "label": "Interaction / Collab",
+  "fill": "#DFAFBF",
+  "order": 11,
+  "isCustom": false,
+  "aliases": [
+   "INTERACTION",
+   "COLLAB",
+   "LOUNGE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "ASSEMBLY",
+  "label": "Assembly / Auditorium / Boardroom",
+  "fill": "#A16C9B",
+  "order": 12,
+  "isCustom": false,
+  "aliases": [
+   "ASSEMBLY",
+   "AUDITORIUM",
+   "BOARDROOM",
+   "SEMINAR",
+   "SEMINAR ROOM",
+   "LECTURE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "CLINIC",
+  "label": "Clinic",
+  "fill": "#888DB3",
+  "order": 13,
+  "isCustom": false,
+  "aliases": [
+   "CLINIC"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "CLINIC_SUPPORT",
+  "label": "Clinic Support",
+  "fill": "#BCC0DB",
+  "order": 14,
+  "isCustom": false,
+  "aliases": [
+   "CLINIC SUPPORT"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "GREEN_ROOF",
+  "label": "Green Roof / Sky Garden",
+  "fill": "#DCE9AE",
+  "order": 15,
+  "isCustom": false,
+  "aliases": [
+   "GREEN ROOF",
+   "ROOF GARDEN",
+   "SKY GARDEN",
+   "TERRACE",
+   "GARDEN",
+   "GREEN TERRACE"
+  ],
+  "stroke": "#A8BE7A",
+  "strokePt": 0.5,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "CORE",
+  "label": "Core",
+  "fill": "#999999",
+  "order": 16,
+  "isCustom": false,
+  "aliases": [
+   "CORE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "STAIR",
+  "label": "Stair / Transportation",
+  "fill": "#E4BA3C",
+  "order": 17,
+  "isCustom": false,
+  "aliases": [
+   "STAIR",
+   "ELEVATOR",
+   "TRANSPORTATION"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "SHELL",
+  "label": "Shell / Penthouse",
+  "fill": "#FFFFFF",
+  "order": 18,
+  "isCustom": false,
+  "aliases": [
+   "SHELL",
+   "PENTHOUSE",
+   "SHELL SPACE",
+   "FUTURE"
+  ],
+  "stroke": "#000000",
+  "strokePt": 0.75,
+  "dash": null,
+  "hatch": null
+ },
+ {
+  "key": "VOID",
+  "label": "Void",
+  "fill": null,
+  "order": 19,
+  "isCustom": false,
+  "aliases": [
+   "VOID",
+   "OPEN TO BELOW"
+  ],
+  "stroke": "#000000",
+  "strokePt": 0.5,
+  "dash": [
+   3,
+   2
+  ],
+  "hatch": null
+ },
+ {
+  "key": "UNASSIGNED",
+  "label": "Unassigned",
+  "fill": "#BFBFBF",
+  "order": 20,
+  "isCustom": false,
+  "aliases": [],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": "diagonal"
+ },
+ {
+  "key": "PARKING",
+  "label": "Parking",
+  "fill": "#C3CBD3",
+  "order": 21,
+  "isCustom": true,
+  "aliases": [
+   "PARKING",
+   "GARAGE",
+   "PARKING GARAGE"
+  ],
+  "stroke": null,
+  "strokePt": null,
+  "dash": null,
+  "hatch": null
+ }
+]
