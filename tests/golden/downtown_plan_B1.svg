@@ -101,6 +101,19 @@
 </g>
 <g id="PD_VOID">
 </g>
+<g id="PD_GRID">
+<path id="PLN_B1_GRID_001" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M633.26,529.123 L633.26,528.643 L633.26,413.596 L633.74,413.596"/>
+<path id="PLN_B1_GRID_002" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M498.541,413.596 L499.021,413.596 M498.541,471.517 L498.541,413.596"/>
+<path id="PLN_B1_GRID_003" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M498.861,503.357 L479.659,503.357 L479.659,502.877 M498.861,502.877 L498.861,503.357"/>
+<path id="PLN_B1_GRID_004" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M479.659,490.719 L479.659,490.239 L498.861,490.239 L498.861,490.594"/>
+<path id="PLN_B1_GRID_005" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M498.861,515.84 L479.659,515.84 L479.659,515.36 M498.861,515.36 L498.861,515.84"/>
+<path id="PLN_B1_GRID_006" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M460.142,502.562 L460.142,503.042 L440.94,503.042 L440.94,502.562"/>
+<path id="PLN_B1_GRID_007" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M440.94,490.239 L460.142,490.239 L460.142,490.719 M440.94,490.719 L440.94,490.239"/>
+<path id="PLN_B1_GRID_008" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M440.94,516.16 L440.94,515.68 M460.142,515.68 L460.142,516.16 L440.94,516.16"/>
+<path id="PLN_B1_GRID_009" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M498.546,662.877 L498.546,663.352 L498.861,663.352 L498.861,663.357 L479.339,663.357 L479.339,643.84 L479.694,643.84"/>
+</g>
+<g id="PD_OVERHEAD">
+</g>
 <g id="PD_OUTLINE">
 <path id="PLN_B1_OUTLINE" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M633.1,778.394 L633.1,778.388 L613.903,778.399 L498.701,778.399 L364.302,778.388 L364.302,413.596 L805.898,413.596 L805.898,778.399 Z"/>
 </g>

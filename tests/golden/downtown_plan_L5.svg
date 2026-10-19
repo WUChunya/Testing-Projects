@@ -401,6 +401,19 @@
 </g>
 <g id="PD_VOID">
 </g>
+<g id="PD_GRID">
+<path id="PLN_L5_GRID_001" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M410.559,503.357 L391.197,503.357 L391.197,502.877 M410.559,502.877 L410.559,503.357"/>
+<path id="PLN_L5_GRID_002" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M391.197,490.85 L391.197,490.399 L391.037,490.399 L391.037,490.239 L410.559,490.239 L410.559,490.719"/>
+<path id="PLN_L5_GRID_003" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M410.559,515.84 L391.197,515.84 L391.197,515.36 M410.559,515.36 L410.559,515.84"/>
+<path id="PLN_L5_GRID_004" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M372,502.562 L372,503.042 L352.638,503.042 L352.638,502.562"/>
+<path id="PLN_L5_GRID_005" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M372.16,490.399 L372,490.399 L372,490.85 M352.638,490.719 L352.638,490.239 L372.16,490.239 L372.16,490.399"/>
+<path id="PLN_L5_GRID_006" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M372,516.16 L352.638,516.16 L352.638,515.68 M372,515.68 L372,516.16"/>
+<path id="PLN_L5_GRID_007" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M410.559,662.877 L410.559,663.357 L391.037,663.357 L391.037,643.84 L391.392,643.84"/>
+<path id="PLN_L5_GRID_008" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M410.559,643.84 L410.559,644.32 M391.037,644.64 L391.037,643.84 L410.559,643.84"/>
+<path id="PLN_L5_GRID_009" fill="none" stroke="#6E6E6E" stroke-width="0.6" stroke-dasharray="3 2" fill-rule="evenodd" d="M352.638,644.64 L352.638,644.16 L391.037,644.16 L391.037,644.64"/>
+</g>
+<g id="PD_OVERHEAD">
+</g>
 <g id="PD_OUTLINE">
 <path id="PLN_L5_OUTLINE" fill="none" stroke="#000000" stroke-width="3" fill-rule="evenodd" d="M276,759.197 L276,375.197 L487.197,375.197 L487.197,759.197 Z M391.197,490.399 L372,490.399 L372,528.798 L391.197,528.798 Z"/>
 </g>

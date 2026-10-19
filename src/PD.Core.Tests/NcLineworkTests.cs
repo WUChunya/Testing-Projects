@@ -84,7 +84,10 @@ public class NcLineworkTests
         Assert.DoesNotContain(ax.Layers, l => l.Name == "AXON_SCREEN" && l.Items.Count > 0);
         var wall = ax.Layer("PD_PROGRAM").Items.Where(i => i.Name.StartsWith("AXT_SCREEN_01_WALL")).ToList();
         Assert.NotEmpty(wall);
-        Assert.NotEmpty(ax.Layer("AXON_MASSING").Items);
+        // NC.Massing outlines stay out of the site axon (CW markup V2: parking under a ramp drew lines over the site)
+        // and remain in the stacked axon.
+        Assert.Empty(ax.Layer("AXON_MASSING").Items);
+        Assert.NotEmpty(AxonDrawing.Build(ctx, AxonKind.Stacked).Layer("AXON_MASSING").Items);
         // A 100 ft × 12 ft panel stays a thin wall in the drawing (not a block).
         var ys = wall.SelectMany(i => i.Paths!).SelectMany(p => p).Select(q => q[1]).ToList();
         var xs = wall.SelectMany(i => i.Paths!).SelectMany(p => p).Select(q => q[0]).ToList();
