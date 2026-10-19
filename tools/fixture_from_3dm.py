@@ -153,6 +153,15 @@ def closed_and_faces(geom):
     return False, 0
 
 
+def xmul(a, b):
+    """a × b (rhino3dm Transform has no product operator)."""
+    t = r.Transform(1.0)
+    for i in range(4):
+        for j in range(4):
+            setattr(t, f"M{i}{j}", sum(getattr(a, f"M{i}{k}") * getattr(b, f"M{k}{j}") for k in range(4)))
+    return t
+
+
 def flatten(model):
     """(id, geometry, layer index, name, from an instance) per drawable object; block instances exploded."""
     defs = {str(d.Id): d for d in model.InstanceDefinitions}
@@ -166,7 +175,7 @@ def flatten(model):
             o = by_id.get(str(pid))
             if o is None:
                 continue
-            x = xform * o.Geometry.Xform if isinstance(o.Geometry, r.InstanceReference) else None
+            x = xmul(xform, o.Geometry.Xform) if isinstance(o.Geometry, r.InstanceReference) else None
             if x is not None:
                 yield from pieces(o.Geometry, x, depth + 1)
                 continue
