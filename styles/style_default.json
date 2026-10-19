@@ -435,7 +435,10 @@
     "lightLabelColor": "#FFFFFF",
     "labelLightBelowLuma": 150,
     "maxArtboardPt": 15000.0,
-    "maxArtboardComment": "Largest artboard side in pt (Illustrator canvas 16383); the site plan extent is clipped to fit."
+    "maxArtboardComment": "Largest artboard side in pt (Illustrator canvas 16383); the site plan extent is clipped to fit.",
+    "centreOn": "PropertyLine",
+    "fitContentWhenLarger": true,
+    "centreComment": "Fixed artboards: drawings are centred on the property line (\"PropertyLine\", the building without one) or on the \"Building\"; a drawing larger than the artboard gets a Fit content artboard at the same scale."
   },
   "view": {
     "comment": "Projected (Make2D-like) view used behind section cuts and for elevations. Our building: masses = solid light-grey base; every slab/facade layer gets its own AI layer and global swatch (grey by layer order, glass white); all opaque, near hides far. Other buildings: white fill + dashed grey outline.",

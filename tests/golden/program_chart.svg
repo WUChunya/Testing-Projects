@@ -95,7 +95,7 @@
 <text id="CHT_03_R18_LBL" x="746" y="1093" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="746" dy="0">LAB</tspan></text>
 <text id="CHT_03_G19" x="746" y="1198" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="746" dy="0">L10</tspan></text>
 <text id="CHT_03_R20_LBL" x="746" y="1213" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="746" dy="0">LAB</tspan></text>
-<text id="CHT_03_TOTAL" x="1046" y="1333" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1046" dy="0">91,727 GSF</tspan></text>
+<text id="CHT_03_TOTAL" x="1046" y="1333" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1046" dy="0">91,573 GSF</tspan></text>
 <text id="CHT_04_TITLE" x="1080" y="85" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="1080" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
 <text id="CHT_04_G01" x="1094" y="118" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="1094" dy="0">L10</tspan></text>
 <text id="CHT_04_R02_LBL" x="1094" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="1094" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
@@ -106,6 +106,6 @@
 <text id="CHT_05_G01" x="50" y="1413" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L11</tspan></text>
 <text id="CHT_05_R02_LBL" x="50" y="1428" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">INTERACTION / COLLAB</tspan></text>
 <text id="CHT_05_TOTAL" x="350" y="1548" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="350" dy="0">3,887 GSF</tspan></text>
-<text id="CHT_SOURCE" x="36" y="1580" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">MODEL (GSF) — TOTAL 158,050 GSF</tspan></text>
+<text id="CHT_SOURCE" x="36" y="1580" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">MODEL (GSF) — TOTAL 157,896 GSF</tspan></text>
 </g>
 </svg>

@@ -108,7 +108,9 @@ public class S1GeometryTests
         {
             var sum = p.AreaByProgram.Values.Sum();
             _out.WriteLine($"{p.Level.Name}: union={p.Union.Area:0} sum={sum:0} " + string.Join(" ", p.AreaByProgram.Select(kv => $"{kv.Key}={kv.Value:0}")));
-            Assert.Equal(p.Union.Area, sum, 0.5);
+            // The upper part of a kept tall room is in the level outline but counts for no program (v0.9.2).
+            var voids = p.Footprints.Where(f => f.OpenToBelow).Select(f => f.Raw).Aggregate((NetTopologySuite.Geometries.Geometry?)null, (a, g) => a == null ? g : a.Union(g));
+            Assert.Equal(p.Union.Area - (voids == null ? 0 : p.Union.Intersection(voids).Area), sum, 0.5);
         }
         Assert.True(R.Plans.Sum(p => p.Union.Area) > 1000);
     }

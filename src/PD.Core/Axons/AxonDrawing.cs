@@ -212,7 +212,10 @@ public static class AxonDrawing
             w = Math.Max(scr.Width, (ctx.Style.Axon.Site.PageWidthIn * 72 - 2 * pg.MarginPt) / k);
             h = Math.Max(scr.Height, (ctx.Style.Axon.Site.PageHeightIn * 72 - 2 * pg.MarginPt - ctx.Pt(pg.TitleBandPt)) / k);
         }
-        double cx = scr.Centre.X, cy = scr.Centre.Y;
+        // Centred on the property line (page.centreOn), moved only as far as it takes to keep our building on the page.
+        var c = (AnchorScreen(ctx, proj) ?? scr).Centre;
+        double cx = w > scr.Width ? Math.Clamp(c.X, scr.MaxX - w / 2, Math.Max(scr.MaxX - w / 2, scr.MinX + w / 2)) : scr.Centre.X;
+        double cy = h > scr.Height ? Math.Clamp(c.Y, scr.MaxY - h / 2, Math.Max(scr.MaxY - h / 2, scr.MinY + h / 2)) : scr.Centre.Y;
         return MeshSlicer.Factory.CreatePolygon(new[]
         {
             new Coordinate(cx - w / 2, cy - h / 2), new Coordinate(cx + w / 2, cy - h / 2), new Coordinate(cx + w / 2, cy + h / 2),
@@ -1221,6 +1224,21 @@ public static class AxonDrawing
         yield return SectionDrawing.Text(prefix + "NORTH_N", tx + vx * l * 0.45, ty + vy * l * 0.45, "N", "PD Note", "center", center: true);
     }
 
+    /// <summary>The page anchor (property line) projected at grade, in screen feet; null when there is none.</summary>
+    static Envelope? AnchorScreen(ExportContext ctx, AxonProjection proj)
+    {
+        var a = ctx.PageAnchor();
+        if (a.IsEmpty) return null;
+        var ground = ctx.Rules.Levels.GroundElevationFt;
+        var e = new Envelope();
+        foreach (var c in a.Coordinates)
+        {
+            var (sx, sy) = proj.Project(c.X, c.Y, ground);
+            e.ExpandToInclude(sx, sy);
+        }
+        return e;
+    }
+
     /// <summary>Artboards (one per sheet, same size), items, level column, titles.</summary>
     static void Page(PD.Core.Drawing.Drawing d, ExportContext ctx, AxonProjection proj, List<Sheet> sheets, AxonKind kind)
     {
@@ -1235,16 +1253,19 @@ public static class AxonDrawing
         var colR = sheets.Any(s => s.Tags.Count > 0) ? ctx.Pt(ax.LevelColumnPt) : 0;
         var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
-        if (ctx.ArtboardSize is { } fixedSize)
+        var fits = ctx.ArtboardSize is { } fs && w + colR <= fs.W - 2 * m + 0.5 && h <= fs.H - 2 * m - titleBand + 0.5;
+        if (ctx.ArtboardSize is { } fixedSize && (fits || !pg.FitContentWhenLarger))
         {
             (abW, abH) = fixedSize;
-            x0 = (abW - w - colR) / 2;
-            y0 = m + (abH - 2 * m - titleBand - h) / 2;
-            if (x0 < m - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"{kind} axon at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+            // Centred on the property line as seen at grade (page.centreOn), kept on the page.
+            var c = AnchorScreen(ctx, proj) ?? env;
+            x0 = ExportContext.Place(m, abW - m - colR, w, (c.Centre.X - env.MinX) * k) ?? (abW - w - colR) / 2;
+            y0 = ExportContext.Place(m, abH - m - titleBand, h, (env.MaxY - c.Centre.Y) * k) ?? m + (abH - 2 * m - titleBand - h) / 2;
+            if (!fits) d.Notes.Add(ctx.LargerNote($"{kind} axon"));
         }
         else
         {
+            if (ctx.ArtboardSize != null) d.Notes.Add(ctx.LargerNote($"{kind} axon"));
             abW = 2 * m + w + colR;
             abH = 2 * m + h + titleBand;
             x0 = m;

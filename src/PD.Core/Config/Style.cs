@@ -383,6 +383,13 @@ public sealed class PageStyle
     public string LightLabelColor { get; set; } = "#FFFFFF";
     /// <summary>Largest artboard side; Illustrator's canvas is 16383 pt and runtime.jsx refuses layouts past 16000.</summary>
     public double MaxArtboardPt { get; set; } = 15000;
+    /// <summary>
+    /// Fixed artboards (user rev 0.9.2): what the drawing is centred on — "PropertyLine" (our NC.PropertyLine, the
+    /// building when there is none) or "Building".
+    /// </summary>
+    public string CentreOn { get; set; } = "PropertyLine";
+    /// <summary>A drawing larger than the fixed artboard gets a "Fit content" artboard at the same scale (user rev 0.9.2).</summary>
+    public bool FitContentWhenLarger { get; set; } = true;
 }
 
 /// <summary>Projected (Make2D-like) view: behind section cuts and in elevations.</summary>

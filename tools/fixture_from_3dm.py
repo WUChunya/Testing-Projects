@@ -1,11 +1,13 @@
 """Export a .3dm model to a compact JSON fixture for PD.Core tests.
 
-Usage: python3 -I tools/fixture_from_3dm.py <in.3dm> <out.json>
+Usage: python3 -I tools/fixture_from_3dm.py <in.3dm> <out.json> [--full]
 
 Per object: id, layer path, type, bbox, isClosed, faceCount, mesh (render
 meshes, coordinates rounded to 1 mm) or polyline points for curves.
 Coordinates stay in model units (see "units"); Core converts to feet.
 If the file exceeds MAX_BYTES, CONTEXT layer meshes are dropped (bbox kept).
+Block instances are exploded like the plugin does (nested transforms applied, pieces keep their own layer, id
+"<instance id>#<n>"); a piece mesh over INSTANCE_MESH_MAX_FACES faces (people, trees, cars) is kept as its box.
 """
 import json
 import sys
@@ -16,6 +18,7 @@ MAX_BYTES = 5 * 1024 * 1024
 MM_PER_UNIT = {"Millimeters": 1.0, "Centimeters": 10.0, "Meters": 1000.0,
                "Inches": 25.4, "Feet": 304.8}
 CURVE_SAMPLES = 64
+INSTANCE_MESH_MAX_FACES = 400
 
 
 def unit_name(model):
@@ -150,6 +153,38 @@ def closed_and_faces(geom):
     return False, 0
 
 
+def flatten(model):
+    """(id, geometry, layer index, name, from an instance) per drawable object; block instances exploded."""
+    defs = {str(d.Id): d for d in model.InstanceDefinitions}
+    by_id = {str(o.Attributes.Id): o for o in model.Objects}
+
+    def pieces(ref, xform, depth):
+        d = defs.get(str(ref.ParentIdefId))
+        if d is None or depth > 8:
+            return
+        for pid in d.GetObjectIds():
+            o = by_id.get(str(pid))
+            if o is None:
+                continue
+            x = xform * o.Geometry.Xform if isinstance(o.Geometry, r.InstanceReference) else None
+            if x is not None:
+                yield from pieces(o.Geometry, x, depth + 1)
+                continue
+            g = o.Geometry.Duplicate()
+            g.Transform(xform)
+            yield o.Attributes, g
+
+    for o in model.Objects:
+        a = o.Attributes
+        if a.IsInstanceDefinitionObject:
+            continue
+        if isinstance(o.Geometry, r.InstanceReference):
+            for i, (pa, g) in enumerate(pieces(o.Geometry, o.Geometry.Xform, 0)):
+                yield f"{a.Id}#{i}", g, pa.LayerIndex, pa.Name or a.Name or "", True
+            continue
+        yield str(a.Id), o.Geometry, a.LayerIndex, a.Name or "", False
+
+
 def export(path_in):
     model = r.File3dm.Read(path_in)
     units = unit_name(model)
@@ -160,16 +195,20 @@ def export(path_in):
         layers.append({"index": lyr.Index, "path": lyr.FullPath, "visible": bool(lyr.Visible),
                        "color": "#%02X%02X%02X" % (c[0], c[1], c[2])})
     objects = []
-    for o in model.Objects:
-        g, a = o.Geometry, o.Attributes
+    for oid, g, li, name, piece in flatten(model):
         try:
             bb = bbox(g, step)
         except TypeError:
             continue
         closed, nfaces = closed_and_faces(g)
-        rec = {"id": str(a.Id), "layer": model.Layers[a.LayerIndex].FullPath,
-               "type": type(g).__name__, "name": a.Name or "", "bbox": bb,
+        rec = {"id": oid, "layer": model.Layers[li].FullPath,
+               "type": type(g).__name__, "name": name, "bbox": bb,
                "isClosed": closed, "faceCount": nfaces}
+        if piece and isinstance(g, r.Mesh) and len(g.Faces) > INSTANCE_MESH_MAX_FACES:
+            rec["mesh"] = box_mesh(bb)
+            rec["meshFromBBox"] = True
+            objects.append(rec)
+            continue
         if "Curve" in rec["type"]:
             rec["points"] = curve_points(g, step)
         else:
@@ -205,10 +244,10 @@ def layer_bytes(data):
 
 
 def strip(data, layer):
+    """Meshes only: curve points are cheap and site curves (context areas, property line) are drawn from them."""
     for rec in data["objects"]:
         if rec["layer"] == layer:
             rec["mesh"] = None
-            rec.pop("points", None)
 
 
 def shrink(data, text):
@@ -235,10 +274,12 @@ def shrink(data, text):
 
 
 def main():
-    src, dst = sys.argv[1], sys.argv[2]
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    src, dst = args[0], args[1]
     data = export(src)
     text = dump(data)
-    if len(text) > MAX_BYTES:
+    # --full: keep every mesh (a working copy of a big model; test fixtures stay under MAX_BYTES).
+    if len(text) > MAX_BYTES and "--full" not in sys.argv:
         text = shrink(data, text)
     with open(dst, "w", encoding="utf-8") as fh:
         fh.write(text)

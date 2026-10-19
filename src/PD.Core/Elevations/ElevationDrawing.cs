@@ -23,7 +23,7 @@ public static class ElevationDrawing
         // A fixed artboard (user rev 0.8.4): a longer line is cut down around the building.
         if (ctx.ArtboardSize is { } ab0)
             plane = plane.Fit((ab0.W - 2 * ctx.Style.Page.MarginPt - (ctx.Style.Elevation.LevelMarkers ? ctx.Pt(ctx.Style.Page.LevelColumnPt) : 0)) / ctx.PtPerFt,
-                PD.Core.Plans.PlanBackground.Footprint(r));
+                ctx.PageAnchor());
         var depth = el.DepthFt > 0 ? el.DepthFt : ctx.Rules.Output.SectionDepthFt;
         var ground = ctx.Rules.Levels.GroundElevationFt;
         var items = ProjectedView.Collect(r, plane, depth, ProjectedView.GlassRegex(ctx.Style.View), ground);
@@ -44,16 +44,19 @@ public static class ElevationDrawing
         var colL = es.LevelMarkers ? ctx.Pt(pg.LevelColumnPt) : 0;
         var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
-        if (ctx.ArtboardSize is { } fixedSize)
+        var fits = ctx.ArtboardSize is { } fs && colL + w <= fs.W - 2 * m + 0.5 && h <= fs.H - 2 * m - titleBand + 0.5;
+        if (ctx.ArtboardSize is { } fixedSize && (fits || !pg.FitContentWhenLarger))
         {
             (abW, abH) = fixedSize;
-            x0 = m + colL + (abW - 2 * m - colL - w) / 2;
+            // The property line (page.centreOn) mid-page, as far as the drawing allows.
+            var mid = plane.Mid(ctx.PageAnchor()) ?? plane.Length / 2;
+            x0 = ExportContext.Place(m + colL, abW - m, w, mid * k) ?? m + colL + (abW - 2 * m - colL - w) / 2;
             y0 = m + (abH - 2 * m - titleBand - h) / 2;
-            if (x0 < m + colL - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"Elevation {el.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+            if (!fits) d.Notes.Add(ctx.LargerNote($"Elevation {el.Name}"));
         }
         else
         {
+            if (ctx.ArtboardSize != null) d.Notes.Add(ctx.LargerNote($"Elevation {el.Name}"));
             abW = 2 * m + colL + w;
             abH = 2 * m + h + titleBand;
             x0 = m + colL;

@@ -68,14 +68,14 @@
 </g>
 <g id="AXON_L3">
 <path id="AXB_L3_L02_LAB_01_TOP" fill="#F7A238" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M301.477,2003.118 L386.48,1954.042 L450.864,2065.56 L444.452,2069.262 L456.231,2089.664 L377.503,2135.118 Z"/>
-<path id="AXB_L3_L01_LAB_01_TOP" fill="#F7A238" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M598.732,1980.373 L626.953,2029.252 L472.753,2118.28 L444.452,2069.262 Z"/>
+<path id="AXB_L3_L01_LAB_01_TOP" fill="#F7A238" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M579.002,1991.764 L587.627,2006.702 L607.357,1995.311 L626.953,2029.252 L472.753,2118.28 L444.452,2069.262 Z"/>
 <path id="AXB_L3_L02_LAB_01_SIDE_003" fill="#D28A30" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M301.477,2012.718 L301.477,2003.118 L377.503,2135.118 L365.803,2114.854 L364.273,2115.738 L364.273,2121.749 Z"/>
 <path id="AXB_L3_L01_LAB_01_SIDE_002" fill="#AD7127" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M626.953,2029.252 L626.953,2038.852 L472.753,2127.88 L472.753,2118.28 Z"/>
 <path id="AXB_L3_L03_LAB_01_TOP" fill="#F7A238" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M364.273,2115.738 L365.803,2114.854 L377.503,2135.118 L456.231,2089.664 L472.753,2118.28 L392.494,2164.617 Z"/>
 <path id="AXB_L3_L03_LAB_01_SIDE_002" fill="#D28A30" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M364.273,2125.338 L364.273,2115.738 L392.494,2164.617 L392.494,2174.217 Z"/>
 <path id="AXB_L3_L03_LAB_01_SIDE_001" fill="#AD7127" stroke="#FFFFFF" stroke-width="0.75" opacity="0.85" fill-rule="evenodd" d="M392.494,2174.217 L472.753,2127.88 L472.753,2118.28 L392.494,2164.617 Z"/>
 <text id="AXB_L3_L02_LAB_01_LBL" x="0" y="9.1" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.9" transform="matrix(0.5 0.866 -0.866 0.5 381.991 2044.58)"><tspan x="0" dy="0">LAB</tspan></text>
-<text id="AXB_L3_L01_LAB_01_LBL" x="0" y="9.1" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.9" transform="matrix(0.866 -0.5 0.5 0.866 535.722 2049.292)"><tspan x="0" dy="0">LAB</tspan></text>
+<text id="AXB_L3_L01_LAB_01_LBL" x="0" y="9.1" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.9" transform="matrix(0.866 -0.5 0.5 0.866 525.857 2054.987)"><tspan x="0" dy="0">LAB</tspan></text>
 <text id="AXB_L3_L03_LAB_01_LBL" x="0" y="4.55" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="middle" fill="#FFFFFF" fill-opacity="0.9" transform="matrix(0.963 -0.268 0.268 0.963 425.128 2126.699)"><tspan x="0" dy="0">LAB</tspan></text>
 </g>
 <g id="AXON_L4">

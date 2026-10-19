@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.9.1）
+# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.9.2）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.9.1; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.9.2; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,8 +18,9 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.9.1**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），234 个测试全过（全套约 7 分钟），`dist/ProgramDiagram-0.9.1.zip`（dist 下的 zip 随提交入库）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.9.2**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），241 个测试全过（全套约 9 分钟），`dist/ProgramDiagram-0.9.2.zip`（dist 下的 zip 随提交入库）。
 - 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，v0.8.4 = `Rev084Tests.cs`，v0.8.6 = `Rev086Tests.cs`，v0.8.7 = `Rev087Tests.cs`，v0.8.5 = `Rev085Tests.cs`（`Noisy` = 坐标加噪声模拟 Rhino 原始坐标），其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
+- 方案模型（v0.9.2）：`river_tk.json` / `campus.json` + `*_settings.json`，测试里用 `FixtureAnalysis(model, settings)` 加载；成果在 `deliverables/2026-10-19_CAMPUS`（RIVER 方案用户已不需要，TK 只留作回归测试）（PDF、模型、AI 导出包 = ProgramDiagram.jsx，scripts 可重建）。固定画板居中 / 自适应：`ExportContext.PageAnchor / Place / LargerNote`，样式键 `page.centreOn`、`page.fitContentWhenLarger`。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
 - 文档：PRD v1.0（顶部有 v1.0 变化摘要）、`docs/USER_GUIDE.md`、`docs/MODELING_CONVENTION.md`、`docs/SITE_STYLE.md`（§0.1 已注明 Futura PT）。
 

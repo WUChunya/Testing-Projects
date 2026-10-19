@@ -24,7 +24,7 @@ public static class SectionDrawing
         if (ctx.ArtboardSize is { } ab0)
         {
             var cols = (st.LevelColumn || st.LevelMarkers ? ctx.Pt(pg.LevelColumnPt) : 0) + (st.HeightDimension ? ctx.Pt(pg.DimColumnPt) : 0);
-            plane = plane.Fit((ab0.W - 2 * pg.MarginPt - cols) / ctx.PtPerFt, PD.Core.Plans.PlanBackground.Footprint(r));
+            plane = plane.Fit((ab0.W - 2 * pg.MarginPt - cols) / ctx.PtPerFt, ctx.PageAnchor());
         }
         var g = SectionGeometry.Build(r, plane, depth, ctx.Rules, ctx.Style);
 
@@ -48,16 +48,18 @@ public static class SectionDrawing
         var colR = st.HeightDimension ? ctx.Pt(pg.DimColumnPt) : 0;
         var titleBand = ctx.Pt(pg.TitleBandPt);
         double abW, abH, x0, y0;
-        if (ctx.ArtboardSize is { } fixedSize)
+        var fits = ctx.ArtboardSize is { } fs && colL + w + colR <= fs.W - 2 * m + 0.5 && h <= fs.H - 2 * m - titleBand + 0.5;
+        if (ctx.ArtboardSize is { } fixedSize && (fits || !pg.FitContentWhenLarger))
         {
             (abW, abH) = fixedSize;
-            x0 = m + colL + (abW - 2 * m - colL - colR - w) / 2;
+            // Where the cut crosses the property line (page.centreOn) sits mid-page, as far as the drawing allows.
+            x0 = ExportContext.Place(m + colL, abW - m - colR, w, (plane.Mid(ctx.PageAnchor()) ?? plane.Length / 2) * k) ?? m + colL + (abW - 2 * m - colL - colR - w) / 2;
             y0 = m + (abH - 2 * m - titleBand - h) / 2;
-            if (x0 < m + colL - 0.5 || y0 < m - 0.5)
-                d.Notes.Add($"Section {sec.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+            if (!fits) d.Notes.Add(ctx.LargerNote($"Section {sec.Name}"));
         }
         else
         {
+            if (ctx.ArtboardSize != null) d.Notes.Add(ctx.LargerNote($"Section {sec.Name}"));
             abW = 2 * m + colL + w + colR;
             abH = 2 * m + h + titleBand;
             x0 = m + colL;

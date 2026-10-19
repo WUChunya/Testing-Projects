@@ -97,6 +97,35 @@ public sealed class ExportContext
         Rules.Output.ArtboardSizesPt.TryGetValue(Settings.Output.Artboard, out var s) ? (s[0], s[1]) : null;
 
     /// <summary>
+    /// Plan-space shape a fixed artboard is centred on (user rev 0.9.2, page.centreOn): our property line, else the
+    /// building's footprint.
+    /// </summary>
+    public NetTopologySuite.Geometries.Geometry PageAnchor()
+    {
+        if (Cache.TryGetValue("pageAnchor", out var c)) return (NetTopologySuite.Geometries.Geometry)c;
+        var g = string.Equals(Style.Page.CentreOn, "Building", StringComparison.OrdinalIgnoreCase)
+            ? PD.Core.Plans.PlanBackground.Footprint(Result) : PD.Core.Plans.PlanBackground.PropertyArea(Result);
+        if (g.IsEmpty) g = PD.Core.Plans.PlanBackground.Footprint(Result);
+        Cache["pageAnchor"] = g;
+        return g;
+    }
+
+    /// <summary>
+    /// Start of a <paramref name="size"/>-long drawing on a fixed artboard's free span lo…hi: <paramref name="centre"/>
+    /// (the anchor's position within the drawing) lands mid-span, kept inside the span; null when it does not fit.
+    /// </summary>
+    public static double? Place(double lo, double hi, double size, double centre)
+    {
+        if (size > hi - lo + 0.5) return null;
+        return Math.Clamp((lo + hi) / 2 - centre, lo, Math.Max(lo, hi - size));
+    }
+
+    /// <summary>Note for a drawing larger than the fixed artboard: fitted to its content (same scale) or left as is.</summary>
+    public string LargerNote(string what) => Style.Page.FitContentWhenLarger
+        ? $"{what} at {ScaleText} is larger than {Settings.Output.Artboard}: its artboard fits the content instead (same scale)."
+        : $"{what} at {ScaleText} is larger than {Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.";
+
+    /// <summary>
     /// Imperial "1/32\" = 1'-0\"" → 2.25 pt per foot, "1\" = 50'" → 1.44; metric ratio "1:200" → 4.32.
     /// </summary>
     public static double? ParseScale(string? scale)

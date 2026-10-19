@@ -14,7 +14,7 @@ public static class Reports
         foreach (var p in r.Plans)
         {
             var cells = keys.Select(k => p.AreaByProgram.GetValueOrDefault(k).ToString("0", CultureInfo.InvariantCulture));
-            sb.AppendLine($"{p.Level.Name},{p.Level.Elevation.ToString("0.00", CultureInfo.InvariantCulture)},{string.Join(",", cells)},{p.Union.Area.ToString("0", CultureInfo.InvariantCulture)}");
+            sb.AppendLine($"{p.Level.Name},{p.Level.Elevation.ToString("0.00", CultureInfo.InvariantCulture)},{string.Join(",", cells)},{p.AreaByProgram.Values.Sum().ToString("0", CultureInfo.InvariantCulture)}");
         }
         return sb.ToString();
     }

@@ -161,6 +161,12 @@ public class S3SectionTests
         ctx.Settings.Output.Artboard = "8.5x11 Landscape";
         ctx.Settings.Output.SectionScale = "1/8\" = 1'-0\"";
         var d = SectionDrawing.Build(ctx, SectionA);
+        // User rev 0.9.2: a drawing larger than the sheet gets a Fit content artboard at the same scale.
+        Assert.True(d.Artboards[0].W > 792);
+        Assert.Contains(d.Notes, n => n.Contains("larger than"));
+        var strict = new ExportContext { Result = ctx.Result, Settings = ctx.Settings, Programs = ctx.Programs, Style = PD.Core.Config.Style.Default() };
+        strict.Style.Page.FitContentWhenLarger = false;
+        d = SectionDrawing.Build(strict, SectionA);
         Assert.Equal(792, d.Artboards[0].W);
         Assert.Contains(d.Notes, n => n.Contains("larger than"));
     }

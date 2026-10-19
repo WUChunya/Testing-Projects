@@ -162,28 +162,38 @@ public class Rev089Tests
 /// <summary>The RIVER model after the CW markup (deliverables/2026-10-18_RIVER_MARKUP) with its plugin settings.</summary>
 public static class RiverAnalysis
 {
-    static readonly Lazy<(AnalysisResult R, PD.Core.Settings.PdSettings S)> Lazy = new(() =>
+    static readonly FixtureAnalysis A = new("river.json", "river_settings.json");
+    public static AnalysisResult Result => A.Result;
+    public static PD.Core.Drawing.ExportContext Context() => A.Context();
+}
+
+/// <summary>A fixture model analysed with the plugin settings saved in its 3dm (exported to JSON next to it).</summary>
+public sealed class FixtureAnalysis
+{
+    readonly Lazy<(AnalysisResult R, PD.Core.Settings.PdSettings S)> _lazy;
+
+    public FixtureAnalysis(string model, string settings) => _lazy = new(() =>
     {
-        var s = PD.Core.Settings.PdSettings.FromJson(File.ReadAllText(FixtureSmokeTests.FixturePath("river_settings.json")));
+        var s = PD.Core.Settings.PdSettings.FromJson(File.ReadAllText(FixtureSmokeTests.FixturePath(settings)));
+        var m = FixtureReader.Load(FixtureSmokeTests.FixturePath(model));
         // The settings hold the 3dm's own units (feet); the fixture stores millimetres.
         foreach (var sec in s.Sections) sec.Line = sec.Line.Select(v => v * 304.8).ToArray();
         s.Output.FillDefaults(PD.Core.Config.Rules.Default().Output);
-        var model = FixtureReader.Load(FixtureSmokeTests.FixturePath("river.json"));
         var programs = ProgramCatalog.Effective(LayerClassifier.LoadPrograms(), s.Programs);
         var roles = s.RoleOverrides().ToDictionary(kv => kv.Key, kv => kv.Value);
-        foreach (var l in model.Layers.Where(l => !roles.ContainsKey(l.Path))) roles[l.Path] = new LayerGuess(l.Path, Roles.Ignore, "");
+        foreach (var l in m.Layers.Where(l => !roles.ContainsKey(l.Path))) roles[l.Path] = new LayerGuess(l.Path, Roles.Ignore, "");
         var r = Analyzer.Run(new AnalysisInput
         {
-            Model = model, Classifier = ProgramCatalog.Classifier(programs), RoleOverrides = roles, ProgramOverrides = s.ObjectPrograms,
+            Model = m, Classifier = ProgramCatalog.Classifier(programs), RoleOverrides = roles, ProgramOverrides = s.ObjectPrograms,
             SpanOverrides = s.SpanModes, SingleSurfaceChoices = s.SingleSurfaces, KeepStray = s.KeepStray.ToHashSet(), Levels = s.Levels,
         });
         return (r, s);
     });
 
-    public static AnalysisResult Result => Lazy.Value.R;
+    public AnalysisResult Result => _lazy.Value.R;
 
-    public static PD.Core.Drawing.ExportContext Context() => new()
+    public PD.Core.Drawing.ExportContext Context() => new()
     {
-        Result = Lazy.Value.R, Settings = Lazy.Value.S, Programs = ProgramCatalog.Effective(LayerClassifier.LoadPrograms(), Lazy.Value.S.Programs),
+        Result = _lazy.Value.R, Settings = _lazy.Value.S, Programs = ProgramCatalog.Effective(LayerClassifier.LoadPrograms(), _lazy.Value.S.Programs),
     };
 }

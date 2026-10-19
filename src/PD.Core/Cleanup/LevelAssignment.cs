@@ -110,7 +110,12 @@ public static class LevelAssignment
     static void Resolve(LevelPlan plan, int levelIndex, CleanupRules r, List<Overlap> overlaps)
     {
         var counted = plan.Footprints.Where(f => !f.OpenToBelow).OrderBy(f => f.Mass.Volume).ToList();
-        NtsGeometry union = MeshSlicer.Factory.CreatePolygon();
+        // The upper part of a kept tall room is a void on this level: no other program counts there (user rev 0.9.2,
+        // CAMPUS: a whole-floor L2 circulation mass took over the auditorium's open-to-below).
+        var voidParts = plan.Footprints.Where(f => f.OpenToBelow).Select(f => f.Raw).ToList();
+        var voids = voidParts.Count == 0 ? MeshSlicer.Factory.CreatePolygon()
+            : MeshSlicer.Polygonal(NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(voidParts));
+        var union = voids;
         var winners = new List<Footprint>();
         foreach (var f in counted)
         {
@@ -120,14 +125,16 @@ public static class LevelAssignment
                 var a = w.Raw.Intersection(f.Raw).Area;
                 if (a >= r.MinOverlapAreaSf) overlaps.Add(new Overlap(levelIndex, w.Mass.Id, f.Mass.Id, a));
             }
-            f.Resolved = union.IsEmpty ? f.Raw : f.Raw.Difference(union);
-            union = union.IsEmpty ? f.Raw : union.Union(f.Raw);
+            // Overlays keep only their polygons: a sliver can come back as a line, and NTS refuses a mixed collection as
+            // the argument of the next overlay (RIVER 2026-10-19 TK model).
+            f.Resolved = union.IsEmpty ? f.Raw : MeshSlicer.Polygonal(f.Raw.Difference(union));
+            union = union.IsEmpty ? f.Raw : MeshSlicer.Polygonal(union.Union(f.Raw));
             winners.Add(f);
             var key = f.Mass.ProgramKey;
             plan.AreaByProgram[key] = plan.AreaByProgram.GetValueOrDefault(key) + f.Resolved.Area;
         }
         plan.Union = union;
-        Seal(plan, counted, r.SealGapFt);
+        Seal(plan, counted, r.SealGapFt, voids);
     }
 
     /// <summary>
@@ -135,7 +142,7 @@ public static class LevelAssignment
     /// is closed over such gaps and each footprint grows into them (smaller volume first, no overlaps), so drawings get
     /// one outline and shared edges. Areas were counted before, from the modelled geometry.
     /// </summary>
-    static void Seal(LevelPlan plan, List<Footprint> counted, double gap)
+    static void Seal(LevelPlan plan, List<Footprint> counted, double gap, NtsGeometry voids)
     {
         if (gap <= 0 || plan.Union.IsEmpty) return;
         var mitre = new NetTopologySuite.Operation.Buffer.BufferParameters { JoinStyle = NetTopologySuite.Operation.Buffer.JoinStyle.Mitre };
@@ -144,7 +151,7 @@ public static class LevelAssignment
         {
             var closed = Grow(Grow(plan.Union, gap / 2), -gap / 2);
             if (closed.IsEmpty) return;
-            NtsGeometry taken = MeshSlicer.Factory.CreatePolygon();
+            NtsGeometry taken = voids;
             var sealedParts = new List<(Footprint F, NtsGeometry G)>();
             foreach (var f in counted.Where(f => !f.Resolved.IsEmpty))
             {
@@ -152,12 +159,12 @@ public static class LevelAssignment
                 if (!taken.IsEmpty) g = MeshSlicer.Polygonal(g.Difference(taken));
                 if (g.IsEmpty) continue;
                 sealedParts.Add((f, g));
-                taken = taken.IsEmpty ? g : taken.Union(g);
+                taken = taken.IsEmpty ? g : MeshSlicer.Polygonal(taken.Union(g));
             }
             foreach (var (f, g) in sealedParts) f.Resolved = g;
             plan.Union = closed;
         }
-        catch (TopologyException)
+        catch (Exception e) when (e is TopologyException or ArgumentException)
         {
             // Keep the modelled geometry.
         }

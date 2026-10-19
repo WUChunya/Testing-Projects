@@ -150,16 +150,17 @@ public static class PlanDrawing
         var tag = ctx.Style.Fonts.Title.SizePt * 1.2 + 2 * ps.TitleTagPadPt;
         var bottom = band + Math.Max(legendH, ctx.Pt(tag));
         double abW, abH, x0, y0;
-        if (ctx.ArtboardSize is { } fixedSize)
+        var fits = ctx.ArtboardSize is { } fs && w <= fs.W - 2 * m + 0.5 && h <= fs.H - 2 * m - titleH - bottom + 0.5;
+        if (ctx.ArtboardSize is { } fixedSize && (fits || !pg.FitContentWhenLarger))
         {
             (abW, abH) = fixedSize;
             x0 = (abW - w) / 2;
             y0 = m + titleH + (abH - 2 * m - titleH - bottom - h) / 2;
-            if (x0 < m - 0.5 || y0 < m + titleH - 0.5)
-                d.Notes.Add($"Plan {lvl.Name} at {ctx.ScaleText} is larger than {ctx.Settings.Output.Artboard}; use \"Fit content\" or a smaller scale.");
+            if (!fits) d.Notes.Add(ctx.LargerNote($"Plan {lvl.Name}"));
         }
         else
         {
+            if (ctx.ArtboardSize != null) d.Notes.Add(ctx.LargerNote($"Plan {lvl.Name}"));
             abW = 2 * m + Math.Max(Math.Max(w, legendW + ctx.Pt(260)), tools);
             abH = 2 * m + titleH + h + bottom;
             x0 = m + (abW - 2 * m - w) / 2;
@@ -180,7 +181,8 @@ public static class PlanDrawing
 
     /// <summary>
     /// The plan extent that fills the fixed artboard's drawing area (artboard less margins, title band, bottom band with
-    /// the legend and level tag), centred on <paramref name="core"/>; null when the building itself does not fit.
+    /// the legend and level tag), centred on the page anchor around <paramref name="core"/>; null when the building
+    /// itself does not fit.
     /// </summary>
     static Envelope? FitArtboard(ExportContext ctx, Envelope core, int keys)
     {
@@ -193,8 +195,11 @@ public static class PlanDrawing
         var bottom = ctx.Pt(ps.BandPt) + Math.Max(rows * ctx.Pt(ps.LegendRowPt), ctx.Pt(tag));
         double w = (ab.W - 2 * pg.MarginPt) / k, h = (ab.H - 2 * pg.MarginPt - ctx.Pt(pg.TitleBandPt) - bottom) / k;
         if (w < core.Width || h < core.Height) return null;
-        var c = core.Centre;
-        return new Envelope(c.X - w / 2, c.X + w / 2, c.Y - h / 2, c.Y + h / 2);
+        // Centred on the property line (page.centreOn), moved only as far as it takes to keep the building in view.
+        var anchor = ctx.PageAnchor();
+        var c = anchor.IsEmpty ? core.Centre : anchor.EnvelopeInternal.Centre;
+        double x0 = Math.Clamp(c.X - w / 2, core.MaxX - w, Math.Max(core.MaxX - w, core.MinX)), y0 = Math.Clamp(c.Y - h / 2, core.MaxY - h, Math.Max(core.MaxY - h, core.MinY));
+        return new Envelope(x0, x0 + w, y0, y0 + h);
     }
 
     /// <summary>Background, program blocks, open-to-below voids, outline, facade line and labels of one level.</summary>

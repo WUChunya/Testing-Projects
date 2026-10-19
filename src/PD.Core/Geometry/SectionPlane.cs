@@ -35,29 +35,35 @@ public sealed class SectionPlane
 
     /// <summary>
     /// Fixed artboards (user rev 0.8.4): a line longer than <paramref name="maxFt"/> is cut down to that length,
-    /// centred on where it crosses <paramref name="building"/> (else on its middle).
+    /// centred on where it crosses <paramref name="anchor"/> (the property line or the building, else its middle).
     /// </summary>
-    public SectionPlane Fit(double maxFt, NetTopologySuite.Geometries.Geometry building)
+    public SectionPlane Fit(double maxFt, NetTopologySuite.Geometries.Geometry anchor)
     {
         if (maxFt <= 0 || Length <= maxFt) return this;
-        var mid = Length / 2;
+        var mid = Mid(anchor) ?? Length / 2;
+        var u0 = Math.Clamp(mid - maxFt / 2, 0, Length - maxFt);
+        return Sub(u0, u0 + maxFt);
+    }
+
+    /// <summary>Middle (u) of where the line crosses <paramref name="g"/>, else of its centroid on the line; null when empty.</summary>
+    public double? Mid(NetTopologySuite.Geometries.Geometry g)
+    {
+        if (g.IsEmpty) return null;
         try
         {
-            var hit = building.IsEmpty ? null : building.Buffer(1).Intersection(PlanLine());
+            var hit = g.Buffer(1).Intersection(PlanLine());
             if (hit is { IsEmpty: false })
             {
                 var us = hit.Coordinates.Select(c => U(c.X, c.Y)).ToList();
-                mid = (us.Min() + us.Max()) / 2;
+                return (us.Min() + us.Max()) / 2;
             }
-            else if (!building.IsEmpty)
-            {
-                var c = building.Centroid.Coordinate;
-                mid = Math.Clamp(U(c.X, c.Y), 0, Length);
-            }
+            var c = g.Centroid.Coordinate;
+            return Math.Clamp(U(c.X, c.Y), 0, Length);
         }
-        catch (Exception e) when (e is NetTopologySuite.Geometries.TopologyException or ArgumentException) { }
-        var u0 = Math.Clamp(mid - maxFt / 2, 0, Length - maxFt);
-        return Sub(u0, u0 + maxFt);
+        catch (Exception e) when (e is NetTopologySuite.Geometries.TopologyException or ArgumentException)
+        {
+            return null;
+        }
     }
 
     public double U(double x, double y) => (x - Ax) * Dx + (y - Ay) * Dy;

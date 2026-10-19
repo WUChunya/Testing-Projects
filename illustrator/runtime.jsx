@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.9.1";
+PD.version = "0.9.2";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -16,6 +16,8 @@ PD.run = function (drawings, opts) {
     // Progress is appended to illustrator_progress.txt as it goes, so a run that takes Illustrator down (COM reports
     // RPC_E_SERVERFAULT) can be resumed: files already saved are kept, the file it died on is skipped and named in the
     // log with its last step, and the rest is drawn (user rev 0.8.7).
+    // A script moved to another machine or folder (user rev 0.9.2: shared export zips) writes next to itself.
+    if (!opts.outDir || (typeof Folder !== "undefined" && !new Folder(opts.outDir).exists)) opts.outDir = new File($.fileName).parent.fsName.replace(/\\/g, "/");
     PD.progressPath = opts.outDir + "/illustrator_progress.txt";
     var prev = PD.readProgress(PD.progressPath);
     for (var c = 0; c < prev.log.length; c++) log.push(prev.log[c]);
