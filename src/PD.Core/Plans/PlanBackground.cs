@@ -282,7 +282,8 @@ public static class PlanBackground
     /// <summary><paramref name="g"/> less what our sloped ground covers at level <paramref name="j"/> (see <see cref="SiteOver"/>).</summary>
     public static NtsGeometry UnderSiteRemoved(ExportContext ctx, NtsGeometry g, int j)
     {
-        if (g.IsEmpty) return g;
+        // Basements are seen only through openings in the floors above: the site does not cover them.
+        if (g.IsEmpty || j < PlanDrawing.GroundIndex(ctx)) return g;
         var over = SiteOver(ctx, StoreyMid(ctx.Result, j));
         if (over.IsEmpty || !over.EnvelopeInternal.Intersects(g.EnvelopeInternal)) return g;
         return MeshSlicer.Polygonal(Safe(() => g.Difference(over)) ?? g);
