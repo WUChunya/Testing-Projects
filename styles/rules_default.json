@@ -23,6 +23,7 @@
     "coordSnapFt": 0.00328084,
     "planCutHeightFt": 4.0,
     "minLevelOverlapFt": 4.0,
+    "mezzanineStartToleranceFt": 1.0,
     "flatMassMaxThicknessFt": 2.0,
     "overlap": "smallerVolumeWins",
     "spanKeepTallMaxLevels": 2,

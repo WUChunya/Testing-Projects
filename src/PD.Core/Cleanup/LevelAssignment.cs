@@ -95,13 +95,28 @@ public static class LevelAssignment
         return b.MinZ - lv[i].Elevation > r.SpanKeepTallMaxStoryFactor * story ? Array.Empty<int>() : new[] { i };
     }
 
-    static double Top(IReadOnlyList<Level> lv, int i) =>
-        i + 1 < lv.Count ? lv[i + 1].Elevation : lv[i].Elevation + (i > 0 ? lv[i].Elevation - lv[i - 1].Elevation : 12.0);
+    /// <summary>Index of the level a storey runs up to: the next level, past mezzanines for a main level; Count at the top.</summary>
+    static int Next(IReadOnlyList<Level> lv, int i)
+    {
+        var n = i + 1;
+        while (!lv[i].IsMezzanine && n < lv.Count && lv[n].IsMezzanine) n++;
+        return n;
+    }
+
+    static double Top(IReadOnlyList<Level> lv, int i)
+    {
+        var n = Next(lv, i);
+        return n < lv.Count ? lv[n].Elevation : lv[i].Elevation + (i > 0 ? lv[i].Elevation - lv[i - 1].Elevation : 12.0);
+    }
 
     static bool Occupies(double z0, double z1, IReadOnlyList<Level> lv, int i, CleanupRules r)
     {
         var lo = lv[i].Elevation;
-        var hi = i + 1 < lv.Count ? lv[i + 1].Elevation : double.PositiveInfinity;
+        var n = Next(lv, i);
+        var hi = n < lv.Count ? lv[n].Elevation : double.PositiveInfinity;
+        // A mezzanine holds what starts on it; its main storey leaves those to it (user rev 0.9.3).
+        var tol = r.MezzanineStartToleranceFt;
+        if (lv[i].IsMezzanine ? z0 < lo - tol : Enumerable.Range(i + 1, n - i - 1).Any(k => z0 >= lv[k].Elevation - tol)) return false;
         var overlap = Math.Min(z1, hi) - Math.Max(z0, lo);
         var story = (double.IsInfinity(hi) ? Top(lv, i) : hi) - lo;
         return overlap >= Math.Min(r.MinLevelOverlapFt, 0.5 * story);

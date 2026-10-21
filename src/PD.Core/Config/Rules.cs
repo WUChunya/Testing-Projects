@@ -52,6 +52,11 @@ public sealed class CleanupRules
     /// <summary>A mass no thicker than this is a slab-like element (roof garden, terrace, paving): it belongs to the
     /// level under its own top face instead of needing a full story of overlap.</summary>
     public double FlatMassMaxThicknessFt { get; set; } = 2.0;
+    /// <summary>
+    /// A mezzanine level holds the masses whose bottom is within this of its elevation or above (user rev 0.9.3: the
+    /// RIVER parking decks at 10'); main storeys leave those to it and run to the next main level.
+    /// </summary>
+    public double MezzanineStartToleranceFt { get; set; } = 1.0;
     public string Overlap { get; set; } = "smallerVolumeWins";
     public int SpanKeepTallMaxLevels { get; set; }
     public double SpanKeepTallMaxStoryFactor { get; set; }
