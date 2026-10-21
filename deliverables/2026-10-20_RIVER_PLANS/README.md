@@ -1,0 +1,23 @@
+# RIVER — 2026-10-20 check-in：模型清理 + 滨水景观更新 + 总平面 / 平面（plugin v0.9.2）
+
+| 文件 | 内容 |
+|---|---|
+| `RIVER_Site_Plan_and_Plans_1020.pdf` | 9 页：00 总平面（SITE PLAN、屋顶视图、图例）+ 01 平面（L1M–L4、总览、图例）。11x17 横向，按用地红线（MX3）居中，1" = 100'-0"。 |
+| `RIVER_1020_AI_Export.zip` | AI 原图：解压后在 Illustrator 中运行 `ProgramDiagram.jsx`，生成 00_Site_Plan.ai、01_Plans.ai（分层、全局色板）。 |
+| `RIVER_1020_Illustrator_Editable.zip` | 不跑脚本也能编辑：每张图一个 SVG（按 AI 图层分组）+ 矢量 PDF，Illustrator 打开后另存为 .ai。 |
+| `RIVER_2026_1020_PD.3dm` | 清理后的模型 + 新滨水公园 + 插件设置（输出已设为 11x17 / 1"=100'）。 |
+| `scripts/` | `build_r20.sh <RIVER_2026_1020_checkin.3dm> <repo> <工作目录>` 从原始模型重建。 |
+
+## 模型清理（物件都没删，只换图层）
+- PROGRAM 图层上的 39 条房间轮廓线（地面上的闭合线会被插件当成铺装）→ `PROGRAM OUTLINES (2D)`。
+- 两个屋顶 MECHANICAL 体块没封顶 → 封顶后的副本，原物件移到 `OUTSIDE BUILDING (LEFTOVERS)`；场地南 700 ft 外的一个停车面和一条工作线也移过去。
+- 插件设置里 40 个名称、4 个跨层设置指向已删除的物件，已清掉；礼堂和 0–34' 的四个 lab 设为两层通高（L2 挑空），与之前一致。
+- GRID（12' 柱网线）设为不画（V2 批注要求删除，这个模型的设置又把它改回了铺装）。
+
+## 滨水景观（`PROJECT SITE::RIVERFRONT PARK`）
+- 按新的建筑外轮廓重新生成：公园一直延伸到建筑边（之前停在旧外轮廓处，中间留空）。设计元素和规则与 10-18 版相同：沿河步道、UPPER RIBBON 贴着新建筑走、三条 S 形 GARDEN WALK 从建筑接到河边、草坪、开花林、亲水台阶、皮划艇码头、雕塑广场、雨水花园、滨水亭、人物。
+- 你们在 `greens` 图层新建的绿丘全部保留，步道和草坪绕开。
+- 地块内其余没有覆盖的地面（礼堂周边、建筑和公园之间、西侧）铺成场地铺装（`PROJECT SITE::PLAZA`），总平面不再有空白。
+
+## 说明
+- 停车楼按 8' 厚的楼层体量建模，同一建筑层内的两层车位重叠部分只计一次（面积表 PARKING 偏小）。
