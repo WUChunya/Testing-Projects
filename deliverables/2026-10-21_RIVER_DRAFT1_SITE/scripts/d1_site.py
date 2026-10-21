@@ -4,9 +4,11 @@ Usage: python3 -I d1_site.py <fixture.json of in.3dm> <in.3dm> <out.3dm>
 - Every round double-height opening (a circular hole in a floor plate) gets a small spiral stair on PROGRAM::Stair,
   from the floor below the hole to the floor with the hole, standing against the hole's edge.
 - Auditorium: seats in curved rows with aisles, stage and screen (2D curves on FURNITURE).
-- Every named area on `greens` (GARDEN / TERRACE / GREEN ROOF) is designed inside its own outline: gardens get a
-  family of long parallel bands with filleted ends (seating steps, a walk, planting between them, after the user's
-  reference of stepped riverside seating); terraces the same with deck bands and raised planters; trees and people.
+- Every named area on `greens` (GARDEN / TERRACE / GREEN ROOF) is designed inside its own outline after the user's two
+  reference plans (ref1.py, ref2.py): the irregular gardens and the terraces take the zoning of the riverside park plan
+  (paved plaza, gravel, timber deck, angular walk, lawn mounds and planting beds with filleted corners, tree grates),
+  mapped into each area along its spine; the south gardens and the parking roof garden take the terraced lawn of
+  straight lines turning on fillets, crossed by straight paths, with planters between the lines.
   The cut green keeps its layer and name; replaced objects move to OUTSIDE BUILDING (LEFTOVERS).
 - The previous PROJECT SITE::PLAZA paving moves to LEFTOVERS (the site is laid out again in d1_plaza.py).
 """
@@ -254,111 +256,90 @@ def width_of(g, sp):
     return min(max(pr) - min(pr), local[len(local) // 2] * 1.1)
 
 
-# Scale after the Vancouver WA / Seattle waterfronts: 10 ft walks, 8–9 ft seating steps / decks, 8–10 ft planting
-# strips between them with a row of trees; benches long and linear along the planting.
-SPEC = {'GARDEN': (14.0, 7.0), 'TERRACE': (15.0, 9.0), 'GREEN ROOF': (26.0, 8.0)}
-
-
-def band_family(g, kind, seed, axis=None, near=None):
-    """
-    Bands that converge (user 10-21: ends not round — they gather into one point or stop on one straight line):
-    every band follows the spine at offset o·e(t); e rises from 0 at the gathering point to 1 and holds, so all bands
-    meet in a point at that end and stop together on one straight line across the spine at the other. The bands keep
-    their fillet curvature from the spine. The tapered tip region is a dark paving inlay.
-    Returns [(geometry, centre line, type)] with type STEPS / WALK / DECK / INLAY, the spine, and tree-row lines.
-    """
-    sp = spine(g, axis)
-    if sp is None: return [], None, []
-    if near is not None and not near.is_empty and Point(sp.coords[-1]).distance(near) < Point(sp.coords[0]).distance(near):
-        sp = LineString(list(sp.coords)[::-1])          # the gathering point at the end nearer the building / entry
-    W = width_of(g, sp)
-    pitch, bw = SPEC.get(kind, SPEC['GARDEN'])
-    n = max(1, int((W - 6) // pitch))
-    if kind == 'TERRACE':
-        pitch = (W - 4) / n; bw = max(8.0, 0.62 * pitch)
-    H = (n - 1) / 2 * pitch + bw / 2 + 2
-    N = 120
-    pts = [sp.interpolate(k / N, normalized=True) for k in range(N + 1)]
-    nrm = []
-    for k in range(N + 1):
-        a, b = pts[max(0, k - 1)], pts[min(N, k + 1)]
-        tx, ty = b.x - a.x, b.y - a.y; m = math.hypot(tx, ty) or 1
-        nrm.append((-ty / m, tx / m))
-    edge = g.exterior
-    raw = []
-    for k in range(N + 1):
-        t = k / N
-        shape = math.sin(math.pi / 2 * min(1.0, t / 0.42)) ** 0.8
-        room = max(0.0, (edge.distance(pts[k]) - 2.0) / H)
-        raw.append(min(shape, room, 1.0))
-    e = [float(np.mean(raw[max(0, k - 3):k + 4])) if k else 0.0 for k in range(N + 1)]
-    e[0] = 0.0
-    k_end = N - 2                                           # the common straight end line
-
-    def curve(o):
-        return [(pts[k].x + nrm[k][0] * o * e[k], pts[k].y + nrm[k][1] * o * e[k]) for k in range(k_end + 1)]
-
-    def ribbon(o0, o1):
-        return Polygon(curve(o0) + curve(o1)[::-1]).buffer(0)
-
-    offs = [(-(n - 1) / 2 + i) * pitch for i in range(n)]
-    walk_i = n // 2 if kind != 'TERRACE' else -1
-    out, gaps = [], []
-    for i, o in enumerate(offs):
-        typ = 'WALK' if i == walk_i else ('DECK' if kind == 'TERRACE' else 'STEPS')
-        w = (9.0 if kind == 'GARDEN' else 8.0) if typ == 'WALK' else bw
-        b = ribbon(o - w / 2, o + w / 2).intersection(g.buffer(-1.0))
-        b = unary_union([q for q in parts(b) if q.area > 40])
-        if not b.is_empty: out.append((b, LineString(curve(o)), typ))
-        if i + 1 < n: gaps.append(LineString(curve(o + pitch / 2)))
-    # The gathering tip: dark paving where the bands converge (the first stretch of the envelope).
-    tip_k = int(N * 0.2)
-    tip = Polygon([(pts[k].x + nrm[k][0] * H * e[k], pts[k].y + nrm[k][1] * H * e[k]) for k in range(tip_k + 1)]
-                  + [(pts[k].x - nrm[k][0] * H * e[k], pts[k].y - nrm[k][1] * H * e[k]) for k in range(tip_k, -1, -1)]).buffer(0)
-    tip = tip.intersection(g.buffer(-1.0)).difference(unary_union([b for b, _, _ in out]))
-    tip = unary_union([q for q in parts(tip) if q.area > 30])
-    if not tip.is_empty and kind != 'GREEN ROOF': out.append((tip, LineString(curve(0)[:tip_k + 1]), 'INLAY'))
-    return out, sp, gaps
-
-
-def steps_and_benches(b, seg, typ, z):
-    """Seating steps read as tiers (two lines along the band); decks and walks get long linear benches."""
-    if typ == 'INLAY':
-        return
-    if typ == 'STEPS':
-        for f in (-1.4, 1.4):
-            for l in lines_of(seg.offset_curve(f, join_style=1).intersection(b.buffer(-0.6))):
-                if l.length > 6: M.add_line(l, z, f'{G}::FURNITURE', 'SEATING STEP')
-        return
-    edge = seg.offset_curve((3.2 if typ == 'DECK' else 3.8), join_style=1)
-    for l in lines_of(edge.intersection(b.buffer(-0.4))):
-        s = 4.0
-        while s + 14 < l.length:
-            M.add_line(substring(l, s, s + 14), z, f'{G}::FURNITURE', 'BENCH')
-            s += 34
-
-
-def tree_rows(gaps, plant, z, spacing=30, radius=(7, 9.5)):
-    pts = []
-    ok = plant.buffer(-2.5)
-    for k, l in enumerate(gaps):
-        if k % 2: continue                       # every other planting strip carries trees
-        s = spacing / 2
-        while s < l.length:
-            p = l.interpolate(s)
-            if ok.contains(p) and all(p.distance(q) > spacing * 0.6 for q in pts): pts.append(p)
-            s += spacing
-    for p in pts: circle_curve((p.x, p.y), rng.uniform(*radius), z, f'{G}::TREES')
-    return pts
+# Scale after the Vancouver WA / Seattle waterfronts; shapes from the user's two reference plans (10-21):
+# ref 1 (riverside park plan) zoning for the irregular gardens and the terraces, ref 2 (terraced lawn: straight lines
+# turning on fillets) for the south gardens and the parking roof garden.
+import ref1, ref2
+REF1, MOUNDS1 = ref1.shapes()
+SOUTH = ('c4485c57', '1f02ebc1', '0cb1ec08', '67c09ee7', 'f5b835df')
+M.role(f'{G}::PAVING', 'NC.Hardscape')
+M.role(f'{G}::GRAVEL', 'NC.Hardscape')
+M.role(f'{G}::PLANTING', 'NC.Green')
+M.role(f'{G}::PLANTER', 'NC.Green')
+M.role(f'{G}::TERRACE LINES', 'NC.Furniture', mode='line')
 
 
 def slope_axis(o):
     """Contour direction of a sloped site mesh (perpendicular to its steepest fall)."""
     v = np.array(o['mesh']['v'], float).reshape(-1, 3) / FT
-    A = np.c_[v[:, :2], np.ones(len(v))]
-    a, b, _ = np.linalg.lstsq(A, v[:, 2], rcond=None)[0]
+    a, b, _ = np.linalg.lstsq(np.c_[v[:, :2], np.ones(len(v))], v[:, 2], rcond=None)[0]
     n = math.hypot(a, b) or 1
     return (-b / n, a / n)
+
+
+def cross_frame(g, sp, near=None):
+    """f(x, y) image px → model: y along the spine (window [ya, yb]), x across the area between its two edges."""
+    N = 80
+    pts = [sp.interpolate(k / N, normalized=True) for k in range(N + 1)]
+    secs = []
+    for k in range(N + 1):
+        a, b = pts[max(0, k - 1)], pts[min(N, k + 1)]
+        tx, ty = b.x - a.x, b.y - a.y; m = math.hypot(tx, ty) or 1
+        nx, ny = -ty / m, tx / m
+        p = pts[k]
+        cut = LineString([(p.x - nx * 900, p.y - ny * 900), (p.x + nx * 900, p.y + ny * 900)]).intersection(g)
+        segs = [l for l in lines_of(cut) if l.distance(p) < 0.5] or lines_of(cut)
+        if not segs: secs.append(None); continue
+        s = min(segs, key=lambda l: l.distance(p))
+        c0, c1 = s.coords[0], s.coords[-1]
+        if (c1[0] - c0[0]) * nx + (c1[1] - c0[1]) * ny < 0: c0, c1 = c1, c0
+        secs.append((c0, c1))
+    idx = [i for i, s in enumerate(secs) if s]
+    for i in range(len(secs)):
+        if secs[i] is None: secs[i] = secs[min(idx, key=lambda j: abs(j - i))]
+    # smooth the two edges
+    def sm(vals): return [tuple(np.mean(vals[max(0, i - 2):i + 3], axis=0)) for i in range(len(vals))]
+    L0, L1 = sm([s[0] for s in secs]), sm([s[1] for s in secs])
+    flip = False
+    if near is not None and not near.is_empty:      # x = 60 (the "water" side) faces away from the building
+        flip = Point(L0[N // 2]).distance(near) < Point(L1[N // 2]).distance(near)
+
+    def make(ya, yb, xa, xb):
+        def f(x, y):
+            t = min(1.0, max(0.0, (y - ya) / (yb - ya))) * N
+            i = min(N - 1, int(t)); w = t - i
+            u = min(1.0, max(0.0, (x - xa) / (xb - xa)))
+            if flip: u = 1 - u
+            a0 = (L0[i][0] * (1 - w) + L0[i + 1][0] * w, L0[i][1] * (1 - w) + L0[i + 1][1] * w)
+            a1 = (L1[i][0] * (1 - w) + L1[i + 1][0] * w, L1[i][1] * (1 - w) + L1[i + 1][1] * w)
+            return (a0[0] + (a1[0] - a0[0]) * u, a0[1] + (a1[1] - a0[1]) * u)
+        return f
+    return make
+
+
+def ref1_design(g, seed, near, terrace):
+    """Reference 1 laid into g: a window of the reference at about park scale (0.37 ft / px along)."""
+    sp = spine(g)
+    if sp is None: return None
+    W = width_of(g, sp)
+    rr = random.Random(seed)
+    span = min(1310.0, max(260.0, sp.length / 0.4))
+    ya = ref1.Y0 + rr.uniform(0, 1310 - span); yb = ya + span
+    xa, xb = (ref1.X_PLAZA, ref1.X_TRACK0) if W > 45 else (290.0, ref1.X_TRACK0)
+    f = cross_frame(g, sp, near)(ya, yb, xa, xb)
+    win = box(xa, ya, xb, yb)
+    out = {}
+    for k, s in REF1.items():
+        if k in ('TRACK', 'EDGE PLANTING'): continue
+        m = ref1.map_geom(s.intersection(win), f)
+        out[k] = unary_union([p for p in parts(m.intersection(g)) if p.area > 30])
+    out['MOUNDS'] = [ref1.map_geom(l.intersection(win), f) for l in MOUNDS1 if l.intersects(win)]
+    out['TREES'] = [f(x, y) for x, y in ref1.TREE_SQUARES if ya <= y <= yb and xa <= x <= xb]
+    out['BENCHES'] = [LineString([f(*a), f(*b)]) for a, b in ref1.BENCHES if win.contains(Point(a)) and win.contains(Point(b))]
+    # fillet everything a little in model space
+    for k in ('PLAZA', 'GRAVEL', 'DECK', 'LAWN', 'SHRUB'):
+        out[k] = rounded(out[k], 1.5) if not out[k].is_empty else out[k]
+    return out
 
 
 summary = []
@@ -372,42 +353,70 @@ for gi, o in enumerate(greens):
     sloped = o['type'] == 'Brep' and z1 - z0 > 4
     zf = z_on(o) if sloped else (lambda x, y, _z=z1: _z)
     (_, _), short = long_axis(g)
+    zt = z1 + 1.5 if name == 'TERRACE' else (z1 if not sloped else 0.0)
     if g.area < 1500 or short < 16:
         ts = trees_in(g, 26, z1 if not sloped else z0, cap=int(g.area / 600) + 1)
         summary.append(f"{name} {oid[:8]}: small — {len(ts)} trees")
         continue
-    fam, sp, gaps = band_family(g, name, gi, slope_axis(o) if sloped and short > 60 else None, near=walls_at(z0 + 0.5))
-    if not fam:
-        summary.append(f"{name} {oid[:8]}: no spine — left as it is"); continue
-    hard = unary_union([b for b, _, _ in fam]).buffer(0.01)
-    plant = g.difference(hard)
-    lay = {'STEPS': (f'{G}::SEATING', 'SEATING STEPS'), 'WALK': (f'{G}::PATH', 'GARDEN WALK' if name != 'GREEN ROOF' else 'ROOF WALK'),
-           'DECK': (f'{G}::DECK', 'TERRACE'), 'INLAY': (f'{G}::PAVING INLAY', '')}
-    if sloped:
-        mesh_part(o, plant, 'greens', name)
-        for b, _, typ in fam: mesh_part(o, b, *lay[typ])
-    elif name == 'TERRACE':
-        # Terrace: deck bands at floor level, the planting between them raised as planters.
-        for b, _, typ in fam: M.add_solid(b, z0, z1, *lay[typ])
-        M.add_solid(plant, z0, z1 + 1.5, 'greens', '')
+    if oid[:8] in SOUTH:
+        # ---- reference 2: lines turning on fillets, straight paths, planters
+        (ax, _), _s = long_axis(g)
+        axis = slope_axis(o) if sloped and short > 60 else long_axis(g)[0]
+        r2 = ref2.fan(g, axis, gi)
+        hard = r2['PATHS']; planters = r2['PLANTERS']
+        lawn = g.difference(unary_union([hard, planters]).buffer(0.01))
+        if sloped:
+            mesh_part(o, lawn, 'greens', name)
+            mesh_part(o, hard, f'{G}::PATH', 'GARDEN WALK')
+            mesh_part(o, planters, f'{G}::PLANTER', '')
+        else:
+            M.add_solid(lawn, z0, z1, 'greens', name)
+            M.add_area(hard, f'{G}::PATH', 'GARDEN WALK' if name != 'GREEN ROOF' else 'ROOF WALK', z1)
+            M.add_solid(planters, z1, z1 + 1.5, f'{G}::PLANTER', '')
+        for l in r2['LINES']:
+            q = l.interpolate(0.5, normalized=True)
+            M.add_line(l, zf(q.x, q.y) if sloped else z1, f'{G}::TERRACE LINES', 'TERRACE STEP')
+        # trees beside the paths (palms in the reference), people on the paths and the lawn strips
+        nt = 0 if name == 'GREEN ROOF' else len(trees_in(lawn.intersection(hard.buffer(10)).difference(hard.buffer(4)), 30, zt, (6, 8),
+                                                        cap=int(hard.area / 250) + 1))
+        npl = people(hard, max(2, int(hard.area / 400)), z1 if not sloped else 0.0) + people(lawn, max(2, int(lawn.area / 2500)), z1 if not sloped else 0.0)
+        summary.append(f"{name} {oid[:8]}{' (slope)' if sloped else ''} — ref 2: {len(r2['LINES'])} terrace lines, paths {hard.area:,.0f} sf, "
+                       f"{len(parts(planters))} planters, {nt} trees, {npl} people")
     else:
-        M.add_solid(plant, z0, z1, 'greens', name)
-        for b, _, typ in fam: M.add_area(b, *lay[typ], z1)
-    for b, seg, typ in fam:
-        q = seg.interpolate(0.5, normalized=True)
-        steps_and_benches(b, seg, typ, zf(q.x, q.y) if sloped else z1)
-    zt = z1 + 1.5 if name == 'TERRACE' else (z1 if not sloped else 0.0)
-    ts = [] if name == 'GREEN ROOF' else tree_rows(gaps, plant, zt, 28 if name == 'TERRACE' else 30, (6, 8) if name == 'TERRACE' else (7, 9.5))
-    if name != 'GREEN ROOF' and not ts:
-        wide = unary_union([q for q in parts(plant.buffer(-3.5).buffer(3.5)) if q.area > 150])
-        ts = trees_in(wide, 28, zt, (6, 8) if name == 'TERRACE' else (7, 9.5), cap=int(g.area / 1200) + 1)
-    npl = 0
-    for b, seg, typ in fam:
-        q = b.representative_point()
-        npl += people(b, max(1, int(b.area / 500)), zf(q.x, q.y))
-    counts = {t: sum(1 for _, _, x in fam if x == t) for t in ('STEPS', 'WALK', 'DECK', 'INLAY')}
-    summary.append(f"{name} {oid[:8]}{' (slope)' if sloped else ''} @{z0:.0f}': {', '.join(f'{v} {k.lower()}' for k, v in counts.items() if v)} bands "
-                   f"({hard.area:,.0f} sf), planting {plant.area:,.0f} sf, {len(ts)} trees, {npl} people")
+        # ---- reference 1: plaza / gravel / timber deck / walk / lawn mounds / planting beds
+        near = walls_at(z0 + 0.5)
+        r1 = ref1_design(g, gi, near, name == 'TERRACE')
+        if r1 is None:
+            summary.append(f"{name} {oid[:8]}: no spine — left as it is"); continue
+        soft = unary_union([r1['LAWN'], r1['SHRUB']])
+        hard_parts = {'PLAZA': (f'{G}::PAVING', ''), 'GRAVEL': (f'{G}::GRAVEL', ''), 'DECK': (f'{G}::DECK', ''), 'WALK': (f'{G}::PATH', 'GARDEN WALK')}
+        if name == 'TERRACE':
+            for k, (lay, nm) in hard_parts.items():
+                M.add_solid(r1[k], z0, z1, lay, 'TERRACE' if k == 'PLAZA' else nm)
+            M.add_solid(r1['LAWN'], z0, z1 + 1.5, 'greens', '')
+            M.add_solid(r1['SHRUB'], z0, z1 + 1.5, f'{G}::PLANTING', '')
+        else:
+            M.add_solid(r1['LAWN'], z0, z1, 'greens', name)
+            M.add_solid(r1['SHRUB'], z0, z1, f'{G}::PLANTING', '')
+            for k, (lay, nm) in hard_parts.items():
+                M.add_area(r1[k], lay, nm, z1)
+        rest = g.difference(unary_union([soft] + [r1[k] for k in hard_parts]).buffer(0.05))
+        if rest.area > 20:      # what the reference leaves between its pieces: gravel in a garden, paving on a terrace
+            if name == 'TERRACE': M.add_solid(rest, z0, z1, f'{G}::PAVING', '')
+            else: M.add_area(rest, f'{G}::GRAVEL', '', z1)
+        for l in r1['MOUNDS']:
+            for x in lines_of(l.intersection(g.buffer(-1))):
+                if x.length > 6: M.add_line(x, zt, f'{G}::FURNITURE', 'LAWN MOUND')
+        for b in r1['BENCHES']:
+            if g.buffer(-1).contains(b): M.add_line(b, z1, f'{G}::FURNITURE', 'BENCH')
+        for x, y in r1['TREES']:
+            if g.buffer(-3).contains(Point(x, y)):
+                M.add_line(LineString(box(x - 2, y - 2, x + 2, y + 2).exterior.coords), z1, f'{G}::FURNITURE', 'TREE GRATE')
+                circle_curve((x, y), rng.uniform(7, 9), zt, f'{G}::TREES')
+        ts = trees_in(unary_union([r1['LAWN'], r1['SHRUB']]), 30, zt, (6, 8.5) if name == 'TERRACE' else (7, 9.5), cap=int(g.area / 1500) + 1)
+        npl = people(unary_union([r1['PLAZA'], r1['DECK'], r1['WALK']]), max(2, int(g.area / 1200)), z1)
+        summary.append(f"{name} {oid[:8]} @{z0:.0f}' — ref 1: " + ", ".join(f"{k.lower()} {r1[k].area:,.0f}" for k in ('PLAZA', 'GRAVEL', 'DECK', 'WALK', 'LAWN', 'SHRUB'))
+                       + f" sf, {len(ts) + len(r1['TREES'])} trees, {npl} people")
     M.retire(oid)
     for t in twin_curves(oid): M.retire(t)
 M.log += summary
