@@ -3,6 +3,7 @@
 | 文件 | 内容 |
 |---|---|
 | `RIVER_Site_Plan_and_Plans_1020.pdf` | 10 页：00 总平面（SITE PLAN、屋顶视图、图例）+ 01 平面（L1、L1M 停车夹层、L2–L4、总览、图例）。11x17 横向，按用地红线（MX3）居中，1" = 100'-0"。 |
+| `RIVER_Plans_1020_EDITED_11x17.pdf` | 你们在 Illustrator 里修改过的 PLANS OVERVIEW（10-21）排成 11x17：第 1 页总览 1" = 400'-0"，之后每层一页 1" = 100'-0"（L1、L1M、L2、L3、L4），带比例尺、指北针和层名。图面内容未改动（`scripts/ov_pages.py`）。 |
 | `RIVER_1020_AI_Export.zip` | AI 原图：解压后在 Illustrator 中运行 `ProgramDiagram.jsx`，生成 00_Site_Plan.ai、01_Plans.ai（分层、全局色板）。 |
 | `RIVER_1020_Illustrator_Editable.zip` | 不跑脚本也能编辑：每张图一个 SVG（按 AI 图层分组）+ 矢量 PDF，Illustrator 打开后另存为 .ai。 |
 | `RIVER_2026_1020_PD.3dm` | 清理后的模型 + 新滨水公园 + 插件设置（输出已设为 11x17 / 1"=100'）。 |
