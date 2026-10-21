@@ -192,11 +192,11 @@
       "family": "Futura PT",
       "postScript": "FuturaPT-Heavy",
       "fallbackPostScript": "Arial-BoldMT",
-      "sizePt": 20,
+      "sizePt": 32,
       "allCaps": true,
       "weight": "bold",
       "color": "#FFFFFF",
-      "opacity": 0.7,
+      "opacity": 1.0,
       "tracking": 0,
       "leadingPt": 0
     },
@@ -204,11 +204,11 @@
       "family": "Futura PT",
       "postScript": "FuturaPT-Heavy",
       "fallbackPostScript": "Arial-BoldMT",
-      "sizePt": 16,
+      "sizePt": 24,
       "allCaps": true,
       "weight": "bold",
       "color": "#FFFFFF",
-      "opacity": 0.7,
+      "opacity": 1.0,
       "tracking": 0,
       "leadingPt": 0
     },
@@ -216,7 +216,7 @@
       "family": "Futura PT",
       "postScript": "FuturaPT-Heavy",
       "fallbackPostScript": "Arial-BoldMT",
-      "sizePt": 26,
+      "sizePt": 36,
       "allCaps": true,
       "weight": "bold",
       "color": "#FFFFFF",
@@ -228,11 +228,23 @@
       "family": "Futura PT",
       "postScript": "FuturaPT-Heavy",
       "fallbackPostScript": "Arial-BoldMT",
-      "sizePt": 13,
+      "sizePt": 22,
       "allCaps": true,
       "weight": "bold",
       "color": "#FFFFFF",
       "opacity": 0.9,
+      "tracking": 0,
+      "leadingPt": 0
+    },
+    "planeLabelMin": {
+      "family": "Futura PT",
+      "postScript": "FuturaPT-Heavy",
+      "fallbackPostScript": "Arial-BoldMT",
+      "sizePt": 16,
+      "allCaps": true,
+      "weight": "bold",
+      "color": "#FFFFFF",
+      "opacity": 1.0,
       "tracking": 0,
       "leadingPt": 0
     },
@@ -616,6 +628,12 @@
     "connectorStroke": "#B5AE9C",
     "connectorPt": 0.53,
     "coreLabel": "CORE",
+    "openPrograms": [
+      "CIRCULATION",
+      "INTERACTION"
+    ],
+    "openLayerFt": 0.25,
+    "openComment": "User rev 0.9.3: open space is not a volume — in the exploded, exploded B and floor key axons these programs are a flat layer (openLayerFt) on their floor; the stacked / site massing keeps them solid unless stacked.openProgramsFlat. Labels (fonts.planeLabel*) were enlarged in the same round; fonts.planeLabelMin is the last resort before a label is left out.",
     "levelColumnPt": 200.0,
     "trees": {
       "canopies": [
@@ -647,6 +665,7 @@
       "levelLineColor": "#333333",
       "levelLinePt": 0.5,
       "showBasements": false,
+      "openProgramsFlat": false,
       "comment": "User rev 0.8.1 / 0.8.2: like the site axon — no slabs (blocks floor to floor), the heavy silhouettePt line only on the outer silhouette, and between floors one thin line (levelLinePt on AXON_LEVEL_LINE); basements are not drawn (showBasements)."
     },
     "exploded": {
@@ -665,6 +684,13 @@
       "columnOffsetPt": 108,
       "basementClearFt": 12.0,
       "tallConnectors": false,
+      "volumeHeightFt": 8.0,
+      "plateFill": "#F2F2F2",
+      "plateSideDarken": [
+        0.08,
+        0.16
+      ],
+      "volumeComment": "User rev 0.9.3 (reference: stacked plates with LABS / CLASS volumes): each level is a neutral slab (slabThicknessFt, plateFill) with its programs standing on it volumeHeightFt tall and the open programs flat on it; 0 = every program its own coloured slab (older style).",
       "basementComment": "User rev 0.8.1: the site follows Level 1; basements hang below the whole site plate (basementClearFt of drawn height under its front edge) with the dug-out hole shown in the site, never drawn over the site."
     },
     "explodedB": {

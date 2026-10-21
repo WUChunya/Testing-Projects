@@ -116,6 +116,8 @@ public static class AxonDrawing
         }
         var context = Site(d, ctx, proj, blocks, sheet, ground, flatContext: false, family: "axon", opacity: 1, reach: reach, area: area);
         Func<ProgramBlock, (double, double)> band = full ? b => FullHeight(ctx.Result, b) : b => (b.Z0, b.Z1);
+        // Open space stays solid in the massing unless stacked.openProgramsFlat (user rev 0.9.3; the site axon never).
+        if (!site && st.OpenProgramsFlat) { var massing = band; band = b => IsOpen(ctx, b) ? OnFloor(ctx, massing(b).Item1) : massing(b); }
         // Open slabs and glass at their real height (user rev 0.8.6: every floor edge the model shows, as in Rhino);
         // the blocks stretched under them stop at their underside.
         var plates = UnderScreens(ctx, Exposed(d, ctx, blocks, band: null));
@@ -567,7 +569,8 @@ public static class AxonDrawing
             if (basements.Contains(i)) sheet.UnderSite.Add(layer);
             var z = lifted[i];
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
-            var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), ax.SideDarken, coreOverride: true).ToList();
+            var prisms = ex.VolumeHeightFt > 0 ? SlabAndVolumes(d, ctx, mine, lvl.Name, z, t, ex)
+                : ProgramPrisms(d, ctx, mine, _ => (z - t, z), ax.SideDarken, coreOverride: true).ToList();
             // A screen on this level stands on the plate: solid walls, white floor, open top (user rev 0.8.3).
             prisms.AddRange(ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i), _ => z - t, floorThicknessFt: t));
             // Open slabs / glass of this level (terrace, canopy) as part of its plate (user rev 0.8.4).
@@ -655,6 +658,8 @@ public static class AxonDrawing
             {
                 "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
                 "EXP" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt),
+                // Sides of the volumes and the slab (user rev 0.9.3): no white seams between the facets of a curved side.
+                "PRG" or "SLAB" when !f.IsTop && ctx.Style.Axon.Exploded.VolumeHeightFt > 0 => new Spec(f.Name, f.Screen, f.Fill, f.Fill, lv.EdgePt * 0.5),
                 _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
             }));
         var outline = Shells(AxonFaces.Union(faces.Select(f => f.Screen)));
@@ -695,7 +700,8 @@ public static class AxonDrawing
                 sheet.Paint.Add((layer, new Spec($"{ln}_ATRIUM_{k + 1:00}", proj.Plane(f.Resolved, z - t), d.Swatch("AXON_ATRIUM", eb.AtriumFill),
                     null, 0, Opacity: eb.AtriumOpacity)));
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
-            var prisms = ProgramPrisms(d, ctx, mine, _ => (z - t, z), eb.SideDarken, coreOverride: false).ToList();
+            // Open space (circulation, interaction) is a flat layer on the floor, not a block (user rev 0.9.3).
+            var prisms = ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z - t) : (z - t, z), eb.SideDarken, coreOverride: false).ToList();
             var faces = AxonFaces.Render(proj, prisms);
             allFaces.AddRange(faces);
             foreach (var f in faces)
@@ -775,7 +781,7 @@ public static class AxonDrawing
                     var shape = AxonFaces.Union(g.Select(b => b.Geometry));
                     if (!shape.IsEmpty) prisms.Add(new Prism($"{SectionDrawing.Safe(r.Levels[j].Name)}_BELOW_{k + 1:00}", shape, g.Key.Item1, g.Key.Item2, white, white, white, "BELOW"));
                 }
-            prisms.AddRange(ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), b => band[b], ax.SideDarken, coreOverride: true));
+            prisms.AddRange(ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), b => IsOpen(ctx, b) ? OnFloor(ctx, band[b].Z0) : band[b], ax.SideDarken, coreOverride: true));
             // Open slabs / glass of this floor in their paint, those of the floors below in white (user rev 0.8.4);
             // the blocks stretched under them stop at their underside (user rev 0.8.6).
             var plates = UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null));
@@ -918,6 +924,31 @@ public static class AxonDrawing
 
     // ---------------------------------------------------------------- shared
 
+    /// <summary>Open space (axon.openPrograms: circulation, interaction) is never a volume (user rev 0.9.3).</summary>
+    static bool IsOpen(ExportContext ctx, ProgramBlock b) => ctx.Style.Axon.OpenPrograms.Contains(b.ProgramKey, StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>The flat layer an open program makes on a floor at <paramref name="z0"/>.</summary>
+    static (double Z0, double Z1) OnFloor(ExportContext ctx, double z0) => (z0, z0 + ctx.Style.Axon.OpenLayerFt);
+
+    /// <summary>
+    /// Exploded A, user rev 0.9.3: the level's neutral slab (every block's footprint, slabThicknessFt under the floor
+    /// line), its programs standing on it volumeHeightFt tall, open space as a flat layer on it.
+    /// </summary>
+    static List<Prism> SlabAndVolumes(PD.Core.Drawing.Drawing d, ExportContext ctx, List<ProgramBlock> mine, string level, double z, double t, Config.ExplodedAxonStyle ex)
+    {
+        var res = new List<Prism>();
+        var plate = AxonFaces.Union(mine.Select(b => b.Geometry));
+        if (!plate.IsEmpty)
+        {
+            var tag = $"_{(int)Math.Round(ex.PlateSideDarken.ElementAtOrDefault(0) * 100)}_{(int)Math.Round(ex.PlateSideDarken.ElementAtOrDefault(1) * 100)}";
+            res.Add(new Prism($"{SectionDrawing.Safe(level)}_SLAB", plate, z - t, z, d.Swatch("AXON_SLAB", ex.PlateFill),
+                d.Swatch("AXON_SLAB_SIDE1" + tag, Darken(ex.PlateFill, ex.PlateSideDarken.ElementAtOrDefault(0))),
+                d.Swatch("AXON_SLAB_SIDE2" + tag, Darken(ex.PlateFill, ex.PlateSideDarken.ElementAtOrDefault(1))), "SLAB"));
+        }
+        res.AddRange(ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z) : (z, z + ex.VolumeHeightFt), ctx.Style.Axon.SideDarken, coreOverride: true));
+        return res;
+    }
+
     /// <summary>Program prisms: top in the program colour, sides darkened (own global swatches), label = tab 4 name.</summary>
     static IEnumerable<Prism> ProgramPrisms(PD.Core.Drawing.Drawing d, ExportContext ctx, IEnumerable<ProgramBlock> blocks, Func<ProgramBlock, (double Z0, double Z1)> band,
         double[] darken, bool coreOverride)
@@ -953,7 +984,7 @@ public static class AxonDrawing
             var p = group.Key;
             var top = proj.Unplane(AxonFaces.Union(group.Select(x => x.Screen)), p.Z1);
             var text = p.Label!.ToUpperInvariant();
-            var styles = p.LabelStyle != null ? new[] { p.LabelStyle } : new[] { style, small };
+            var styles = p.LabelStyle != null ? new[] { p.LabelStyle } : new[] { style, small, "PD Plane Label Min" }.Distinct().ToArray();
             foreach (var st in styles)
             {
                 var spot = PlanLabels.Fit(top, text, ctx.Pt(Font(f, st).SizePt) / ctx.PtPerFt);
@@ -1026,13 +1057,14 @@ public static class AxonDrawing
                 if (placed) break;
             }
             // Nothing fits at the corner: centred (wrapped) at the secondary size, as in the reference's small blocks.
-            if (!placed) CentredLabels(ctx, proj, group.ToList(), sheet, layer, "PD Plane Label Small", "PD Plane Label Small");
+            if (!placed) CentredLabels(ctx, proj, group.ToList(), sheet, layer, "PD Plane Label Small", "PD Plane Label Min");
         }
     }
 
     static Config.Font Font(Config.Fonts f, string style) => style switch
     {
         "PD Plane Label Small" => f.PlaneLabelSmall,
+        "PD Plane Label Min" => f.PlaneLabelMin,
         "PD Plane Label B" => f.PlaneLabelB,
         "PD Plane Label B Small" => f.PlaneLabelBSmall,
         "PD Core Label" => f.CoreLabel,

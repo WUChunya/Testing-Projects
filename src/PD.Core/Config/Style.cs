@@ -285,6 +285,8 @@ public sealed class Fonts
     public Font PlaneLabelSmall { get; set; } = new();
     public Font PlaneLabelB { get; set; } = new();
     public Font PlaneLabelBSmall { get; set; } = new();
+    /// <summary>Last resort for a program label that fits neither size above (all axons).</summary>
+    public Font PlaneLabelMin { get; set; } = new();
     public Font CoreLabel { get; set; } = new();
     /// <summary>Building / place names (Bold 24, #6C6C6C).</summary>
     public Font ContextLabel { get; set; } = new();
@@ -555,6 +557,12 @@ public sealed class AxonStyle
     public string ConnectorStroke { get; set; } = "";
     public double ConnectorPt { get; set; }
     public string CoreLabel { get; set; } = "";
+    /// <summary>
+    /// User rev 0.9.3: open space (circulation, interaction) is never a volume in the exploded, exploded B and floor
+    /// key axons — a flat layer openLayerFt thick on its floor, information on the slab.
+    /// </summary>
+    public List<string> OpenPrograms { get; set; } = new();
+    public double OpenLayerFt { get; set; } = 0.25;
     public double LevelColumnPt { get; set; }
     /// <summary>Trees cut by a building stop this far short of it (room for its outline, user rev 0.8.4).</summary>
     public double TreeClearPt { get; set; } = 1;
@@ -633,6 +641,8 @@ public sealed class StackedAxonStyle
     public double LevelLinePt { get; set; } = 0.5;
     /// <summary>Basement levels in the stacked axon (user rev 0.8.1: no).</summary>
     public bool ShowBasements { get; set; }
+    /// <summary>Open programs (axon.openPrograms) as a flat layer on their floor here too (false: massing stays solid).</summary>
+    public bool OpenProgramsFlat { get; set; }
 }
 
 /// <summary>
@@ -679,6 +689,14 @@ public sealed class ExplodedAxonStyle
     public double LeaderPt { get; set; }
     /// <summary>Level column: this far right of the drawing's rightmost point.</summary>
     public double ColumnOffsetPt { get; set; }
+    /// <summary>
+    /// User rev 0.9.3: each level is a neutral slab (slabThicknessFt, plateFill) with its programs standing on it as
+    /// volumes this tall; open programs (axon.openPrograms) lie on the slab as a flat layer. 0 = the older style
+    /// (every program is its own coloured slab).
+    /// </summary>
+    public double VolumeHeightFt { get; set; }
+    public string PlateFill { get; set; } = "#F2F2F2";
+    public double[] PlateSideDarken { get; set; } = { 0.08, 0.16 };
 }
 
 /// <summary>Exploded axon B (SITE_STYLE §3): planometric 30/60, every program its own translucent block.</summary>

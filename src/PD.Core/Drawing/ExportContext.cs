@@ -173,6 +173,7 @@ public sealed class ExportContext
         Add("PD Plane Label Small", f.PlaneLabelSmall, "center");
         Add("PD Plane Label B", f.PlaneLabelB, "center");
         Add("PD Plane Label B Small", f.PlaneLabelBSmall, "center");
+        Add("PD Plane Label Min", f.PlaneLabelMin, "center");
         Add("PD Core Label", f.CoreLabel, "center");
         Add("PD Context Label", f.ContextLabel, "center");
         Add("PD Street", f.Street, "center");

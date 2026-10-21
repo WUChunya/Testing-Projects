@@ -119,7 +119,7 @@ public class S4PlanAxonTests
         Assert.NotEmpty(labels);
         Assert.All(labels, t => Assert.StartsWith("PD Plane Label", t.ParaStyle));
         Assert.Equal("FuturaPT-Heavy", d.ParaStyles.Single(p => p.Name == "PD Plane Label").Font);
-        Assert.Equal(0.7, d.ParaStyles.Single(p => p.Name == "PD Plane Label").Opacity);
+        Assert.Equal(1.0, d.ParaStyles.Single(p => p.Name == "PD Plane Label").Opacity);   // user rev 0.9.3: opaque white
         UniqueNamesInsideArtboards(d);
     }
 
@@ -141,9 +141,11 @@ public class S4PlanAxonTests
             Assert.DoesNotContain(l.Items, i => i.Name.EndsWith("_FOLDS"));
             var plate = l.Items.Where(i => !i.Name.Contains("_TALL_") && !i.Name.Contains("_CONNECTOR_") && !i.Name.Contains("EXPOSED") && !i.Name.Contains("SCREEN") && !i.Name.Contains("GLASS")
                 && i.Kind == ItemKind.Path && !i.Name.EndsWith("_OUTLINE")).ToList();
-            Assert.All(plate, i => { Assert.Equal(ax.Levels.EdgePt, i.StrokePt); Assert.Equal("PD_FFFFFF", i.Stroke); });
+            // User rev 0.9.3: tops edged in white; the sides of the volumes and slab carry no white seams.
+            Assert.All(plate.Where(i => i.Name.Contains("_TOP")), i => { Assert.Equal(ax.Levels.EdgePt, i.StrokePt); Assert.Equal("PD_FFFFFF", i.Stroke); });
+            Assert.All(plate.Where(i => i.Name.Contains("_SIDE")), i => Assert.NotEqual("PD_FFFFFF", i.Stroke));
         });
-        // Front-corner labels: left or right aligned on the plane, white 70 %.
+        // Front-corner labels: left or right aligned on the plane, white (user rev 0.9.3: opaque).
         var labels = plates.SelectMany(l => l.Items).Where(i => i.Kind == ItemKind.Text).ToList();
         Assert.NotEmpty(labels);
         Assert.All(labels, t => { Assert.NotNull(t.Matrix); Assert.True(t.Matrix![0] > 0); Assert.Contains(t.Align, new[] { "left", "right", "center" }); });
@@ -197,7 +199,7 @@ public class S4PlanAxonTests
         Assert.DoesNotContain(plates.SelectMany(l => l.Items), i => i.Name.EndsWith("_OUTLINE"));
         var labels = plates.SelectMany(l => l.Items).Where(i => i.Kind == ItemKind.Text).ToList();
         Assert.NotEmpty(labels);
-        Assert.All(labels, t => Assert.StartsWith("PD Plane Label B", t.ParaStyle));
+        Assert.All(labels, t => Assert.True(t.ParaStyle!.StartsWith("PD Plane Label B") || t.ParaStyle == "PD Plane Label Min", t.ParaStyle));
         // Planometric: plan +X runs down-right at 60°, +Y up-right at 30°.
         var p = AxonProjection.Planometric(30);
         var (xx, xy) = p.Project(1, 0, 0);
