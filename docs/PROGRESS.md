@@ -2,6 +2,8 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- RIVER 1021 (model only, plugin unchanged): VP comments → `deliverables/2026-10-21_RIVER_VP/` (README lists each comment).
+  `scripts/build_r21.sh`: west bar + cores slid 24 ft east (passage), service road + parking gap, terraces, MEP, names.
 - Rev 26 (v0.9.2, 241 tests, `Rev092Tests`, fixtures `river_tk.json`, `campus.json`): fixed artboards centre on the property
   line (`page.centreOn`) and a drawing too large for them gets Fit content at the same scale (`page.fitContentWhenLarger`);
   open-to-below claims its area first; level overlays keep polygons only (RIVER TK crash); area CSV total = program sum;
@@ -15,10 +17,8 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
   Exploded B hides site trees/people behind lifted plates, only trees on the site shape; section skips T.O. PENTHOUSE at a
   marked level; plan names our site areas (`plan.siteNameRoles`); LAWN/MEADOW greens unplanted; modelled people drawn.
   Model + 28-page PDF + scripts: `deliverables/2026-10-18_RIVER_MARKUP/`. Fixture tool meshes rhino3dm-written extrusions.
-- Rev 23 (v0.8.9): `MeshSlicer.Factory` = GeometryOverlay.NG (RIVER "non-noded intersection"); `deliverables/2026-10-17_RIVER/`.
-- Rev 22 (v0.8.8): resumable Illustrator run after RPC_E_SERVERFAULT (`illustrator_progress.txt`). Rev 14–15: user rev 0.8.
-- Open (asked the user, HANDOFF §7): "一楼的镂空" = the L1 plate hole (drawn since 0.8.6) or the open ground floor
-  under the podium / atrium (would need an overhead dashed outline on the site plan)?
+- Rev 23 (v0.8.9): `MeshSlicer.Factory` = GeometryOverlay.NG; Rev 22 (v0.8.8) resumable Illustrator run; Rev 14–15 user rev 0.8.
+- Open (HANDOFF §7): "一楼的镂空" = the L1 plate hole (drawn since 0.8.6) or the open ground floor under the podium?
 - Next: next Windows round — opening message, feature map, tuning keys, review workflow and open questions in
   **`docs/HANDOFF.md`**. Review: `DumpForReview` (PD_DUMP / PD_USER / PD_ONLY / PD_ARTBOARD) + `node tools/svg_shot.mjs`.
 
