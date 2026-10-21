@@ -516,8 +516,10 @@ public static class PlanDrawing
         var roof = PlanBackground.PaintOf(ctx.Style, Roles.Roof, "plan");
         var list = PD.Core.Analysis.ExposedSurfaces.For(ctx).Where(e => e.LevelIndex == i).ToList();
         var items = new List<DItem>();
-        foreach (var (e, n) in list.Select((e, n) => (e, n)))
+        foreach (var (e0, n) in list.Select((e, n) => (e, n)))
         {
+            var e = e0 with { Area = PlanBackground.UnderSiteRemoved(ctx, e0.Area, i) };
+            if (e.Area.IsEmpty) continue;
             var name = $"{p}{(e.IsGlass ? "EXPOSED_GLASS" : "EXPOSED_ROOF")}_{n + 1:00}";
             if (!e.IsGlass)
             {
@@ -568,7 +570,9 @@ public static class PlanDrawing
             foreach (var f in r.Plans[j].Footprints.Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty))
             {
                 var (fill, _, _, _) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
-                d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}{ln}_{++k:000}", f.Resolved, fill, d.Gray(ps.RoomStroke), ps.RoomPt), a));
+                // Seen from above, our ramp landscape over a block (parking under the ramp) is what shows.
+                var top = PlanBackground.UnderSiteRemoved(ctx, f.Resolved, j);
+                if (!top.IsEmpty) d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}{ln}_{++k:000}", top, fill, d.Gray(ps.RoomStroke), ps.RoomPt), a));
             }
             foreach (var e in screens.Where(e => e.LevelIndex == j))
                 d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_WALL", e.Walls, d.Swatch("NC_SCREEN_WALL_PLAN", sc.PlanWallFill), null, 0), a));

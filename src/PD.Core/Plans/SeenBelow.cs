@@ -47,6 +47,8 @@ public static class SeenBelow
                 // Slabs at or below grade are the ground: seen only through an opening (the basement floor).
                 var seen = Minus(Floor(ctx, j, glass, groundSlabs: j < g), covered);
                 if (within != null) seen = Clip(seen, within);
+                // Our ramp landscape climbing over a lower roof hides it (the site underneath shows instead).
+                seen = PlanBackground.UnderSiteRemoved(ctx, seen, j);
                 seen = Clean(seen);
                 if (!seen.IsEmpty && seen.Area >= minArea)
                     found.Add(new SeenSurface(j, glass, seen, j < g));

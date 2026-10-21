@@ -251,6 +251,43 @@ public static class PlanBackground
     }
 
     /// <summary>Union of our building's footprints on every level.</summary>
+    /// <summary>
+    /// Plan area of our own sloped ground (ramp lawn, ramp road and turnaround, raised paving: NC site roles and BG.Road)
+    /// that climbs from below <paramref name="z"/> to above it. Seen from above it covers a lower block's or slab's top
+    /// there (user rev 0.9.3, RIVER 1020: the ramp landscape and turnaround over the parking); a flat or raised
+    /// terrace never counts.
+    /// </summary>
+    public static NtsGeometry SiteOver(ExportContext ctx, double z)
+    {
+        var key = $"SiteOver|{z:0.00}";
+        if (ctx.Cache.TryGetValue(key, out var c) && c is NtsGeometry g0) return g0;
+        var r = ctx.Result;
+        var parts = new List<NtsGeometry>();
+        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role)
+                     && (Roles.IsNew(o.Role) || o.Role == Roles.Road) && o.BBox.MinZ < z - 1 && o.BBox.MaxZ > z + 1))
+        {
+            var top = Safe(() => MeshProjection.TopDown(o.Mesh!));
+            if (top is { IsEmpty: false }) parts.Add(top);
+        }
+        var u = parts.Count == 0 ? MeshSlicer.Factory.CreatePolygon()
+            : MeshSlicer.Polygonal(Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(parts)) ?? parts[0]);
+        ctx.Cache[key] = u;
+        return u;
+    }
+
+    /// <summary>Mid-height of level <paramref name="j"/>'s storey (to its next level; 6 ft above it at the top).</summary>
+    public static double StoreyMid(AnalysisResult r, int j) =>
+        j + 1 < r.Levels.Count ? (r.Levels[j].Elevation + r.Levels[j + 1].Elevation) / 2 : r.Levels[j].Elevation + 6;
+
+    /// <summary><paramref name="g"/> less what our sloped ground covers at level <paramref name="j"/> (see <see cref="SiteOver"/>).</summary>
+    public static NtsGeometry UnderSiteRemoved(ExportContext ctx, NtsGeometry g, int j)
+    {
+        if (g.IsEmpty) return g;
+        var over = SiteOver(ctx, StoreyMid(ctx.Result, j));
+        if (over.IsEmpty || !over.EnvelopeInternal.Intersects(g.EnvelopeInternal)) return g;
+        return MeshSlicer.Polygonal(Safe(() => g.Difference(over)) ?? g);
+    }
+
     public static NtsGeometry Footprint(AnalysisResult r)
     {
         var parts = r.Plans.Select(p => p.Union).Where(u => !u.IsEmpty).ToList();
