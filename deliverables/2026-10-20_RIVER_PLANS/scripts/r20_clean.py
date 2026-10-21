@@ -6,6 +6,7 @@ Usage: python3 -I r20_clean.py <fixture.json of in.3dm> <in.3dm> <out.3dm>
 - Open extrusions on program layers (the two roof MECHANICAL boxes have no caps) → capped copies; originals to
   OUTSIDE BUILDING (LEFTOVERS).
 - Settings rows of deleted objects dropped; the 0–34' auditorium and labs kept tall.
+- SITE LANDSCAPE (ramp paving, turnaround island) drawn as paving.
 - GRID back to Ignore (the check-in settings had it as paving again).
 - Objects far outside the site (a parking surface and a working line 700 ft south) → LEFTOVERS.
 """
@@ -28,6 +29,8 @@ OUT2D, LEFT = layer("PROGRAM OUTLINES (2D)"), layer("OUTSIDE BUILDING (LEFTOVERS
 # GRID (12' grid lines) stays off the drawings, as asked in the CW markup V2 ("删除这些灰色的线条").
 for p in ("PROGRAM OUTLINES (2D)", "OUTSIDE BUILDING (LEFTOVERS)", "GRID"):
     st["layers"][p] = {"use": True, "role": "Ignore", "programKey": "", "mode": ""}
+# SITE LANDSCAPE is now the user's own ramp paving and turnaround island (no longer the 10-18 3D reference): drawn.
+st["layers"]["SITE LANDSCAPE"] = {"use": True, "role": "NC.Hardscape", "programKey": "", "mode": "color"}
 by_id = {str(o.Attributes.Id): o for o in m.Objects}
 mx3 = next(o for o in fx["objects"] if o["layer"] == "Plats::MX3")["bbox"]
 X0, Y0, X1, Y1 = mx3[0] / FT - 400, mx3[1] / FT - 400, mx3[3] / FT + 400, mx3[4] / FT + 400
