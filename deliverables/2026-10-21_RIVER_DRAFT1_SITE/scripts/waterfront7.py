@@ -1,17 +1,16 @@
-"""Riverfront park for the RIVER model, DRAFT_1 v2 (2026-10-21): the user's reference plan (a riverside park: jagged
-plaza edge, angular walk, timber decks, lawn mounds, planting beds, cycle track; ref1.py) laid along our river.
+"""Riverfront park for the RIVER model, DRAFT_1 v3 (user markup 10-21): outside the property line a riverside walk,
+inside it one hardscape plaza zoned by the user's north greens, an amphitheatre round the river pavilion.
 
-Usage: python3 waterfront6.py <fixture.json of in.3dm> <in.3dm> <out.3dm>
+Usage: python3 waterfront7.py <fixture.json of in.3dm> <in.3dm> <out.3dm>
 The previous park (PROJECT SITE::RIVERFRONT PARK::*) is removed first; the user's greens and the designed gardens
 (PROJECT SITE::GARDENS) stay. River coordinates: s along the south water edge (west → east), u inland.
-Paving types on their own layers (hatches): PROMENADE pavers, GRAVEL, DECK timber, GARDEN WALK / CYCLE TRACK red.
 """
 import json, math, random, sys
 sys.path.insert(0, __file__.rsplit('/', 1)[0])
 import rhino3dm as r
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box
 from shapely.ops import unary_union, linemerge, substring
-from r21_lib import rounded
+from r21_lib import rounded, lines_of
 import inv
 
 objs = inv.load(sys.argv[1])
@@ -148,59 +147,91 @@ def inner_u(s):
     segs = [g for g in getattr(hit, 'geoms', [hit]) if g.length > 0]
     return max((Point(x, y).distance(Point(g.coords[-1])) for g in segs), default=60)
 
-# ------------------------------------------------------------------ design (DRAFT_1 v2: the user's reference plan 1)
-# The riverside park plan the user sent (ref1.py) laid along our river: y along the river at 0.4 ft / px (one plan
-# ≈ 520 ft, the second half mirrored so the two meet), x across from the water (px 60) to the building side (px 555),
-# stretched to the park's depth there. Jagged plaza edge with planting to the water, plaza paving with a row of tree
-# grates, gravel, timber decks, an angular walk, lawn mounds, planting beds, a cycle track along the building.
-import ref1
+# ------------------------------------------------------------------ design (DRAFT_1 v3, user markup 10-21)
+# Outside the property line: a riverside walk (timber boardwalk at the water, a planted strip with a tree row, the
+# 22 ft RIVER WALK, a planted strip with trees and benches up to the property line), all smooth bands.
+# Inside the property line: one hardscape plaza; the user's north greens are the main planting and zone it — the paving
+# itself is not cut up. Round the river pavilion (the user's PROGRAM::Break Room "RIVER PAVILION"): an outdoor
+# amphitheatre, timber seating tiers on arcs facing the pavilion as its stage.
 keep = unary_union([o['fp'] for o in objs if (o['layer'] == 'greens' or o['layer'].startswith('PROJECT SITE::GARDENS::')) and o['z0'] < 3 and o['fp'] is not None
                     and o['fp'].geom_type in ('Polygon', 'MultiPolygon') and o['fp'].intersects(zone)])
-print(f"kept gardens {keep.area:,.0f} sf")
-_iu = [(k * L / 120, inner_u(k * L / 120)) for k in range(121)]
-def iu(s):
-    w = [u for x, u in _iu if abs(x - s) <= 30]
-    return sum(w) / len(w)
-REF1, MOUNDS1 = ref1.shapes()
-SPAN = (ref1.Y1 - ref1.Y0)
-HALF = L / 2
-def to_model(x, y, half):
-    t = (y - ref1.Y0) / SPAN                          # 0..1 along one plan
-    s = t * HALF if half == 0 else L - t * HALF       # the second half mirrored: it runs back from the east end
-    u = (x - ref1.X_WATER) / (ref1.X_TRACK1 - ref1.X_WATER) * (iu(s) + 1.5)
-    return at(s, u)
-free = zone.difference(keep.buffer(3))
-mapped = {}
-for half in (0, 1):
-    f = lambda x, y, h=half: to_model(x, y, h)
-    for k, g in REF1.items():
-        mapped.setdefault(k, []).append(ref1.map_geom(g, f))
-    mapped.setdefault('MOUNDS', []).extend(ref1.map_geom(l, f) for l in MOUNDS1)
-    mapped.setdefault('TREES', []).extend(f(x, y) for x, y in ref1.TREE_SQUARES)
-    mapped.setdefault('BENCHES', []).extend(LineString([f(*a), f(*b)]) for a, b in ref1.BENCHES)
-for k in list(REF1):
-    mapped[k] = unary_union([p for p in parts(unary_union(mapped[k]).intersection(free)) if p.area > 25])
-# The river steps and the kayak launch stay (cut into the edge planting), two pavilions on the decks' landward side.
-steps, step_names = [], []
+pav_o = next(o for o in objs if o['name'] == 'RIVER PAVILION' and o['layer'].startswith('PROGRAM::'))
+PAV = pav_o['fp']; PC = PAV.centroid; PR = math.sqrt(PAV.area / math.pi)
+print(f"kept greens {keep.area:,.0f} sf; pavilion at ({PC.x:.0f}, {PC.y:.0f}) r {PR:.0f}")
+inside_all = zone.intersection(parcel).buffer(0)
+outside = zone.difference(parcel).buffer(-0.3).buffer(0.3)
+outside = unary_union([p for p in parts(outside) if p.area > 200])
+
+def strip(u0, u1, s_a, s_b, step=3.0):
+    f0 = u0 if callable(u0) else (lambda s, v=u0: v)
+    f1 = u1 if callable(u1) else (lambda s, v=u1: v)
+    k = max(2, int((s_b - s_a) / step))
+    ss = [s_a + (s_b - s_a) * i / k for i in range(k + 1)]
+    return Polygon([at(s, f0(s)) for s in ss] + [at(s, f1(s)) for s in reversed(ss)]).buffer(0)
+
+def smooth(g, r=3.0):
+    return g.buffer(r, join_style=1).buffer(-2 * r, join_style=1).buffer(r, join_style=1) if not g.is_empty else g
+
+# Riverside walk bands (u from the water's edge).
+boardwalk = strip(0, 9, 0.01 * L, 0.99 * L).intersection(outside)
+plant_w = strip(9, 15, 0, L).intersection(outside)
+promenade = strip(15, 37, 0, L).intersection(outside)
+plant_pl = outside.difference(strip(-80, 37, -5, L + 5))
+# River steps and the kayak launch stay at the water.
+steps = []
 for s0 in (0.15 * L, 0.46 * L, 0.88 * L):
     for j, (u0, u1) in enumerate([(-12, -6.5), (-5.5, 0), (1, 6.5), (7.5, 13), (14, 19.5)]):
         w = 74 - 6 * j
-        steps.append(band(None, lambda s, a=u0, b=u1: (a + b) / 2, u1 - u0, s0 - w / 2, s0 + w / 2, step=2))
+        steps.append(strip(u0, u1, s0 - w / 2, s0 + w / 2, step=2))
 steps = unary_union(steps)
 kayak_s = 0.36 * L
-kayak = unary_union([band(None, lambda s: -26, 52, kayak_s - 5, kayak_s + 5, step=2), band(None, lambda s: -58, 14, kayak_s - 16, kayak_s + 16, step=2)])
-for k in ('EDGE PLANTING', 'PLAZA'):
-    mapped[k] = mapped[k].difference(steps).difference(kayak)
-pav = []
-for d in parts(mapped['DECK']):
-    if d.area > 2500 and len(pav) < 2:
-        c = d.representative_point()
-        pav.append(c.buffer(14, 48))
-pavilion = unary_union(pav)
-mapped['DECK'] = mapped['DECK'].difference(pavilion.buffer(1))
-covered = unary_union([mapped[k] for k in REF1] + [steps, kayak, pavilion])
-meadow = unary_union([p for p in parts(free.difference(covered.buffer(0.2))) if p.area > 25])
-promenade = mapped['PLAZA']
+kayak = unary_union([strip(-52, 0, kayak_s - 5, kayak_s + 5, step=2), strip(-65, -51, kayak_s - 16, kayak_s + 16, step=2)])
+boardwalk = boardwalk.difference(steps).difference(kayak); plant_w = plant_w.difference(steps)
+promenade = promenade.difference(steps).union(steps.intersection(outside).difference(strip(-80, 0, -5, L + 5)).intersection(strip(0, 37, 0, L)))
+promenade = promenade.difference(boardwalk).difference(plant_w)
+# Cross walks from the plaza through the riverside planting to the river walk, every ~110 ft (straight, 10 ft).
+links = []
+s = 55.0
+while s < L - 30:
+    if all(abs(s - s0) > 50 for s0 in (0.15 * L, 0.46 * L, 0.88 * L)):
+        links.append(strip(30, 300, s - 5, s + 5, step=1))
+    s += 110
+links = unary_union(links).intersection(plant_pl.buffer(0.2)) if links else Polygon()
+plant_pl = plant_pl.difference(links.buffer(0.1))
+promenade = promenade.union(links)
+
+# Amphitheatre round the pavilion: tiers on arcs about its centre on the landward side, two aisles.
+inland = at(L / 2, 300); inl = math.degrees(math.atan2(inland[1] - PC.y, inland[0] - PC.x))
+# face the audience towards the river: the seats lie on the landward half, ±70° about the inland direction
+ang = math.degrees(math.atan2(PC.y - at(L * 0.5, 0)[1], PC.x - at(L * 0.5, 0)[0]))
+def sector(r0, r1, a0, a1, n=64):
+    out = [(PC.x + r1 * math.cos(math.radians(a0 + (a1 - a0) * k / n)), PC.y + r1 * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n + 1)]
+    inn = [(PC.x + r0 * math.cos(math.radians(a0 + (a1 - a0) * k / n)), PC.y + r0 * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n, -1, -1)]
+    return Polygon(out + inn).buffer(0)
+R0, R1, A = PR + 9, PR + 37, 70
+amph_dir = ang                       # from the river through the pavilion: the audience sits beyond it
+amph = sector(R0, R1, amph_dir - A, amph_dir + A)
+aisles = unary_union([LineString([(PC.x, PC.y), (PC.x + 200 * math.cos(math.radians(amph_dir + d)), PC.y + 200 * math.sin(math.radians(amph_dir + d)))]).buffer(2.5)
+                      for d in (-25, 25)])
+avail = inside_all.union(outside).difference(keep.buffer(2))
+amph = amph.intersection(avail)
+seats = amph.difference(aisles)
+tiers = []
+r_ = R0 + 3.5
+while r_ < R1 - 0.5:
+    arc = LineString([(PC.x + r_ * math.cos(math.radians(amph_dir - A + 2 * A * k / 80)), PC.y + r_ * math.sin(math.radians(amph_dir - A + 2 * A * k / 80))) for k in range(81)])
+    tiers += [l for l in lines_of(arc.intersection(seats.buffer(-0.3))) if l.length > 4]
+    r_ += 3.5
+stage_apron = Point(PC.x, PC.y).buffer(PR + 6, 64).difference(PAV.buffer(0.2)).intersection(avail)
+
+# The hardscape plaza inside the property line: everything there that is not green, the amphitheatre or the pavilion.
+inside = inside_all.difference(keep.buffer(0.2)).difference(PAV.buffer(0.2))
+plaza = smooth(inside.difference(amph).difference(stage_apron), 2.0).intersection(inside)
+plaza = unary_union([p for p in parts(plaza) if p.area > 50])
+# the plaza meets the river walk where the property line is close to the water: no seam, both are paving
+promenade = promenade.difference(amph).difference(stage_apron)
+plant_pl = plant_pl.difference(amph).difference(stage_apron)
+pavilion = Polygon()
 
 # ------------------------------------------------------------------ replace the near bank context
 removed = 0
@@ -216,44 +247,55 @@ for o in objs:
 CHANGES.append(f"~ near bank: {removed} context objects replaced by the park (rest of each kept)")
 
 P = 'PROJECT SITE::RIVERFRONT PARK'
-NAMES = {'EDGE PLANTING': ('GROVE', 'RIVER EDGE PLANTING'), 'PLAZA': ('PROMENADE', 'RIVER WALK'), 'GRAVEL': ('GRAVEL', ''),
-         'DECK': ('DECK', 'TIMBER DECK'), 'LAWN': ('LAWN', 'LAWN MOUNDS'), 'SHRUB': ('PLANTING', ''), 'WALK': ('GARDEN WALK', 'GARDEN WALK'),
-         'TRACK': ('CYCLE TRACK', 'CYCLE TRACK')}
-for k, (sub, name) in NAMES.items():
-    area(mapped[k], f'{P}::{sub}', name)
-    CHANGES.append(f"+ {name or sub.lower()}: {mapped[k].area:,.0f} sf")
-area(meadow, P + '::GROVE', '')
-area(steps, P + '::RIVER STEPS', 'RIVER STEPS')
-area(kayak, P + '::KAYAK LAUNCH', 'KAYAK LAUNCH')
-for k, p in enumerate(parts(pavilion)):
-    solid(p, P + '::PAVILION', 'RIVER PAVILION' if k == 0 else 'GARDEN PAVILION', 0.0, 14.0)
-CHANGES.append(f"+ river steps {steps.area:,.0f} sf, kayak launch, {len(parts(pavilion))} pavilions, meadow {meadow.area:,.0f} sf")
-for l in mapped['MOUNDS']:
-    for x in getattr(l.intersection(mapped['LAWN']), 'geoms', [l.intersection(mapped['LAWN'])]):
-        if x.geom_type == 'LineString' and x.length > 8:
-            model.Objects.AddCurve(r.PolylineCurve(pl(list(x.coords), 0.05)), attrs(P + '::FURNITURE', 'LAWN MOUND'))
-nb = 0
-for b in mapped['BENCHES']:
-    if free.buffer(-1).contains(b):
-        model.Objects.AddCurve(r.PolylineCurve(pl(list(b.coords), 0.05)), attrs(P + '::FURNITURE', 'BENCH')); nb += 1
-# Trees: the grates of the plaza, a loose band in the edge planting, a few in the lawns and beds.
+for g, sub, name in [(boardwalk, 'BOARDWALK', 'BOARDWALK'), (plant_w, 'GROVE', ''), (promenade, 'PROMENADE', 'RIVER WALK'),
+                     (plant_pl, 'GROVE', 'RIVERSIDE PLANTING'), (steps, 'RIVER STEPS', 'RIVER STEPS'), (kayak, 'KAYAK LAUNCH', 'KAYAK LAUNCH'),
+                     (plaza, 'PLAZA', 'RIVER PLAZA'), (seats, 'SEATING STEPS', 'AMPHITHEATRE'), (stage_apron, 'STAGE', ''),
+                     (amph.difference(seats), 'PLAZA', '')]:
+    area(g, f'{P}::{sub}', name)
+    CHANGES.append(f"+ {(name or sub).lower()}: {g.area:,.0f} sf")
+for l in tiers:
+    model.Objects.AddCurve(r.PolylineCurve(pl(list(l.coords), 0.05)), attrs(P + '::FURNITURE', 'SEATING TIER'))
+CHANGES.append(f"+ amphitheatre: {len(tiers)} tier lines, r {R0:.0f}–{R1:.0f} ft about the pavilion, two aisles")
+
 trees = []
-for x, y in mapped['TREES']:
-    p = Point(x, y)
-    if promenade.buffer(-2).contains(p):
-        model.Objects.AddCurve(r.PolylineCurve(pl(list(box(x - 2.5, y - 2.5, x + 2.5, y + 2.5).exterior.coords), 0.05)), attrs(P + '::FURNITURE', 'TREE GRATE'))
-        trees.append(p)
-for g, spacing, cap in ((mapped['EDGE PLANTING'], 26, 60), (unary_union([mapped['LAWN'], mapped['SHRUB'], meadow]), 34, 40)):
-    gg = g.buffer(-4); n = 0
-    if gg.is_empty: continue
-    minx, miny, maxx, maxy = gg.bounds
-    for _ in range(4000):
-        if n >= cap: break
-        p = Point(rng.uniform(minx, maxx), rng.uniform(miny, maxy))
-        if gg.contains(p) and all(p.distance(q) > spacing for q in trees): trees.append(p); n += 1
-for p in trees:
-    model.Objects.AddCircle(r.Circle(r.Point3d(p.x, p.y, 0), rng.uniform(8, 11)), attrs(P + '::FLOWERING TREES'))
-CHANGES.append(f"+ trees {len(trees)}, benches {nb}")
+def row(u, spacing, region, off=0.0):
+    s = off
+    while s < L:
+        p = Point(at(s, u))
+        if region.buffer(-1.5).contains(p) and all(p.distance(q) > spacing * 0.8 for q in trees): trees.append(p)
+        s += spacing
+row(12, 28, plant_w, 6)
+for p in parts(plant_pl):
+    if p.area > 400:
+        g = p.buffer(-5)
+        if g.is_empty: continue
+        minx, miny, maxx, maxy = g.bounds
+        for _ in range(600):
+            q = Point(rng.uniform(minx, maxx), rng.uniform(miny, maxy))
+            if g.contains(q) and all(q.distance(t) > 26 for t in trees): trees.append(q)
+# plaza: tree grates in rows parallel to the river, clear of the amphitheatre and the greens
+grates = []
+for u in (60, 95, 130):
+    s = 14.0
+    while s < L:
+        p = Point(at(s, u))
+        if plaza.buffer(-6).contains(p) and not amph.buffer(8).contains(p) and all(p.distance(q) > 24 for q in trees + grates): grates.append(p)
+        s += 32
+for p in grates:
+    model.Objects.AddCurve(r.PolylineCurve(pl(list(box(p.x - 2.5, p.y - 2.5, p.x + 2.5, p.y + 2.5).exterior.coords), 0.05)), attrs(P + '::FURNITURE', 'TREE GRATE'))
+for p in trees + grates:
+    model.Objects.AddCircle(r.Circle(r.Point3d(p.x, p.y, 0), rng.uniform(8, 10.5)), attrs(P + '::FLOWERING TREES'))
+CHANGES.append(f"+ trees {len(trees)} in the planting, {len(grates)} in plaza grates")
+# long benches along the river walk's landward edge
+nb = 0
+edge = LineString([at(s, 35.5) for s in [L * k / 300 for k in range(301)]])
+s = 20.0
+while s + 14 < edge.length:
+    seg = substring(edge, s, s + 14)
+    if promenade.buffer(-0.3).contains(seg):
+        model.Objects.AddCurve(r.PolylineCurve(pl(list(seg.coords), 0.05)), attrs(P + '::FURNITURE', 'BENCH')); nb += 1
+    s += 42
+CHANGES.append(f"+ benches {nb}")
 people = []
 def scatter(g, n, groups=False):
     g = g.buffer(-2)
@@ -268,8 +310,7 @@ def scatter(g, n, groups=False):
         for j in range(k):
             people.append(Point(c.x + 2.6 * math.cos(2 * math.pi * j / k), c.y + 2.6 * math.sin(2 * math.pi * j / k)) if k > 1 else c)
         n -= 1
-scatter(promenade, 40); scatter(mapped['DECK'], 14, groups=True); scatter(mapped['LAWN'], 10, groups=True)
-scatter(mapped['WALK'], 10); scatter(mapped['TRACK'], 6); scatter(steps.intersection(zone.union(river)), 12)
+scatter(promenade, 34); scatter(boardwalk, 10); scatter(plaza, 30); scatter(seats, 26); scatter(steps.intersection(zone.union(river)), 12)
 for p in people:
     model.Objects.AddCircle(r.Circle(r.Point3d(p.x, p.y, 0), 1.0), attrs(P + '::PEOPLE'))
 CHANGES.append(f"+ people (activity points): {len(people)}")
@@ -286,7 +327,7 @@ def set_layer(path, role, key="", mode="color"):
     settings['layers'][path] = {"use": True, "role": role, "programKey": key, "mode": mode}
 set_layer(P, 'Ignore', '', '')
 for sub, role in [('PROMENADE', 'NC.Hardscape'), ('GARDEN WALK', 'NC.Hardscape'), ('PLAZA', 'NC.Hardscape'), ('RIVER STEPS', 'NC.Hardscape'),
-                  ('GRAVEL', 'NC.Hardscape'), ('DECK', 'NC.Hardscape'), ('CYCLE TRACK', 'NC.Hardscape'), ('PLANTING', 'NC.Green'),
+                  ('BOARDWALK', 'NC.Hardscape'), ('SEATING STEPS', 'NC.Hardscape'), ('STAGE', 'NC.Hardscape'),
                   ('KAYAK LAUNCH', 'NC.Hardscape'), ('RAIN GARDEN', 'NC.Water'), ('LAWN', 'NC.Green'), ('GROVE', 'NC.Green'),
                   ('FLOWERING TREES', 'NC.Tree'), ('PEOPLE', 'Entourage')]:
     set_layer(f'{P}::{sub}', role)

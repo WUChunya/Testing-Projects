@@ -342,6 +342,73 @@ def ref1_design(g, seed, near, terrace):
     return out
 
 
+RAMPED = ('c4485c57', '1f02ebc1')      # the south slope: ramps and stairs along the fall line (user markup 10-21)
+
+
+def fall_frame(o, g):
+    """Uphill unit vector and contour unit vector of a sloped mesh, and a local → world mapper about the centroid."""
+    v = np.array(o['mesh']['v'], float).reshape(-1, 3) / FT
+    a, b, _ = np.linalg.lstsq(np.c_[v[:, :2], np.ones(len(v))], v[:, 2], rcond=None)[0]
+    n = math.hypot(a, b) or 1
+    up = (a / n, b / n); ct = (-up[1], up[0])
+    c = g.centroid
+    to_w = lambda u, w: (c.x + ct[0] * u + up[0] * w, c.y + ct[1] * u + up[1] * w)
+    us = [(x - c.x) * ct[0] + (y - c.y) * ct[1] for x, y in g.exterior.coords]
+    ws = [(x - c.x) * up[0] + (y - c.y) * up[1] for x, y in g.exterior.coords]
+    return to_w, (min(us), max(us)), (min(ws), max(ws))
+
+
+def ramps(o, g, seed):
+    """
+    Strips along the fall line, every strip boundary the same polyline — straight runs with two angled jogs (the
+    markup's red lines) filleted — offset across the slope: ramps (10 ft, paved) alternating with planting strips;
+    one ramp is a stair. Returns paths, stairs, the strip lines, symbols (tread lines, ramp arrows).
+    """
+    to_w, (u0, u1), (w0, w1) = fall_frame(o, g)
+    H = w1 - w0
+    J, D = 14.0, 26.0                                   # jog across, over this much of the run
+    wa, wb = w0 + 0.30 * H, w0 + 0.62 * H
+    guide_local = [(0, w0 - 10), (0, wa), (J, wa + D), (J, wb), (0, wb + D), (0, w1 + 10)]
+    RW, PW = 10.0, 14.0                                 # ramp width, planting width
+    pitch = RW + PW
+    n = max(1, int((u1 - u0 - J) // pitch))
+    start = u0 + (u1 - u0 - J - (n * pitch - PW)) / 2
+    import ref2
+    strips, lines = [], []
+    for k in range(n):
+        a = start + k * pitch
+        for uu in (a, a + RW):
+            loc = ref2.fillet_polyline([(x + uu, w) for x, w in guide_local], 9.0)
+            lines.append(LineString([to_w(x, w) for x, w in loc.coords]).intersection(g.buffer(-0.5)))
+        la = ref2.fillet_polyline([(x + a, w) for x, w in guide_local], 9.0)
+        lb = ref2.fillet_polyline([(x + a + RW, w) for x, w in guide_local], 9.0)
+        poly = Polygon([to_w(x, w) for x, w in la.coords] + [to_w(x, w) for x, w in reversed(lb.coords)]).buffer(0)
+        strips.append((poly.intersection(g), la, a))
+    stair_k = n // 2
+    stairs = Polygon(); symbols = []
+    for k, (poly, la, a) in enumerate(strips):
+        mid_u = a + RW / 2
+        if k == stair_k:
+            # stair on the lower straight run: treads every 1.5 ft across the strip, an arrow up the middle
+            s0, s1 = w0 + 0.08 * H, wa - 4
+            st = Polygon([to_w(a, s0), to_w(a + RW, s0), to_w(a + RW, s1), to_w(a, s1)]).intersection(g)
+            stairs = st
+            w = s0
+            while w <= s1:
+                symbols.append(('STAIR', LineString([to_w(a, w), to_w(a + RW, w)]).intersection(st.buffer(0.01))))
+                w += 1.5
+            symbols.append(('STAIR', LineString([to_w(mid_u, s0 + 1), to_w(mid_u, s1 - 1)])))
+            symbols.append(('STAIR', LineString([to_w(mid_u - 2, s1 - 4), to_w(mid_u, s1 - 1), to_w(mid_u + 2, s1 - 4)])))
+        else:
+            # ramp arrows on the upper straight run: a line up the middle with a chevron at the top
+            s0, s1 = wa + D + 6, wb - 4
+            x = mid_u + J
+            symbols.append(('RAMP', LineString([to_w(x, s0), to_w(x, s1)])))
+            symbols.append(('RAMP', LineString([to_w(x - 2.5, s1 - 4), to_w(x, s1), to_w(x + 2.5, s1 - 4)])))
+    paths = unary_union([p for p, _, _ in strips])
+    return paths, stairs, [l for x in lines for l in lines_of(x) if l.length > 4], [(t, l) for t, l in symbols if not l.is_empty]
+
+
 summary = []
 greens = [o for o in M.fx if o['layer'] == 'greens' and o['name'] in ('GARDEN', 'TERRACE', 'GREEN ROOF') and o.get('mesh')]
 for gi, o in enumerate(greens):
@@ -358,7 +425,33 @@ for gi, o in enumerate(greens):
         ts = trees_in(g, 26, z1 if not sloped else z0, cap=int(g.area / 600) + 1)
         summary.append(f"{name} {oid[:8]}: small — {len(ts)} trees")
         continue
-    if oid[:8] in SOUTH:
+    if oid[:8] in RAMPED:
+        # ---- the slope: ramps and a stair along the fall line, planting strips between (user markup 10-21)
+        paths, stairs, lines, symbols = ramps(o, g, gi)
+        lawn = g.difference(paths.buffer(0.01))
+        mesh_part(o, lawn, 'greens', name)
+        mesh_part(o, paths.difference(stairs.buffer(0.01)), f'{G}::PATH', 'RAMP')
+        if not stairs.is_empty: mesh_part(o, stairs, f'{G}::PAVING', 'STAIR')
+        for l in lines:
+            q = l.interpolate(0.5, normalized=True); M.add_line(l, zf(q.x, q.y), f'{G}::TERRACE LINES', 'RAMP EDGE')
+        for typ, l in symbols:
+            for x in lines_of(l):
+                q = x.interpolate(0.5, normalized=True); M.add_line(x, zf(q.x, q.y) + 0.05, f'{G}::FURNITURE', typ)
+        planting = lawn.buffer(-4)
+        nt = len(trees_in(planting, 26, 0.0, (6.5, 8.5), cap=int(lawn.area / 900) + 1))
+        npl = people(paths, max(2, int(paths.area / 500)), 0.0)
+        summary.append(f"{name} {oid[:8]} (slope) — ramps: {len(parts(paths))} ramps / stair strips ({paths.area:,.0f} sf), stair {stairs.area:,.0f} sf, "
+                       f"{len(lines)} strip lines, {nt} trees, {npl} people")
+    elif o['bbox'][2] / FT < 3 and oid[:8] not in SOUTH:
+        # ---- the north gardens on the ground stay whole: the main planting, which zones the paving round them
+        # (user markup 10-21). Only trees and a mound contour are added; the green itself is not touched.
+        inner_line = g.buffer(-8, join_style=1)
+        for p in parts(inner_line):
+            M.add_line(LineString(p.exterior.coords), z1 + 0.05, f'{G}::FURNITURE', 'LAWN MOUND')
+        nt = len(trees_in(g, 24, z1, (7, 9.5), cap=int(g.area / 700) + 1))
+        summary.append(f"{name} {oid[:8]} @{z0:.0f}' — kept whole: mound line, {nt} trees")
+        continue
+    elif oid[:8] in SOUTH:
         # ---- reference 2: lines turning on fillets, straight paths, planters
         (ax, _), _s = long_axis(g)
         axis = slope_axis(o) if sloped and short > 60 else long_axis(g)[0]

@@ -9,7 +9,7 @@ zlo, zhi = float(sys.argv[2]), float(sys.argv[3])
 lim = [float(v) for v in sys.argv[5:9]] or [-80, 760, -110, 700]
 C = [('CONTEXT::RIVER', '#d6e8f5'), ('GROVE', '#7fae6f'), ('EDGE', '#7fae6f'), ('greens', '#8cc878'), ('LAWN', '#9fd685'), ('PLANTING', '#4f8a4f'), ('PLANTER', '#c86a6a'),
      ('RAIN GARDEN', '#9cc9e6'), ('WATER PLAY', '#7fb9e6'), ('GRAVEL', '#ece8dc'), ('PAVING', '#cfcfcf'), ('PLAZA', '#d6d6d6'), ('PROMENADE', '#d6d6d6'),
-     ('GARDENS::PATH', '#e5a99a'), ('GARDEN WALK', '#e5a99a'), ('CYCLE', '#d97a6a'), ('GROVE', '#7fae6f'), ('DECK', '#d9a46a'), ('BOARDWALK', '#c9955c'), ('SEATING STEPS', '#c48a4e'),
+     ('GARDENS::PATH', '#e5a99a'), ('GARDEN WALK', '#e5a99a'), ('CYCLE', '#d97a6a'), ('GROVE', '#7fae6f'), ('DECK', '#d9a46a'), ('BOARDWALK', '#c9955c'), ('SEATING STEPS', '#c48a4e'), ('STAGE', '#bbb'),
      ('INLAY', '#6f6f78'), ('KAYAK', '#c9955c'), ('RIVER STEPS', '#d8c8a8'), ('ROAD', '#c8c8c8'), ('PAVILION', '#ffffff'), ('Stair', '#777')]
 order = lambda o: next((i for i, (k, _) in enumerate(C) if k in o['layer']), 99)
 objs = sorted([o for o in inv.load(sys.argv[1]) if o['z1'] >= zlo - 1 and o['z0'] <= zhi], key=order)
