@@ -195,19 +195,22 @@
 <rect id="SEC_A_PENTHOUSE_01" fill="#BDBDBD" stroke="none" stroke-width="0" x="629.891" y="184.627" width="886.89" height="52.801" rx="7.875"/>
 </g>
 <g id="PD_SLAB">
-<path id="SEC_A_SLAB_14&apos;-1&quot;_80" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M465.249,765.291 L1429.816,765.291 L1429.816,773.166 L465.249,773.166 Z"/>
+<path id="SEC_A_SLAB_14&apos;-1&quot;_80" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M465.249,765.291 L735.904,765.291 L735.904,773.166 L465.249,773.166 Z"/>
+<path id="SEC_A_SLAB_14&apos;-1&quot;_148" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M769.843,765.291 L858.93,765.291 L858.93,773.166 L769.843,773.166 Z"/>
+<path id="SEC_A_SLAB_14&apos;-1&quot;_204" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1023.765,765.291 L1429.816,765.291 L1429.816,773.166 L1023.765,773.166 Z"/>
 <path id="SEC_A_SLAB_23&apos;-3&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,724.159 L1801.834,724.159 L1801.834,732.034 L1507.781,732.034 Z"/>
-<path id="SEC_A_SLAB_30&apos;-2&quot;_44" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M301.714,692.934 L1041.765,692.934 L1041.765,700.809 L301.714,700.809 Z"/>
-<path id="SEC_A_SLAB_30&apos;-2&quot;_219" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1091.9,692.934 L1835.333,692.934 L1835.333,700.809 L1091.9,700.809 Z"/>
+<path id="SEC_A_SLAB_30&apos;-2&quot;_148" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M769.843,692.934 L858.93,692.934 L858.93,700.809 L769.843,700.809 Z"/>
+<path id="SEC_A_SLAB_30&apos;-2&quot;_266" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1303.007,692.934 L1429.816,692.934 L1429.816,700.809 L1303.007,700.809 Z"/>
+<path id="SEC_A_SLAB_30&apos;-2&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,692.934 L1801.834,692.934 L1801.834,700.809 L1507.781,700.809 Z"/>
 <path id="SEC_A_SLAB_34&apos;-9&quot;_204" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1023.765,672.176 L1109.9,672.176 L1109.9,680.051 L1023.765,680.051 Z"/>
-<path id="SEC_A_SLAB_41&apos;-8&quot;_45" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M306.217,641.187 L1839.821,641.187 L1839.821,649.062 L306.217,649.062 Z"/>
-<path id="SEC_A_SLAB_54&apos;-2&quot;_43" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M297.211,584.937 L1830.83,584.937 L1830.83,592.812 L297.211,592.812 Z"/>
-<path id="SEC_A_SLAB_66&apos;-8&quot;_44" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M301.714,528.687 L1835.333,528.687 L1835.333,536.562 L301.714,536.562 Z"/>
-<path id="SEC_A_SLAB_79&apos;-2&quot;_45" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M306.217,472.437 L1839.821,472.437 L1839.821,480.312 L306.217,480.312 Z"/>
-<path id="SEC_A_SLAB_91&apos;-8&quot;_45" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M306.217,416.187 L1839.821,416.187 L1839.821,424.062 L306.217,424.062 Z"/>
-<path id="SEC_A_SLAB_104&apos;-3&quot;_43" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M297.211,359.494 L1807.252,359.494 L1807.252,367.369 L297.211,367.369 Z"/>
-<path id="SEC_A_SLAB_116&apos;-9&quot;_43" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M297.211,303.244 L1811.15,303.244 L1811.15,311.119 L297.211,311.119 Z"/>
-<path id="SEC_A_SLAB_130&apos;-3&quot;_115" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M620.891,242.491 L1811.15,242.491 L1811.15,250.366 L620.891,250.366 Z"/>
+<path id="SEC_A_SLAB_41&apos;-8&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,641.187 L1801.834,641.187 L1801.834,649.062 L1507.781,649.062 Z"/>
+<path id="SEC_A_SLAB_54&apos;-2&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,584.937 L1801.834,584.937 L1801.834,592.812 L1507.781,592.812 Z"/>
+<path id="SEC_A_SLAB_66&apos;-8&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,528.687 L1801.834,528.687 L1801.834,536.562 L1507.781,536.562 Z"/>
+<path id="SEC_A_SLAB_79&apos;-2&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,472.437 L1801.834,472.437 L1801.834,480.312 L1507.781,480.312 Z"/>
+<path id="SEC_A_SLAB_91&apos;-8&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,416.187 L1801.834,416.187 L1801.834,424.062 L1507.781,424.062 Z"/>
+<path id="SEC_A_SLAB_104&apos;-3&quot;_312" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M1507.781,359.494 L1801.834,359.494 L1801.834,367.369 L1507.781,367.369 Z"/>
+<path id="SEC_A_SLAB_116&apos;-9&quot;_115" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M620.891,303.244 L1801.834,303.244 L1801.834,311.119 L620.891,311.119 Z"/>
+<path id="SEC_A_SLAB_130&apos;-3&quot;_137" fill="#FFFFFF" stroke="#4A4A4A" stroke-width="1" fill-rule="evenodd" d="M722.362,242.491 L1525.781,242.491 L1525.781,250.366 L722.362,250.366 Z"/>
 </g>
 <g id="PD_MASSING">
 </g>

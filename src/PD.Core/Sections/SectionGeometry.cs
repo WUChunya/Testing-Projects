@@ -141,14 +141,19 @@ public sealed class SectionGeometry
             {
                 // A tall space (one bar crossing this level) has no floor through it.
                 var open = g.Bars.Where(b => b.Z0 < l.Elevation - 0.1 && b.Z1 > l.Elevation + 0.1).Select(b => (b.U0, b.U1)).ToList();
-                var ranges = Merge(Across(g.Outline, l.Elevation + 0.05).Concat(Across(g.Outline, l.Elevation - 0.05)));
+                var ranges = Merge(Across(g.Outline, l.Elevation + 0.05).Concat(Across(g.Outline, l.Elevation - 0.05)), gap: 3.0);
                 if (ranges.Count == 0) continue;
-                // One slab per level: the modelled floor plates decide where it really opens (a deliberate void);
-                // without plates at this level the cut is one continuous slab.
+                // A mezzanine has a floor only under the blocks that start on it (user rev 0.9.4: the parking decks).
+                if (l.IsMezzanine)
+                {
+                    var own = g.Bars.Where(b => Math.Abs(b.Z0 - l.Elevation) <= rules.Levels.ClusterToleranceFt).Select(b => (b.U0, b.U1));
+                    ranges = Intersect(ranges, Merge(own, gap: 0.5));
+                    if (ranges.Count == 0) continue;
+                }
+                // The modelled floor plates decide where the floor really opens (a deliberate void), never where it
+                // runs: the slab stays within the cut building (user rev 0.9.4: a site-wide plate drew floors past it).
                 var plates = slabCuts.Where(x => Math.Abs(x.Z - l.Elevation) <= rules.Levels.ClusterToleranceFt).Select(x => (x.U0, x.U1)).ToList();
-                var slab = plates.Count > 0
-                    ? Merge(ranges.Concat(plates), gap: 0.5)
-                    : new List<(double, double)> { (ranges.Min(x => x.Item1), ranges.Max(x => x.Item2)) };
+                var slab = plates.Count > 0 ? Intersect(ranges, Merge(plates, gap: 0.5)) : ranges;
                 foreach (var range in slab)
                     foreach (var (u0, u1) in Subtract(range, open))
                         g.SlabLines.Add((u0, u1, l.Elevation));
@@ -189,7 +194,11 @@ public sealed class SectionGeometry
     /// <summary>Top of a level's band: next level, or for the top level the highest mass counted on it.</summary>
     public static double Top(AnalysisResult r, int i)
     {
-        if (i + 1 < r.Levels.Count) return r.Levels[i + 1].Elevation;
+        // A main storey runs past mezzanines to the next main level (user rev 0.9.4: blocks were cut at the 10' deck).
+        var lv = r.Levels;
+        var j = i + 1;
+        if (!lv[i].IsMezzanine) while (j < lv.Count && lv[j].IsMezzanine) j++;
+        if (j < lv.Count) return lv[j].Elevation;
         var tops = r.Plans[i].Footprints.Select(f => f.Mass.Source.BBox.MaxZ).ToList();
         return tops.Count > 0 ? tops.Max() : r.Levels[i].Elevation + 12;
     }
@@ -230,6 +239,19 @@ public sealed class SectionGeometry
             catch (Exception e) when (e is TopologyException or ArgumentException) { continue; }
             foreach (var (u0, u1) in Segments(cut, plane)) res.Add((u0, u1, o.BBox.MaxZ));
         }
+        return res;
+    }
+
+    /// <summary>Overlaps of two sorted, merged range lists.</summary>
+    static List<(double, double)> Intersect(List<(double a, double b)> x, List<(double a, double b)> y)
+    {
+        var res = new List<(double, double)>();
+        foreach (var p in x)
+            foreach (var q in y)
+            {
+                double a = Math.Max(p.a, q.a), b = Math.Min(p.b, q.b);
+                if (b > a + 0.5) res.Add((a, b));
+            }
         return res;
     }
 

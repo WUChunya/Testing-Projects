@@ -423,7 +423,8 @@
 </g>
 <g id="PD_LABELS">
 <text id="PLN_L5_L05_LAB_01_LBL" x="439.348" y="574.597" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 439.348 567.947)"><tspan x="439.348" dy="0">LAB</tspan></text>
-<text id="PLN_L5_B01_CORE_09_LBL" x="381.598" y="466.068" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="381.598" dy="0">CORE</tspan></text>
+<path id="PLN_L5_B01_CORE_09_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M381.598,461.518 L381.598,357.197"/>
+<text id="PLN_L5_B01_CORE_09_LBL" x="379.598" y="359.697" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="end" fill="#333333"><tspan x="379.598" dy="0">CORE</tspan></text>
 </g>
 <g id="PD_LEGEND">
 <path id="PLN_L5_LEGEND_LAB" fill="#F7A238" stroke="#FFFFFF" stroke-width="1" fill-rule="evenodd" d="M36,1042.399 L44,1042.399 L44,1050.399 L36,1050.399 Z"/>

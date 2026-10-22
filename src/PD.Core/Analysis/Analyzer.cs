@@ -74,7 +74,11 @@ public static class Analyzer
         // A thin program mass lying at grade (a plaza slab on PROGRAM::Circulation, a lawn on PROGRAM::Green Roof) is
         // site paving / planting: drawn with our site, never a floor area or a level candidate. Raised ones (roof
         // gardens, terraces) stay programs.
-        var paving = masses.Where(m => IsSitePaving(m, rules)).ToList();
+        // Inside the glass at grade it is a room (a 2 ft dining hall plate, user rev 0.9.4), not paving.
+        var g0 = rules.Levels.GroundElevationFt;
+        var groundEnv = GlassEnvelope.At(live.Where(o => o.Role == Roles.Facade), masses.Where(m => m.Source.BBox.SizeZ > rules.Cleanup.FlatMassMaxThicknessFt).Select(m => m.Source),
+            g0, g0 + 12, rules.Cleanup.EnvelopeGapFt).Envelope;
+        var paving = masses.Where(m => IsSitePaving(m, rules) && !Indoors(m, groundEnv)).ToList();
         foreach (var m in paving) m.Source.Role = m.ProgramKey == "GREEN_ROOF" ? Roles.Green : Roles.NcHardscape;
         masses = masses.Except(paving).ToList();
         var facade = live.Where(o => o.Role == Roles.Facade).ToList();
@@ -90,6 +94,16 @@ public static class Analyzer
             : input.Levels.OrderBy(l => l.Elevation).Select(l => new Level { Name = l.Name, Elevation = l.Elevation, IsMezzanine = l.IsMezzanine }).ToList();
         if (input.Levels != null && levels.LastOrDefault(l => !l.IsMezzanine) is { } roof) roof.IsRoof = true;
 
+        // The glass is the envelope (user rev 0.9.4): what no program fills inside it on a main storey is circulation.
+        var indoor = GlassEnvelope.IndoorCirculation(facade.Where(o => o.Role == Roles.Facade).ToList(), masses.Where(m => m.IsSolid).Select(m => m.Source).ToList(),
+            live.Where(o => o.Role == Roles.Slab).ToList(), levels, rules.Cleanup);
+        if (indoor.Count > 0)
+        {
+            masses.AddRange(indoor.Select(o => MassClassifier.Classify(o, rules.Cleanup)));
+            local = new SourceModel { Units = local.Units, Layers = local.Layers.Append(new LayerInfo(-1, GlassEnvelope.Layer, true, "#FDF5D1")).ToList(),
+                Objects = local.Objects.Concat(indoor).ToList() };
+            roles[GlassEnvelope.Layer] = new LayerGuess(GlassEnvelope.Layer, Roles.Program, rules.Cleanup.EnvelopeProgram);
+        }
         var (spans, plans, overlaps) = LevelAssignment.Run(masses, levels, rules.Cleanup, input.SpanOverrides);
 
         var issues = new List<Issue>();
@@ -117,7 +131,7 @@ public static class Analyzer
         issues.AddRange(FacadeDetector.Candidates(live, building, rules));
         foreach (var l in input.Model.Layers.Where(l => roles[l.Path].IsFallback && input.Model.Objects.Any(o => o.LayerPath == l.Path)))
             issues.Add(new Issue(IssueKind.UnclassifiedLayer, $"Layer '{l.Path}' has no role (set on tab 1)", Array.Empty<string>()));
-        var unnamed = masses.Where(m => string.IsNullOrWhiteSpace(m.Source.Name)).Select(m => m.Id).ToArray();
+        var unnamed = masses.Where(m => string.IsNullOrWhiteSpace(m.Source.Name) && m.Source.LayerPath != GlassEnvelope.Layer).Select(m => m.Id).ToArray();
         if (unnamed.Length > 0)
             issues.Add(new Issue(IssueKind.UnnamedMass, $"{unnamed.Length} masses have no name: program name used", unnamed));
         foreach (var g in masses.GroupBy(m => m.ProgramKey))
@@ -155,6 +169,18 @@ public static class Analyzer
         var t = rules.Cleanup.FlatMassMaxThicknessFt;
         return m.ProgramKey is not ("CORE" or "STAIR") && b.SizeZ <= t
             && Math.Abs(b.MaxZ - rules.Levels.GroundElevationFt) <= t;
+    }
+
+    /// <summary>Most of the mass's plan lies inside the ground-floor glass envelope.</summary>
+    static bool Indoors(Mass m, NetTopologySuite.Geometries.Geometry env)
+    {
+        if (env.IsEmpty || m.Source.Mesh == null) return false;
+        try
+        {
+            var fp = PD.Core.Geometry.MeshProjection.TopDown(m.Source.Mesh);
+            return fp.Area > 0 && fp.Intersection(env).Area > 0.5 * fp.Area;
+        }
+        catch (Exception e) when (e is ArgumentException or InvalidOperationException or NetTopologySuite.Geometries.TopologyException) { return false; }
     }
 
     static string Layer(SourceModel m, string id) => m.Objects.First(o => o.Id == id).LayerPath;

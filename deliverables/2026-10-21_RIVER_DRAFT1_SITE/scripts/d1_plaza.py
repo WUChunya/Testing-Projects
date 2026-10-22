@@ -115,5 +115,14 @@ if 'LOADING' in areas:
             furniture(LineString([(x0, top), (x0, top - 40), (x0 + 12, top - 40), (x0 + 12, top)]), 'LOADING BAY'); nbays += 1
     M.log.append(f"loading bays: {nbays}")
 
+# Plugin settings for this model (user run 10-21): PROGRAM::INTERACTIVE is the interaction program; the levels are the
+# main floors plus the parking structure's own decks as mezzanines (a mezzanine floor is drawn only under its blocks).
+M.st['layers']['PROGRAM::INTERACTIVE'] = {"use": True, "role": "Program", "programKey": "INTERACTION", "mode": ""}
+M.st['levels'] = [{"name": n, "elevation": z, "isMezzanine": m} for n, z, m in
+                  [("L1", 0, False), ("L1M", 10, True), ("L2", 20, False), ("L2M", 30, True), ("L3", 36, False), ("L3M", 40, True),
+                   ("L4", 52, False), ("L5", 77.07, False)]]
+for k in [k for k, v in M.st['layers'].items() if k.startswith('SITE CONTEXT::')]:
+    M.st['layers'][k]['use'] = True
+M.log.append("settings: INTERACTIVE → interaction; levels L1 0' / L1M 10' / L2 20' / L2M 30' / L3 36' / L3M 40' / L4 52' / L5 77'-1\"; site context layers in use")
 M.write(sys.argv[3])
 print("\n".join(M.log))

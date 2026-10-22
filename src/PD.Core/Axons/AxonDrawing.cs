@@ -577,8 +577,10 @@ public static class AxonDrawing
             prisms.AddRange(Exposed(d, ctx, mine, _ => (z - t, z)));
             // Glass is see-through (user rev 0.8.7, as in 03): flat glass of the plate and the facade glass of this
             // storey standing on it at its real height, drawn over the plate at their opacity.
-            var ceil = levels.Where(j => r.Levels[j].Elevation > lvl.Elevation + 1).Select(j => r.Levels[j].Elevation).DefaultIfEmpty(lvl.Elevation + 15).Min();
-            var glass = prisms.Where(IsGlass).Concat(facade == null ? Enumerable.Empty<Prism>()
+            // The storey's facade glass stands on its main level up to the next main level; a mezzanine (a parking deck
+            // inside that storey) carries none (user rev 0.9.4).
+            var ceil = Sections.SectionGeometry.Top(r, i);
+            var glass = prisms.Where(IsGlass).Concat(facade == null || lvl.IsMezzanine ? Enumerable.Empty<Prism>()
                 : GlassBand(facade, lvl.Elevation, ceil, z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_")).ToList();
             prisms = prisms.Where(q => !IsGlass(q)).ToList();
             var faces = AxonFaces.Render(proj, prisms);
@@ -945,7 +947,16 @@ public static class AxonDrawing
                 d.Swatch("AXON_SLAB_SIDE1" + tag, Darken(ex.PlateFill, ex.PlateSideDarken.ElementAtOrDefault(0))),
                 d.Swatch("AXON_SLAB_SIDE2" + tag, Darken(ex.PlateFill, ex.PlateSideDarken.ElementAtOrDefault(1))), "SLAB"));
         }
-        res.AddRange(ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z) : (z, z + ex.VolumeHeightFt), ctx.Style.Axon.SideDarken, coreOverride: true));
+        // User rev 0.9.4: each volume keeps its block's own height (a tall space no higher than its storey).
+        var r = ctx.Result;
+        double Height(ProgramBlock b)
+        {
+            if (!ex.VolumesAtModelHeight) return ex.VolumeHeightFt;
+            var lv = r.Levels[b.LevelIndex].Elevation;
+            var next = Sections.SectionGeometry.Top(r, b.LevelIndex);
+            return Math.Max(1.0, Math.Min(b.Z1, next) - Math.Max(b.Z0, lv));
+        }
+        res.AddRange(ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z) : (z, z + Height(b)), ctx.Style.Axon.SideDarken, coreOverride: true));
         return res;
     }
 

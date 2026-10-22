@@ -446,6 +446,8 @@ public sealed class PlanStyle
     public Paint ContextBuilding { get; set; } = new();
     public string LevelTitleFormat { get; set; } = "";
     /// <summary>Room names that do not fit at the label size try this size (site plan: 19 → 13 pt).</summary>
+    /// <summary>User rev 0.9.4: every room name at the label size (fonts.label); one that does not fit gets a leader.</summary>
+    public bool LabelUniform { get; set; } = true;
     public double LabelSmallPt { get; set; }
     public int LegendColumns { get; set; }
     public double LegendSwatchPt { get; set; }
@@ -695,6 +697,8 @@ public sealed class ExplodedAxonStyle
     /// (every program is its own coloured slab).
     /// </summary>
     public double VolumeHeightFt { get; set; }
+    /// <summary>User rev 0.9.4: the volumes keep their blocks' own heights (volumeHeightFt only when false).</summary>
+    public bool VolumesAtModelHeight { get; set; } = true;
     public string PlateFill { get; set; } = "#F2F2F2";
     public double[] PlateSideDarken { get; set; } = { 0.08, 0.16 };
 }

@@ -320,7 +320,7 @@ public static class PlanDrawing
             d.Layer("BG_VEIL").Items.Add(veil);
         }
         if (kind is LevelKind.Site or LevelKind.Roof && ps.ContextNames) ContextNames(d, ctx, a, map, p, background);
-        if (kind is LevelKind.Ground or LevelKind.Site or LevelKind.Roof && ps.SiteNameRoles.Count > 0) SiteNames(d, ctx, a, map, p, background);
+        if (kind is LevelKind.Ground or LevelKind.Site or LevelKind.Roof && ps.SiteNameRoles.Count > 0) SiteNames(d, ctx, a, map, p, background, kind);
 
         if (kind == LevelKind.Roof)
         {
@@ -619,8 +619,12 @@ public static class PlanDrawing
     }
 
     /// <summary>Names of our own named site areas (plan.siteNameRoles), centred on the area when they fit; each name once.</summary>
-    static void SiteNames(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background)
+    static void SiteNames(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, string p, List<BackgroundItem> background, LevelKind kind)
     {
+        // At grade only the areas of the ground storey (user rev 0.9.4: no roof garden names on the ground floor; the
+        // raised plaza on the ramp, up to the next main level, still counts).
+        var storeyTop = PD.Core.Sections.SectionGeometry.Top(ctx.Result, GroundIndex(ctx)) + 2;
+        if (kind != LevelKind.Roof) background = background.Where(b => b.Z0 <= storeyTop).ToList();
         var ps = ctx.Style.Plan;
         var roles = ps.SiteNameRoles;
         var size = ctx.Pt(ps.SiteNamePt > 0 ? ps.SiteNamePt : ctx.Style.Fonts.ContextLabel.SizePt);
@@ -690,6 +694,7 @@ public static class PlanDrawing
         var spot = PlanLabels.Fit(block, text, sizeFt);
         if (spot != null) return (spot, null);
         var ps = ctx.Style.Plan;
+        if (ps.LabelUniform) return (null, null);      // user rev 0.9.4: one size for every name; a leader instead
         var full = ctx.Pt(ctx.Style.Fonts.Label.SizePt);
         var sizes = new List<double>();
         if (ps.LabelSmallPt > 0) sizes.Add(ctx.Pt(ps.LabelSmallPt));
@@ -733,7 +738,7 @@ public static class PlanDrawing
         // Keep the label (and its leader) on the sheet: the text runs away from the leader, so clamp both ends.
         var ab = d.Artboards[a];
         // Long names outside the plan are set at the small size, like the reference sheets.
-        var leaderSize = text.Length > 20 && small > 0 ? small : ctx.Pt(ctx.Style.Fonts.Label.SizePt);
+        var leaderSize = text.Length > 20 && small > 0 && !ps.LabelUniform ? small : ctx.Pt(ctx.Style.Fonts.Label.SizePt);
         var width = TextFit.Width(text, leaderSize) * 1.05;
         var right = dx >= 0;
         var px = Math.Clamp(map.X(end.X), right ? 4 : Math.Min(width + 4, ab.W - 4), right ? Math.Max(4, ab.W - width - 4) : ab.W - 4);

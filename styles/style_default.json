@@ -540,6 +540,8 @@
       22
     ],
     "labelSmallPt": 13,
+    "labelUniform": true,
+    "labelUniformComment": "User rev 0.9.4: all room names in a plan at one size (fonts.label.sizePt, as CORE LAB); a name that does not fit gets a leader. false = shrink to labelSmallPt … labelMinPt first.",
     "siteMarginFt": 160.0,
     "siteExtentFactor": 5.0,
     "siteExtentComment": "Site plan shows the NC site plus siteExtentFactor × its width (E–W) / depth (N–S) on each side; siteMarginFt is the minimum.",
@@ -685,12 +687,13 @@
       "basementClearFt": 12.0,
       "tallConnectors": false,
       "volumeHeightFt": 8.0,
+      "volumesAtModelHeight": true,
       "plateFill": "#F2F2F2",
       "plateSideDarken": [
         0.08,
         0.16
       ],
-      "volumeComment": "User rev 0.9.3 (reference: stacked plates with LABS / CLASS volumes): each level is a neutral slab (slabThicknessFt, plateFill) with its programs standing on it volumeHeightFt tall and the open programs flat on it; 0 = every program its own coloured slab (older style).",
+      "volumeComment": "User rev 0.9.3 (reference: stacked plates with LABS / CLASS volumes): each level is a neutral slab (slabThicknessFt, plateFill) with its programs standing on it at their blocks' own heights (volumesAtModelHeight; false = volumeHeightFt for all) and the open programs flat on it; 0 = every program its own coloured slab (older style).",
       "basementComment": "User rev 0.8.1: the site follows Level 1; basements hang below the whole site plate (basementClearFt of drawn height under its front edge) with the dug-out hole shown in the site, never drawn over the site."
     },
     "explodedB": {

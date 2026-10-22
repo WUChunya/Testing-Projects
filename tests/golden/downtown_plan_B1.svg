@@ -122,8 +122,10 @@
 <g id="BG_SITE_LABELS">
 </g>
 <g id="PD_LABELS">
-<text id="PLN_B1_B01_CORE_01_LBL" x="463.44" y="683.808" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="13" text-anchor="middle" fill="#333333"><tspan x="463.44" dy="0">CORE</tspan></text>
-<text id="PLN_B1_B01_BUILDING_SUPPORT_01_LBL" x="409.058" y="715.755" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="12" text-anchor="middle" fill="#333333" transform="rotate(-90 409.058 733.155)"><tspan x="409.058" dy="0">BUILDING</tspan><tspan x="409.058" dy="14.4">SUPPORT /</tspan><tspan x="409.058" dy="14.4">MECHANICAL</tspan><tspan x="409.058" dy="14.4">/ STORAGE</tspan></text>
+<path id="PLN_B1_B01_CORE_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M463.44,679.258 L349.448,757.273"/>
+<text id="PLN_B1_B01_CORE_01_LBL" x="347.448" y="759.773" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="end" fill="#333333"><tspan x="347.448" dy="0">CORE</tspan></text>
+<path id="PLN_B1_B01_BUILDING_SUPPORT_01_LDR" fill="none" stroke="#808080" stroke-width="0.35" fill-rule="evenodd" d="M409.058,733.155 L470.83,779.088"/>
+<text id="PLN_B1_B01_BUILDING_SUPPORT_01_LBL" x="468.83" y="781.588" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="end" fill="#333333"><tspan x="468.83" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
 <text id="PLN_B1_B01_LAB_02_LBL" x="719.579" y="679.525" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(-90 719.579 672.875)"><tspan x="719.579" dy="0">LAB</tspan></text>
 <text id="PLN_B1_B01_CIRCULATION_01_LBL" x="585.1" y="612.248" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="19" text-anchor="middle" fill="#333333" transform="rotate(59.032 585.1 605.598)"><tspan x="585.1" dy="0">CIRCULATION</tspan></text>
 </g>

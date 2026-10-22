@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="2418" viewBox="0 0 1584 2418">
+<svg xmlns="http://www.w3.org/2000/svg" width="1584" height="2440" viewBox="0 0 1584 2440">
 <title>PROGRAM CHART</title>
 <rect width="100%" height="100%" fill="#FFFFFF"/>
 <g id="PD_CHART_BOX">
-<path id="CHT_01_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,93 L500.007,93 L500.007,387 L36,387 Z"/>
-<path id="CHT_02_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M520.007,93 L896.09,93 L896.09,1510.219 L520.007,1510.219 Z"/>
-<path id="CHT_03_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M916.09,93 L1244.09,93 L1244.09,1227 L916.09,1227 Z"/>
-<path id="CHT_04_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,1551.219 L364,1551.219 L364,2046.73 L36,2046.73 Z"/>
-<path id="CHT_05_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M384,1551.219 L787.156,1551.219 L787.156,1965.219 L384,1965.219 Z"/>
-<path id="CHT_06_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M807.156,1551.219 L1135.156,1551.219 L1135.156,1845.219 L807.156,1845.219 Z"/>
-<path id="CHT_07_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M1155.156,1551.219 L1483.156,1551.219 L1483.156,1845.219 L1155.156,1845.219 Z"/>
-<path id="CHT_08_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,2087.73 L364,2087.73 L364,2381.73 L36,2381.73 Z"/>
-<path id="CHT_09_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M384,2087.73 L712,2087.73 L712,2381.73 L384,2381.73 Z"/>
-<path id="CHT_10_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M732,2087.73 L1060,2087.73 L1060,2261.73 L732,2261.73 Z"/>
+<path id="CHT_01_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,93 L499.957,93 L499.957,387 L36,387 Z"/>
+<path id="CHT_02_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M519.957,93 L896.041,93 L896.041,1510.191 L519.957,1510.191 Z"/>
+<path id="CHT_03_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M916.041,93 L1244.041,93 L1244.041,1227 L916.041,1227 Z"/>
+<path id="CHT_04_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,1551.191 L364,1551.191 L364,2068.387 L36,2068.387 Z"/>
+<path id="CHT_05_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M384,1551.191 L787.156,1551.191 L787.156,1965.191 L384,1965.191 Z"/>
+<path id="CHT_06_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M807.156,1551.191 L1135.156,1551.191 L1135.156,1845.191 L807.156,1845.191 Z"/>
+<path id="CHT_07_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M1155.156,1551.191 L1483.156,1551.191 L1483.156,1845.191 L1155.156,1845.191 Z"/>
+<path id="CHT_08_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M36,2109.387 L364,2109.387 L364,2403.387 L36,2403.387 Z"/>
+<path id="CHT_09_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M384,2109.387 L712,2109.387 L712,2403.387 L384,2403.387 Z"/>
+<path id="CHT_10_BOX" fill="none" stroke="#9A9A9A" stroke-width="0.75" stroke-dasharray="6 6" fill-rule="evenodd" d="M732,2109.387 L1060,2109.387 L1060,2283.387 L732,2283.387 Z"/>
 </g>
 <g id="PD_CHART_BLOCKS">
 <path id="CHT_01_R02_01" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,137 L114,137 L114,201 L50,201 Z"/>
@@ -25,172 +25,175 @@
 <path id="CHT_01_R04_06" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M118.259,317 L122.259,317 L122.259,321 L118.259,321 Z"/>
 <path id="CHT_01_R04_07" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M123.259,257 L187.259,257 L187.259,321 L123.259,321 Z"/>
 <path id="CHT_01_R04_08" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M188.259,257 L252.259,257 L252.259,321 L188.259,321 Z"/>
-<path id="CHT_01_R04_09" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M253.259,273.839 L300.42,273.839 L300.42,321 L253.259,321 Z"/>
-<path id="CHT_01_R04_10" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M301.42,266.413 L356.007,266.413 L356.007,321 L301.42,321 Z"/>
-<path id="CHT_01_R04_11" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M357.007,257 L421.007,257 L421.007,321 L357.007,321 Z"/>
-<path id="CHT_01_R04_12" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M422.007,257 L486.007,257 L486.007,321 L422.007,321 Z"/>
-<path id="CHT_02_R02_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,175.433 L549.878,175.433 L549.878,191.304 L534.007,191.304 Z"/>
-<path id="CHT_02_R02_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.878,175.822 L566.36,175.822 L566.36,191.304 L550.878,191.304 Z"/>
-<path id="CHT_02_R02_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.36,175.625 L583.04,175.625 L583.04,191.304 L567.36,191.304 Z"/>
-<path id="CHT_02_R02_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.04,175.625 L599.719,175.625 L599.719,191.304 L584.04,191.304 Z"/>
-<path id="CHT_02_R02_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.719,175.433 L616.59,175.433 L616.59,191.304 L600.719,191.304 Z"/>
-<path id="CHT_02_R02_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.59,175.822 L633.073,175.822 L633.073,191.304 L617.59,191.304 Z"/>
-<path id="CHT_02_R02_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.073,171.941 L653.435,171.941 L653.435,191.304 L634.073,191.304 Z"/>
-<path id="CHT_02_R02_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M654.435,137 L708.74,137 L708.74,191.304 L654.435,191.304 Z"/>
-<path id="CHT_02_R02_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M709.74,158.047 L742.997,158.047 L742.997,191.304 L709.74,191.304 Z"/>
-<path id="CHT_02_R04_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,285.388 L549.945,285.388 L549.945,301.326 L534.007,301.326 Z"/>
-<path id="CHT_02_R04_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,285.779 L566.491,285.779 L566.491,301.326 L550.945,301.326 Z"/>
-<path id="CHT_02_R04_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,285.486 L583.331,285.486 L583.331,301.326 L567.491,301.326 Z"/>
-<path id="CHT_02_R04_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.331,285.58 L600.076,285.58 L600.076,301.326 L584.331,301.326 Z"/>
-<path id="CHT_02_R04_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.076,285.388 L617.013,285.388 L617.013,301.326 L601.076,301.326 Z"/>
-<path id="CHT_02_R04_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.013,285.679 L633.66,285.679 L633.66,301.326 L618.013,301.326 Z"/>
-<path id="CHT_02_R04_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.66,281.886 L654.1,281.886 L654.1,301.326 L634.66,301.326 Z"/>
-<path id="CHT_02_R04_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.1,247.304 L709.121,247.304 L709.121,301.326 L655.1,301.326 Z"/>
-<path id="CHT_02_R04_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.121,268.392 L743.055,268.392 L743.055,301.326 L710.121,301.326 Z"/>
-<path id="CHT_02_R06_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,399.187 L549.745,399.187 L549.745,414.925 L534.007,414.925 Z"/>
-<path id="CHT_02_R06_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.745,399.572 L566.098,399.572 L566.098,414.925 L550.745,414.925 Z"/>
-<path id="CHT_02_R06_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.098,399.38 L582.643,399.38 L582.643,414.925 L567.098,414.925 Z"/>
-<path id="CHT_02_R06_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.643,399.246 L599.322,399.246 L599.322,414.925 L583.643,414.925 Z"/>
-<path id="CHT_02_R06_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.322,399.054 L616.194,399.054 L616.194,414.925 L600.322,414.925 Z"/>
-<path id="CHT_02_R06_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.194,399.446 L632.673,399.446 L632.673,414.925 L617.194,414.925 Z"/>
-<path id="CHT_02_R06_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M633.673,395.406 L653.192,395.406 L653.192,414.925 L633.673,414.925 Z"/>
-<path id="CHT_02_R06_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M654.192,360.621 L708.496,360.621 L708.496,414.925 L654.192,414.925 Z"/>
-<path id="CHT_02_R06_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M709.496,357.326 L767.096,357.326 L767.096,414.925 L709.496,414.925 Z"/>
-<path id="CHT_02_R06_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M768.096,367.762 L815.26,367.762 L815.26,414.925 L768.096,414.925 Z"/>
-<path id="CHT_02_R08_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,512.468 L549.745,512.468 L549.745,528.206 L534.007,528.206 Z"/>
-<path id="CHT_02_R08_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.745,512.854 L566.098,512.854 L566.098,528.206 L550.745,528.206 Z"/>
-<path id="CHT_02_R08_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.098,512.658 L582.646,512.658 L582.646,528.206 L567.098,528.206 Z"/>
-<path id="CHT_02_R08_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.646,512.527 L599.326,512.527 L599.326,528.206 L583.646,528.206 Z"/>
-<path id="CHT_02_R08_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.326,512.335 L616.197,512.335 L616.197,528.206 L600.326,528.206 Z"/>
-<path id="CHT_02_R08_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.197,512.727 L632.676,512.727 L632.676,528.206 L617.197,528.206 Z"/>
-<path id="CHT_02_R08_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M633.676,508.847 L653.035,508.847 L653.035,528.206 L633.676,528.206 Z"/>
-<path id="CHT_02_R08_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M654.035,474.242 L707.999,474.242 L707.999,528.206 L654.035,528.206 Z"/>
-<path id="CHT_02_R08_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M708.999,470.925 L766.281,470.925 L766.281,528.206 L708.999,528.206 Z"/>
-<path id="CHT_02_R08_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M767.281,481.369 L814.117,481.369 L814.117,528.206 L767.281,528.206 Z"/>
-<path id="CHT_02_R10_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,626.053 L549.945,626.053 L549.945,641.991 L534.007,641.991 Z"/>
-<path id="CHT_02_R10_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,626.444 L566.491,626.444 L566.491,641.991 L550.945,641.991 Z"/>
-<path id="CHT_02_R10_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,626.053 L583.429,626.053 L583.429,641.991 L567.491,641.991 Z"/>
-<path id="CHT_02_R10_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,626.246 L600.175,626.246 L600.175,641.991 L584.429,641.991 Z"/>
-<path id="CHT_02_R10_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,626.054 L617.112,626.054 L617.112,641.991 L601.175,641.991 Z"/>
-<path id="CHT_02_R10_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,626.246 L633.857,626.246 L633.857,641.991 L618.112,641.991 Z"/>
-<path id="CHT_02_R10_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,622.472 L654.377,622.472 L654.377,641.991 L634.857,641.991 Z"/>
-<path id="CHT_02_R10_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,587.574 L709.794,587.574 L709.794,641.991 L655.377,641.991 Z"/>
-<path id="CHT_02_R10_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,584.206 L768.579,584.206 L768.579,641.991 L710.794,641.991 Z"/>
-<path id="CHT_02_R10_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,594.697 L816.873,594.697 L816.873,641.991 L769.579,641.991 Z"/>
-<path id="CHT_02_R12_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,739.838 L549.945,739.838 L549.945,755.776 L534.007,755.776 Z"/>
-<path id="CHT_02_R12_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,740.229 L566.491,740.229 L566.491,755.776 L550.945,755.776 Z"/>
-<path id="CHT_02_R12_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,739.838 L583.429,739.838 L583.429,755.776 L567.491,755.776 Z"/>
-<path id="CHT_02_R12_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,740.03 L600.175,740.03 L600.175,755.776 L584.429,755.776 Z"/>
-<path id="CHT_02_R12_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,739.839 L617.112,739.839 L617.112,755.776 L601.175,755.776 Z"/>
-<path id="CHT_02_R12_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,740.03 L633.857,740.03 L633.857,755.776 L618.112,755.776 Z"/>
-<path id="CHT_02_R12_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,736.256 L654.377,736.256 L654.377,755.776 L634.857,755.776 Z"/>
-<path id="CHT_02_R12_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,701.358 L709.794,701.358 L709.794,755.776 L655.377,755.776 Z"/>
-<path id="CHT_02_R12_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,697.991 L768.579,697.991 L768.579,755.776 L710.794,755.776 Z"/>
-<path id="CHT_02_R12_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,708.482 L816.873,708.482 L816.873,755.776 L769.579,755.776 Z"/>
-<path id="CHT_02_R14_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,853.623 L549.945,853.623 L549.945,869.561 L534.007,869.561 Z"/>
-<path id="CHT_02_R14_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,854.014 L566.491,854.014 L566.491,869.561 L550.945,869.561 Z"/>
-<path id="CHT_02_R14_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,853.623 L583.429,853.623 L583.429,869.561 L567.491,869.561 Z"/>
-<path id="CHT_02_R14_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,853.815 L600.175,853.815 L600.175,869.561 L584.429,869.561 Z"/>
-<path id="CHT_02_R14_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,853.623 L617.112,853.623 L617.112,869.561 L601.175,869.561 Z"/>
-<path id="CHT_02_R14_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,853.815 L633.857,853.815 L633.857,869.561 L618.112,869.561 Z"/>
-<path id="CHT_02_R14_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,850.041 L654.377,850.041 L654.377,869.561 L634.857,869.561 Z"/>
-<path id="CHT_02_R14_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,815.143 L709.794,815.143 L709.794,869.561 L655.377,869.561 Z"/>
-<path id="CHT_02_R14_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,811.776 L768.579,811.776 L768.579,869.561 L710.794,869.561 Z"/>
-<path id="CHT_02_R14_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,822.267 L816.873,822.267 L816.873,869.561 L769.579,869.561 Z"/>
-<path id="CHT_02_R16_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,966.927 L549.945,966.927 L549.945,982.865 L534.007,982.865 Z"/>
-<path id="CHT_02_R16_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,967.319 L566.491,967.319 L566.491,982.865 L550.945,982.865 Z"/>
-<path id="CHT_02_R16_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,966.927 L583.429,966.927 L583.429,982.865 L567.491,982.865 Z"/>
-<path id="CHT_02_R16_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,967.12 L600.175,967.12 L600.175,982.865 L584.429,982.865 Z"/>
-<path id="CHT_02_R16_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,966.928 L617.112,966.928 L617.112,982.865 L601.175,982.865 Z"/>
-<path id="CHT_02_R16_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,967.12 L633.857,967.12 L633.857,982.865 L618.112,982.865 Z"/>
-<path id="CHT_02_R16_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,963.346 L654.377,963.346 L654.377,982.865 L634.857,982.865 Z"/>
-<path id="CHT_02_R16_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,928.902 L709.34,928.902 L709.34,982.865 L655.377,982.865 Z"/>
-<path id="CHT_02_R16_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.34,925.561 L767.645,925.561 L767.645,982.865 L710.34,982.865 Z"/>
-<path id="CHT_02_R16_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M768.645,936.031 L815.479,936.031 L815.479,982.865 L768.645,982.865 Z"/>
-<path id="CHT_02_R18_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,1080.712 L549.945,1080.712 L549.945,1096.65 L534.007,1096.65 Z"/>
-<path id="CHT_02_R18_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,1081.103 L566.491,1081.103 L566.491,1096.65 L550.945,1096.65 Z"/>
-<path id="CHT_02_R18_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,1080.712 L583.429,1080.712 L583.429,1096.65 L567.491,1096.65 Z"/>
-<path id="CHT_02_R18_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,1080.904 L600.175,1080.904 L600.175,1096.65 L584.429,1096.65 Z"/>
-<path id="CHT_02_R18_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,1080.713 L617.112,1080.713 L617.112,1096.65 L601.175,1096.65 Z"/>
-<path id="CHT_02_R18_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,1080.904 L633.857,1080.904 L633.857,1096.65 L618.112,1096.65 Z"/>
-<path id="CHT_02_R18_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,1077.13 L654.377,1077.13 L654.377,1096.65 L634.857,1096.65 Z"/>
-<path id="CHT_02_R18_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,1042.233 L709.794,1042.233 L709.794,1096.65 L655.377,1096.65 Z"/>
-<path id="CHT_02_R18_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,1038.865 L768.579,1038.865 L768.579,1096.65 L710.794,1096.65 Z"/>
-<path id="CHT_02_R18_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,1049.356 L816.873,1049.356 L816.873,1096.65 L769.579,1096.65 Z"/>
-<path id="CHT_02_R20_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,1194.497 L549.945,1194.497 L549.945,1210.435 L534.007,1210.435 Z"/>
-<path id="CHT_02_R20_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,1194.888 L566.491,1194.888 L566.491,1210.435 L550.945,1210.435 Z"/>
-<path id="CHT_02_R20_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,1194.497 L583.429,1194.497 L583.429,1210.435 L567.491,1210.435 Z"/>
-<path id="CHT_02_R20_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,1194.689 L600.175,1194.689 L600.175,1210.435 L584.429,1210.435 Z"/>
-<path id="CHT_02_R20_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,1194.497 L617.112,1194.497 L617.112,1210.435 L601.175,1210.435 Z"/>
-<path id="CHT_02_R20_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,1194.689 L633.857,1194.689 L633.857,1210.435 L618.112,1210.435 Z"/>
-<path id="CHT_02_R20_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,1190.915 L654.377,1190.915 L654.377,1210.435 L634.857,1210.435 Z"/>
-<path id="CHT_02_R20_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,1156.017 L709.794,1156.017 L709.794,1210.435 L655.377,1210.435 Z"/>
-<path id="CHT_02_R20_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,1152.65 L768.579,1152.65 L768.579,1210.435 L710.794,1210.435 Z"/>
-<path id="CHT_02_R20_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,1163.141 L816.872,1163.141 L816.872,1210.435 L769.579,1210.435 Z"/>
-<path id="CHT_02_R22_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,1308.281 L549.945,1308.281 L549.945,1324.219 L534.007,1324.219 Z"/>
-<path id="CHT_02_R22_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.945,1308.672 L566.491,1308.672 L566.491,1324.219 L550.945,1324.219 Z"/>
-<path id="CHT_02_R22_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.491,1308.281 L583.429,1308.281 L583.429,1324.219 L567.491,1324.219 Z"/>
-<path id="CHT_02_R22_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.429,1308.474 L600.175,1308.474 L600.175,1324.219 L584.429,1324.219 Z"/>
-<path id="CHT_02_R22_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.175,1308.282 L617.112,1308.282 L617.112,1324.219 L601.175,1324.219 Z"/>
-<path id="CHT_02_R22_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.112,1308.473 L633.857,1308.473 L633.857,1324.219 L618.112,1324.219 Z"/>
-<path id="CHT_02_R22_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.857,1304.7 L654.377,1304.7 L654.377,1324.219 L634.857,1324.219 Z"/>
-<path id="CHT_02_R22_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.377,1269.802 L709.794,1269.802 L709.794,1324.219 L655.377,1324.219 Z"/>
-<path id="CHT_02_R22_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.794,1266.435 L768.579,1266.435 L768.579,1324.219 L710.794,1324.219 Z"/>
-<path id="CHT_02_R22_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.579,1276.925 L816.872,1276.925 L816.872,1324.219 L769.579,1324.219 Z"/>
-<path id="CHT_02_R24_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M534.007,1428.216 L550.01,1428.216 L550.01,1444.219 L534.007,1444.219 Z"/>
-<path id="CHT_02_R24_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M551.01,1428.608 L566.62,1428.608 L566.62,1444.219 L551.01,1444.219 Z"/>
-<path id="CHT_02_R24_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.62,1428.216 L583.623,1428.216 L583.623,1444.219 L567.62,1444.219 Z"/>
-<path id="CHT_02_R24_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.623,1428.409 L600.433,1428.409 L600.433,1444.219 L584.623,1444.219 Z"/>
-<path id="CHT_02_R24_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.433,1428.216 L617.436,1428.216 L617.436,1444.219 L601.433,1444.219 Z"/>
-<path id="CHT_02_R24_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.436,1428.409 L634.245,1428.409 L634.245,1444.219 L618.436,1444.219 Z"/>
-<path id="CHT_02_R24_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.245,1380.219 L699.245,1380.219 L699.245,1444.219 L635.245,1444.219 Z"/>
-<path id="CHT_02_R24_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M700.245,1424.7 L719.765,1424.7 L719.765,1444.219 L700.245,1444.219 Z"/>
-<path id="CHT_02_R24_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M720.765,1389.802 L775.182,1389.802 L775.182,1444.219 L720.765,1444.219 Z"/>
-<path id="CHT_02_R24_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M776.182,1386.408 L833.993,1386.408 L833.993,1444.219 L776.182,1444.219 Z"/>
-<path id="CHT_02_R24_11" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M834.993,1397.122 L882.09,1397.122 L882.09,1444.219 L834.993,1444.219 Z"/>
-<path id="CHT_03_R02_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,137 L994.09,137 L994.09,201 L930.09,201 Z"/>
-<path id="CHT_03_R02_02" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M995.09,137 L1059.09,137 L1059.09,201 L995.09,201 Z"/>
-<path id="CHT_03_R02_03" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1060.09,137 L1124.09,137 L1124.09,201 L1060.09,201 Z"/>
-<path id="CHT_03_R04_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,257 L994.09,257 L994.09,321 L930.09,321 Z"/>
-<path id="CHT_03_R06_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,377 L994.09,377 L994.09,441 L930.09,441 Z"/>
-<path id="CHT_03_R08_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,497 L994.09,497 L994.09,561 L930.09,561 Z"/>
-<path id="CHT_03_R10_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,617 L994.09,617 L994.09,681 L930.09,681 Z"/>
-<path id="CHT_03_R12_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,737 L994.09,737 L994.09,801 L930.09,801 Z"/>
-<path id="CHT_03_R14_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,857 L994.09,857 L994.09,921 L930.09,921 Z"/>
-<path id="CHT_03_R16_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,977 L994.09,977 L994.09,1041 L930.09,1041 Z"/>
-<path id="CHT_03_R18_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.09,1097 L994.09,1097 L994.09,1161 L930.09,1161 Z"/>
-<path id="CHT_04_R02_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1595.219 L114,1595.219 L114,1659.219 L50,1659.219 Z"/>
-<path id="CHT_04_R04_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1715.219 L75.511,1715.219 L75.511,1740.73 L50,1740.73 Z"/>
-<path id="CHT_04_R06_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1796.73 L114,1796.73 L114,1860.73 L50,1860.73 Z"/>
-<path id="CHT_04_R08_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1955.219 L75.511,1955.219 L75.511,1980.73 L50,1980.73 Z"/>
-<path id="CHT_04_R08_02" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M76.511,1916.73 L140.511,1916.73 L140.511,1980.73 L76.511,1980.73 Z"/>
-<path id="CHT_05_R02_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1604.858 L452.361,1604.858 L452.361,1659.219 L398,1659.219 Z"/>
-<path id="CHT_05_R02_02" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M453.361,1595.219 L517.361,1595.219 L517.361,1659.219 L453.361,1659.219 Z"/>
-<path id="CHT_05_R02_03" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M518.361,1595.219 L582.361,1595.219 L582.361,1659.219 L518.361,1659.219 Z"/>
-<path id="CHT_05_R02_04" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.361,1595.219 L647.361,1595.219 L647.361,1659.219 L583.361,1659.219 Z"/>
-<path id="CHT_05_R04_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1715.219 L462,1715.219 L462,1779.219 L398,1779.219 Z"/>
-<path id="CHT_05_R04_02" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M463,1721.514 L520.705,1721.514 L520.705,1779.219 L463,1779.219 Z"/>
-<path id="CHT_05_R04_03" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M521.705,1715.219 L585.705,1715.219 L585.705,1779.219 L521.705,1779.219 Z"/>
-<path id="CHT_05_R04_04" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.705,1715.219 L650.705,1715.219 L650.705,1779.219 L586.705,1779.219 Z"/>
-<path id="CHT_05_R04_05" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.705,1716.304 L714.62,1716.304 L714.62,1779.219 L651.705,1779.219 Z"/>
-<path id="CHT_05_R04_06" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M715.62,1721.684 L773.156,1721.684 L773.156,1779.219 L715.62,1779.219 Z"/>
-<path id="CHT_05_R06_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1835.219 L462,1835.219 L462,1899.219 L398,1899.219 Z"/>
-<path id="CHT_06_R02_01" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M821.156,1595.219 L885.156,1595.219 L885.156,1659.219 L821.156,1659.219 Z"/>
-<path id="CHT_06_R02_02" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M886.156,1595.219 L950.156,1595.219 L950.156,1659.219 L886.156,1659.219 Z"/>
-<path id="CHT_06_R04_01" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M821.156,1715.219 L885.156,1715.219 L885.156,1779.219 L821.156,1779.219 Z"/>
-<path id="CHT_07_R02_01" fill="#A16C9B" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1169.156,1595.219 L1233.156,1595.219 L1233.156,1659.219 L1169.156,1659.219 Z"/>
-<path id="CHT_07_R04_01" fill="#A16C9B" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1169.156,1715.219 L1233.156,1715.219 L1233.156,1779.219 L1169.156,1779.219 Z"/>
-<path id="CHT_08_R02_01" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,2131.73 L114,2131.73 L114,2195.73 L50,2195.73 Z"/>
-<path id="CHT_08_R02_02" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M115,2131.73 L179,2131.73 L179,2195.73 L115,2195.73 Z"/>
-<path id="CHT_08_R04_01" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,2258.132 L107.598,2258.132 L107.598,2315.73 L50,2315.73 Z"/>
-<path id="CHT_08_R04_02" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M108.598,2251.73 L172.598,2251.73 L172.598,2315.73 L108.598,2315.73 Z"/>
-<path id="CHT_08_R04_03" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M173.598,2272.727 L216.601,2272.727 L216.601,2315.73 L173.598,2315.73 Z"/>
-<path id="CHT_08_R04_04" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M217.601,2268.962 L264.37,2268.962 L264.37,2315.73 L217.601,2315.73 Z"/>
-<path id="CHT_08_R04_05" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M265.37,2261.648 L319.452,2261.648 L319.452,2315.73 L265.37,2315.73 Z"/>
-<path id="CHT_09_R02_01" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,2131.73 L462,2131.73 L462,2195.73 L398,2195.73 Z"/>
-<path id="CHT_09_R02_02" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M463,2131.73 L527,2131.73 L527,2195.73 L463,2195.73 Z"/>
-<path id="CHT_09_R04_01" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,2251.73 L462,2251.73 L462,2315.73 L398,2315.73 Z"/>
-<path id="CHT_10_R02_01" fill="#FFFFFF" stroke="#000000" stroke-width="0.75" fill-rule="evenodd" d="M746,2131.73 L810,2131.73 L810,2195.73 L746,2195.73 Z"/>
+<path id="CHT_01_R04_09" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M253.259,273.888 L300.371,273.888 L300.371,321 L253.259,321 Z"/>
+<path id="CHT_01_R04_10" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M301.371,266.413 L355.957,266.413 L355.957,321 L301.371,321 Z"/>
+<path id="CHT_01_R04_11" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M356.957,257 L420.957,257 L420.957,321 L356.957,321 Z"/>
+<path id="CHT_01_R04_12" fill="#D8D8D6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M421.957,257 L485.957,257 L485.957,321 L421.957,321 Z"/>
+<path id="CHT_02_R02_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,175.433 L549.829,175.433 L549.829,191.304 L533.957,191.304 Z"/>
+<path id="CHT_02_R02_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.829,175.822 L566.311,175.822 L566.311,191.304 L550.829,191.304 Z"/>
+<path id="CHT_02_R02_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.311,175.625 L582.99,175.625 L582.99,191.304 L567.311,191.304 Z"/>
+<path id="CHT_02_R02_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.99,175.625 L599.67,175.625 L599.67,191.304 L583.99,191.304 Z"/>
+<path id="CHT_02_R02_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.67,175.433 L616.541,175.433 L616.541,191.304 L600.67,191.304 Z"/>
+<path id="CHT_02_R02_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.541,175.822 L633.023,175.822 L633.023,191.304 L617.541,191.304 Z"/>
+<path id="CHT_02_R02_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.023,171.941 L653.386,171.941 L653.386,191.304 L634.023,191.304 Z"/>
+<path id="CHT_02_R02_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M654.386,137 L708.691,137 L708.691,191.304 L654.386,191.304 Z"/>
+<path id="CHT_02_R02_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M709.691,158.047 L742.948,158.047 L742.948,191.304 L709.691,191.304 Z"/>
+<path id="CHT_02_R04_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,285.359 L549.895,285.359 L549.895,301.297 L533.957,301.297 Z"/>
+<path id="CHT_02_R04_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,285.751 L566.442,285.751 L566.442,301.297 L550.895,301.297 Z"/>
+<path id="CHT_02_R04_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,285.458 L583.282,285.458 L583.282,301.297 L567.442,301.297 Z"/>
+<path id="CHT_02_R04_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.282,285.552 L600.027,285.552 L600.027,301.297 L584.282,301.297 Z"/>
+<path id="CHT_02_R04_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.027,285.36 L616.964,285.36 L616.964,301.297 L601.027,301.297 Z"/>
+<path id="CHT_02_R04_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.964,285.65 L633.611,285.65 L633.611,301.297 L617.964,301.297 Z"/>
+<path id="CHT_02_R04_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.611,281.898 L654.011,281.898 L654.011,301.297 L634.611,301.297 Z"/>
+<path id="CHT_02_R04_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.011,247.304 L709.004,247.304 L709.004,301.297 L655.011,301.297 Z"/>
+<path id="CHT_02_R04_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.004,268.364 L742.937,268.364 L742.937,301.297 L710.004,301.297 Z"/>
+<path id="CHT_02_R06_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,399.159 L549.696,399.159 L549.696,414.897 L533.957,414.897 Z"/>
+<path id="CHT_02_R06_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.696,399.544 L566.049,399.544 L566.049,414.897 L550.696,414.897 Z"/>
+<path id="CHT_02_R06_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.049,399.352 L582.594,399.352 L582.594,414.897 L567.049,414.897 Z"/>
+<path id="CHT_02_R06_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.594,399.218 L599.273,399.218 L599.273,414.897 L583.594,414.897 Z"/>
+<path id="CHT_02_R06_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.273,399.026 L616.144,399.026 L616.144,414.897 L600.273,414.897 Z"/>
+<path id="CHT_02_R06_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.144,399.418 L632.623,399.418 L632.623,414.897 L617.144,414.897 Z"/>
+<path id="CHT_02_R06_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M633.623,395.378 L653.143,395.378 L653.143,414.897 L633.623,414.897 Z"/>
+<path id="CHT_02_R06_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M654.143,360.593 L708.447,360.593 L708.447,414.897 L654.143,414.897 Z"/>
+<path id="CHT_02_R06_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M709.447,357.297 L767.047,357.297 L767.047,414.897 L709.447,414.897 Z"/>
+<path id="CHT_02_R06_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M768.047,367.733 L815.211,367.733 L815.211,414.897 L768.047,414.897 Z"/>
+<path id="CHT_02_R08_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,512.44 L549.696,512.44 L549.696,528.178 L533.957,528.178 Z"/>
+<path id="CHT_02_R08_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.696,512.825 L566.049,512.825 L566.049,528.178 L550.696,528.178 Z"/>
+<path id="CHT_02_R08_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.049,512.63 L582.597,512.63 L582.597,528.178 L567.049,528.178 Z"/>
+<path id="CHT_02_R08_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.597,512.499 L599.276,512.499 L599.276,528.178 L583.597,528.178 Z"/>
+<path id="CHT_02_R08_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M600.276,512.307 L616.147,512.307 L616.147,528.178 L600.276,528.178 Z"/>
+<path id="CHT_02_R08_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M617.147,512.699 L632.627,512.699 L632.627,528.178 L617.147,528.178 Z"/>
+<path id="CHT_02_R08_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M633.627,508.819 L652.985,508.819 L652.985,528.178 L633.627,528.178 Z"/>
+<path id="CHT_02_R08_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M653.985,474.213 L707.95,474.213 L707.95,528.178 L653.985,528.178 Z"/>
+<path id="CHT_02_R08_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M708.95,470.897 L766.231,470.897 L766.231,528.178 L708.95,528.178 Z"/>
+<path id="CHT_02_R08_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M767.231,481.341 L814.068,481.341 L814.068,528.178 L767.231,528.178 Z"/>
+<path id="CHT_02_R10_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,626.025 L549.895,626.025 L549.895,641.963 L533.957,641.963 Z"/>
+<path id="CHT_02_R10_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,626.416 L566.442,626.416 L566.442,641.963 L550.895,641.963 Z"/>
+<path id="CHT_02_R10_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,626.025 L583.38,626.025 L583.38,641.963 L567.442,641.963 Z"/>
+<path id="CHT_02_R10_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,626.217 L600.125,626.217 L600.125,641.963 L584.38,641.963 Z"/>
+<path id="CHT_02_R10_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,626.026 L617.063,626.026 L617.063,641.963 L601.125,641.963 Z"/>
+<path id="CHT_02_R10_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,626.217 L633.808,626.217 L633.808,641.963 L618.063,641.963 Z"/>
+<path id="CHT_02_R10_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,622.443 L654.328,622.443 L654.328,641.963 L634.808,641.963 Z"/>
+<path id="CHT_02_R10_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,587.546 L709.745,587.546 L709.745,641.963 L655.328,641.963 Z"/>
+<path id="CHT_02_R10_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,584.178 L768.53,584.178 L768.53,641.963 L710.745,641.963 Z"/>
+<path id="CHT_02_R10_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.53,594.669 L816.823,594.669 L816.823,641.963 L769.53,641.963 Z"/>
+<path id="CHT_02_R12_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,739.81 L549.895,739.81 L549.895,755.748 L533.957,755.748 Z"/>
+<path id="CHT_02_R12_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,740.201 L566.442,740.201 L566.442,755.748 L550.895,755.748 Z"/>
+<path id="CHT_02_R12_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,739.81 L583.38,739.81 L583.38,755.748 L567.442,755.748 Z"/>
+<path id="CHT_02_R12_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,740.002 L600.125,740.002 L600.125,755.748 L584.38,755.748 Z"/>
+<path id="CHT_02_R12_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,739.811 L617.063,739.811 L617.063,755.748 L601.125,755.748 Z"/>
+<path id="CHT_02_R12_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,740.002 L633.808,740.002 L633.808,755.748 L618.063,755.748 Z"/>
+<path id="CHT_02_R12_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,736.228 L654.328,736.228 L654.328,755.748 L634.808,755.748 Z"/>
+<path id="CHT_02_R12_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,701.33 L709.745,701.33 L709.745,755.748 L655.328,755.748 Z"/>
+<path id="CHT_02_R12_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,697.963 L768.53,697.963 L768.53,755.748 L710.745,755.748 Z"/>
+<path id="CHT_02_R12_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.53,708.454 L816.823,708.454 L816.823,755.748 L769.53,755.748 Z"/>
+<path id="CHT_02_R14_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,853.594 L549.895,853.594 L549.895,869.532 L533.957,869.532 Z"/>
+<path id="CHT_02_R14_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,853.986 L566.442,853.986 L566.442,869.532 L550.895,869.532 Z"/>
+<path id="CHT_02_R14_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,853.594 L583.38,853.594 L583.38,869.532 L567.442,869.532 Z"/>
+<path id="CHT_02_R14_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,853.787 L600.125,853.787 L600.125,869.532 L584.38,869.532 Z"/>
+<path id="CHT_02_R14_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,853.595 L617.063,853.595 L617.063,869.532 L601.125,869.532 Z"/>
+<path id="CHT_02_R14_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,853.787 L633.808,853.787 L633.808,869.532 L618.063,869.532 Z"/>
+<path id="CHT_02_R14_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,850.013 L654.328,850.013 L654.328,869.532 L634.808,869.532 Z"/>
+<path id="CHT_02_R14_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,815.115 L709.745,815.115 L709.745,869.532 L655.328,869.532 Z"/>
+<path id="CHT_02_R14_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,811.748 L768.53,811.748 L768.53,869.532 L710.745,869.532 Z"/>
+<path id="CHT_02_R14_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.53,822.239 L816.823,822.239 L816.823,869.532 L769.53,869.532 Z"/>
+<path id="CHT_02_R16_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,966.899 L549.895,966.899 L549.895,982.837 L533.957,982.837 Z"/>
+<path id="CHT_02_R16_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,967.29 L566.442,967.29 L566.442,982.837 L550.895,982.837 Z"/>
+<path id="CHT_02_R16_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,966.899 L583.38,966.899 L583.38,982.837 L567.442,982.837 Z"/>
+<path id="CHT_02_R16_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,967.092 L600.125,967.092 L600.125,982.837 L584.38,982.837 Z"/>
+<path id="CHT_02_R16_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,966.9 L617.063,966.9 L617.063,982.837 L601.125,982.837 Z"/>
+<path id="CHT_02_R16_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,967.092 L633.808,967.092 L633.808,982.837 L618.063,982.837 Z"/>
+<path id="CHT_02_R16_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,963.318 L654.328,963.318 L654.328,982.837 L634.808,982.837 Z"/>
+<path id="CHT_02_R16_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,928.874 L709.29,928.874 L709.29,982.837 L655.328,982.837 Z"/>
+<path id="CHT_02_R16_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.29,925.532 L767.595,925.532 L767.595,982.837 L710.29,982.837 Z"/>
+<path id="CHT_02_R16_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M768.595,936.002 L815.43,936.002 L815.43,982.837 L768.595,982.837 Z"/>
+<path id="CHT_02_R18_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,1080.684 L549.895,1080.684 L549.895,1096.622 L533.957,1096.622 Z"/>
+<path id="CHT_02_R18_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,1081.075 L566.442,1081.075 L566.442,1096.622 L550.895,1096.622 Z"/>
+<path id="CHT_02_R18_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,1080.684 L583.38,1080.684 L583.38,1096.622 L567.442,1096.622 Z"/>
+<path id="CHT_02_R18_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,1080.876 L600.125,1080.876 L600.125,1096.622 L584.38,1096.622 Z"/>
+<path id="CHT_02_R18_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,1080.685 L617.063,1080.685 L617.063,1096.622 L601.125,1096.622 Z"/>
+<path id="CHT_02_R18_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,1080.876 L633.808,1080.876 L633.808,1096.622 L618.063,1096.622 Z"/>
+<path id="CHT_02_R18_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,1077.102 L654.328,1077.102 L654.328,1096.622 L634.808,1096.622 Z"/>
+<path id="CHT_02_R18_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,1042.204 L709.745,1042.204 L709.745,1096.622 L655.328,1096.622 Z"/>
+<path id="CHT_02_R18_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,1038.837 L768.529,1038.837 L768.529,1096.622 L710.745,1096.622 Z"/>
+<path id="CHT_02_R18_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.529,1049.328 L816.823,1049.328 L816.823,1096.622 L769.529,1096.622 Z"/>
+<path id="CHT_02_R20_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,1194.468 L549.895,1194.468 L549.895,1210.406 L533.957,1210.406 Z"/>
+<path id="CHT_02_R20_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,1194.86 L566.442,1194.86 L566.442,1210.406 L550.895,1210.406 Z"/>
+<path id="CHT_02_R20_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,1194.468 L583.38,1194.468 L583.38,1210.406 L567.442,1210.406 Z"/>
+<path id="CHT_02_R20_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,1194.661 L600.125,1194.661 L600.125,1210.406 L584.38,1210.406 Z"/>
+<path id="CHT_02_R20_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,1194.469 L617.063,1194.469 L617.063,1210.406 L601.125,1210.406 Z"/>
+<path id="CHT_02_R20_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,1194.661 L633.808,1194.661 L633.808,1210.406 L618.063,1210.406 Z"/>
+<path id="CHT_02_R20_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,1190.887 L654.328,1190.887 L654.328,1210.406 L634.808,1210.406 Z"/>
+<path id="CHT_02_R20_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,1155.989 L709.745,1155.989 L709.745,1210.406 L655.328,1210.406 Z"/>
+<path id="CHT_02_R20_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,1152.622 L768.529,1152.622 L768.529,1210.406 L710.745,1210.406 Z"/>
+<path id="CHT_02_R20_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.529,1163.113 L816.823,1163.113 L816.823,1210.406 L769.529,1210.406 Z"/>
+<path id="CHT_02_R22_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,1308.253 L549.895,1308.253 L549.895,1324.191 L533.957,1324.191 Z"/>
+<path id="CHT_02_R22_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.895,1308.644 L566.442,1308.644 L566.442,1324.191 L550.895,1324.191 Z"/>
+<path id="CHT_02_R22_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.442,1308.253 L583.38,1308.253 L583.38,1324.191 L567.442,1324.191 Z"/>
+<path id="CHT_02_R22_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.38,1308.445 L600.125,1308.445 L600.125,1324.191 L584.38,1324.191 Z"/>
+<path id="CHT_02_R22_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.125,1308.254 L617.063,1308.254 L617.063,1324.191 L601.125,1324.191 Z"/>
+<path id="CHT_02_R22_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.063,1308.445 L633.808,1308.445 L633.808,1324.191 L618.063,1324.191 Z"/>
+<path id="CHT_02_R22_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M634.808,1304.671 L654.328,1304.671 L654.328,1324.191 L634.808,1324.191 Z"/>
+<path id="CHT_02_R22_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M655.328,1269.773 L709.745,1269.773 L709.745,1324.191 L655.328,1324.191 Z"/>
+<path id="CHT_02_R22_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M710.745,1266.406 L768.529,1266.406 L768.529,1324.191 L710.745,1324.191 Z"/>
+<path id="CHT_02_R22_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M769.529,1276.897 L816.823,1276.897 L816.823,1324.191 L769.529,1324.191 Z"/>
+<path id="CHT_02_R24_01" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M533.957,1428.188 L549.96,1428.188 L549.96,1444.191 L533.957,1444.191 Z"/>
+<path id="CHT_02_R24_02" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M550.96,1428.58 L566.571,1428.58 L566.571,1444.191 L550.96,1444.191 Z"/>
+<path id="CHT_02_R24_03" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M567.571,1428.188 L583.574,1428.188 L583.574,1444.191 L567.571,1444.191 Z"/>
+<path id="CHT_02_R24_04" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M584.574,1428.381 L600.383,1428.381 L600.383,1444.191 L584.574,1444.191 Z"/>
+<path id="CHT_02_R24_05" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M601.383,1428.188 L617.386,1428.188 L617.386,1444.191 L601.383,1444.191 Z"/>
+<path id="CHT_02_R24_06" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M618.386,1428.381 L634.196,1428.381 L634.196,1444.191 L618.386,1444.191 Z"/>
+<path id="CHT_02_R24_07" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M635.196,1380.191 L699.196,1380.191 L699.196,1444.191 L635.196,1444.191 Z"/>
+<path id="CHT_02_R24_08" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M700.196,1424.671 L719.715,1424.671 L719.715,1444.191 L700.196,1444.191 Z"/>
+<path id="CHT_02_R24_09" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M720.715,1389.773 L775.133,1389.773 L775.133,1444.191 L720.715,1444.191 Z"/>
+<path id="CHT_02_R24_10" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M776.133,1386.38 L833.943,1386.38 L833.943,1444.191 L776.133,1444.191 Z"/>
+<path id="CHT_02_R24_11" fill="#999999" stroke="none" stroke-width="0" fill-rule="evenodd" d="M834.943,1397.093 L882.041,1397.093 L882.041,1444.191 L834.943,1444.191 Z"/>
+<path id="CHT_03_R02_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,137 L994.041,137 L994.041,201 L930.041,201 Z"/>
+<path id="CHT_03_R02_02" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M995.041,137 L1059.041,137 L1059.041,201 L995.041,201 Z"/>
+<path id="CHT_03_R02_03" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1060.041,137 L1124.041,137 L1124.041,201 L1060.041,201 Z"/>
+<path id="CHT_03_R04_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,257 L994.041,257 L994.041,321 L930.041,321 Z"/>
+<path id="CHT_03_R06_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,377 L994.041,377 L994.041,441 L930.041,441 Z"/>
+<path id="CHT_03_R08_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,497 L994.041,497 L994.041,561 L930.041,561 Z"/>
+<path id="CHT_03_R10_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,617 L994.041,617 L994.041,681 L930.041,681 Z"/>
+<path id="CHT_03_R12_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,737 L994.041,737 L994.041,801 L930.041,801 Z"/>
+<path id="CHT_03_R14_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,857 L994.041,857 L994.041,921 L930.041,921 Z"/>
+<path id="CHT_03_R16_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,977 L994.041,977 L994.041,1041 L930.041,1041 Z"/>
+<path id="CHT_03_R18_01" fill="#F7A238" stroke="none" stroke-width="0" fill-rule="evenodd" d="M930.041,1097 L994.041,1097 L994.041,1161 L930.041,1161 Z"/>
+<path id="CHT_04_R02_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1595.191 L114,1595.191 L114,1659.191 L50,1659.191 Z"/>
+<path id="CHT_04_R04_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1736.876 L75.511,1736.876 L75.511,1762.387 L50,1762.387 Z"/>
+<path id="CHT_04_R04_02" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M76.511,1715.191 L123.708,1715.191 L123.708,1762.387 L76.511,1762.387 Z"/>
+<path id="CHT_04_R06_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1818.387 L114,1818.387 L114,1882.387 L50,1882.387 Z"/>
+<path id="CHT_04_R06_02" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M115,1818.387 L179,1818.387 L179,1882.387 L115,1882.387 Z"/>
+<path id="CHT_04_R08_01" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,1976.876 L75.511,1976.876 L75.511,2002.387 L50,2002.387 Z"/>
+<path id="CHT_04_R08_02" fill="#FDF5D1" stroke="none" stroke-width="0" fill-rule="evenodd" d="M76.511,1938.387 L140.511,1938.387 L140.511,2002.387 L76.511,2002.387 Z"/>
+<path id="CHT_05_R02_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1604.83 L452.361,1604.83 L452.361,1659.191 L398,1659.191 Z"/>
+<path id="CHT_05_R02_02" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M453.361,1595.191 L517.361,1595.191 L517.361,1659.191 L453.361,1659.191 Z"/>
+<path id="CHT_05_R02_03" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M518.361,1595.191 L582.361,1595.191 L582.361,1659.191 L518.361,1659.191 Z"/>
+<path id="CHT_05_R02_04" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M583.361,1595.191 L647.361,1595.191 L647.361,1659.191 L583.361,1659.191 Z"/>
+<path id="CHT_05_R04_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1715.191 L462,1715.191 L462,1779.191 L398,1779.191 Z"/>
+<path id="CHT_05_R04_02" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M463,1721.485 L520.705,1721.485 L520.705,1779.191 L463,1779.191 Z"/>
+<path id="CHT_05_R04_03" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M521.705,1715.191 L585.705,1715.191 L585.705,1779.191 L521.705,1779.191 Z"/>
+<path id="CHT_05_R04_04" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M586.705,1715.191 L650.705,1715.191 L650.705,1779.191 L586.705,1779.191 Z"/>
+<path id="CHT_05_R04_05" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M651.705,1716.276 L714.62,1716.276 L714.62,1779.191 L651.705,1779.191 Z"/>
+<path id="CHT_05_R04_06" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M715.62,1721.655 L773.156,1721.655 L773.156,1779.191 L715.62,1779.191 Z"/>
+<path id="CHT_05_R06_01" fill="#EFB7D7" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,1835.191 L462,1835.191 L462,1899.191 L398,1899.191 Z"/>
+<path id="CHT_06_R02_01" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M821.156,1595.191 L885.156,1595.191 L885.156,1659.191 L821.156,1659.191 Z"/>
+<path id="CHT_06_R02_02" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M886.156,1595.191 L950.156,1595.191 L950.156,1659.191 L886.156,1659.191 Z"/>
+<path id="CHT_06_R04_01" fill="#F5CB78" stroke="none" stroke-width="0" fill-rule="evenodd" d="M821.156,1715.191 L885.156,1715.191 L885.156,1779.191 L821.156,1779.191 Z"/>
+<path id="CHT_07_R02_01" fill="#A16C9B" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1169.156,1595.191 L1233.156,1595.191 L1233.156,1659.191 L1169.156,1659.191 Z"/>
+<path id="CHT_07_R02_02" fill="#A16C9B" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1234.156,1609.415 L1283.932,1609.415 L1283.932,1659.191 L1234.156,1659.191 Z"/>
+<path id="CHT_07_R04_01" fill="#A16C9B" stroke="none" stroke-width="0" fill-rule="evenodd" d="M1169.156,1715.191 L1233.156,1715.191 L1233.156,1779.191 L1169.156,1779.191 Z"/>
+<path id="CHT_08_R02_01" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,2153.387 L114,2153.387 L114,2217.387 L50,2217.387 Z"/>
+<path id="CHT_08_R02_02" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M115,2153.387 L179,2153.387 L179,2217.387 L115,2217.387 Z"/>
+<path id="CHT_08_R04_01" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M50,2279.789 L107.598,2279.789 L107.598,2337.387 L50,2337.387 Z"/>
+<path id="CHT_08_R04_02" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M108.598,2273.387 L172.598,2273.387 L172.598,2337.387 L108.598,2337.387 Z"/>
+<path id="CHT_08_R04_03" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M173.598,2294.384 L216.601,2294.384 L216.601,2337.387 L173.598,2337.387 Z"/>
+<path id="CHT_08_R04_04" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M217.601,2290.619 L264.37,2290.619 L264.37,2337.387 L217.601,2337.387 Z"/>
+<path id="CHT_08_R04_05" fill="#C97CA6" stroke="none" stroke-width="0" fill-rule="evenodd" d="M265.37,2283.306 L319.452,2283.306 L319.452,2337.387 L265.37,2337.387 Z"/>
+<path id="CHT_09_R02_01" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,2153.387 L462,2153.387 L462,2217.387 L398,2217.387 Z"/>
+<path id="CHT_09_R02_02" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M463,2153.387 L527,2153.387 L527,2217.387 L463,2217.387 Z"/>
+<path id="CHT_09_R04_01" fill="#7CBECD" stroke="none" stroke-width="0" fill-rule="evenodd" d="M398,2273.387 L462,2273.387 L462,2337.387 L398,2337.387 Z"/>
+<path id="CHT_10_R02_01" fill="#FFFFFF" stroke="#000000" stroke-width="0.75" fill-rule="evenodd" d="M746,2153.387 L810,2153.387 L810,2217.387 L746,2217.387 Z"/>
 </g>
 <g id="PD_CHART_TEXT">
 <text id="CHT_TITLE" x="36" y="52" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="start" fill="#333333"><tspan x="36" dy="0">DETAILED PROGRAM PROPOSAL</tspan></text>
@@ -199,99 +202,99 @@
 <text id="CHT_01_R02_LBL" x="50" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
 <text id="CHT_01_G03" x="50" y="238" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L1</tspan></text>
 <text id="CHT_01_R04_LBL" x="50" y="253" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">BUILDING SUPPORT / MECHANICAL / STORAGE</tspan></text>
-<text id="CHT_01_TOTAL" x="486.007" y="373" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="486.007" dy="0">42,902 GSF</tspan></text>
-<text id="CHT_02_TITLE" x="520.007" y="85" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="520.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G01" x="534.007" y="118" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">B1</tspan></text>
-<text id="CHT_02_R02_LBL" x="534.007" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G03" x="534.007" y="228.304" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L1</tspan></text>
-<text id="CHT_02_R04_LBL" x="534.007" y="243.304" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G05" x="534.007" y="338.326" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L2</tspan></text>
-<text id="CHT_02_R06_LBL" x="534.007" y="353.326" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G07" x="534.007" y="451.925" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L3</tspan></text>
-<text id="CHT_02_R08_LBL" x="534.007" y="466.925" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G09" x="534.007" y="565.206" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L4</tspan></text>
-<text id="CHT_02_R10_LBL" x="534.007" y="580.206" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G11" x="534.007" y="678.991" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L5</tspan></text>
-<text id="CHT_02_R12_LBL" x="534.007" y="693.991" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G13" x="534.007" y="792.776" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L6</tspan></text>
-<text id="CHT_02_R14_LBL" x="534.007" y="807.776" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G15" x="534.007" y="906.561" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L7</tspan></text>
-<text id="CHT_02_R16_LBL" x="534.007" y="921.561" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G17" x="534.007" y="1019.865" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L8</tspan></text>
-<text id="CHT_02_R18_LBL" x="534.007" y="1034.865" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G19" x="534.007" y="1133.65" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L9</tspan></text>
-<text id="CHT_02_R20_LBL" x="534.007" y="1148.65" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G21" x="534.007" y="1247.435" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L10</tspan></text>
-<text id="CHT_02_R22_LBL" x="534.007" y="1262.435" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_G23" x="534.007" y="1361.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="534.007" dy="0">L11</tspan></text>
-<text id="CHT_02_R24_LBL" x="534.007" y="1376.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="534.007" dy="0">CORE</tspan></text>
-<text id="CHT_02_TOTAL" x="882.09" y="1496.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="882.09" dy="0">46,868 GSF</tspan></text>
-<text id="CHT_03_TITLE" x="916.09" y="85" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="916.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G01" x="930.09" y="118" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">B1</tspan></text>
-<text id="CHT_03_R02_LBL" x="930.09" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G03" x="930.09" y="238" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L2</tspan></text>
-<text id="CHT_03_R04_LBL" x="930.09" y="253" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G05" x="930.09" y="358" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L4</tspan></text>
-<text id="CHT_03_R06_LBL" x="930.09" y="373" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G07" x="930.09" y="478" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L5</tspan></text>
-<text id="CHT_03_R08_LBL" x="930.09" y="493" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G09" x="930.09" y="598" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L6</tspan></text>
-<text id="CHT_03_R10_LBL" x="930.09" y="613" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G11" x="930.09" y="718" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L7</tspan></text>
-<text id="CHT_03_R12_LBL" x="930.09" y="733" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G13" x="930.09" y="838" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L8</tspan></text>
-<text id="CHT_03_R14_LBL" x="930.09" y="853" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G15" x="930.09" y="958" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L9</tspan></text>
-<text id="CHT_03_R16_LBL" x="930.09" y="973" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_G17" x="930.09" y="1078" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.09" dy="0">L10</tspan></text>
-<text id="CHT_03_R18_LBL" x="930.09" y="1093" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.09" dy="0">LAB</tspan></text>
-<text id="CHT_03_TOTAL" x="1230.09" y="1213" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1230.09" dy="0">206,056 GSF</tspan></text>
-<text id="CHT_04_TITLE" x="36" y="1543.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="36" dy="0">CIRCULATION</tspan></text>
-<text id="CHT_04_G01" x="50" y="1576.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">B1</tspan></text>
-<text id="CHT_04_R02_LBL" x="50" y="1591.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
-<text id="CHT_04_G03" x="50" y="1696.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L1</tspan></text>
-<text id="CHT_04_R04_LBL" x="50" y="1711.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
-<text id="CHT_04_G05" x="50" y="1777.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L2</tspan></text>
-<text id="CHT_04_R06_LBL" x="50" y="1792.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
-<text id="CHT_04_G07" x="50" y="1897.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L3</tspan></text>
-<text id="CHT_04_R08_LBL" x="50" y="1912.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
-<text id="CHT_04_TOTAL" x="350" y="2032.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="350" dy="0">24,928 GSF</tspan></text>
-<text id="CHT_05_TITLE" x="384" y="1543.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="384" dy="0">LOBBY / BREAK</tspan></text>
-<text id="CHT_05_G01" x="398" y="1576.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L1</tspan></text>
-<text id="CHT_05_R02_LBL" x="398" y="1591.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
-<text id="CHT_05_G03" x="398" y="1696.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L3</tspan></text>
-<text id="CHT_05_R04_LBL" x="398" y="1711.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
-<text id="CHT_05_G05" x="398" y="1816.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L7</tspan></text>
-<text id="CHT_05_R06_LBL" x="398" y="1831.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
-<text id="CHT_05_TOTAL" x="773.156" y="1951.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="773.156" dy="0">19,493 GSF</tspan></text>
-<text id="CHT_06_TITLE" x="807.156" y="1543.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="807.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
-<text id="CHT_06_G01" x="821.156" y="1576.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="821.156" dy="0">L1</tspan></text>
-<text id="CHT_06_R02_LBL" x="821.156" y="1591.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="821.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
-<text id="CHT_06_G03" x="821.156" y="1696.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="821.156" dy="0">L2</tspan></text>
-<text id="CHT_06_R04_LBL" x="821.156" y="1711.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="821.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
-<text id="CHT_06_TOTAL" x="1121.156" y="1831.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1121.156" dy="0">24,893 GSF</tspan></text>
-<text id="CHT_07_TITLE" x="1155.156" y="1543.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="1155.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
-<text id="CHT_07_G01" x="1169.156" y="1576.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="1169.156" dy="0">L1</tspan></text>
-<text id="CHT_07_R02_LBL" x="1169.156" y="1591.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="1169.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
-<text id="CHT_07_G03" x="1169.156" y="1696.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="1169.156" dy="0">L2</tspan></text>
-<text id="CHT_07_R04_LBL" x="1169.156" y="1711.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="1169.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
-<text id="CHT_07_TOTAL" x="1469.156" y="1831.219" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1469.156" dy="0">19,560 GSF</tspan></text>
-<text id="CHT_08_TITLE" x="36" y="2079.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="36" dy="0">CONFERENCE</tspan></text>
-<text id="CHT_08_G01" x="50" y="2112.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L2</tspan></text>
-<text id="CHT_08_R02_LBL" x="50" y="2127.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CONFERENCE</tspan></text>
-<text id="CHT_08_G03" x="50" y="2232.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L3</tspan></text>
-<text id="CHT_08_R04_LBL" x="50" y="2247.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CONFERENCE</tspan></text>
-<text id="CHT_08_TOTAL" x="350" y="2367.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="350" dy="0">12,527 GSF</tspan></text>
-<text id="CHT_09_TITLE" x="384" y="2079.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="384" dy="0">OFFICE</tspan></text>
-<text id="CHT_09_G01" x="398" y="2112.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L3</tspan></text>
-<text id="CHT_09_R02_LBL" x="398" y="2127.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">OFFICE</tspan></text>
-<text id="CHT_09_G03" x="398" y="2232.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L7</tspan></text>
-<text id="CHT_09_R04_LBL" x="398" y="2247.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">OFFICE</tspan></text>
-<text id="CHT_09_TOTAL" x="698" y="2367.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="698" dy="0">21,146 GSF</tspan></text>
-<text id="CHT_10_TITLE" x="732" y="2079.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="732" dy="0">SHELL / PENTHOUSE</tspan></text>
-<text id="CHT_10_G01" x="746" y="2112.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="746" dy="0">L11</tspan></text>
-<text id="CHT_10_R02_LBL" x="746" y="2127.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="746" dy="0">SHELL / PENTHOUSE</tspan></text>
-<text id="CHT_10_TOTAL" x="1046" y="2247.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1046" dy="0">25,872 GSF</tspan></text>
-<text id="CHT_SOURCE" x="36" y="2399.73" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">MODEL (GSF) — TOTAL 444,244 GSF</tspan></text>
+<text id="CHT_01_TOTAL" x="485.957" y="373" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="485.957" dy="0">42,899 GSF</tspan></text>
+<text id="CHT_02_TITLE" x="519.957" y="85" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="519.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G01" x="533.957" y="118" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">B1</tspan></text>
+<text id="CHT_02_R02_LBL" x="533.957" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G03" x="533.957" y="228.304" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L1</tspan></text>
+<text id="CHT_02_R04_LBL" x="533.957" y="243.304" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G05" x="533.957" y="338.297" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L2</tspan></text>
+<text id="CHT_02_R06_LBL" x="533.957" y="353.297" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G07" x="533.957" y="451.897" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L3</tspan></text>
+<text id="CHT_02_R08_LBL" x="533.957" y="466.897" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G09" x="533.957" y="565.178" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L4</tspan></text>
+<text id="CHT_02_R10_LBL" x="533.957" y="580.178" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G11" x="533.957" y="678.963" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L5</tspan></text>
+<text id="CHT_02_R12_LBL" x="533.957" y="693.963" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G13" x="533.957" y="792.748" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L6</tspan></text>
+<text id="CHT_02_R14_LBL" x="533.957" y="807.748" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G15" x="533.957" y="906.532" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L7</tspan></text>
+<text id="CHT_02_R16_LBL" x="533.957" y="921.532" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G17" x="533.957" y="1019.837" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L8</tspan></text>
+<text id="CHT_02_R18_LBL" x="533.957" y="1034.837" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G19" x="533.957" y="1133.622" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L9</tspan></text>
+<text id="CHT_02_R20_LBL" x="533.957" y="1148.622" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G21" x="533.957" y="1247.406" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L10</tspan></text>
+<text id="CHT_02_R22_LBL" x="533.957" y="1262.406" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_G23" x="533.957" y="1361.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="533.957" dy="0">L11</tspan></text>
+<text id="CHT_02_R24_LBL" x="533.957" y="1376.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="533.957" dy="0">CORE</tspan></text>
+<text id="CHT_02_TOTAL" x="882.041" y="1496.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="882.041" dy="0">46,866 GSF</tspan></text>
+<text id="CHT_03_TITLE" x="916.041" y="85" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="916.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G01" x="930.041" y="118" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">B1</tspan></text>
+<text id="CHT_03_R02_LBL" x="930.041" y="133" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G03" x="930.041" y="238" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L2</tspan></text>
+<text id="CHT_03_R04_LBL" x="930.041" y="253" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G05" x="930.041" y="358" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L4</tspan></text>
+<text id="CHT_03_R06_LBL" x="930.041" y="373" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G07" x="930.041" y="478" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L5</tspan></text>
+<text id="CHT_03_R08_LBL" x="930.041" y="493" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G09" x="930.041" y="598" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L6</tspan></text>
+<text id="CHT_03_R10_LBL" x="930.041" y="613" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G11" x="930.041" y="718" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L7</tspan></text>
+<text id="CHT_03_R12_LBL" x="930.041" y="733" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G13" x="930.041" y="838" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L8</tspan></text>
+<text id="CHT_03_R14_LBL" x="930.041" y="853" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G15" x="930.041" y="958" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L9</tspan></text>
+<text id="CHT_03_R16_LBL" x="930.041" y="973" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_G17" x="930.041" y="1078" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="930.041" dy="0">L10</tspan></text>
+<text id="CHT_03_R18_LBL" x="930.041" y="1093" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="930.041" dy="0">LAB</tspan></text>
+<text id="CHT_03_TOTAL" x="1230.041" y="1213" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1230.041" dy="0">206,055 GSF</tspan></text>
+<text id="CHT_04_TITLE" x="36" y="1543.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="36" dy="0">CIRCULATION</tspan></text>
+<text id="CHT_04_G01" x="50" y="1576.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">B1</tspan></text>
+<text id="CHT_04_R02_LBL" x="50" y="1591.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
+<text id="CHT_04_G03" x="50" y="1696.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L1</tspan></text>
+<text id="CHT_04_R04_LBL" x="50" y="1711.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
+<text id="CHT_04_G05" x="50" y="1799.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L2</tspan></text>
+<text id="CHT_04_R06_LBL" x="50" y="1814.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
+<text id="CHT_04_G07" x="50" y="1919.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L3</tspan></text>
+<text id="CHT_04_R08_LBL" x="50" y="1934.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CIRCULATION</tspan></text>
+<text id="CHT_04_TOTAL" x="350" y="2054.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="350" dy="0">28,394 GSF</tspan></text>
+<text id="CHT_05_TITLE" x="384" y="1543.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="384" dy="0">LOBBY / BREAK</tspan></text>
+<text id="CHT_05_G01" x="398" y="1576.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L1</tspan></text>
+<text id="CHT_05_R02_LBL" x="398" y="1591.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
+<text id="CHT_05_G03" x="398" y="1696.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L3</tspan></text>
+<text id="CHT_05_R04_LBL" x="398" y="1711.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
+<text id="CHT_05_G05" x="398" y="1816.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L7</tspan></text>
+<text id="CHT_05_R06_LBL" x="398" y="1831.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">LOBBY / BREAK</tspan></text>
+<text id="CHT_05_TOTAL" x="773.156" y="1951.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="773.156" dy="0">19,492 GSF</tspan></text>
+<text id="CHT_06_TITLE" x="807.156" y="1543.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="807.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
+<text id="CHT_06_G01" x="821.156" y="1576.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="821.156" dy="0">L1</tspan></text>
+<text id="CHT_06_R02_LBL" x="821.156" y="1591.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="821.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
+<text id="CHT_06_G03" x="821.156" y="1696.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="821.156" dy="0">L2</tspan></text>
+<text id="CHT_06_R04_LBL" x="821.156" y="1711.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="821.156" dy="0">LAB SUPPORT / CORE LAB</tspan></text>
+<text id="CHT_06_TOTAL" x="1121.156" y="1831.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1121.156" dy="0">24,893 GSF</tspan></text>
+<text id="CHT_07_TITLE" x="1155.156" y="1543.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="1155.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
+<text id="CHT_07_G01" x="1169.156" y="1576.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="1169.156" dy="0">L1</tspan></text>
+<text id="CHT_07_R02_LBL" x="1169.156" y="1591.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="1169.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
+<text id="CHT_07_G03" x="1169.156" y="1696.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="1169.156" dy="0">L2</tspan></text>
+<text id="CHT_07_R04_LBL" x="1169.156" y="1711.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="1169.156" dy="0">ASSEMBLY / AUDITORIUM / BOARDROOM</tspan></text>
+<text id="CHT_07_TOTAL" x="1469.156" y="1831.191" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1469.156" dy="0">19,560 GSF</tspan></text>
+<text id="CHT_08_TITLE" x="36" y="2101.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="36" dy="0">CONFERENCE</tspan></text>
+<text id="CHT_08_G01" x="50" y="2134.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L2</tspan></text>
+<text id="CHT_08_R02_LBL" x="50" y="2149.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CONFERENCE</tspan></text>
+<text id="CHT_08_G03" x="50" y="2254.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="50" dy="0">L3</tspan></text>
+<text id="CHT_08_R04_LBL" x="50" y="2269.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="50" dy="0">CONFERENCE</tspan></text>
+<text id="CHT_08_TOTAL" x="350" y="2389.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="350" dy="0">12,524 GSF</tspan></text>
+<text id="CHT_09_TITLE" x="384" y="2101.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="384" dy="0">OFFICE</tspan></text>
+<text id="CHT_09_G01" x="398" y="2134.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L3</tspan></text>
+<text id="CHT_09_R02_LBL" x="398" y="2149.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">OFFICE</tspan></text>
+<text id="CHT_09_G03" x="398" y="2254.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="398" dy="0">L7</tspan></text>
+<text id="CHT_09_R04_LBL" x="398" y="2269.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="398" dy="0">OFFICE</tspan></text>
+<text id="CHT_09_TOTAL" x="698" y="2389.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="698" dy="0">21,146 GSF</tspan></text>
+<text id="CHT_10_TITLE" x="732" y="2101.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="13" text-anchor="start" fill="#333333" letter-spacing="0.52"><tspan x="732" dy="0">SHELL / PENTHOUSE</tspan></text>
+<text id="CHT_10_G01" x="746" y="2134.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#5A5A5A"><tspan x="746" dy="0">L11</tspan></text>
+<text id="CHT_10_R02_LBL" x="746" y="2149.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#333333"><tspan x="746" dy="0">SHELL / PENTHOUSE</tspan></text>
+<text id="CHT_10_TOTAL" x="1046" y="2269.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="bold" font-size="22" text-anchor="end" fill="#333333"><tspan x="1046" dy="0">25,872 GSF</tspan></text>
+<text id="CHT_SOURCE" x="36" y="2421.387" font-family="Futura PT, Futura, Arial, sans-serif" font-weight="normal" font-size="11" text-anchor="start" fill="#444444"><tspan x="36" dy="0">MODEL (GSF) — TOTAL 447,700 GSF</tspan></text>
 </g>
 </svg>

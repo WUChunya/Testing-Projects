@@ -51,12 +51,21 @@ public sealed class CleanupRules
     public double MinLevelOverlapFt { get; set; }
     /// <summary>A mass no thicker than this is a slab-like element (roof garden, terrace, paving): it belongs to the
     /// level under its own top face instead of needing a full story of overlap.</summary>
-    public double FlatMassMaxThicknessFt { get; set; } = 2.0;
+    public double FlatMassMaxThicknessFt { get; set; } = 2.5;
     /// <summary>
     /// A mezzanine level holds the masses whose bottom is within this of its elevation or above (user rev 0.9.3: the
     /// RIVER parking decks at 10'); main storeys leave those to it and run to the next main level.
     /// </summary>
     public double MezzanineStartToleranceFt { get; set; } = 1.0;
+    /// <summary>
+    /// User rev 0.9.4: the glass (NC.Facade standing in a storey) is the building envelope. Inside it, on each main
+    /// storey, what no program fills is indoor circulation (program <see cref="EnvelopeProgram"/>).
+    /// </summary>
+    public bool GlassEnvelope { get; set; } = true;
+    public string EnvelopeProgram { get; set; } = "CIRCULATION";
+    /// <summary>Glass and blocks closer than this close the envelope (a mullion gap, a block set back from the glass).</summary>
+    public double EnvelopeGapFt { get; set; } = 1.5;
+    public double EnvelopeMinAreaSf { get; set; } = 200;
     public string Overlap { get; set; } = "smallerVolumeWins";
     public int SpanKeepTallMaxLevels { get; set; }
     public double SpanKeepTallMaxStoryFactor { get; set; }

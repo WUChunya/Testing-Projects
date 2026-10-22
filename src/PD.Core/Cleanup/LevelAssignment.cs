@@ -83,13 +83,15 @@ public static class LevelAssignment
         return (spans, plans, overlaps);
     }
 
-    /// <summary>Level whose elevation is at or just below a flat mass's top, within one story; empty when it is below L1.</summary>
+    /// <summary>
+    /// Level a flat mass lies on: of the levels no higher than its top, the one nearest its bottom (user rev 0.9.4: a
+    /// 2 ft plate on L3 at 36' is not lifted to a 40' mezzanine); empty when it is below L1 or floats a story above.
+    /// </summary>
     static int[] FlatLevel(BBox3 b, IReadOnlyList<Level> lv, CleanupRules r)
     {
-        var top = b.MaxZ + r.FlatMassMaxThicknessFt;
         var i = -1;
         for (var k = 0; k < lv.Count; k++)
-            if (lv[k].Elevation <= top) i = k;
+            if (lv[k].Elevation <= b.MaxZ + 0.5 && (i < 0 || Math.Abs(lv[k].Elevation - b.MinZ) < Math.Abs(lv[i].Elevation - b.MinZ))) i = k;
         if (i < 0) return Array.Empty<int>();
         var story = Top(lv, i) - lv[i].Elevation;
         return b.MinZ - lv[i].Elevation > r.SpanKeepTallMaxStoryFactor * story ? Array.Empty<int>() : new[] { i };

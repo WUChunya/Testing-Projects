@@ -2,6 +2,9 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- Rev 28 (v0.9.4, `Rev094Tests`): glass = envelope, the rest inside each main storey is synthetic CIRCULATION
+  (`GlassEnvelope`); thin masses ≤ 2.5 ft on their floor, indoors never paving; INTERACTIVE alias; exploded volumes at block
+  height; section slabs only inside the cut building, mezzanine slabs only under their blocks; plan names one size.
 - Rev 27 (v0.9.3, `Rev093Tests`): axon style after the user's reference — exploded A = neutral slab + program volumes
   (`axon.exploded.volumeHeightFt` 8 ft), open space (`axon.openPrograms` CIRCULATION / INTERACTION) a flat layer on the floor
   in exploded A / B and floor keys; axon labels larger (`fonts.planeLabel*`, last resort `planeLabelMin`).
@@ -26,7 +29,7 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Program keys immutable; AI update redraws named items, keeps `_MANUAL` / `OVERLAY` / `ANNOTATION` / unnamed.
 
 ## Windows test checklist (for the user)
-1. Unzip `ProgramDiagram-0.9.3.zip` over the old folder (whole folder), restart Rhino.
+1. Unzip `ProgramDiagram-0.9.4.zip` over the old folder (whole folder), restart Rhino.
 2. 04 exploded: each level a pale slab with program volumes on it; circulation / interaction flat on the slab, no sides.
 3. 04 exploded B and floor keys: circulation / interaction flat on the floor; labels larger, white. Volume height and
    slab colour: `axon.exploded.volumeHeightFt` / `plateFill` (0 = old plates); open list `axon.openPrograms`.

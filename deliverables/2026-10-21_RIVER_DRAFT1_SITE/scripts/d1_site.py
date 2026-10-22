@@ -410,7 +410,26 @@ def ramps(o, g, seed):
 
 
 summary = []
-greens = [o for o in M.fx if o['layer'] == 'greens' and o['name'] in ('GARDEN', 'TERRACE', 'GREEN ROOF') and o.get('mesh')]
+# User markup 10-21 (plan of the plugin run): the strip west of the parking structure is LOADING; the strips along the
+# west edge and the drop-off island are hardscape. Their greens become paving (PROJECT SITE::LOADING / PLAZA).
+TO_LOADING = ('1f02ebc1',)
+TO_PAVING = ('a0dd3665', '3f41822b', '0faf9be8', '67c09ee7')
+M.role('PROJECT SITE::LOADING', 'NC.Hardscape')
+M.role('PROJECT SITE::PLAZA', 'NC.Hardscape')
+for o in [o for o in M.fx if o['layer'] == 'greens' and o['id'][:8] in TO_LOADING + TO_PAVING and o.get('mesh')]:
+    oid = o['id']; g = FP[oid]
+    if g is None: continue
+    loading = oid[:8] in TO_LOADING
+    path, nm = ('PROJECT SITE::LOADING', 'LOADING') if loading else ('PROJECT SITE::PLAZA', '')
+    if o['type'] == 'Brep' and Z[oid][1] - Z[oid][0] > 4:
+        mesh_part(o, g.buffer(0.01), path, nm)
+    else:
+        M.add_area(g, path, nm, Z[oid][0])
+    M.retire(oid)
+    for c in twin_curves(oid): M.retire(c)
+    summary.append(f"greens {oid[:8]} → {'LOADING' if loading else 'hardscape'} ({g.area:,.0f} sf)")
+greens = [o for o in M.fx if o['layer'] == 'greens' and o['name'] in ('GARDEN', 'TERRACE', 'GREEN ROOF') and o.get('mesh')
+          and o['id'][:8] not in TO_LOADING + TO_PAVING]
 for gi, o in enumerate(greens):
     oid, name = o['id'], o['name']
     g = FP[oid]
