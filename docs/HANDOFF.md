@@ -1,4 +1,4 @@
-# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.9.7）
+# 交接：v0.8.x 测试与微调（2026-10-14，当前 v0.9.8）
 
 新窗口用法：把下面第 1 节的消息贴进新会话，后面附上 Windows 测试结果 / 截图。新会话先读 `CLAUDE.md` → `docs/PROGRESS.md` → 本文件，再按需读 PRD 章节。
 
@@ -7,7 +7,7 @@
 You are the lead developer of the "Program Diagram" Rhino 8 plugin (repo branch claude/axon-diagram-workflow-sroy86).
 First: git fetch and pull the branch (other sessions have pushed to it before). Read, in this order and only these:
 CLAUDE.md, docs/PROGRESS.md, docs/HANDOFF.md, docs/CHANGELOG.md (top rows); PRD sections only as needed
-(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.9.7; all tests green.
+(grep -n '^#' docs/PRD.md, then sed -n). PRD v1.0; S0-S6 done; plugin v0.9.8; all tests green.
 Task: test-and-tune round on Windows results pasted below. For each item: find it in HANDOFF.md §3 (where it lives),
 prefer changing a style key (§4) over code, reproduce on the Downtown fixture with DumpForReview + tools/svg_shot.mjs (§5),
 add or adjust a test, keep goldens updated. Keep: true scale, stable item names, _MANUAL / OVERLAY untouched,
@@ -18,7 +18,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 ```
 
 ## 2. 当前状态
-- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.9.7**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），253 个测试全过（全套约 9 分钟），`dist/ProgramDiagram-0.9.7.zip`（dist 下的 zip 随提交入库）。
+- 分支 `claude/axon-diagram-workflow-sroy86`，版本 **0.9.8**（`src/PD.Rhino/PD.Rhino.csproj`、`src/PD.Rhino/yak/manifest.yml`、`illustrator/runtime.jsx` 三处同步改），253 个测试全过（全套约 9 分钟），`dist/ProgramDiagram-0.9.8.zip`（dist 下的 zip 随提交入库）。
 - 每轮微调的测试放在 `src/PD.Core.Tests/Rev0xxTests.cs`（v0.8.1 = `Rev081Tests.cs`，v0.8.2 = `Rev082Tests.cs`，v0.8.3 = `Rev083Tests.cs`，v0.8.4 = `Rev084Tests.cs`，v0.8.6 = `Rev086Tests.cs`，v0.8.7 = `Rev087Tests.cs`，v0.8.5 = `Rev085Tests.cs`（`Noisy` = 坐标加噪声模拟 Rhino 原始坐标），其中 `ScreenModel` 是带屋面 screen 的 Downtown，`PD_DUMP_SCREEN=<dir>` 出图）。
 - 方案模型（v0.9.2）：`river_tk.json` / `campus.json` + `*_settings.json`，测试里用 `FixtureAnalysis(model, settings)` 加载；成果在 `deliverables/2026-10-19_CAMPUS`（RIVER 方案用户已不需要，TK 只留作回归测试）（PDF、模型、AI 导出包 = ProgramDiagram.jsx，scripts 可重建）。固定画板居中 / 自适应：`ExportContext.PageAnchor / Place / LargerNote`，样式键 `page.centreOn`、`page.fitContentWhenLarger`。
 - 测试模型：`tests/fixtures/template.json`（模板模型）和 `downtown.json`（用户 Downtown 模型 2026-10-13 版，毫米，无屋面楼板，B1–L11）。新模型来了用 `python3 -I tools/fixture_from_3dm.py <in.3dm> tests/fixtures/downtown.json` 重做，再修正 `DowntownTests` 里的数字。
@@ -30,6 +30,7 @@ and CHANGELOG.md, bump the patch version, run tools/package.sh, commit, push, se
 | 场地材质分色；楼梯白底灰线（0.9.5） | `PlanBackground.Mat / PaintFor`（`BackgroundItem.Material`）；`PlanDrawing.Stairs / IsStair`；`AxonDrawing.StairPrisms`（爆炸 A、分层） | `siteMaterials`（key / match / roles / plan / axon）、`stairs.layerKeywords / fill / stroke / strokePt` |
 | 斜坡景观 / 露台 / 屋顶花园从上方可见（0.9.6） | `PlanBackground.SiteAbove / SiteRemoved / Climbs / Sorted`；`PlanDrawing.RoofView`（体块和外轮廓让位）、`DrawLevel`（总平面只让位给爬升的场地）、`ExposedItems` | `rules.cleanup.slopedSiteMinRiseFt` |
 | Illustrator 提速（0.9.7） | `runtime.jsx` `PD.drawItem`：开放的多段线（hatch、场地边线）画成编组，不用复合路径；`PlanDrawing.DrawLevel(overview)` | `plan.upperFloorHatch / overviewHatch`（默认 false） |
+| 打开文件后重读设置（0.9.8） | `PdSession.Reload / Load`；`ProgramDiagramPlugin` 的 `EndOpenDocument` 事件；`Forget` 不再删会话 | —（VERIFY-WIN） |
 | 玻璃外皮 → 室内 circulation；薄体块归层 / 室内不当铺装；剖面楼板只在剖到的建筑内、夹层只在其体块下；平面字号统一（0.9.4） | `Analysis/GlassEnvelope.cs`（`Analyzer` 在 LevelAssignment 前加入合成体块，图层 `PD::INDOOR CIRCULATION`）；`Analyzer.Indoors`；`SectionGeometry`（Slab lines）；`PlanDrawing.FitShrinking / Label` | `cleanup.glassEnvelope / envelopeProgram / envelopeGapFt / envelopeMinAreaSf / flatMassMaxThicknessFt`；`axon.exploded.volumesAtModelHeight`；`plan.labelUniform` |
 | 轴测风格 0.9.3：爆炸 A = 中性楼板 + program 体块；开放空间（CIRCULATION、INTERACTION）平铺在楼面；标签放大 | `AxonDrawing.SlabAndVolumes / IsOpen / OnFloor`（爆炸 A / B、分层、叠合可选）；标签 `CentredLabels / FrontCornerLabels`（最后一档 `PD Plane Label Min`） | `axon.openPrograms / openLayerFt`、`axon.exploded.volumeHeightFt / plateFill / plateSideDarken`、`axon.stacked.openProgramsFlat`、`fonts.planeLabel* / planeLabelMin` |
 | 字体 Futura PT 大写（Heavy / Book） | `ExportContext.AddStandardStyles`、`runtime.jsx PD.paraStyle`（找不到字体退回 fallback） | `fonts.*`（postScript / fallbackPostScript / allCaps / sizePt） |

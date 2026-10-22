@@ -19,6 +19,8 @@ public sealed class ProgramDiagramPlugin : PlugIn
         Panels.RegisterPanel(this, typeof(PdPanel), "Program Diagram", typeof(ProgramDiagramPlugin).Assembly,
             "PD.Rhino.Resources.icon.ico", PanelType.PerDoc);
         RhinoDoc.CloseDocument += (_, e) => Adapter.PdSession.Forget(e.Document.RuntimeSerialNumber);
+        // VERIFY-WIN: a file opened into an existing document (Windows reuses it) re-reads the model's settings.
+        RhinoDoc.EndOpenDocument += (_, e) => { if (!e.Merge && !e.Reference) Adapter.PdSession.Reload(e.Document.RuntimeSerialNumber); };
         return LoadReturnCode.Success;
     }
 }

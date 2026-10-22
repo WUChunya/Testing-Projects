@@ -38,11 +38,43 @@ public sealed class PdSession
     PdSession(uint serial)
     {
         DocSerial = serial;
-        // The model's own copy, or the side file next to the model when that is newer (settings changed but the 3dm
-        // not saved, or a plugin update could not read the old copy).
+        Settings = Load();
+    }
+
+    /// <summary>
+    /// The model's own copy, or the side file next to the model when that is newer (settings changed but the 3dm not
+    /// saved, or a plugin update could not read the old copy).
+    /// </summary>
+    PdSettings Load()
+    {
         var inDoc = Doc?.Strings.GetValue(Section, Entry);
         var side = SidePath is { } path && File.Exists(path) ? PdSettings.FromJson(File.ReadAllText(path)) : null;
-        Settings = PdSettings.Newest(string.IsNullOrWhiteSpace(inDoc) ? null : PdSettings.FromJson(inDoc), side) ?? new PdSettings();
+        var doc = string.IsNullOrWhiteSpace(inDoc) ? null : PdSettings.FromJson(inDoc);
+        var pick = PdSettings.Newest(doc, side) ?? new PdSettings();
+        if (side != null && ReferenceEquals(pick, side) && doc != null)
+            RhinoApp.WriteLine($"Program Diagram: using the newer settings beside the model ({SidePath}, saved {side.SavedUtc}) instead of the model's copy (saved {doc.SavedUtc}); delete that file to use the model's copy.");
+        return pick;
+    }
+
+    /// <summary>
+    /// After a file is opened into this document (rev 0.9.7, VERIFY-WIN): the panel built for the empty start-up
+    /// document keeps its session, so the settings are read again from the opened model. Without this the session went
+    /// on with defaults (keyword roles, auto levels) and wrote them over the model's own settings on the next analysis.
+    /// </summary>
+    public void Reload()
+    {
+        Settings = Load();
+        _classifier = null;
+        Extraction = null;
+        Result = null;
+        LastError = null;
+        RhinoApp.WriteLine($"Program Diagram: settings read from the model (saved {(Settings.SavedUtc is { Length: > 0 } t ? t : "never")}, {Settings.Layers.Count} layers, {Settings.Levels?.Count ?? 0} levels).");
+        Changed?.Invoke();
+    }
+
+    public static void Reload(uint docSerial)
+    {
+        if (Sessions.TryGetValue(docSerial, out var s)) s.Reload();
     }
 
     /// <summary>"Tower.3dm" → "Tower.programdiagram.json" beside it; null for an unsaved model.</summary>
@@ -55,7 +87,11 @@ public sealed class PdSession
         return s;
     }
 
-    public static void Forget(uint docSerial) => Sessions.Remove(docSerial);
+    /// <summary>A closed document's session is kept: its panel may live on for the next file opened into it (see <see cref="Reload()"/>).</summary>
+    public static void Forget(uint docSerial)
+    {
+        if (Sessions.TryGetValue(docSerial, out var s)) { s.Extraction = null; s.Result = null; }
+    }
 
     public void Save()
     {
