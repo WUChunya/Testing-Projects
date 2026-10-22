@@ -29,6 +29,7 @@
     "envelopeGapFt": 1.5,
     "envelopeMinAreaSf": 200,
     "flatMassMaxThicknessFt": 2.5,
+    "slopedSiteMinRiseFt": 3.0,
     "overlap": "smallerVolumeWins",
     "spanKeepTallMaxLevels": 2,
     "spanKeepTallMaxStoryFactor": 1.6,

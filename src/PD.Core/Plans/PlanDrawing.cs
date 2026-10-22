@@ -357,6 +357,14 @@ public static class PlanDrawing
         var count = new Dictionary<string, int>();
         var sizeFt = ctx.Pt(ctx.Style.Fonts.Label.SizePt) / map.K;
         var outline = plan.Union;
+        // Site plan (rev 0.9.6): our sloped ground climbing over a ground block (the stepped slope garden over the
+        // parking) is seen from above, so the block and the outline give way to it.
+        var shown = plan.Footprints.ToDictionary(f => f, f => kind == LevelKind.Site && !f.OpenToBelow
+            ? PlanBackground.SiteRemoved(ctx, f.Resolved, f.Mass.Source.BBox.MaxZ, slopedOnly: true) : f.Resolved);
+        var hidden = plan.Footprints.Where(f => shown[f] != f.Resolved).Select(f => MeshSlicer.Polygonal(Safe(() => f.Resolved.Difference(shown[f]))))
+            .Where(g => !g.IsEmpty).ToList();
+        var under = hidden.Count == 0 ? null : Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(hidden));
+        if (under is { IsEmpty: false }) outline = MeshSlicer.Polygonal(Safe(() => outline.Difference(under.Buffer(0.05))) ?? outline);
         var centre = outline.IsEmpty ? null : outline.Centroid.Coordinate;
         BelowItems(d, ctx, a, map, p, i, sizeFt, centre, outline);
         // One name per program (per label text) and level: the largest block carries it, the legend covers the rest.
@@ -394,11 +402,12 @@ public static class PlanDrawing
                 continue;
             }
             var (fill, pStroke, pPt, pDash) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
-            var block = At(map.Poly(name, f.Resolved, fill, pStroke ?? d.Gray(ps.RoomStroke), pStroke != null ? pPt : ps.RoomPt), a);
+            if (shown[f].IsEmpty) continue;
+            var block = At(map.Poly(name, shown[f], fill, pStroke ?? d.Gray(ps.RoomStroke), pStroke != null ? pPt : ps.RoomPt), a);
             block.Dash = pDash;
             d.Layer("PD_PROGRAM").Items.Add(block);
             if (named.Contains(f.Mass.Id))
-                Label(d, ctx, a, map, name, f.Resolved, LabelText(ctx, f), sizeFt, centre, outline, ctx.LabelStyle(d, fill), leaders.Contains(f.Mass.Id));
+                Label(d, ctx, a, map, name, shown[f], LabelText(ctx, f), sizeFt, centre, outline, ctx.LabelStyle(d, fill), leaders.Contains(f.Mass.Id));
         }
 
         if (kind == LevelKind.Site) People(d, ctx, a, map, p, plan, background);
@@ -519,7 +528,8 @@ public static class PlanDrawing
         var items = new List<DItem>();
         foreach (var (e0, n) in list.Select((e, n) => (e, n)))
         {
-            var e = e0 with { Area = PlanBackground.UnderSiteRemoved(ctx, e0.Area, i) };
+            // A terrace or roof garden on the slab (and ramp landscape over it) is what shows from above (rev 0.9.6).
+            var e = e0 with { Area = PlanBackground.SiteRemoved(ctx, PlanBackground.UnderSiteRemoved(ctx, e0.Area, i), e0.Z1, slopedOnly: false) };
             if (e.Area.IsEmpty) continue;
             var name = $"{p}{(e.IsGlass ? "EXPOSED_GLASS" : "EXPOSED_ROOF")}_{n + 1:00}";
             if (!e.IsGlass)
@@ -559,6 +569,8 @@ public static class PlanDrawing
         var tiers = new List<NtsGeometry>();
         var sc = ctx.Style.Screen;
         var screens = PD.Core.Analysis.ScreenEnclosures.For(ctx);
+        // Blocks under our climbing ground (the stepped slope garden over the parking) are out of the outline (rev 0.9.6).
+        var buried = new List<NtsGeometry>();
         foreach (var j in levels)
         {
             var ln = SectionDrawing.Safe(r.Plans[j].Level.Name);
@@ -571,9 +583,11 @@ public static class PlanDrawing
             foreach (var f in r.Plans[j].Footprints.Where(f => !f.OpenToBelow && !f.Resolved.IsEmpty))
             {
                 var (fill, _, _, _) = ctx.ProgramPaint(d, f.Mass.ProgramKey);
-                // Seen from above, our ramp landscape over a block (parking under the ramp) is what shows.
-                var top = PlanBackground.UnderSiteRemoved(ctx, f.Resolved, j);
+                // Seen from above, our ramp landscape over a block (parking under the ramp) and a garden on its roof is what shows.
+                var top = PlanBackground.SiteRemoved(ctx, PlanBackground.UnderSiteRemoved(ctx, f.Resolved, j), f.Mass.Source.BBox.MaxZ, slopedOnly: false);
                 if (!top.IsEmpty) d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}{ln}_{++k:000}", top, fill, d.Gray(ps.RoomStroke), ps.RoomPt), a));
+                var open = PlanBackground.SiteRemoved(ctx, f.Resolved, f.Mass.Source.BBox.MaxZ, slopedOnly: true);
+                if (open != f.Resolved && MeshSlicer.Polygonal(Safe(() => f.Resolved.Difference(open))) is { IsEmpty: false } b) buried.Add(b);
             }
             foreach (var e in screens.Where(e => e.LevelIndex == j))
                 d.Layer("PD_PROGRAM").Items.Add(At(map.Poly($"{p}SCREEN_{e.Index:00}_WALL", e.Walls, d.Swatch("NC_SCREEN_WALL_PLAN", sc.PlanWallFill), null, 0), a));
@@ -584,6 +598,9 @@ public static class PlanDrawing
             var tier = parts.Count == 0 ? null : Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(parts));
             if (tier is { IsEmpty: false }) tiers.Add(MeshSlicer.Polygonal(tier));
         }
+        var under = buried.Count == 0 ? null : Safe(() => NetTopologySuite.Operation.Union.CascadedPolygonUnion.Union(buried).Buffer(0.05));
+        if (under is { IsEmpty: false })
+            for (var t = 0; t < tiers.Count; t++) tiers[t] = MeshSlicer.Polygonal(Safe(() => tiers[t].Difference(under)) ?? tiers[t]);
         // A tier's edge shows where nothing higher covers it.
         for (var t = 0; t < tiers.Count; t++)
         {

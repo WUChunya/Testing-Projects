@@ -52,6 +52,9 @@ public sealed class CleanupRules
     /// <summary>A mass no thicker than this is a slab-like element (roof garden, terrace, paving): it belongs to the
     /// level under its own top face instead of needing a full story of overlap.</summary>
     public double FlatMassMaxThicknessFt { get; set; } = 2.5;
+    /// <summary>Our site piece rising at least this much is sloped ground (ramp, stepped slope garden): seen from above it
+    /// covers the blocks under it even in the site plan (user rev 0.9.6).</summary>
+    public double SlopedSiteMinRiseFt { get; set; } = 3.0;
     /// <summary>
     /// A mezzanine level holds the masses whose bottom is within this of its elevation or above (user rev 0.9.3: the
     /// RIVER parking decks at 10'); main storeys leave those to it and run to the next main level.

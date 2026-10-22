@@ -89,7 +89,7 @@ public static class PlanBackground
             }
         }
         if (greens.Count > 0) items.AddRange(PlantGreens(r, greens, ours, extent, dia, greenTrees!, seed));
-        return items.OrderBy(Rank).ToList();
+        return Sorted(items, ground);
     }
 
     /// <summary>
@@ -116,10 +116,19 @@ public static class PlanBackground
             var g = i.IsLine ? MeshSlicer.Lineal(Safe(() => i.Geometry.Intersection(clip))) : MeshSlicer.Polygonal(Safe(() => i.Geometry.Intersection(clip)));
             if (!g.IsEmpty) items.Add(i with { Geometry = g });
         }
-        items = items.OrderBy(Rank).ToList();
+        items = Sorted(items, ctx.Rules.Levels.GroundElevationFt);
         ctx.Cache[key] = items;
         return items;
     }
+
+    /// <summary>
+    /// Bottom → top: areas, then trees, then lines; our site raised above grade (the stepped slope garden, terraces,
+    /// roof gardens) over the ground and higher pieces over lower ones, as seen from above (rev 0.9.6); by role at grade.
+    /// </summary>
+    static List<BackgroundItem> Sorted(IEnumerable<BackgroundItem> items, double ground) => items
+        .OrderBy(i => IsLineRole(i.Role) ? 2 : i.Role is Roles.Tree or Roles.NcTree ? 1 : 0)
+        .ThenBy(i => Roles.IsNew(i.Role) && i.Z0 > ground + 1 ? i.Z0 : ground)
+        .ThenBy(Rank).ToList();
 
     static double Rank(BackgroundItem i) => i.IsLine && !IsLineRole(i.Role) ? Array.IndexOf(Order, Roles.Building) - 0.5
         : Array.IndexOf(Order, i.Role) + (i.MaterialIndex + 1) * 0.001;
@@ -277,19 +286,22 @@ public static class PlanBackground
 
     /// <summary>Union of our building's footprints on every level.</summary>
     /// <summary>
-    /// Plan area of our own sloped ground (ramp lawn, ramp road and turnaround, raised paving: NC site roles and BG.Road)
-    /// that climbs from below <paramref name="z"/> to above it. Seen from above it covers a lower block's or slab's top
-    /// there (user rev 0.9.3, RIVER 1020: the ramp landscape and turnaround over the parking); a flat or raised
-    /// terrace never counts.
+    /// Plan area of our own site (NC site areas and BG.Road, not trees) standing higher than <paramref name="z"/>: seen
+    /// from above it covers a block's or slab's top at that height (user rev 0.9.3, RIVER 1020: the ramp landscape and
+    /// turnaround over the parking; rev 0.9.6: terraces and roof gardens on a slab, the stepped slope garden over the
+    /// parking). <paramref name="slopedOnly"/> keeps ground that climbs (spans <paramref name="z"/> or rises at least
+    /// cleanup.slopedSiteMinRiseFt), so a flat or raised terrace does not hide a floor plan's blocks.
     /// </summary>
-    public static NtsGeometry SiteOver(ExportContext ctx, double z)
+    public static NtsGeometry SiteAbove(ExportContext ctx, double z, bool slopedOnly)
     {
-        var key = $"SiteOver|{z:0.00}";
+        var key = $"SiteAbove|{z:0.00}|{slopedOnly}";
         if (ctx.Cache.TryGetValue(key, out var c) && c is NtsGeometry g0) return g0;
         var r = ctx.Result;
+        var rise = ctx.Rules.Cleanup.SlopedSiteMinRiseFt;
         var parts = new List<NtsGeometry>();
-        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role)
-                     && (Roles.IsNew(o.Role) || o.Role == Roles.Road) && o.BBox.MinZ < z - 1 && o.BBox.MaxZ > z + 1))
+        foreach (var o in r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role) && o.Role is not (Roles.Tree or Roles.NcTree)
+                     && (Roles.IsNew(o.Role) || o.Role == Roles.Road) && o.BBox.MaxZ > z + 0.5
+                     && (!slopedOnly || o.BBox.MinZ < z - 1 || o.BBox.MaxZ - o.BBox.MinZ >= rise && Climbs(o.Mesh!, rise))))
         {
             var top = Safe(() => MeshProjection.TopDown(o.Mesh!));
             if (top is { IsEmpty: false }) parts.Add(top);
@@ -300,18 +312,55 @@ public static class PlanBackground
         return u;
     }
 
+    /// <summary>
+    /// Sloped or stepped ground: its tilted faces, or its flat faces at four or more heights (steps), span at least
+    /// <paramref name="rise"/>. A raised planter or a terrace slab (flat top) does not climb.
+    /// </summary>
+    public static bool Climbs(PD.Core.Model.MeshData m, double rise)
+    {
+        double t0 = double.MaxValue, t1 = double.MinValue;
+        var flats = new SortedSet<double>();
+        var v = m.Vertices;
+        foreach (var f in m.Faces)
+        {
+            if (f.Length < 3) continue;
+            double nx = 0, ny = 0, nz = 0;
+            for (var k = 0; k < f.Length; k++)
+            {
+                int a = f[k] * 3, b = f[(k + 1) % f.Length] * 3;
+                nx += (v[a + 1] - v[b + 1]) * (v[a + 2] + v[b + 2]);
+                ny += (v[a + 2] - v[b + 2]) * (v[a] + v[b]);
+                nz += (v[a] - v[b]) * (v[a + 1] + v[b + 1]);
+            }
+            var len = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+            if (len < 1e-9) continue;
+            var c = Math.Abs(nz) / len;
+            if (c < 0.05) continue;                                   // vertical side
+            if (c > 0.999) { flats.Add(Math.Round(v[f[0] * 3 + 2], 1)); continue; }
+            foreach (var i in f) { t0 = Math.Min(t0, v[i * 3 + 2]); t1 = Math.Max(t1, v[i * 3 + 2]); }
+        }
+        return t1 - t0 >= rise || flats.Count >= 4 && flats.Max - flats.Min >= rise;
+    }
+
+    /// <summary><paramref name="g"/> (a top at height <paramref name="z"/>) less our site standing above it (see <see cref="SiteAbove"/>).</summary>
+    public static NtsGeometry SiteRemoved(ExportContext ctx, NtsGeometry g, double z, bool slopedOnly)
+    {
+        if (g.IsEmpty) return g;
+        var over = SiteAbove(ctx, z, slopedOnly);
+        if (over.IsEmpty || !over.EnvelopeInternal.Intersects(g.EnvelopeInternal)) return g;
+        return MeshSlicer.Polygonal(Safe(() => g.Difference(over)) ?? g);
+    }
+
     /// <summary>Mid-height of level <paramref name="j"/>'s storey (to its next level; 6 ft above it at the top).</summary>
     public static double StoreyMid(AnalysisResult r, int j) =>
         j + 1 < r.Levels.Count ? (r.Levels[j].Elevation + r.Levels[j + 1].Elevation) / 2 : r.Levels[j].Elevation + 6;
 
-    /// <summary><paramref name="g"/> less what our sloped ground covers at level <paramref name="j"/> (see <see cref="SiteOver"/>).</summary>
+    /// <summary><paramref name="g"/> less what our sloped ground covers at level <paramref name="j"/> (see <see cref="SiteAbove"/>).</summary>
     public static NtsGeometry UnderSiteRemoved(ExportContext ctx, NtsGeometry g, int j)
     {
         // Basements are seen only through openings in the floors above: the site does not cover them.
         if (g.IsEmpty || j < PlanDrawing.GroundIndex(ctx)) return g;
-        var over = SiteOver(ctx, StoreyMid(ctx.Result, j));
-        if (over.IsEmpty || !over.EnvelopeInternal.Intersects(g.EnvelopeInternal)) return g;
-        return MeshSlicer.Polygonal(Safe(() => g.Difference(over)) ?? g);
+        return SiteRemoved(ctx, g, StoreyMid(ctx.Result, j), slopedOnly: true);
     }
 
     public static NtsGeometry Footprint(AnalysisResult r)

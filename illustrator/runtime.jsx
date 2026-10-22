@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.9.5";
+PD.version = "0.9.6";
 
 PD.run = function (drawings, opts) {
     var log = [];
