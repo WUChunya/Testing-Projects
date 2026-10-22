@@ -261,7 +261,7 @@ def width_of(g, sp):
 # turning on fillets) for the south gardens and the parking roof garden.
 import ref1, ref2
 REF1, MOUNDS1 = ref1.shapes()
-SOUTH = ('c4485c57', '1f02ebc1', '0cb1ec08', '67c09ee7', 'f5b835df')
+SOUTH = ('c4485c57', '1f02ebc1', '0cb1ec08', '67c09ee7')       # the green roof is designed like the others (10-22)
 M.role(f'{G}::PAVING', 'NC.Hardscape')
 M.role(f'{G}::GRAVEL', 'NC.Hardscape')
 M.role(f'{G}::PLANTING', 'NC.Green')
@@ -409,6 +409,162 @@ def ramps(o, g, seed):
     return paths, stairs, [l for x in lines for l in lines_of(x) if l.length > 4], [(t, l) for t, l in symbols if not l.is_empty]
 
 
+# ------------------------------------------------------------------ greens, DRAFT_1 v4 (user 10-22)
+# Every green is designed inside its own outline with the four kinds of element of the user's reference plans, in
+# large pieces: hardscape (red garden walk, pavers, gravel, timber deck), green (lawn mound, planting beds), the walk
+# that ties it to the paving round it, and a landscape structure (pergola). Nothing enters the building: the area
+# under the storey's glass envelope and its rooms, grown by 3 ft, is cut off first.
+from r20_envelope import envelope as _envelope
+from shapely.ops import polylabel as _polylabel
+M.role(f'{G}::STRUCTURE', 'NC.Furniture', mode='line')
+_ENV = {}
+
+
+def indoor(z):
+    """Rooms standing at z plus the glass envelope of that storey (local feet), grown by 3 ft."""
+    key = round(z)
+    if key not in _ENV:
+        lv = sorted(l['elevation'] for l in M.st['levels'] if not l.get('isMezzanine'))
+        z0 = max([e for e in lv if e <= z + 0.5], default=0.0)
+        z1 = min([e for e in lv if e > z0 + 1], default=z0 + 15)
+        env = _envelope(M.fx, z0, z1 - 2)[0]
+        _ENV[key] = unary_union([walls_at(z), env]).buffer(3)
+    return _ENV[key]
+
+
+def angular_walk(g, width, seed):
+    """Walk along the long axis with two angled bends (as the reference's red walk), corners filleted, run past the
+    area's ends so it meets the paving round it."""
+    (dx, dy), short = long_axis(g)
+    nx, ny = -dy, dx
+    c = g.centroid
+    pr = [((x - c.x) * dx + (y - c.y) * dy) for x, y in g.exterior.coords]
+    a, b = min(pr) - 8, max(pr) + 8
+    side = 1 if seed % 2 else -1
+    off = min(short * 0.18, 16.0) * side
+    pts = [(a, -off * 0.3), (a + (b - a) * 0.34, -off), (a + (b - a) * 0.62, off), (b, off * 0.3)]
+    line = LineString([(c.x + dx * s + nx * o, c.y + dy * s + ny * o) for s, o in pts])
+    return line, line.buffer(width / 2, cap_style=2, join_style=2).buffer(-3, join_style=1).buffer(3, join_style=1).intersection(g)
+
+
+def pergola(rect, ang, z):
+    """Outline and slats (every 2 ft across) of a pergola over a rectangle."""
+    M.add_line(LineString(rect.exterior.coords), z + 0.1, f'{G}::STRUCTURE', 'PERGOLA')
+    c = rect.centroid
+    L = 60.0
+    dx, dy = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+    mr = rect.minimum_rotated_rectangle
+    cs = list(mr.exterior.coords)
+    half = max(math.dist(cs[0], cs[1]), math.dist(cs[1], cs[2])) / 2
+    s = -half + 1.5
+    while s < half - 1:
+        p = (c.x + dx * s, c.y + dy * s)
+        cut = LineString([(p[0] - dy * L, p[1] + dx * L), (p[0] + dy * L, p[1] - dx * L)]).intersection(rect.buffer(-0.4))
+        for l in lines_of(cut): M.add_line(l, z + 0.1, f'{G}::STRUCTURE', 'PERGOLA')
+        s += 2.0
+
+
+def designed(o, g, name, z0, z1, gi):
+    terrace = name == 'TERRACE'
+    roof = name == 'GREEN ROOF'
+    zt = z1 + (1.5 if terrace else 0.0)
+    g = g.difference(indoor(z0 + 0.5)).buffer(-0.3).buffer(0.3)
+    g = max(parts(g), key=lambda p: p.area, default=None)
+    if g is None or g.area < 400:
+        return None
+    (dx, dy), short = long_axis(g)
+    ang = math.degrees(math.atan2(dy, dx))
+    hard = {}
+    # 1 walk (ground gardens and the roof: through the area; terraces: none, the deck is the floor)
+    if not terrace and short > 22:
+        _, walk = angular_walk(g, 8.0 if not roof else 7.0, gi)
+        hard['WALK'] = walk
+    walkU = hard.get('WALK', Polygon())
+    # 2 deck: terraces along the building, at most 12 ft or 40 % of the depth
+    if terrace:
+        bld = walls_at(z0 + 0.5).buffer(0.5)
+        dw = min(12.0, 0.4 * short)
+        deck = g.intersection(bld.buffer(dw + 3)).buffer(-1, join_style=2).buffer(1, join_style=2)
+        if deck.area < 0.2 * g.area:      # the building does not run along it: the deck takes the long middle band
+            deck = g.buffer(-max(4.0, short * 0.25), join_style=2).buffer(2, join_style=1).intersection(g)
+        hard['DECK'] = unary_union([p for p in parts(deck) if p.area > 150])
+    # 3 pocket: a paved seating court with a pergola where the area is roomy
+    free = g.difference(unary_union(list(hard.values())).buffer(4)).buffer(-3)
+    pocket = Polygon(); per = None
+    if g.area > 2200 and not free.is_empty:
+        pc = _polylabel(max(parts(free), key=lambda p: p.area), 0.5)
+        rad = free.exterior.distance(pc) if free.geom_type == 'Polygon' else 6
+        w, h = min(30.0, 2 * rad + 6), min(18.0, 2 * rad)
+        if h >= 9:
+            rect = affinity.rotate(box(pc.x - w / 2, pc.y - h / 2, pc.x + w / 2, pc.y + h / 2), ang, origin=pc)
+            pocket = rect.buffer(-2, join_style=1).buffer(2, join_style=1).intersection(g)
+            per = affinity.scale(rect, 0.7, 0.75, origin=pc)
+            # a short spur to the walk
+            if not walkU.is_empty:
+                q = nearest_points(walkU, pc)[0]
+                pocket = unary_union([pocket, LineString([(pc.x, pc.y), (q.x, q.y)]).buffer(3)]).intersection(g)
+            hard['PAVING'] = pocket
+    # 4 gravel: a 3 ft band round the court
+    gravel = pocket.buffer(3).difference(unary_union(list(hard.values()))).intersection(g)
+    hard['GRAVEL'] = unary_union([p for p in parts(gravel) if p.area > 40])
+    hardU = unary_union(list(hard.values())).buffer(0.01)
+    soft = g.difference(hardU)
+    # 5 planting beds: a 7 ft (terrace planters 5 ft) band on the outer edge, in pieces of 150 sf or more
+    bw = 5.0 if terrace else (6.0 if short > 30 else 4.0)
+    edge = soft.difference(g.buffer(-bw, join_style=1))
+    if terrace: edge = edge.difference(walls_at(z0 + 0.5).buffer(bw + 4))
+    # a band on the walk's far side only for narrow strips
+    beds = unary_union([p.buffer(-1, join_style=1).buffer(1, join_style=1) for p in parts(edge) if p.area > 250])
+    lawn = soft.difference(beds.buffer(0.01))
+    lawn = unary_union([p for p in parts(lawn) if p.area > 120])
+    # write
+    lay = {'WALK': (f'{G}::PATH', 'GARDEN WALK' if not roof else 'ROOF WALK'), 'DECK': (f'{G}::DECK', 'TERRACE'),
+           'PAVING': (f'{G}::PAVING', ''), 'GRAVEL': (f'{G}::GRAVEL', '')}
+    for k, gg in hard.items():
+        if gg.is_empty: continue
+        if terrace: M.add_solid(gg, z0, z1, *lay[k])
+        else: M.add_area(gg, lay[k][0], lay[k][1], z1)
+    if terrace:
+        M.add_solid(beds, z0, z1 + 1.5, f'{G}::PLANTER', '')
+        M.add_solid(lawn, z0, z1 + 0.5, 'greens', name)
+    else:
+        M.add_solid(beds, z0, z1, f'{G}::PLANTING', '')
+        M.add_solid(lawn, z0, z1, 'greens', name)
+        for p in parts(lawn):
+            if p.area > 1500:
+                for q in parts(p.buffer(-7, join_style=1)): M.add_line(LineString(q.exterior.coords), z1 + 0.05, f'{G}::FURNITURE', 'LAWN MOUND')
+    if per is not None and not per.is_empty:
+        pergola(per, ang, zt)
+        for sgn in (-1, 1):   # two benches along the court's long sides
+            c = per.centroid; nx, ny = -dy, dx
+            p0 = (c.x + nx * sgn * (per.minimum_rotated_rectangle.length / 8) - dx * 5, c.y + ny * sgn * (per.minimum_rotated_rectangle.length / 8) - dy * 5)
+            M.add_line(LineString([p0, (p0[0] + dx * 10, p0[1] + dy * 10)]), z1, f'{G}::FURNITURE', 'BENCH')
+    # benches along the walk and the deck edge, every ~36 ft
+    for k in ('WALK', 'DECK'):
+        for p in parts(hard.get(k, Polygon())):
+            ring = p.exterior
+            s = 10.0
+            while s + 10 < ring.length:
+                seg = substring(LineString(ring.coords), s, s + 10).parallel_offset(1.2, 'left')
+                if p.buffer(-0.2).contains(seg): M.add_line(seg, z1, f'{G}::FURNITURE', 'BENCH')
+                s += 36
+    # trees along the middle of the beds every ~22 ft, and a few on the lawn
+    nt = 0; placed = []
+    for p in parts(beds):
+        core = p.buffer(-bw / 2 + 0.6)
+        for l in lines_of(core.boundary if not core.is_empty else LineString()):
+            s = 6.0
+            while s < l.length:
+                q = l.interpolate(s)
+                if p.contains(q) and all(q.distance(x) > 18 for x in placed):
+                    placed.append(q); circle_curve((q.x, q.y), rng.uniform(5.5, 7.5), zt, f'{G}::TREES'); nt += 1
+                s += 22
+    if not roof: nt += len(trees_in(lawn.buffer(-6), 34, z1, (7, 9.5), cap=int(lawn.area / 2500)))
+    npl = people(unary_union([hard.get('WALK', Polygon()), hard.get('DECK', Polygon()), pocket]), max(2, int(hardU.area / 450)), z1) + people(lawn, max(1, int(lawn.area / 3000)), z1)
+    return (f"{name} {o['id'][:8]} @{z0:.0f}': walk {walkU.area:,.0f}, deck {hard.get('DECK', Polygon()).area:,.0f}, court {pocket.area:,.0f}, "
+            f"gravel {hard['GRAVEL'].area:,.0f}, beds {beds.area:,.0f}, lawn {lawn.area:,.0f} sf, pergola {'yes' if per is not None else 'no'}, {nt} trees, {npl} people")
+
+
 summary = []
 # User markup 10-21 (plan of the plugin run): the strip west of the parking structure is LOADING; the strips along the
 # west edge and the drop-off island are hardscape. Their greens become paving (PROJECT SITE::LOADING / PLAZA).
@@ -461,15 +617,11 @@ for gi, o in enumerate(greens):
         npl = people(paths, max(2, int(paths.area / 500)), 0.0)
         summary.append(f"{name} {oid[:8]} (slope) — ramps: {len(parts(paths))} ramps / stair strips ({paths.area:,.0f} sf), stair {stairs.area:,.0f} sf, "
                        f"{len(lines)} strip lines, {nt} trees, {npl} people")
-    elif o['bbox'][2] / FT < 3 and oid[:8] not in SOUTH:
-        # ---- the north gardens on the ground stay whole: the main planting, which zones the paving round them
-        # (user markup 10-21). Only trees and a mound contour are added; the green itself is not touched.
-        inner_line = g.buffer(-8, join_style=1)
-        for p in parts(inner_line):
-            M.add_line(LineString(p.exterior.coords), z1 + 0.05, f'{G}::FURNITURE', 'LAWN MOUND')
-        nt = len(trees_in(g, 24, z1, (7, 9.5), cap=int(g.area / 700) + 1))
-        summary.append(f"{name} {oid[:8]} @{z0:.0f}' — kept whole: mound line, {nt} trees")
-        continue
+    elif oid[:8] not in SOUTH:
+        # ---- designed in large pieces of the four kinds of element (user 10-22)
+        msg = designed(o, g, name, z0, z1, gi)
+        summary.append(msg or f"{name} {oid[:8]}: inside the building or too small — left as it is")
+        if msg is None: continue
     elif oid[:8] in SOUTH:
         # ---- reference 2: lines turning on fillets, straight paths, planters
         (ax, _), _s = long_axis(g)
@@ -494,41 +646,6 @@ for gi, o in enumerate(greens):
         npl = people(hard, max(2, int(hard.area / 400)), z1 if not sloped else 0.0) + people(lawn, max(2, int(lawn.area / 2500)), z1 if not sloped else 0.0)
         summary.append(f"{name} {oid[:8]}{' (slope)' if sloped else ''} — ref 2: {len(r2['LINES'])} terrace lines, paths {hard.area:,.0f} sf, "
                        f"{len(parts(planters))} planters, {nt} trees, {npl} people")
-    else:
-        # ---- reference 1: plaza / gravel / timber deck / walk / lawn mounds / planting beds
-        near = walls_at(z0 + 0.5)
-        r1 = ref1_design(g, gi, near, name == 'TERRACE')
-        if r1 is None:
-            summary.append(f"{name} {oid[:8]}: no spine — left as it is"); continue
-        soft = unary_union([r1['LAWN'], r1['SHRUB']])
-        hard_parts = {'PLAZA': (f'{G}::PAVING', ''), 'GRAVEL': (f'{G}::GRAVEL', ''), 'DECK': (f'{G}::DECK', ''), 'WALK': (f'{G}::PATH', 'GARDEN WALK')}
-        if name == 'TERRACE':
-            for k, (lay, nm) in hard_parts.items():
-                M.add_solid(r1[k], z0, z1, lay, 'TERRACE' if k == 'PLAZA' else nm)
-            M.add_solid(r1['LAWN'], z0, z1 + 1.5, 'greens', '')
-            M.add_solid(r1['SHRUB'], z0, z1 + 1.5, f'{G}::PLANTING', '')
-        else:
-            M.add_solid(r1['LAWN'], z0, z1, 'greens', name)
-            M.add_solid(r1['SHRUB'], z0, z1, f'{G}::PLANTING', '')
-            for k, (lay, nm) in hard_parts.items():
-                M.add_area(r1[k], lay, nm, z1)
-        rest = g.difference(unary_union([soft] + [r1[k] for k in hard_parts]).buffer(0.05))
-        if rest.area > 20:      # what the reference leaves between its pieces: gravel in a garden, paving on a terrace
-            if name == 'TERRACE': M.add_solid(rest, z0, z1, f'{G}::PAVING', '')
-            else: M.add_area(rest, f'{G}::GRAVEL', '', z1)
-        for l in r1['MOUNDS']:
-            for x in lines_of(l.intersection(g.buffer(-1))):
-                if x.length > 6: M.add_line(x, zt, f'{G}::FURNITURE', 'LAWN MOUND')
-        for b in r1['BENCHES']:
-            if g.buffer(-1).contains(b): M.add_line(b, z1, f'{G}::FURNITURE', 'BENCH')
-        for x, y in r1['TREES']:
-            if g.buffer(-3).contains(Point(x, y)):
-                M.add_line(LineString(box(x - 2, y - 2, x + 2, y + 2).exterior.coords), z1, f'{G}::FURNITURE', 'TREE GRATE')
-                circle_curve((x, y), rng.uniform(7, 9), zt, f'{G}::TREES')
-        ts = trees_in(unary_union([r1['LAWN'], r1['SHRUB']]), 30, zt, (6, 8.5) if name == 'TERRACE' else (7, 9.5), cap=int(g.area / 1500) + 1)
-        npl = people(unary_union([r1['PLAZA'], r1['DECK'], r1['WALK']]), max(2, int(g.area / 1200)), z1)
-        summary.append(f"{name} {oid[:8]} @{z0:.0f}' — ref 1: " + ", ".join(f"{k.lower()} {r1[k].area:,.0f}" for k in ('PLAZA', 'GRAVEL', 'DECK', 'WALK', 'LAWN', 'SHRUB'))
-                       + f" sf, {len(ts) + len(r1['TREES'])} trees, {npl} people")
     M.retire(oid)
     for t in twin_curves(oid): M.retire(t)
 M.log += summary
