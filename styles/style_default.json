@@ -548,6 +548,8 @@
     "siteTitle": "Site Plan",
     "upperVeilFill": "#FFFFFF",
     "upperVeilOpacity": 0.7,
+    "upperFloorHatch": false,
+    "overviewHatch": false,
     "basementEarthFill": "#D9D9D9",
     "labelMinPt": 8.0,
     "labelOncePerProgram": true,

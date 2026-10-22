@@ -62,7 +62,8 @@ public static class PlanDrawing
             double cx = m + n % cols * (w + gap), cy = m + n / cols * (h + nameBand + gap);
             var lvl = r.Plans[i].Level;
             var p = $"PLO_{SectionDrawing.Safe(lvl.Name)}_";
-            DrawLevel(d, ctx, ov, new PageMap(cx - env.MinX * k, cy + nameBand, k, env.MaxY, env.Width, flip: false), i, p, background, env, KindOf(ctx, i));
+            DrawLevel(d, ctx, ov, new PageMap(cx - env.MinX * k, cy + nameBand, k, env.MaxY, env.Width, flip: false), i, p, background, env, KindOf(ctx, i),
+                overview: true);
             d.Layer("PD_ANNOTATION").Items.Add(At(SectionDrawing.Text(p + "NAME", cx, cy + ctx.Pt(14), lvl.Name, "PD Heading", "left"), ov));
         }
         PlanLegendSheet.Add(d, ctx, (a, x, y) =>
@@ -270,7 +271,7 @@ public static class PlanDrawing
     }
 
     static void DrawLevel(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, int i, string p, List<BackgroundItem> background,
-        Envelope env, LevelKind kind)
+        Envelope env, LevelKind kind, bool overview = false)
     {
         var r = ctx.Result;
         var ps = ctx.Style.Plan;
@@ -289,7 +290,8 @@ public static class PlanDrawing
             d.Layer(PlanBackground.LayerName(b)).Items.Add(At(item, a));
             // Green and water: a hatch over the fill instead of an outline.
             var hatch = PlanBackground.PaintFor(ctx.Style, b, "plan").Hatch;
-            if (hatch != null && !b.IsLine)
+            var hatched = overview ? ps.OverviewHatch : kind != LevelKind.Upper || ps.UpperFloorHatch;
+            if (hatch != null && !b.IsLine && hatched)
             {
                 var lines = PlanBackground.Hatch(b.Geometry, hatch);
                 if (!lines.IsEmpty)

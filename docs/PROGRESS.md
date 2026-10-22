@@ -2,13 +2,13 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- Rev 31 (v0.9.7): Illustrator speed — open multi-paths (hatch, site edges) drawn as groups, not compound paths;
+  no hatches on veiled upper floors / overview (`plan.upperFloorHatch / overviewHatch`).
 - Rev 30 (v0.9.6, `Rev096Tests`): our site above a block / slab shows from above (`SiteAbove`): roof view gets terraces,
   roof gardens and the slope garden; site plan yields only to climbing ground (`slopedSiteMinRiseFt`); background by height.
 - Rev 29 (v0.9.5, `Rev095Tests`): site materials by layer / name keyword (`siteMaterials`, pastel palette) in plans and
   axon sites; stairs on stair layers white with 0.5 pt grey line in plans, exploded A and floor keys (`stairs`).
-- Rev 28 (v0.9.4, `Rev094Tests`): glass = envelope, the rest inside each main storey is synthetic CIRCULATION
-  (`GlassEnvelope`); thin masses ≤ 2.5 ft on their floor, indoors never paving; INTERACTIVE alias; exploded volumes at block
-  height; section slabs only inside the cut building, mezzanine slabs only under their blocks; plan names one size.
+- Rev 28 (v0.9.4, `Rev094Tests`): glass envelope → synthetic CIRCULATION; thin masses ≤ 2.5 ft; section slabs only in cut.
 - Rev 27 (v0.9.3, `Rev093Tests`): axon style after the user's reference — exploded A = neutral slab + program volumes
   (`axon.exploded.volumeHeightFt` 8 ft), open space (`axon.openPrograms` CIRCULATION / INTERACTION) a flat layer on the floor
   in exploded A / B and floor keys; axon labels larger (`fonts.planeLabel*`, last resort `planeLabelMin`).

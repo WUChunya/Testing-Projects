@@ -5,7 +5,7 @@
 //  - items named by the plugin are replaced; unnamed items and the _MANUAL / OVERLAY layers are never touched.
 // Drawing coordinates: points from the artboard's top-left, y down.
 var PD = PD || {};
-PD.version = "0.9.6";
+PD.version = "0.9.7";
 
 PD.run = function (drawings, opts) {
     var log = [];
@@ -297,6 +297,11 @@ PD.drawItem = function (layer, it, rect, sw, ps) {
         if (it.paths.length === 1) {
             item = PD.pathItem(layer.pathItems, it.paths[0], it.closed, rect);
             PD.style(item, it, sw);
+        } else if (!it.closed) {
+            // Hatch lines, site edges (rev 0.9.7): a group of open paths. A compound path recomputes on every added
+            // sub-path, so thousands of hatch lines took Illustrator an hour.
+            item = layer.groupItems.add();
+            for (var g = 0; g < it.paths.length; g++) PD.style(PD.pathItem(item.pathItems, it.paths[g], false, rect), it, sw);
         } else {
             item = layer.compoundPathItems.add();
             for (var i = 0; i < it.paths.length; i++) PD.style(PD.pathItem(item.pathItems, it.paths[i], it.closed, rect), it, sw);

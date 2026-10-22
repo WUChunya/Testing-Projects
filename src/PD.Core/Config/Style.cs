@@ -512,6 +512,10 @@ public sealed class PlanStyle
     /// <summary>Upper floors sit on the same site, washed out by a white veil of this opacity.</summary>
     public string UpperVeilFill { get; set; } = "#FFFFFF";
     public double UpperVeilOpacity { get; set; } = 0.7;
+    /// <summary>Material hatches on the veiled upper floors and on the plans overview (rev 0.9.7: off by default — they
+    /// are barely visible there and thousands of hatch lines make Illustrator take an hour).</summary>
+    public bool UpperFloorHatch { get; set; }
+    public bool OverviewHatch { get; set; }
     /// <summary>Basement plans: cut earth instead of the site.</summary>
     public string BasementEarthFill { get; set; } = "#D9D9D9";
     /// <summary>Smallest room-name size (pt at the reference scale) tried before a leader is drawn.</summary>

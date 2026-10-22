@@ -67,6 +67,16 @@ public class Rev095Tests
         Assert.Contains(ax.Layers.SelectMany(l => l.Items), i => i.Name.Contains("STAIR") && i.Fill == "NC_STAIR");
     }
 
+    /// <summary>Rev 0.9.7: material hatches only on the ground floor plan, not on veiled upper floors or the overview.</summary>
+    [Fact]
+    public void Hatches_OnlyOnTheGroundFloorPlan()
+    {
+        var plan = PlanDrawing.Build(Ctx());
+        var hatches = plan.Layers.SelectMany(l => l.Items).Where(i => i.Name.EndsWith("_HATCH")).Select(i => i.Name).ToList();
+        Assert.Contains(hatches, n => n.StartsWith("PLN_L1_"));
+        Assert.DoesNotContain(hatches, n => n.StartsWith("PLN_L2_") || n.StartsWith("PLO_"));
+    }
+
     static SourceObject Box(string id, string layer, double x0, double y0, double z0, double x1, double y1, double z1)
     {
         double[] v = { x0, y0, z0, x1, y0, z0, x1, y1, z0, x0, y1, z0, x0, y0, z1, x1, y0, z1, x1, y1, z1, x0, y1, z1 };
