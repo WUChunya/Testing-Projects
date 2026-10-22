@@ -575,6 +575,9 @@ public static class AxonDrawing
             prisms.AddRange(ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i), _ => z - t, floorThicknessFt: t));
             // Open slabs / glass of this level (terrace, canopy) as part of its plate (user rev 0.8.4).
             prisms.AddRange(Exposed(d, ctx, mine, _ => (z - t, z)));
+            // Stairs of this storey standing on the plate (user rev 0.9.5).
+            if (!lvl.IsMezzanine)       // a mezzanine lies inside its main storey, whose plate carries the stairs
+                prisms.AddRange(StairPrisms(d, ctx, lvl.Elevation - 2, Sections.SectionGeometry.Top(r, i), z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_", lvl.Elevation));
             // Glass is see-through (user rev 0.8.7, as in 03): flat glass of the plate and the facade glass of this
             // storey standing on it at its real height, drawn over the plate at their opacity.
             // The storey's facade glass stands on its main level up to the next main level; a mezzanine (a parking deck
@@ -655,16 +658,18 @@ public static class AxonDrawing
         var ax = ctx.Style.Axon;
         var lv = ax.Levels;
         var edge = d.Gray(lv.EdgeStroke);
+        var stair = ctx.Style.Stairs;
         foreach (var f in faces)
             sheet.Paint.Add((layer, f.Prism.Group switch
             {
+                "STR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(stair.Stroke), stair.StrokePt),
                 "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
                 "EXP" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt),
                 // Sides of the volumes and the slab (user rev 0.9.3): no white seams between the facets of a curved side.
                 "PRG" or "SLAB" when !f.IsTop && ctx.Style.Axon.Exploded.VolumeHeightFt > 0 => new Spec(f.Name, f.Screen, f.Fill, f.Fill, lv.EdgePt * 0.5),
                 _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
             }));
-        var outline = Shells(AxonFaces.Union(faces.Select(f => f.Screen)));
+        var outline = Shells(AxonFaces.Union(faces.Where(f => f.Prism.Group != "STR").Select(f => f.Screen)));
         if (!outline.IsEmpty) sheet.Paint.Add((layer, new Spec(prefix + "OUTLINE", outline, null, d.Gray(ax.LineColor), ax.SlabSilhouettePt)));
     }
 
@@ -791,6 +796,8 @@ public static class AxonDrawing
                 .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             prisms = UnderPlates(prisms, plates);
             prisms.AddRange(plates);
+            // This storey's stairs (user rev 0.9.5), as they stand.
+            if (!lvl.IsMezzanine) prisms.AddRange(StairPrisms(d, ctx, lvl.Elevation - 2, Sections.SectionGeometry.Top(r, i), 0, "", lvl.Elevation));
             // Screens standing on this floor (or on a roof below it): solid walls, white floor, open top.
             prisms.AddRange(ScreenPrisms(d, ctx, screens.Where(e => e.LevelIndex == i || lower.Contains(e.LevelIndex))));
             // Glass is see-through (user rev 0.8.7): this floor's flat glass, and the facade glass up to its ceiling.
@@ -804,6 +811,7 @@ public static class AxonDrawing
                 sheet.Paint.Add(("PD_PROGRAM", f.Prism.Group switch
                 {
                     "BELOW" => new Spec(f.Name, f.Screen, white, belowLine, lv.BelowStrokePt),
+                    "STR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Stairs.Stroke), ctx.Style.Stairs.StrokePt),
                     "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
                     "EXP" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt),
                     _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
@@ -925,6 +933,27 @@ public static class AxonDrawing
     }
 
     // ---------------------------------------------------------------- shared
+
+    /// <summary>
+    /// Stair parts (treads, column, guard; style stairs) starting in [<paramref name="z0"/>, <paramref name="z1"/>) as
+    /// white prisms raised by <paramref name="dz"/>, none below <paramref name="floor"/> (user rev 0.9.5).
+    /// </summary>
+    static IEnumerable<Prism> StairPrisms(PD.Core.Drawing.Drawing d, ExportContext ctx, double z0, double z1, double dz, string prefix, double floor)
+    {
+        var r = ctx.Result;
+        var fill = d.Swatch("NC_STAIR", ctx.Style.Stairs.Fill);
+        var n = 0;
+        foreach (var o in r.Local.Objects.Where(o => PlanDrawing.IsStair(ctx, o) && o.Mesh != null && !r.Stray.Contains(o.Id)
+                     && o.BBox.MinZ >= z0 && o.BBox.MinZ < z1 - 0.3))
+        {
+            // Simplified outline (a tread's arc in a few segments): the hidden-face pass stays quick.
+            var top = AxonFaces.Safe(() => NetTopologySuite.Simplify.DouglasPeuckerSimplifier.Simplify(MeshProjection.TopDown(o.Mesh!), 0.25), MeshSlicer.Factory.CreatePolygon());
+            if (top.IsEmpty || top.Area < 0.05) continue;
+            // standing on the floor: a column or guard from the slab's underside starts at the floor line
+            var b0 = Math.Max(o.BBox.MinZ, floor);
+            yield return new Prism($"{prefix}STAIR_{++n:000}", top, b0 + dz, Math.Max(b0 + 0.2, o.BBox.MaxZ) + dz, fill, fill, fill, "STR");
+        }
+    }
 
     /// <summary>Open space (axon.openPrograms: circulation, interaction) is never a volume (user rev 0.9.3).</summary>
     static bool IsOpen(ExportContext ctx, ProgramBlock b) => ctx.Style.Axon.OpenPrograms.Contains(b.ProgramKey, StringComparer.OrdinalIgnoreCase);
@@ -1128,13 +1157,13 @@ public static class AxonDrawing
                 ? new Spec($"BG_{n:000}", proj.Plane(g, z), null, hint.Stroke, hint.Pt, hint.Dash, !bg.IsLine)
                 : new Spec($"BG_{n:000}", proj.Plane(g, z), fill, stroke, pt, dash, !bg.IsLine, op * opacity)));
             // Green and water: hatch over the fill (as in plan).
-            var hatch = PlanBackground.PaintOf(ctx.Style, bg.Role, family).Hatch;
+            var hatch = PlanBackground.PaintFor(ctx.Style, bg, family).Hatch;
             if (hatch != null && !bg.IsLine && !outlineOnly)
             {
                 var lines = PlanBackground.Hatch(g, hatch);
                 if (!lines.IsEmpty)
                     sheet.Paint.Add(("AXON_SITE", new Spec($"BG_{n:000}_HATCH", proj.Plane(lines, z), null,
-                        d.Swatch(PlanBackground.SwatchName(bg.Role) + "_HATCH", hatch.Stroke), hatch.StrokePt, hatch.Dash, Closed: false, Opacity: hatch.Opacity * opacity)));
+                        d.Swatch(PlanBackground.HatchSwatch(bg), hatch.Stroke), hatch.StrokePt, hatch.Dash, Closed: false, Opacity: hatch.Opacity * opacity)));
             }
         }
 

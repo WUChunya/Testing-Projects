@@ -769,6 +769,264 @@
     "treeClearPt": 1.0,
     "propertySiteMarginFt": 50.0
   },
+  "siteMaterialsComment": "User rev 0.9.5: our site areas get a material paint by keyword in layer path + object name (longest keyword wins; list order = drawing order within the role). Pastel palette after the user's reference (10-22: cream / peach paving, soft salmon walks, pale yellow-green lawn, mint planting, lavender water); program colours unchanged.",
+  "siteMaterials": [
+    {
+      "key": "PAVERS",
+      "match": [
+        "PLAZA",
+        "PROMENADE",
+        "PAVING",
+        "LOADING",
+        "::WALKS",
+        "DROP OFF",
+        "SITE LANDSCAPE"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#F7EBDC"
+      }
+    },
+    {
+      "key": "STONE",
+      "match": [
+        "RIVER STEPS",
+        "STAGE",
+        "STAIR"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#EFE2CC",
+        "hatch": {
+          "stroke": "#D9C9AC",
+          "strokePt": 0.35,
+          "spacingFt": 3.0,
+          "angleDeg": 0
+        }
+      }
+    },
+    {
+      "key": "COURT",
+      "match": [
+        "PICNIC",
+        "COURT"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#F6DCCF"
+      }
+    },
+    {
+      "key": "GRAVEL",
+      "match": [
+        "GRAVEL"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#EEE8D8",
+        "hatch": {
+          "stroke": "#C9BFA8",
+          "strokePt": 0.5,
+          "spacingFt": 2.5,
+          "angleDeg": 0,
+          "dash": [
+            0.4,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "key": "TIMBER",
+      "match": [
+        "DECK",
+        "BOARDWALK",
+        "SEATING STEPS",
+        "KAYAK",
+        "TERRACE",
+        "TIMBER",
+        "BENCH",
+        "TIMBER WALK"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#EBD3AE",
+        "hatch": {
+          "stroke": "#D2B488",
+          "strokePt": 0.35,
+          "spacingFt": 2.0,
+          "angleDeg": 30
+        }
+      }
+    },
+    {
+      "key": "RED_WALK",
+      "match": [
+        "GARDEN WALK",
+        "::PATH",
+        "RAMP",
+        "CYCLE",
+        "ROOF WALK",
+        "UPPER WALK",
+        "PICNIC WALK"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#F3C9BC"
+      }
+    },
+    {
+      "key": "INLAY",
+      "match": [
+        "PAVING INLAY",
+        "CROSS WALK",
+        "INLAY"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#CFCDE6"
+      }
+    },
+    {
+      "key": "PLAY",
+      "match": [
+        "::PLAY",
+        "SWING"
+      ],
+      "roles": [
+        "NC.Hardscape"
+      ],
+      "plan": {
+        "fill": "#F6E7A6"
+      }
+    },
+    {
+      "key": "LAWN",
+      "match": [
+        "LAWN",
+        "GREENS",
+        "GARDEN",
+        "GREEN ROOF",
+        "TERRACE",
+        "GREEN SPACE"
+      ],
+      "roles": [
+        "NC.Green"
+      ],
+      "plan": {
+        "fill": "#E1EBC4",
+        "hatch": {
+          "stroke": "#B9C98E",
+          "strokePt": 0.4,
+          "spacingFt": 5.0,
+          "angleDeg": 45,
+          "dash": [
+            1.2,
+            3.6
+          ]
+        }
+      }
+    },
+    {
+      "key": "MEADOW",
+      "match": [
+        "MEADOW"
+      ],
+      "roles": [
+        "NC.Green"
+      ],
+      "plan": {
+        "fill": "#EEF0C8",
+        "hatch": {
+          "stroke": "#CBCF8E",
+          "strokePt": 0.4,
+          "spacingFt": 4.0,
+          "angleDeg": 60,
+          "dash": [
+            0.8,
+            2.4
+          ]
+        }
+      }
+    },
+    {
+      "key": "PLANTING",
+      "match": [
+        "PLANTING",
+        "PLANTER",
+        "GROVE",
+        "EDGE",
+        "HEDGE",
+        "BED"
+      ],
+      "roles": [
+        "NC.Green"
+      ],
+      "plan": {
+        "fill": "#CFE3CC",
+        "hatch": {
+          "stroke": "#9FC19A",
+          "strokePt": 0.4,
+          "spacingFt": 3.0,
+          "angleDeg": 45,
+          "dash": [
+            1.0,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "key": "WATER",
+      "match": [
+        "RAIN GARDEN",
+        "WATER PLAY",
+        "SPLASH",
+        "RILL",
+        "POOL"
+      ],
+      "roles": [
+        "NC.Water"
+      ],
+      "plan": {
+        "fill": "#D9DBF0",
+        "hatch": {
+          "stroke": "#A9ADD6",
+          "strokePt": 0.4,
+          "spacingFt": 4.0,
+          "angleDeg": 0,
+          "dash": [
+            3.0,
+            2.0
+          ]
+        }
+      }
+    }
+  ],
+  "stairs": {
+    "layerKeywords": [
+      "STAIR",
+      "TREAD"
+    ],
+    "fill": "#FFFFFF",
+    "stroke": "#4A4A4A",
+    "strokePt": 0.5,
+    "comment": "User rev 0.9.5: NC.Structure objects on stair layers are stairs: in plans every tread / part within the storey seen from above (upper ones over lower), in axons as solids — white fill, 0.5 pt dark grey line."
+  },
   "rolesComment": "Paint per layer role (tab 1). BG.* = existing context, NC.* = our new construction (Program / NC.Core / NC.Stair are program masses and use the colour scheme). plan = docs/SITE_STYLE.md §2, axon = §1, view = sections / elevations.",
   "roles": {
     "BG.Hardscape": {

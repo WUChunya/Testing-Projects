@@ -18,6 +18,14 @@ public sealed class Style
     public PlanStyle Plan { get; set; } = new();
     /// <summary>Paint per layer role and drawing family (plan / axon / view): BG.* context and NC.* new construction.</summary>
     public Dictionary<string, RolePaint> Roles { get; set; } = new();
+    /// <summary>
+    /// User rev 0.9.5: our site areas (NC.Hardscape / NC.Green / NC.Water) take a material paint by keyword in their
+    /// layer path or object name (pavers, gravel, timber, red walk, lawn, planting, meadow…); first match wins; drawn in
+    /// list order within their role (base materials first).
+    /// </summary>
+    public List<SiteMaterial> SiteMaterials { get; set; } = new();
+    /// <summary>User rev 0.9.5: stairs (NC.Structure on a layer named like a stair) in plans and axons.</summary>
+    public StairStyle Stairs { get; set; } = new();
     public AxonStyle Axon { get; set; } = new();
     public ChartsStyle Charts { get; set; } = new();
     public EntourageStyle Entourage { get; set; } = new();
@@ -89,6 +97,25 @@ public sealed class Paint
     public Paint? Line { get; set; }
     /// <summary>Hatch drawn over the fill (green: grass ticks, water: ripples); no outline.</summary>
     public HatchStyle? Hatch { get; set; }
+}
+
+public sealed class SiteMaterial
+{
+    public string Key { get; set; } = "";
+    public List<string> Match { get; set; } = new();
+    /// <summary>Roles it applies to (empty: NC.Hardscape, NC.Green and NC.Water).</summary>
+    public List<string> Roles { get; set; } = new();
+    public Paint Plan { get; set; } = new();
+    public Paint? Axon { get; set; }
+}
+
+public sealed class StairStyle
+{
+    /// <summary>Layer path keywords of NC.Structure objects drawn as stairs (each tread as seen from above).</summary>
+    public List<string> LayerKeywords { get; set; } = new() { "STAIR", "TREAD" };
+    public string Fill { get; set; } = "#FFFFFF";
+    public string Stroke { get; set; } = "#4A4A4A";
+    public double StrokePt { get; set; } = 0.5;
 }
 
 /// <summary>Parallel lines clipped to an area, at true scale.</summary>

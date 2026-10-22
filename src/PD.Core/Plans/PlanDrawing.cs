@@ -288,13 +288,13 @@ public static class PlanDrawing
             item.Opacity = opacity;
             d.Layer(PlanBackground.LayerName(b)).Items.Add(At(item, a));
             // Green and water: a hatch over the fill instead of an outline.
-            var hatch = PlanBackground.PaintOf(ctx.Style, b.Role, "plan").Hatch;
+            var hatch = PlanBackground.PaintFor(ctx.Style, b, "plan").Hatch;
             if (hatch != null && !b.IsLine)
             {
                 var lines = PlanBackground.Hatch(b.Geometry, hatch);
                 if (!lines.IsEmpty)
                 {
-                    var h = map.Geom($"{p}BG_{n:000}_HATCH", lines, null, d.Swatch(PlanBackground.SwatchName(b.Role) + "_HATCH", hatch.Stroke), hatch.StrokePt, false);
+                    var h = map.Geom($"{p}BG_{n:000}_HATCH", lines, null, d.Swatch(PlanBackground.HatchSwatch(b), hatch.Stroke), hatch.StrokePt, false);
                     h.Dash = hatch.Dash;
                     h.Opacity = hatch.Opacity;
                     d.Layer(PlanBackground.LayerName(b)).Items.Add(At(h, a));
@@ -332,13 +332,14 @@ public static class PlanDrawing
         // Our structure (columns, walls) cut at the plan height: solid dark.
         var cutAt = plan.Level.Elevation + ctx.Rules.Cleanup.PlanCutHeightFt;
         var sPaint = PlanBackground.PaintOf(ctx.Style, Roles.Structure, "plan");
-        foreach (var (o, n) in r.Local.Objects.Where(o => o.Role == Roles.Structure && o.Mesh != null && !r.Stray.Contains(o.Id)
+        foreach (var (o, n) in r.Local.Objects.Where(o => o.Role == Roles.Structure && o.Mesh != null && !r.Stray.Contains(o.Id) && !IsStair(ctx, o)
                      && o.BBox.MinZ <= cutAt && o.BBox.MaxZ >= cutAt).Select((o, n) => (o, n)))
         {
             var cut = MeshSlicer.SliceToPolygon(o.Mesh!, cutAt, ctx.Rules.Cleanup.WeldToleranceFt, ctx.Rules.Cleanup.GapCloseToleranceFt, closeOpen: true);
             if (cut.IsEmpty) cut = MeshProjection.TopDown(o.Mesh!);
             d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STRUCTURE_{n:000}", cut, d.Swatch("NC_STRUCTURE", sPaint.Fill), null, 0), a));
         }
+        Stairs(d, ctx, a, map, i, p);
         PlanLinework.Add(d, ctx, a, map, i, p);
         // Open slabs and flat glass on this level (roof, terrace, canopy, user rev 0.8.4): under the blocks, no label.
         foreach (var it in ExposedItems(d, ctx, map, p, i)) d.Layer("PD_PROGRAM").Items.Insert(0, At(it, a));
@@ -675,6 +676,31 @@ public static class PlanDrawing
         foreach (var b in background) drawn.ExpandToInclude(b.Geometry.EnvelopeInternal);
         var outside = MeshSlicer.Polygonal(Safe(() => MeshSlicer.Factory.ToGeometry(drawn).Difference(plan.Union)));
         Draw(drawn.IsNull || outside.IsEmpty ? generated : PD.Core.Entourage.EntouragePlacer.WithModelled(ctx, generated, outside));
+    }
+
+    /// <summary>An NC.Structure object on a stair layer (style stairs.layerKeywords).</summary>
+    public static bool IsStair(ExportContext ctx, PD.Core.Model.SourceObject o) => o.Role == Roles.Structure
+        && ctx.Style.Stairs.LayerKeywords.Any(k => o.LayerPath.Contains(k, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Stairs of this storey as seen from above (user rev 0.9.5): every tread / part that lies in the storey, lower ones
+    /// first, white with a thin dark line.
+    /// </summary>
+    static void Stairs(PD.Core.Drawing.Drawing d, ExportContext ctx, int a, PageMap map, int i, string p)
+    {
+        var r = ctx.Result;
+        var st = ctx.Style.Stairs;
+        double z0 = r.Plans[i].Level.Elevation, z1 = Sections.SectionGeometry.Top(r, i);
+        var fill = d.Swatch("NC_STAIR", st.Fill);
+        var line = d.Gray(st.Stroke);
+        var n = 0;
+        foreach (var o in r.Local.Objects.Where(o => IsStair(ctx, o) && o.Mesh != null && !r.Stray.Contains(o.Id)
+                     && o.BBox.MaxZ > z0 + 0.3 && o.BBox.MinZ < z1 - 0.3).OrderBy(o => o.BBox.MaxZ))
+        {
+            var top = MeshProjection.TopDown(o.Mesh!);
+            if (top.IsEmpty || top.Area < 0.05) continue;
+            d.Layer("PD_STRUCTURE").Items.Add(At(map.Poly($"{p}STAIR_{++n:000}", top, fill, line, st.StrokePt), a));
+        }
     }
 
     static string LabelText(ExportContext ctx, PD.Core.Cleanup.Footprint f) => f.OpenToBelow ? ctx.Style.Plan.OpenToBelowLabel

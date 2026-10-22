@@ -9,7 +9,8 @@ using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 namespace PD.Core.Plans;
 
 /// <summary>A background element seen from above, clipped to the drawing extent (feet). Z = top of the object.</summary>
-public sealed record BackgroundItem(string Role, NtsGeometry Geometry, bool IsLine, string Name = "", double Z = 0, double Z0 = 0);
+public sealed record BackgroundItem(string Role, NtsGeometry Geometry, bool IsLine, string Name = "", double Z = 0, double Z0 = 0,
+    PD.Core.Config.SiteMaterial? Material = null, int MaterialIndex = -1);
 
 /// <summary>
 /// Site and context seen from above (PRD 5.2 / A1, docs/SITE_STYLE.md §2): context ground (blocks, roads, landscape,
@@ -81,7 +82,7 @@ public static class PlanBackground
             if (o.Role == Roles.Building && !g.IsEmpty && !ours.IsEmpty && OnOurSite(g, ours)) continue;
             if (!g.IsEmpty && g.Area > 0.5)
             {
-                items.Add(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ));
+                items.Add(Mat(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ), style, o.LayerPath));
                 if (greenTrees is { Enabled: true } && greenTrees.Roles.Contains(o.Role) && b.MaxZ <= ground + greenTrees.MaxAboveGroundFt
                     && !greenTrees.OpenNameKeywords.Any(k => o.Name.Contains(k, StringComparison.OrdinalIgnoreCase)))
                     greens.Add((full, o.Role, o.Id));
@@ -120,7 +121,31 @@ public static class PlanBackground
         return items;
     }
 
-    static double Rank(BackgroundItem i) => i.IsLine && !IsLineRole(i.Role) ? Array.IndexOf(Order, Roles.Building) - 0.5 : Array.IndexOf(Order, i.Role);
+    static double Rank(BackgroundItem i) => i.IsLine && !IsLineRole(i.Role) ? Array.IndexOf(Order, Roles.Building) - 0.5
+        : Array.IndexOf(Order, i.Role) + (i.MaterialIndex + 1) * 0.001;
+
+    /// <summary>The site material of an NC area by keyword in its layer path or name (style siteMaterials).</summary>
+    static BackgroundItem Mat(BackgroundItem i, Style? s, string layer)
+    {
+        if (s == null || s.SiteMaterials.Count == 0 || i.Role is not (Roles.NcHardscape or Roles.Green or Roles.NcWater)) return i;
+        var text = (layer + " " + i.Name).ToUpperInvariant();
+        // The longest matching keyword wins ("PAVING INLAY" over "PAVING"); list order is the drawing order.
+        var best = (k: -1, len: 0);
+        for (var k = 0; k < s.SiteMaterials.Count; k++)
+        {
+            var m = s.SiteMaterials[k];
+            if (m.Roles.Count > 0 && !m.Roles.Contains(i.Role)) continue;
+            foreach (var w in m.Match)
+                if (w.Length > best.len && text.Contains(w.ToUpperInvariant())) best = (k, w.Length);
+        }
+        return best.k < 0 ? i : i with { Material = s.SiteMaterials[best.k], MaterialIndex = best.k };
+    }
+
+    /// <summary>Paint of a background item: its site material when it has one, else its role's.</summary>
+    public static Paint PaintFor(Style s, BackgroundItem i, string family) => i.Material is { } m
+        ? (family == "axon" ? m.Axon ?? m.Plan : m.Plan) : PaintOf(s, i.Role, family);
+
+    static string SwatchOf(BackgroundItem i) => i.Material is { } m ? "MAT_" + m.Key.ToUpperInvariant() : SwatchName(i.Role);
 
     /// <summary>Roles that are lines by nature (their own paint is the stroke).</summary>
     public static bool IsLineRole(string role) => role is Roles.Line or Roles.PropertyLine;
@@ -326,8 +351,8 @@ public static class PlanBackground
     public static (string? fill, string? stroke, double strokePt, double[]? dash, double opacity) Paint(PD.Core.Drawing.Drawing d, Style s, BackgroundItem i,
         string family = "plan")
     {
-        var p = PaintOf(s, i.Role, family);
-        var name = SwatchName(i.Role);
+        var p = PaintFor(s, i, family);
+        var name = SwatchOf(i);
         if (i.IsLine && !IsLineRole(i.Role))
         {
             // Open curves of an area role: the role's line paint, else a darker shade of its fill.
@@ -336,6 +361,8 @@ public static class PlanBackground
         }
         return (i.IsLine ? null : d.Swatch(name, p.Fill), d.Swatch(name + "_LINE", p.Stroke), p.StrokePt ?? s.Strokes.BackgroundPt, p.Dash, p.Opacity);
     }
+
+    public static string HatchSwatch(BackgroundItem i) => SwatchOf(i) + "_HATCH";
 
     public static string SwatchName(string role) => role.Replace('.', '_').ToUpperInvariant();
 
