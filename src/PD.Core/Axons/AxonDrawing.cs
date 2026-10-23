@@ -160,7 +160,8 @@ public static class AxonDrawing
         var folds = AxonFaces.Folds(withScreens);
         if (!folds.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("FOLDS", folds, null, line, st.EdgePt, Closed: false)));
         // The glass is part of the envelope: the outline runs round it too.
-        var outline = AxonFaces.Union(withScreens.Concat(glassFaces).Select(f => f.Screen));
+        var outline = AxonFaces.Union(new[] { Silhouette(proj, program.Concat(screens).Concat(plates.Where(q => !IsGlass(q)))) }
+            .Concat(glassFaces.Select(f => f.Screen)));
         if (full)
         {
             // The heavy line only on the outer silhouette (no holes, no hairline gaps between faces).
@@ -913,8 +914,8 @@ public static class AxonDrawing
             var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
                 : AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
             PaintGlass(d, ctx, proj, sheet, glassFaces);
-            // The heavy outline goes round the building only, not the slope garden or the roof gardens.
-            var stack = AxonFaces.Union(faces.Where(f => f.Prism.Group is not ("SLP" or "RG")).Select(f => f.Screen));
+            // The heavy outline goes round the building only, not the slope garden or the roof gardens on it.
+            var stack = Silhouette(proj, prisms.Where(q => q.Group is not ("SLP" or "RG" or "STR")));
             var silhouette = Shells(stack);
             if (!silhouette.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", silhouette, null, line, lv.SilhouettePt)));
             // Above this floor: only the building's total outline, where the drawn stack does not cover it.
@@ -928,6 +929,26 @@ public static class AxonDrawing
             sheets.Add(sheet);
         }
         return sheets;
+    }
+
+    /// <summary>
+    /// Page silhouette of prisms as if nothing stood in front of them (top, bottom and every side), so a roof garden
+    /// lying on the building never cuts the building's outline (rev 0.10.0).
+    /// </summary>
+    static NtsGeometry Silhouette(AxonProjection proj, IEnumerable<Prism> prisms)
+    {
+        var parts = new List<NtsGeometry>();
+        foreach (var p in prisms)
+            foreach (var poly in AxonFaces.Polygons(AxonFaces.Simplify(p.Plan)))
+            {
+                parts.Add(proj.Plane(poly, p.Z1));
+                parts.Add(proj.Plane(poly, p.Z0));
+                var pts = poly.ExteriorRing.Coordinates;
+                for (var i = 0; i + 1 < pts.Length; i++)
+                    if (pts[i].Distance(pts[i + 1]) > 1e-3)
+                        parts.Add(proj.Polygon(new[] { (pts[i].X, pts[i].Y, p.Z0), (pts[i + 1].X, pts[i + 1].Y, p.Z0), (pts[i + 1].X, pts[i + 1].Y, p.Z1), (pts[i].X, pts[i].Y, p.Z1) }));
+            }
+        return AxonFaces.Safe(() => AxonFaces.Union(parts.Where(g => g.IsValid && !g.IsEmpty)).Buffer(0.02), MeshSlicer.Factory.CreatePolygon());
     }
 
     /// <summary>Outer shells of a screen union (no holes, no hairline gaps).</summary>
