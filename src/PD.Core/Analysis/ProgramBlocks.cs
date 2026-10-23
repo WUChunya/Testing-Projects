@@ -4,7 +4,8 @@ using NtsGeometry = NetTopologySuite.Geometries.Geometry;
 namespace PD.Core.Analysis;
 
 /// <summary>One resolved program footprint extruded over its band: level elevation → next level (or the top of a kept tall space).</summary>
-public sealed record ProgramBlock(Footprint Footprint, int LevelIndex, double Z0, double Z1)
+/// <param name="FromMezzanine">Axons (rev 0.9.9): a block of a mezzanine drawn with the main level below it.</param>
+public sealed record ProgramBlock(Footprint Footprint, int LevelIndex, double Z0, double Z1, bool FromMezzanine = false)
 {
     public string MassId => Footprint.Mass.Id;
     public string ProgramKey => Footprint.Mass.ProgramKey;

@@ -545,6 +545,11 @@ public sealed class PlanStyle
 /// </summary>
 public sealed class AxonStyle
 {
+    /// <summary>
+    /// Rev 0.9.9: a mezzanine (the parking decks) is no plate of its own in the axons: its blocks stand on the main level
+    /// below at their own height, its open slabs and glass go with that level.
+    /// </summary>
+    public bool MezzaninesOnMainLevel { get; set; } = true;
     /// <summary>04_Axon_Levels as an axonometric cutaway (user rev 0.8.3).</summary>
     public LevelsAxonStyle Levels { get; set; } = new();
     /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>

@@ -594,6 +594,7 @@
     "comment": "PRD 5.4. Shared values from docs/AXON_STYLE.md (styles/axon_style.json); stacked = docs/SITE_STYLE.md §1 site program axon; exploded = AXON_STYLE §7 (A, Atlanta); explodedB = SITE_STYLE §3 (planometric). azimuthDeg = where the viewer stands (225 = south-west).",
     "azimuthDeg": 225.0,
     "elevationDeg": 35.264,
+    "mezzaninesOnMainLevel": true,
     "foreshorten": false,
     "lineColor": "#000000",
     "silhouettePt": 2.5,

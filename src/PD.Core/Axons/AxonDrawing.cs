@@ -61,6 +61,7 @@ public static class AxonDrawing
         var d = new PD.Core.Drawing.Drawing { FileName = FileName(kind) };
         ctx.AddStandardStyles(d);
         var blocks = ProgramBlocks.Build(ctx.Result);
+        if (ax.MezzaninesOnMainLevel) blocks = OnMainLevels(ctx.Result, blocks);
         if (blocks.Count == 0)
         {
             d.Notes.Add("Axon: no program blocks.");
@@ -120,7 +121,7 @@ public static class AxonDrawing
         if (!site && st.OpenProgramsFlat) { var massing = band; band = b => IsOpen(ctx, b) ? OnFloor(ctx, massing(b).Item1) : massing(b); }
         // Open slabs and glass at their real height (user rev 0.8.6: every floor edge the model shows, as in Rhino);
         // the blocks stretched under them stop at their underside.
-        var plates = UnderScreens(ctx, Exposed(d, ctx, blocks, band: null));
+        var plates = UnderScreens(ctx, Exposed(d, ctx, blocks, band: null, shape: Beyond(ctx, Plates(blocks), blocks), plates: Plates(blocks)));
         var program = UnderPlates(ProgramPrisms(d, ctx, blocks, band, st.SideDarken, coreOverride: false).ToList(), plates);
         // Screens as solid walls with a white floor, open on top (user rev 0.8.3).
         var screens = ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => blocks.Any(b => b.LevelIndex == e.LevelIndex))).ToList();
@@ -258,6 +259,56 @@ public static class AxonDrawing
         var next = lv.FirstOrDefault(l => !l.IsMezzanine && l.Elevation > b.Z1 - 3 && l.Elevation > z0 + 1);
         var z1 = next != null && next.Elevation - b.Z1 <= 3 ? next.Elevation : b.Z1;
         return (z0, Math.Max(z1, z0 + 0.1));
+    }
+
+    /// <summary>The main level a mezzanine lies in (the nearest non-mezzanine level at or below it).</summary>
+    public static int MainLevel(AnalysisResult r, int i)
+    {
+        while (i > 0 && r.Levels[i].IsMezzanine) i--;
+        return i;
+    }
+
+    /// <summary>Rev 0.9.9: mezzanine blocks go with their main level (see <see cref="Config.AxonStyle.MezzaninesOnMainLevel"/>).</summary>
+    public static List<ProgramBlock> OnMainLevels(AnalysisResult r, List<ProgramBlock> blocks) =>
+        blocks.Select(b => MainLevel(r, b.LevelIndex) is var m && m != b.LevelIndex ? b with { LevelIndex = m, FromMezzanine = true } : b).ToList();
+
+    /// <summary>The drawn plate an open slab of level <paramref name="i"/> goes with: its main level, else the highest plate under it (a roof over the top storey).</summary>
+    static int PlateOf(ExportContext ctx, IReadOnlyCollection<int> plates, int i)
+    {
+        var m = ctx.Style.Axon.MezzaninesOnMainLevel ? MainLevel(ctx.Result, i) : i;
+        return plates.Contains(m) ? m : plates.Where(p => p <= m).DefaultIfEmpty(m).Max();
+    }
+
+    /// <summary>
+    /// Exploded / floor key axons (rev 0.9.9): a canopy or roof above the floor of its plate shows only beyond that
+    /// plate's blocks, so the roof over a penthouse never hides its program colour.
+    /// </summary>
+    static Func<ExposedSurface, NtsGeometry> Beyond(ExportContext ctx, IReadOnlyCollection<int> plates, List<ProgramBlock> blocks) => e =>
+    {
+        var p = PlateOf(ctx, plates, e.LevelIndex);
+        if (e.Z1 <= ctx.Result.Levels[p].Elevation + 3) return e.Area;
+        var own = AxonFaces.Union(blocks.Where(b => b.LevelIndex == p).Select(b => b.Geometry));
+        return own.IsEmpty ? e.Area : AxonFaces.Safe(() => MeshSlicer.Polygonal(e.Area.Difference(own)), e.Area);
+    };
+
+    /// <summary>
+    /// A main-level block under a mezzanine block of the same program (parking under its upper deck) reaches up to it,
+    /// so the two read as one volume; the upper one keeps no label of its own.
+    /// </summary>
+    static (Dictionary<ProgramBlock, double> Top, HashSet<string> Unlabelled) Stacks(List<ProgramBlock> mine)
+    {
+        var top = new Dictionary<ProgramBlock, double>();
+        var quiet = new HashSet<string>();
+        foreach (var upper in mine.Where(b => b.FromMezzanine))
+            foreach (var low in mine.Where(b => !b.FromMezzanine && b.ProgramKey == upper.ProgramKey && b.Z1 <= upper.Z0 + 0.5 && upper.Z0 - b.Z1 < 4
+                         && b.Geometry.EnvelopeInternal.Intersects(upper.Geometry.EnvelopeInternal)))
+            {
+                var shared = AxonFaces.Safe(() => low.Geometry.Intersection(upper.Geometry), MeshSlicer.Factory.CreatePolygon()).Area;
+                if (shared < 0.3 * Math.Min(low.Geometry.Area, upper.Geometry.Area)) continue;
+                top[low] = Math.Max(top.GetValueOrDefault(low, low.Z1), upper.Z0);
+                quiet.Add(upper.MassId);
+            }
+        return (top, quiet);
     }
 
     /// <summary>
@@ -492,14 +543,18 @@ public static class AxonDrawing
     /// blocks' levels; <paramref name="band"/> moves them (exploded plates), default = their real height.
     /// </summary>
     static IEnumerable<Prism> Exposed(PD.Core.Drawing.Drawing d, ExportContext ctx, IEnumerable<ProgramBlock> blocks, Func<ExposedSurface, (double Z0, double Z1)>? band,
-        Func<ExposedSurface, bool>? which = null, Func<ExposedSurface, NtsGeometry>? shape = null)
+        Func<ExposedSurface, bool>? which = null, Func<ExposedSurface, NtsGeometry>? shape = null, IReadOnlyCollection<int>? plates = null)
     {
         var levels = blocks.Select(b => b.LevelIndex).ToHashSet();
+        // Slabs of a mezzanine or of a level with no blocks (the roof over the top storey) go with the plate under them (rev 0.9.9).
+        var all = plates ?? levels;
         var st = ctx.Style.Exposed;
         var roof = PlanBackground.PaintOf(ctx.Style, Roles.Roof, "axon");
         var dk = ctx.Style.Axon.SideDarken;
-        foreach (var (e, n) in ExposedSurfaces.For(ctx).Where(e => levels.Contains(e.LevelIndex) && (which?.Invoke(e) ?? true)).Select((e, n) => (e, n)))
+        foreach (var (e, n) in ExposedSurfaces.For(ctx).Where(e => levels.Contains(PlateOf(ctx, all, e.LevelIndex)) && (which?.Invoke(e) ?? true)).Select((e, n) => (e, n)))
         {
+            // Far above the top storey (a stray copy in the model) is no part of the building.
+            if (e.Z0 > Sections.SectionGeometry.Top(ctx.Result, PlateOf(ctx, all, e.LevelIndex)) + 15) continue;
             var hex = e.IsGlass ? st.GlassFill : roof.Fill ?? "#F2F2F2";
             var name = e.IsGlass ? "EXPOSED_GLASS" : "EXPOSED_ROOF";
             var top = d.Swatch(name, hex);
@@ -574,7 +629,9 @@ public static class AxonDrawing
             // A screen on this level stands on the plate: solid walls, white floor, open top (user rev 0.8.3).
             prisms.AddRange(ScreenPrisms(d, ctx, ScreenEnclosures.For(ctx).Where(e => e.LevelIndex == i), _ => z - t, floorThicknessFt: t));
             // Open slabs / glass of this level (terrace, canopy) as part of its plate (user rev 0.8.4).
-            prisms.AddRange(Exposed(d, ctx, mine, _ => (z - t, z)));
+            // A canopy (top off the level line), a mezzanine deck or the roof over the top storey keeps its height above the plate (rev 0.9.9).
+            prisms.AddRange(Exposed(d, ctx, mine, e => e.LevelIndex == i && e.Z1 <= lvl.Elevation + 3 ? (z - t, z)
+                : (z + e.Z0 - lvl.Elevation, z + Math.Max(e.Z1, e.Z0 + 0.3) - lvl.Elevation), shape: Beyond(ctx, levels, blocks), plates: levels));
             // Stairs of this storey standing on the plate (user rev 0.9.5).
             if (!lvl.IsMezzanine)       // a mezzanine lies inside its main storey, whose plate carries the stairs
                 prisms.AddRange(StairPrisms(d, ctx, lvl.Elevation - 2, Sections.SectionGeometry.Top(r, i), z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_", lvl.Elevation));
@@ -709,6 +766,11 @@ public static class AxonDrawing
             var mine = blocks.Where(b => b.LevelIndex == i).ToList();
             // Open space (circulation, interaction) is a flat layer on the floor, not a block (user rev 0.9.3).
             var prisms = ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z - t) : (z - t, z), eb.SideDarken, coreOverride: false).ToList();
+            // A plate is a plan: a mezzanine block (rev 0.9.9) shows only where the main level has no block under it.
+            var main = AxonFaces.Union(mine.Where(b => !b.FromMezzanine).Select(b => b.Geometry));
+            prisms = prisms.Zip(mine, (p, b) => !b.FromMezzanine || main.IsEmpty ? p
+                    : p with { Plan = AxonFaces.Safe(() => MeshSlicer.Polygonal(p.Plan.Difference(main)), p.Plan) })
+                .Where(p => !p.Plan.IsEmpty && p.Plan.Area >= 20).ToList();
             var faces = AxonFaces.Render(proj, prisms);
             allFaces.AddRange(faces);
             foreach (var f in faces)
@@ -724,7 +786,14 @@ public static class AxonDrawing
                 if (name.StartsWith("TALL"))
                 {
                     var hull = AxonFaces.Simplify(shape).ConvexHull();
-                    foreach (var (c, m) in hull.Coordinates.Distinct().Select((c, m) => (c, m)))
+                    var corners = hull.Coordinates.Distinct().ToList();
+                    // A round space (auditorium) keeps its two silhouette lines, not one line per vertex (rev 0.9.9).
+                    if (corners.Count > 8)
+                    {
+                        var sx = corners.Select(c => (c, x: proj.Project(c.X, c.Y, z).X)).OrderBy(q => q.x).ToList();
+                        corners = new List<Coordinate> { sx[0].c, sx[^1].c };
+                    }
+                    foreach (var (c, m) in corners.Select((c, m) => (c, m)))
                         sheet.Paint.Add((layer, new Spec($"{ln}_{name}_EDGE_{m:00}", Seg(proj, c.X, c.Y, z, top - t), null,
                             d.Gray(eb.AtriumEnvelope), eb.AtriumEnvelopePt, Closed: false)));
                     continue;
@@ -788,11 +857,14 @@ public static class AxonDrawing
                     var shape = AxonFaces.Union(g.Select(b => b.Geometry));
                     if (!shape.IsEmpty) prisms.Add(new Prism($"{SectionDrawing.Safe(r.Levels[j].Name)}_BELOW_{k + 1:00}", shape, g.Key.Item1, g.Key.Item2, white, white, white, "BELOW"));
                 }
-            prisms.AddRange(ProgramPrisms(d, ctx, blocks.Where(b => b.LevelIndex == i), b => IsOpen(ctx, b) ? OnFloor(ctx, band[b].Z0) : band[b], ax.SideDarken, coreOverride: true));
+            var here = blocks.Where(b => b.LevelIndex == i).ToList();
+            var (_, quiet) = Stacks(here);
+            prisms.AddRange(ProgramPrisms(d, ctx, here, b => IsOpen(ctx, b) ? OnFloor(ctx, band[b].Z0) : band[b], ax.SideDarken, coreOverride: true)
+                .Zip(here, (p, b) => quiet.Contains(b.MassId) ? p with { Label = null } : p));
             // Open slabs / glass of this floor in their paint, those of the floors below in white (user rev 0.8.4);
             // the blocks stretched under them stop at their underside (user rev 0.8.6).
-            var plates = UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null));
-            plates.AddRange(UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null))
+            var plates = UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => b.LevelIndex == i), null, shape: Beyond(ctx, levels, blocks), plates: levels));
+            plates.AddRange(UnderScreens(ctx, Exposed(d, ctx, blocks.Where(b => lower.Contains(b.LevelIndex)), null, shape: Beyond(ctx, levels, blocks), plates: levels))
                 .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             prisms = UnderPlates(prisms, plates);
             prisms.AddRange(plates);
@@ -985,7 +1057,13 @@ public static class AxonDrawing
             var next = Sections.SectionGeometry.Top(r, b.LevelIndex);
             return Math.Max(1.0, Math.Min(b.Z1, next) - Math.Max(b.Z0, lv));
         }
-        res.AddRange(ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z) : (z, z + Height(b)), ctx.Style.Axon.SideDarken, coreOverride: true));
+        // A mezzanine block stands at its own height above the plate; the block of the same program under it reaches up to it.
+        var (stackTop, quiet) = Stacks(mine);
+        double Off(ProgramBlock b) => b.FromMezzanine ? Math.Max(0, b.Z0 - r.Levels[b.LevelIndex].Elevation) : 0;
+        double Tall(ProgramBlock b) => b.FromMezzanine ? Math.Max(1.0, b.Z1 - b.Z0)
+            : stackTop.TryGetValue(b, out var up) ? Math.Max(Height(b), up - Math.Max(b.Z0, r.Levels[b.LevelIndex].Elevation)) : Height(b);
+        res.AddRange(ProgramPrisms(d, ctx, mine, b => IsOpen(ctx, b) ? OnFloor(ctx, z + Off(b)) : (z + Off(b), z + Off(b) + Tall(b)), ctx.Style.Axon.SideDarken, coreOverride: true)
+            .Zip(mine, (p, b) => quiet.Contains(b.MassId) ? p with { Label = null } : p));
         return res;
     }
 
