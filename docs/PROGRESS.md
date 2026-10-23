@@ -2,6 +2,8 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- Rev 35 (v0.10.1): axons — facade pieces merged per height (`axon.facadeMerge*`), glass trimmed only by the opaque faces
+  in front (`AxonFaces.TrimBy`, no second solve): CAMPUS site axon ~29 → 2 min, floor keys 63 → 9 min. Label keys (below).
 - CAMPUS 1022 (`deliverables/2026-10-23_CAMPUS_1022/`, README): names from the layout pages, cleanup, riverside park;
   new style keys `plan.labelLeaders` / `plan.labelNamedOnly` (off by default; on for that output, `CampusLabelTests`).
 - Rev 34 (v0.10.0): axons draw roof gardens / terraces at height, climbing ground as slope bands, tall spaces coloured.
@@ -16,7 +18,6 @@ Update at the end of every session: keep ≤40 lines total, newest first. Replac
 - Rev 26 (v0.9.2): fixed artboards centred on the property line, Fit content when larger; fixture tool `--full`.
 - Rev 25 (v0.9.1): CW markup V2 (plan grid / overhead dashes, section site cuts); Rev 24 (v0.9.0): CW markup on the RIVER
   PDF (site names `plan.siteNameRoles`, modelled people, exploded B trees). Deliverables `2026-10-18/19_RIVER_MARKUP*`.
-- Rev 23 (v0.8.9): `MeshSlicer.Factory` = GeometryOverlay.NG; Rev 22 (v0.8.8) resumable Illustrator run; Rev 14–15 user rev 0.8.
 - Open (HANDOFF §7): "一楼的镂空" = the L1 plate hole (drawn since 0.8.6) or the open ground floor under the podium?
 - Next: next Windows round — opening message, feature map, tuning keys, review workflow and open questions in
   **`docs/HANDOFF.md`**. Review: `DumpForReview` (PD_DUMP / PD_USER / PD_ONLY / PD_ARTBOARD) + `node tools/svg_shot.mjs`.

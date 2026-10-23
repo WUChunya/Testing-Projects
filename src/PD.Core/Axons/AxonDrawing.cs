@@ -133,7 +133,7 @@ public static class AxonDrawing
         var faces = AxonFaces.Render(proj, solid);
         RoofTrees(d, ctx, sheet, proj, _ => 0, "");
         var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
-            : AxonFaces.Render(proj, solid.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
+            : AxonFaces.TrimBy(proj, faces, AxonFaces.Render(proj, glass));
         // Trees stop short of the building by axon.treeClearPt (user rev 0.8.4: room for the black outline).
         HideBehind(sheet, proj, faces, ax.TreeClearPt / ctx.PtPerFt);
         var line = d.Gray(ax.LineColor);
@@ -459,6 +459,7 @@ public static class AxonDrawing
         var ids = r.FacadeIds.ToHashSet();
         var fill = d.Swatch("AXON_GLASS", ax.FacadeVeilFill);
         var n = 0;
+        var walls = new List<(NtsGeometry Wall, double Z0, double Z1)>();
         foreach (var o in r.Local.Objects.Where(o => (o.Role == Roles.Facade || ids.Contains(o.Id)) && o.Mesh != null && !r.Stray.Contains(o.Id)
                      && o.BBox.SizeZ > 2 && o.BBox.MaxZ > bottom))
         {
@@ -468,8 +469,24 @@ public static class AxonDrawing
             {
                 EndCapStyle = NetTopologySuite.Operation.Buffer.EndCapStyle.Flat,
             })), MeshSlicer.Factory.CreatePolygon());
-            if (wall.IsEmpty) continue;
-            yield return new Prism($"FACADE_GLASS_{++n:00}", wall, Math.Max(o.BBox.MinZ, bottom), o.BBox.MaxZ, fill, fill, fill, "GLS");
+            if (!wall.IsEmpty) walls.Add((wall, Math.Max(o.BBox.MinZ, bottom), o.BBox.MaxZ));
+        }
+        if (!ax.FacadeMerge)
+        {
+            foreach (var (wall, z0, z1) in walls) yield return new Prism($"FACADE_GLASS_{++n:00}", wall, z0, z1, fill, fill, fill, "GLS");
+            yield break;
+        }
+        // Rev 0.10.2: panels, mullions and joints standing over the same height (to axon.facadeMergeStepFt) are one
+        // glass wall — a curtain wall of thousands of pieces read as one at drawing scale, and the hidden-face pass
+        // over each of them took most of the site axon's time.
+        var step = Math.Max(0.1, ax.FacadeMergeStepFt);
+        foreach (var g in walls.GroupBy(w => (Math.Round(w.Z0 / step), Math.Round(w.Z1 / step))))
+        {
+            var merged = AxonFaces.Union(g.Select(w => w.Wall.Buffer(ax.FacadeMergeGapFt / 2)));
+            merged = AxonFaces.Safe(() => MeshSlicer.Polygonal(merged.Buffer(-ax.FacadeMergeGapFt / 2)), merged);
+            double z0 = g.Min(w => w.Z0), z1 = g.Max(w => w.Z1);
+            foreach (var part in AxonFaces.Polygons(merged))
+                if (part.Area > 0.05) yield return new Prism($"FACADE_GLASS_{++n:00}", part, z0, z1, fill, fill, fill, "GLS");
         }
     }
 
@@ -659,7 +676,7 @@ public static class AxonDrawing
             allFaces.AddRange(faces);
             PlateFaces(d, ctx, faces, sheet, layer, $"{SectionDrawing.Safe(lvl.Name)}_");
             if (glass.Count > 0)
-                PaintGlass(d, ctx, proj, sheet, AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList(), layer);
+                PaintGlass(d, ctx, proj, sheet, AxonFaces.TrimBy(proj, faces, AxonFaces.Render(proj, glass)), layer);
             FrontCornerLabels(ctx, proj, faces, sheet, layer);
             sheet.Tags.Add((i, z));
 
@@ -912,7 +929,7 @@ public static class AxonDrawing
                 }));
             GlassHatch(d, ctx, proj, sheet, "PD_PROGRAM", faces);
             var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
-                : AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
+                : AxonFaces.TrimBy(proj, faces, AxonFaces.Render(proj, glass));
             PaintGlass(d, ctx, proj, sheet, glassFaces);
             // The heavy outline goes round the building only, not the slope garden or the roof gardens on it.
             var stack = Silhouette(proj, prisms.Where(q => q.Group is not ("SLP" or "RG" or "STR")));

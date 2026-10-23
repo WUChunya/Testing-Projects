@@ -262,6 +262,37 @@ public static class AxonFaces
         return left.IsEmpty ? null : left;
     }
 
+    /// <summary>
+    /// Rev 0.10.2: see-through faces (glass) cut only by the opaque faces in front of them — each overlap tested on
+    /// both planes at a point inside it — instead of solving the whole drawing again with the glass in it.
+    /// <paramref name="glass"/> comes from <see cref="Render"/> of the glass alone (glass hides glass behind it).
+    /// </summary>
+    public static List<VisibleFace> TrimBy(AxonProjection proj, IReadOnlyList<VisibleFace> opaque, IEnumerable<VisibleFace> glass)
+    {
+        var index = new NetTopologySuite.Index.Strtree.STRtree<VisibleFace>();
+        foreach (var f in opaque) index.Insert(f.Screen.EnvelopeInternal, f);
+        var res = new List<VisibleFace>();
+        foreach (var g in glass)
+        {
+            var front = new List<NtsGeometry>();
+            foreach (var f in index.Query(g.Screen.EnvelopeInternal))
+            {
+                if (!f.Screen.Intersects(g.Screen)) continue;
+                var overlap = Robust(f.Screen, g.Screen, SpatialFunction.Intersection);
+                if (overlap == null || MeshSlicer.Polygonal(overlap) is not { IsEmpty: false } o || o.Area < 1e-3) continue;
+                var pt = o.InteriorPoint.Coordinate;
+                double df = proj.DepthOnPlane(pt.X, pt.Y, f.Normal, f.D0), dg = proj.DepthOnPlane(pt.X, pt.Y, g.Normal, g.D0);
+                if (double.IsNaN(df)) continue;
+                if (double.IsNaN(dg) ? f.Depth > g.Depth : df > dg + 1e-6) front.Add(f.Screen);
+            }
+            if (front.Count == 0) { res.Add(g); continue; }
+            var left = Robust(g.Screen, Union(front), SpatialFunction.Difference);
+            left = left == null ? null : MeshSlicer.Polygonal(left);
+            if (left is { IsEmpty: false } && left.Area > 1e-3) res.Add(g with { Screen = left });
+        }
+        return res;
+    }
+
     /// <summary>Union of a set of faces (a group's silhouette).</summary>
     public static NtsGeometry Union(IEnumerable<NtsGeometry> parts)
     {

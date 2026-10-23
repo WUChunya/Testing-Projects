@@ -598,6 +598,11 @@ public sealed class AxonStyle
     /// <summary>Other buildings as blocks of this height (0 = real height).</summary>
     public double ContextHeightFt { get; set; }
     public bool FacadeVeil { get; set; }
+    /// <summary>Rev 0.10.2: facade pieces over the same height are merged into one glass wall (to facadeMergeStepFt; pieces
+    /// within facadeMergeGapFt join).</summary>
+    public bool FacadeMerge { get; set; } = true;
+    public double FacadeMergeStepFt { get; set; } = 1.0;
+    public double FacadeMergeGapFt { get; set; } = 0.6;
     public string FacadeVeilFill { get; set; } = "";
     public string FacadeVeilStroke { get; set; } = "";
     public double FacadeVeilStrokePt { get; set; }
