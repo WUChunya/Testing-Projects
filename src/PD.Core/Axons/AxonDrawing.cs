@@ -913,7 +913,8 @@ public static class AxonDrawing
             var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
                 : AxonFaces.Render(proj, prisms.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
             PaintGlass(d, ctx, proj, sheet, glassFaces);
-            var stack = AxonFaces.Union(faces.Select(f => f.Screen));
+            // The heavy outline goes round the building only, not the slope garden or the roof gardens.
+            var stack = AxonFaces.Union(faces.Where(f => f.Prism.Group is not ("SLP" or "RG")).Select(f => f.Screen));
             var silhouette = Shells(stack);
             if (!silhouette.IsEmpty) sheet.Paint.Add(("AXON_LINE", new Spec("OUTLINE", silhouette, null, line, lv.SilhouettePt)));
             // Above this floor: only the building's total outline, where the drawn stack does not cover it.
