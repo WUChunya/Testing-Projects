@@ -2,7 +2,8 @@ using PD.Core.Cleanup;
 
 namespace PD.Core.Analysis;
 
-public sealed record NameRow(string MassId, string Level, string ProgramKey, string Label, string StableId);
+/// <param name="Own">A name of its own: the object's name, or a tab 4 name other than the program's label.</param>
+public sealed record NameRow(string MassId, string Level, string ProgramKey, string Label, string StableId, bool Own = false);
 
 /// <summary>Tab 4: label = object name, else program label; stable id = L03_LAB_01 (level, program, counter by position).</summary>
 public static class Naming
@@ -22,7 +23,9 @@ public static class Naming
             {
                 var label = userNames.TryGetValue(m.Id, out var u) && !string.IsNullOrWhiteSpace(u) ? u
                     : !string.IsNullOrWhiteSpace(m.Source.Name) ? m.Source.Name : programLabel(m.ProgramKey);
-                rows.Add(new NameRow(m.Id, levelName, m.ProgramKey, label.ToUpperInvariant(), $"{Pad(levelName)}_{m.ProgramKey}_{++n:00}"));
+                var own = !string.IsNullOrWhiteSpace(m.Source.Name)
+                          || !string.Equals(label.Trim(), programLabel(m.ProgramKey), StringComparison.OrdinalIgnoreCase);
+                rows.Add(new NameRow(m.Id, levelName, m.ProgramKey, label.ToUpperInvariant(), $"{Pad(levelName)}_{m.ProgramKey}_{++n:00}", own));
             }
         }
         return rows;

@@ -1,0 +1,643 @@
+{
+ "version": 2,
+ "savedUtc": "2026-10-23T03:30:40.6518905Z",
+ "layers": {
+  "TEXT": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "12x12 layout": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "ENTOURAGE::AUDITORIUM": {
+   "use": true,
+   "role": "NC.Furniture",
+   "programKey": "ASSEMBLY",
+   "mode": "color"
+  },
+  "ENTOURAGE::Auditorium Support": {
+   "use": true,
+   "role": "NC.Furniture",
+   "programKey": "ASSEMBLY",
+   "mode": "color"
+  },
+  "ENTOURAGE::CARS": {
+   "use": true,
+   "role": "Entourage",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SURROUNDING::FLOR-OTLN": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "SURROUNDING::PARK": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "line"
+  },
+  "SURROUNDING::LOT": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SURROUNDING::GRASS": {
+   "use": true,
+   "role": "BG.Landscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "FLOOR PLATE (2)": {
+   "use": true,
+   "role": "NC.Slab",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "TRELIS": {
+   "use": true,
+   "role": "NC.Roof",
+   "programKey": "",
+   "mode": "color"
+  },
+  "CORE": {
+   "use": true,
+   "role": "NC.Core",
+   "programKey": "",
+   "mode": ""
+  },
+  "Shell Space": {
+   "use": true,
+   "role": "Program",
+   "programKey": "SHELL",
+   "mode": ""
+  },
+  "Grand Stairs - Copy": {
+   "use": true,
+   "role": "NC.Stair",
+   "programKey": "",
+   "mode": ""
+  },
+  "White Program For renders only::Wooden Planks": {
+   "use": false,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "White Program For renders only::Glass": {
+   "use": false,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROGRAM": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROGRAM::Lab": {
+   "use": true,
+   "role": "Program",
+   "programKey": "LAB",
+   "mode": ""
+  },
+  "PROGRAM::Enclosed Office": {
+   "use": true,
+   "role": "Program",
+   "programKey": "OFFICE",
+   "mode": ""
+  },
+  "PROGRAM::Conference": {
+   "use": true,
+   "role": "Program",
+   "programKey": "CONFERENCE",
+   "mode": ""
+  },
+  "PROGRAM::Break Room": {
+   "use": true,
+   "role": "Program",
+   "programKey": "LOBBY",
+   "mode": ""
+  },
+  "PROGRAM::Seminar Room": {
+   "use": true,
+   "role": "Program",
+   "programKey": "ASSEMBLY",
+   "mode": ""
+  },
+  "PROGRAM::Support": {
+   "use": true,
+   "role": "Program",
+   "programKey": "BUILDING_SUPPORT",
+   "mode": ""
+  },
+  "Facade::Mullion": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "Facade::Extra Glass": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "Facade::Glass": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "Facade::Wood Verticals 1": {
+   "use": false,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "Facade::Wood Verticals 2": {
+   "use": false,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "Facade::BAKED DENSE": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "Facade::Glass Joint": {
+   "use": true,
+   "role": "NC.Facade",
+   "programKey": "",
+   "mode": "line"
+  },
+  "STRUCTURAL::Columns": {
+   "use": true,
+   "role": "NC.Structure",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "SITE CONTEXT::CITY BLOCKS": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::STREET": {
+   "use": true,
+   "role": "BG.Road",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::SIDEWALK": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::WALKWAY": {
+   "use": true,
+   "role": "BG.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::BANK LANDSCAPE": {
+   "use": true,
+   "role": "BG.Landscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::RIVER": {
+   "use": true,
+   "role": "BG.Water",
+   "programKey": "",
+   "mode": "color"
+  },
+  "SITE CONTEXT::CONTEXT BUILDINGS": {
+   "use": true,
+   "role": "BG.Building",
+   "programKey": "",
+   "mode": "grayscale"
+  },
+  "SITE CONTEXT::TREES": {
+   "use": true,
+   "role": "BG.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROPERTY LINE": {
+   "use": true,
+   "role": "NC.PropertyLine",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROGRAM::INTERACTIVE": {
+   "use": true,
+   "role": "Program",
+   "programKey": "UNASSIGNED",
+   "mode": ""
+  },
+  "ENTOURAGE::PEOPLE": {
+   "use": true,
+   "role": "Entourage",
+   "programKey": "",
+   "mode": "color"
+  },
+  "ENTOURAGE::TREES": {
+   "use": true,
+   "role": "BG.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "Grand Stairs - Copy 2": {
+   "use": true,
+   "role": "NC.Stair",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROGRAM::Circulation": {
+   "use": true,
+   "role": "Program",
+   "programKey": "CIRCULATION",
+   "mode": ""
+  },
+  "PROGRAM::Outdoor Circulation": {
+   "use": true,
+   "role": "Program",
+   "programKey": "CIRCULATION",
+   "mode": ""
+  },
+  "OUTSIDE BUILDING (LEFTOVERS)": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "DETAIL::CUTLINE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "DETAIL": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE::RIVERFRONT PARK": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE::PICNIC": {
+   "use": true,
+   "role": "Ignore",
+   "programKey": "",
+   "mode": ""
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PROMENADE": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::GARDEN WALK": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PLAZA": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::BOARDWALK": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PLAY": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::WATER PLAY": {
+   "use": true,
+   "role": "NC.Water",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::RAIN GARDEN": {
+   "use": true,
+   "role": "NC.Water",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::LAWN": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::GROVE": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::FLOWERING TREES": {
+   "use": true,
+   "role": "NC.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::PEOPLE": {
+   "use": true,
+   "role": "Entourage",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::RIVERFRONT PARK::FURNITURE": {
+   "use": true,
+   "role": "NC.Furniture",
+   "programKey": "",
+   "mode": "line"
+  },
+  "PROJECT SITE::PICNIC::COURT": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PICNIC::BENCH": {
+   "use": true,
+   "role": "NC.Hardscape",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PICNIC::PLANTING": {
+   "use": true,
+   "role": "NC.Green",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PICNIC::TREES": {
+   "use": true,
+   "role": "NC.Tree",
+   "programKey": "",
+   "mode": "color"
+  },
+  "PROJECT SITE::PICNIC::FURNITURE": {
+   "use": true,
+   "role": "NC.Furniture",
+   "programKey": "",
+   "mode": "line"
+  },
+  "PROJECT SITE::PICNIC::PEOPLE": {
+   "use": true,
+   "role": "Entourage",
+   "programKey": "",
+   "mode": "color"
+  }
+ },
+ "spanModes": {
+  "a702526d-327f-4b8f-915d-f2b1b950d4d5": "KeepTall",
+  "84089f72-53d1-493e-9b1c-35631e29dcbb": "KeepTall"
+ },
+ "singleSurfaces": {},
+ "keepStray": [],
+ "levels": [
+  {
+   "name": "L1",
+   "elevation": 1.5,
+   "isMezzanine": false
+  },
+  {
+   "name": "L2",
+   "elevation": 21.5,
+   "isMezzanine": false
+  },
+  {
+   "name": "L3",
+   "elevation": 41.5,
+   "isMezzanine": false
+  },
+  {
+   "name": "L4",
+   "elevation": 57.5,
+   "isMezzanine": false
+  },
+  {
+   "name": "L5",
+   "elevation": 73.5,
+   "isMezzanine": false
+  },
+  {
+   "name": "PENTHOUSE ROOF",
+   "elevation": 94.16995052,
+   "isMezzanine": false
+  },
+  {
+   "name": "MECHANICAL ROOF",
+   "elevation": 98.5,
+   "isMezzanine": true
+  },
+  {
+   "name": "MECHANICAL ROOF",
+   "elevation": 119.16666666666667,
+   "isMezzanine": false
+  }
+ ],
+ "names": {
+  "85a8e0df-0a06-416b-8f27-f1fb3ba667ec#0": "ASSEMBLY / AUDITORIUM / BOARDROOM",
+  "b46938b4-1e52-4c86-b0f7-13f34562711d": "SECURITY",
+  "f1d81a6d-8e5c-43f4-8a51-f2cab04e7dfb": "STAIR / TRANSPORTATION",
+  "70f00a88-227e-4139-a211-6be6cc8281cb": "",
+  "72e4e6b1-5431-4477-b71b-369e7e6ca81d": "",
+  "b2a92464-06e4-40c2-8efa-30bf75b3eedc": "COMBINABLE CLASSROOMS",
+  "31dc01b0-f18d-445e-9afd-716718aa5a54": "COFFEE KIOSK",
+  "b40cc17f-0ebb-4a54-8100-3f6bd5958757": "FITNESS",
+  "40935811-6f48-45d3-9cae-6dd85921a5ac": "CORE LABS",
+  "640634c4-4255-4cd8-90d7-1211f49f12b3": "STORAGE",
+  "d958d791-9775-4be4-9c30-a8231e75a511": "MEP SUPPORT",
+  "5fee001a-4038-41de-b8d1-41696e3cc9dd": "LOADING DOCK",
+  "84089f72-53d1-493e-9b1c-35631e29dcbb": "PROTOTYPING / FABRICATION",
+  "a702526d-327f-4b8f-915d-f2b1b950d4d5": "AUDITORIUM",
+  "674abca0-d2ec-4668-bb5f-7a0650aff549": "MICRON GALLERY",
+  "7f88d4e6-b79a-4945-996b-1c3809ff5e96": "RESEARCH",
+  "ac19fa3d-26fa-4133-9978-8a049431cd4e": "PARTNER / INCUBATOR",
+  "e368cce9-9bd0-492a-b9b5-e32b03ad9780": "CONFERENCE",
+  "40bb665e-556f-4834-9abc-b1c1f4cc1388": "DINING PREP",
+  "6bb0929e-d536-4be4-ae78-5482d7163df3": "DINING TERRACE",
+  "455cb12c-e207-4e3a-a388-5339621e444a": "OUTDOOR TERRACE",
+  "b8084b12-ff93-4fb8-bbc6-1f15db85e477": "RESEARCH",
+  "a5252cbb-d3bc-47e1-ba85-b432e1183a29": "RESEARCH",
+  "d5fc4641-13df-42f4-9b75-45442d473560": "CONFERENCE",
+  "ffcb5b89-c614-461e-8ade-054ec457742e": "SEMINAR",
+  "c15b2922-906a-4a99-89f8-e91e5154688e": "RESEARCH",
+  "bb5b69f1-fcf0-45e3-870a-9d82d1a754e2": "RESEARCH",
+  "e368652e-d124-4414-8a5b-18e49ead375b": "EXECUTIVE BRIEFING",
+  "b72ea690-f953-4e30-af1c-0fb7ba0259ec": "EXECUTIVE BRIEFING",
+  "823cec9b-230f-4484-ba82-2f5daed0329b": "RESEARCH",
+  "5f9a295e-bf20-4ef6-909e-cc820ec4cc11": "ROOFTOP TERRACE",
+  "fa37b93c-a11c-b642-8e62-24a105315437": "CORE LABS",
+  "0c1e6410-ad9a-1b4b-bc43-42b8a2085627": "QUANTUM HIGH MIP",
+  "c78c6cb7-bea6-5346-bd0c-2332e03224d1": "DINING TERRACE",
+  "260f7b41-f325-ab40-82db-8fafe0b0302c": "OUTDOOR TERRACE",
+  "379593cc-dfdf-7041-95d6-eafebe0c4974": "ROOFTOP TERRACE"
+ },
+ "objectPrograms": {
+  "6bb0929e-d536-4be4-ae78-5482d7163df3": "GREEN_ROOF",
+  "455cb12c-e207-4e3a-a388-5339621e444a": "GREEN_ROOF",
+  "5f9a295e-bf20-4ef6-909e-cc820ec4cc11": "GREEN_ROOF",
+  "674abca0-d2ec-4668-bb5f-7a0650aff549": "INTERACTION",
+  "c78c6cb7-bea6-5346-bd0c-2332e03224d1": "GREEN_ROOF",
+  "260f7b41-f325-ab40-82db-8fafe0b0302c": "GREEN_ROOF",
+  "379593cc-dfdf-7041-95d6-eafebe0c4974": "GREEN_ROOF"
+ },
+ "programs": null,
+ "sections": [
+  {
+   "name": "E1",
+   "kind": "Elevation",
+   "isElevation": true,
+   "objectId": "c0cd4503-7c19-4a2b-b041-e148622c1b68",
+   "line": [
+    3064.566929133858,
+    2947.6213910761153,
+    3064.566929133858,
+    1788.1036745406823
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "E2",
+   "kind": "Elevation",
+   "isElevation": true,
+   "objectId": "2289b2de-eecd-44d2-a1fd-05cdcea89e2e",
+   "line": [
+    3507.732939632546,
+    2947.6213910761153,
+    3507.732939632546,
+    1788.1036745406823
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "A",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "d3d16430-e305-4992-a2d4-3316bda56c5c",
+   "line": [
+    3202.1817585301837,
+    2947.6213910761153,
+    3202.1817585301837,
+    1788.1036745406823
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "B",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "3789b3b5-a049-4ed7-873b-eb7921e21387",
+   "line": [
+    2351.6240157480315,
+    2176.079396325459,
+    4130.583989501312,
+    2176.079396325459
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  },
+  {
+   "name": "C",
+   "kind": "Section",
+   "isElevation": false,
+   "objectId": "2f6907b4-91d7-4288-b885-71092f53b1fc",
+   "line": [
+    2351.6240157480315,
+    2428.507217847769,
+    4130.583989501312,
+    2428.507217847769
+   ],
+   "lookLeft": true,
+   "autoSide": true,
+   "depthFt": 1000
+  }
+ ],
+ "output": {
+  "saveIn": "",
+  "lastFolder": "Z:\\PDX\\Projects\\30256.mrl\\03 Design\\Process\\01 Programming-Concepts\\2026 1022\\2026 1022_Conceptual Program Diagram_115556",
+  "runIllustrator": true,
+  "scheme": "OPT-1",
+  "drawings": [
+   "SitePlan",
+   "Plan",
+   "Section",
+   "Elevation",
+   "SiteAxon",
+   "AxonStacked",
+   "AxonExploded",
+   "AxonExplodedB",
+   "AxonLevels"
+  ],
+  "scale": "1\" = 100'-0\"",
+  "sectionScale": "1\" = 100'-0\"",
+  "artboard": "11x17 Landscape",
+  "exportPng": true,
+  "axonViewDirection": null,
+  "axonFromViewport": false,
+  "axonView": "SW",
+  "axonViewPoint": null,
+  "programExcel": "",
+  "entourage": true,
+  "entourageSeed": null
+ },
+ "confirmed": {
+  "layers": true,
+  "levels": true,
+  "names": true,
+  "colors": true,
+  "section": true,
+  "elevation": true,
+  "cleanup": true,
+  "check": true,
+  "output": true
+ },
+ "ignoredIssues": [
+  "OpenMass:9507cd2f-27c0-44f9-80ed-6b513229ecf7:"
+ ],
+ "treeColor": null,
+ "peopleColor": null
+}

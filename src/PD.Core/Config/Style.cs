@@ -522,6 +522,12 @@ public sealed class PlanStyle
     public double LabelMinPt { get; set; } = 8;
     /// <summary>A program's name appears once per level (on its largest block); the legend covers the rest.</summary>
     public bool LabelOncePerProgram { get; set; } = true;
+    /// <summary>false (CAMPUS 10-23): no leaders; a name that does not fit even at labelMinPt is left out.</summary>
+    public bool LabelLeaders { get; set; } = true;
+    /// <summary>true (CAMPUS 10-23): only blocks with a name of their own (object name, or a tab 4 name other than the
+    /// program's label) are named, each of them (labelOncePerProgram does not apply); plans and axons; OPEN TO BELOW,
+    /// CORE and generic program labels are not written.</summary>
+    public bool LabelNamedOnly { get; set; }
     /// <summary>Site plan: names of the other buildings (numeric GIS ids are never shown).</summary>
     public bool ContextNames { get; set; } = true;
     /// <summary>Ground floor and site plans: names of our own site areas with these roles (MAIN ENTRANCE, RIVER STEPS).</summary>

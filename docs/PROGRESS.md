@@ -2,11 +2,11 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- CAMPUS 1022 (`deliverables/2026-10-23_CAMPUS_1022/`, README): names from the layout pages, cleanup, riverside park;
+  new style keys `plan.labelLeaders` / `plan.labelNamedOnly` (off by default; on for that output, `CampusLabelTests`).
 - Rev 34 (v0.10.0): axons draw roof gardens / terraces at height, climbing ground as slope bands, tall spaces coloured.
 - Rev 33 (v0.9.9, `Rev099Tests`): axons put mezzanine blocks on their main level; canopies / top roofs kept, never over blocks.
 - Rev 32 (v0.9.8): settings re-read from the model on EndOpenDocument (a stale start-up session exported defaults).
-- Rev 31 (v0.9.7): Illustrator speed — open multi-paths (hatch, site edges) drawn as groups, not compound paths;
-  no hatches on veiled upper floors / overview (`plan.upperFloorHatch / overviewHatch`).
 - Rev 30 (v0.9.6, `Rev096Tests`): our site above a block / slab shows from above (`SiteAbove`): roof view gets terraces,
   roof gardens and the slope garden; site plan yields only to climbing ground (`slopedSiteMinRiseFt`); background by height.
 - Rev 27 (v0.9.3, `Rev093Tests`): axon style after the user's reference — exploded A = neutral slab + program volumes

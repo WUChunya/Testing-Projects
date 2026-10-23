@@ -370,12 +370,14 @@ public static class PlanDrawing
         var centre = outline.IsEmpty ? null : outline.Centroid.Coordinate;
         BelowItems(d, ctx, a, map, p, i, sizeFt, centre, outline);
         // One name per program (per label text) and level: the largest block carries it, the legend covers the rest.
-        var named = ps.LabelOncePerProgram
+        var named = ps.LabelNamedOnly
+            ? plan.Footprints.Where(f => !f.Resolved.IsEmpty && !f.OpenToBelow && ctx.HasOwnName(f.Mass.Id, f.Mass.ProgramKey)).Select(f => f.Mass.Id).ToHashSet()
+            : ps.LabelOncePerProgram
             ? plan.Footprints.Where(f => !f.Resolved.IsEmpty).GroupBy(f => LabelText(ctx, f))
                 .Select(g => g.OrderByDescending(f => f.Resolved.Area).First().Mass.Id).ToHashSet()
             : plan.Footprints.Select(f => f.Mass.Id).ToHashSet();
         // A name that does not fit even at the smallest size gets a leader, once per program.
-        var leaders = plan.Footprints.Where(f => !f.Resolved.IsEmpty && named.Contains(f.Mass.Id) && !Fits(ctx, map, f, sizeFt))
+        var leaders = plan.Footprints.Where(f => ps.LabelLeaders && !f.Resolved.IsEmpty && named.Contains(f.Mass.Id) && !Fits(ctx, map, f, sizeFt))
             .GroupBy(f => f.OpenToBelow ? "#VOID" : f.Mass.ProgramKey)
             .Select(g => g.OrderByDescending(f => f.Resolved.Area).First().Mass.Id)
             .ToHashSet();
@@ -514,7 +516,7 @@ public static class PlanDrawing
                 var cut = Safe(() => hole.Intersection(diag));
                 if (cut is { IsEmpty: false }) v.Items.Add(At(map.Geom($"{name}_X{j + 1}", cut, null, stroke, ps.VoidPt, false), a));
             }
-            if (k == 0) Label(d, ctx, a, map, name, hole, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: true);
+            if (k == 0 && !ps.LabelNamedOnly) Label(d, ctx, a, map, name, hole, ps.OpenToBelowLabel, sizeFt, centre, outline, allowLeader: ps.LabelLeaders);
         }
     }
 

@@ -553,6 +553,9 @@
     "basementEarthFill": "#D9D9D9",
     "labelMinPt": 8.0,
     "labelOncePerProgram": true,
+    "labelLeaders": true,
+    "labelNamedOnly": false,
+    "labelNamedOnlyComment": "CAMPUS 10-23 output (user: names as on the reference site plan): labelUniform false, labelLeaders false, labelNamedOnly true, labelMinPt 6 = no leaders, a name shrinks until it fits its room (left out if it still does not), only rooms with a name of their own (object name, or a tab 4 name other than the program label) are named — every one of them; generic program labels, CORE and OPEN TO BELOW are not written. Plans and axons.",
     "contextNames": true,
     "siteNameRoles": [
       "NC.Hardscape",

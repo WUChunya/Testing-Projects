@@ -1133,7 +1133,8 @@ public static class AxonDrawing
             var tag = $"_{(int)Math.Round(darken.ElementAtOrDefault(0) * 100)}_{(int)Math.Round(darken.ElementAtOrDefault(1) * 100)}";
             var side1 = hex == null ? null : d.Swatch(fill + "_SIDE1" + tag, Darken(hex, darken.ElementAtOrDefault(0)));
             var side2 = hex == null ? null : d.Swatch(fill + "_SIDE2" + tag, Darken(hex, darken.ElementAtOrDefault(1)));
-            var text = core ? ax.CoreLabel : row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
+            var text = ctx.Style.Plan.LabelNamedOnly ? (ctx.HasOwnName(b.MassId, b.ProgramKey) ? row!.Label : null)
+                : core ? ax.CoreLabel : row?.Label ?? ctx.ProgramLabel(b.ProgramKey);
             var (z0, z1) = band(b);
             yield return new Prism(id, b.Geometry, z0, z1, fill, side1, side2, "PRG", text, core ? "PD Core Label" : null);
         }

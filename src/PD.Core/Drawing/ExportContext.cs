@@ -29,6 +29,9 @@ public sealed class ExportContext
 
     public string ProgramLabel(string key) => Program(key)?.Label ?? key;
 
+    /// <summary>The block has a name of its own (the object's name, or a tab 4 name other than its program's label).</summary>
+    public bool HasOwnName(string massId, string programKey) => Names.TryGetValue(massId, out var row) && row.Own;
+
     /// <summary>Drawing scale; drawings are always at true scale (never fitted).</summary>
     public double PtPerFt => ParseScale(ScaleOverride) ?? ParseScale(Settings.Output.Scale) ?? ParseScale(Rules.Output.DefaultScale) ?? 1.6;
 
