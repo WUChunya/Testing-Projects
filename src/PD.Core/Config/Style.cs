@@ -555,6 +555,8 @@ public sealed class AxonStyle
     /// slope garden) stands on its roof in the axons at its real height, its trees with it.
     /// </summary>
     public double RoofSiteMinAboveGroundFt { get; set; } = 3.0;
+    /// <summary>Rev 0.10.0: climbing ground (slope garden, ramps) is drawn in bands this tall along its sloped top.</summary>
+    public double SlopeStepFt { get; set; } = 1.0;
     /// <summary>04_Axon_Levels as an axonometric cutaway (user rev 0.8.3).</summary>
     public LevelsAxonStyle Levels { get; set; } = new();
     /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>

@@ -129,7 +129,7 @@ public static class AxonDrawing
         // out of the opaque pass and drawn over it at its own opacity where nothing opaque stands in front of it.
         var glass = plates.Where(IsGlass).Concat(ax.FacadeVeil ? FacadeGlass(d, ctx, blocks) : Enumerable.Empty<Prism>()).ToList();
         // Roof gardens and terraces on their roofs (rev 0.10.0), their trees with them.
-        var solid = context.Concat(program).Concat(screens).Concat(plates.Where(q => !IsGlass(q))).Concat(RoofSite(d, ctx, _ => 0, "")).ToList();
+        var solid = context.Concat(program).Concat(screens).Concat(plates.Where(q => !IsGlass(q))).Concat(RoofSite(d, ctx, _ => 0, "")).Concat(SlopePrisms(d, ctx, 0, "")).ToList();
         var faces = AxonFaces.Render(proj, solid);
         RoofTrees(d, ctx, sheet, proj, _ => 0, "");
         var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
@@ -146,6 +146,9 @@ public static class AxonDrawing
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt)));
             else if (f.Prism.Group == "EXP")
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt)));
+            else if (f.Prism.Group == "SLP")
+                // A slope band has no lines of its own: the bands read as one sloped surface.
+                sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, f.Fill, 0.25)));
             else
                 // Faces carry the floor lines: 0.5 pt in their own colour, 35 % darker.
                 sheet.Paint.Add(("PD_PROGRAM", new Spec(f.Name, f.Screen, f.Fill, FloorLine(d, f.Fill, st.FloorLineDarken), st.FloorLinePt)));
@@ -634,6 +637,8 @@ public static class AxonDrawing
             // A canopy (top off the level line), a mezzanine deck or the roof over the top storey keeps its height above the plate (rev 0.9.9).
             prisms.AddRange(Exposed(d, ctx, mine, e => e.LevelIndex == i && e.Z1 <= lvl.Elevation + 3 ? (z - t, z)
                 : (z + e.Z0 - lvl.Elevation, z + Math.Max(e.Z1, e.Z0 + 0.3) - lvl.Elevation), shape: Beyond(ctx, levels, blocks), plates: levels));
+            // Climbing ground (slope garden, ramps) with the plate the site follows (rev 0.10.0).
+            if (i == siteLevel) prisms.AddRange(SlopePrisms(d, ctx, z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_"));
             // Roof gardens and terraces of this plate at their height above it (rev 0.10.0).
             int? Mine(PD.Core.Model.SourceObject o) => PlateOf(ctx, levels, StandsOn(r, o)) == i ? i : null;
             prisms.AddRange(RoofSite(d, ctx, o => Mine(o) == null ? null : z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_"));
@@ -728,11 +733,12 @@ public static class AxonDrawing
                 "STR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(stair.Stroke), stair.StrokePt),
                 "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
                 "EXP" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt),
+                "SLP" => new Spec(f.Name, f.Screen, f.Fill, f.Fill, 0.25),
                 // Sides of the volumes and the slab (user rev 0.9.3): no white seams between the facets of a curved side.
                 "PRG" or "SLAB" when !f.IsTop && ctx.Style.Axon.Exploded.VolumeHeightFt > 0 => new Spec(f.Name, f.Screen, f.Fill, f.Fill, lv.EdgePt * 0.5),
                 _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
             }));
-        var outline = Shells(AxonFaces.Union(faces.Where(f => f.Prism.Group != "STR").Select(f => f.Screen)));
+        var outline = Shells(AxonFaces.Union(faces.Where(f => f.Prism.Group is not ("STR" or "SLP")).Select(f => f.Screen)));
         if (!outline.IsEmpty) sheet.Paint.Add((layer, new Spec(prefix + "OUTLINE", outline, null, d.Gray(ax.LineColor), ax.SlabSilhouettePt)));
     }
 
@@ -857,8 +863,11 @@ public static class AxonDrawing
             // underground on the floors at grade and above.
             var lower = levels.Where(j => j < i && (below || r.Levels[j].Elevation >= gradeElev - 1)).ToList();
             var prisms = new List<Prism>();
+            // A tall space from a floor below reaching into this one (the auditorium) shows in colour (rev 0.10.0).
+            var tallBelow = blocks.Where(b => lower.Contains(b.LevelIndex) && band[b].Z1 > lvl.Elevation + 3).ToList();
+            prisms.AddRange(ProgramPrisms(d, ctx, tallBelow, b => band[b], ax.SideDarken, coreOverride: true));
             foreach (var j in lower)
-                foreach (var (g, k) in blocks.Where(b => b.LevelIndex == j).GroupBy(b => (Math.Round(band[b].Z0, 1), Math.Round(band[b].Z1, 1))).Select((g, k) => (g, k)))
+                foreach (var (g, k) in blocks.Where(b => b.LevelIndex == j && !tallBelow.Contains(b)).GroupBy(b => (Math.Round(band[b].Z0, 1), Math.Round(band[b].Z1, 1))).Select((g, k) => (g, k)))
                 {
                     var shape = AxonFaces.Union(g.Select(b => b.Geometry));
                     if (!shape.IsEmpty) prisms.Add(new Prism($"{SectionDrawing.Safe(r.Levels[j].Name)}_BELOW_{k + 1:00}", shape, g.Key.Item1, g.Key.Item2, white, white, white, "BELOW"));
@@ -874,6 +883,8 @@ public static class AxonDrawing
                 .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             prisms = UnderPlates(prisms, plates);
             prisms.AddRange(plates);
+            // Climbing ground over the floors below (rev 0.10.0).
+            if (!below) prisms.AddRange(SlopePrisms(d, ctx, 0, ""));
             // Roof gardens and terraces of this floor and the floors below (rev 0.10.0).
             prisms.AddRange(RoofSite(d, ctx, o => PlateOf(ctx, levels, StandsOn(r, o)) <= i ? 0 : null, ""));
             RoofTrees(d, ctx, sheet, proj, o => PlateOf(ctx, levels, StandsOn(r, o)) <= i ? 0 : null, "");
@@ -895,6 +906,7 @@ public static class AxonDrawing
                     "STR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Stairs.Stroke), ctx.Style.Stairs.StrokePt),
                     "SCR" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Screen.AxonLineColor), ctx.Style.Screen.AxonLinePt),
                     "EXP" => new Spec(f.Name, f.Screen, f.Fill, d.Gray(ctx.Style.Exposed.LineColor), ctx.Style.Exposed.LinePt),
+                    "SLP" => new Spec(f.Name, f.Screen, f.Fill, f.Fill, 0.25),
                     _ => new Spec(f.Name, f.Screen, f.Fill, edge, lv.EdgePt),
                 }));
             GlassHatch(d, ctx, proj, sheet, "PD_PROGRAM", faces);
@@ -1337,7 +1349,103 @@ public static class AxonDrawing
     static HashSet<string> RaisedIds(ExportContext ctx)
     {
         var (areas, trees) = Raised(ctx);
-        return areas.Concat(trees).Select(o => o.Id).ToHashSet();
+        return areas.Concat(trees).Concat(Climbing(ctx)).Select(o => o.Id).ToHashSet();
+    }
+
+    /// <summary>
+    /// Ground that climbs above grade (the stepped slope garden over the parking, the ramp road and loading ramp):
+    /// our site and the roads with a sloped or stepped top rising past axon.roofSiteMinAboveGroundFt.
+    /// </summary>
+    static List<PD.Core.Model.SourceObject> Climbing(ExportContext ctx)
+    {
+        if (ctx.Cache.TryGetValue("AxonClimbing", out var c) && c is List<PD.Core.Model.SourceObject> hit) return hit;
+        var r = ctx.Result;
+        var above = ctx.Rules.Levels.GroundElevationFt + ctx.Style.Axon.RoofSiteMinAboveGroundFt;
+        var top = r.Masses.Select(m => m.Source.BBox.MaxZ).DefaultIfEmpty(above).Max() + 15;
+        var rise = ctx.Rules.Cleanup.SlopedSiteMinRiseFt;
+        var res = r.Local.Objects.Where(o => o.Mesh != null && !r.Stray.Contains(o.Id) && Roles.IsSite(o.Role) && o.Role is not (Roles.Tree or Roles.NcTree)
+            && o.BBox.MaxZ > above && o.BBox.MaxZ < top && PlanBackground.Climbs(o.Mesh, rise)).ToList();
+        ctx.Cache["AxonClimbing"] = res;
+        return res;
+    }
+
+    /// <summary>
+    /// Climbing ground as stacked thin bands (axon.slopeStepFt tall, group SLP) cut from its upward faces, in its plan
+    /// colour, raised by <paramref name="dz"/>: the slope reads as a slope, over whatever stands under it.
+    /// </summary>
+    static IEnumerable<Prism> SlopePrisms(PD.Core.Drawing.Drawing d, ExportContext ctx, double dz, string prefix)
+    {
+        var step = Math.Max(0.25, ctx.Style.Axon.SlopeStepFt);
+        var empty = MeshSlicer.Factory.CreatePolygon();
+        var n = 0;
+        foreach (var o in Climbing(ctx))
+        {
+            var item = PlanBackground.Mat(new BackgroundItem(o.Role, empty, false, o.Name, o.BBox.MaxZ, o.BBox.MinZ, Id: o.Id), ctx.Style, o.LayerPath);
+            var (fill, _, _, _, _) = PlanBackground.Paint(d, ctx.Style, item, "axon");
+            if (fill == null) continue;
+            var faces = UpFaces(o.Mesh!, o.IsClosed);
+            if (faces.Count == 0) continue;
+            var lo = faces.Min(f => f.Min(q => q.Z));
+            var hi = faces.Max(f => f.Max(q => q.Z));
+            for (var a = Math.Floor(lo / step) * step; a < hi - 1e-6; a += step)
+            {
+                var parts = new List<NtsGeometry>();
+                foreach (var f in faces)
+                {
+                    var cut = ClipZ(ClipZ(f, a, true), a + step, false);
+                    if (cut.Count < 3) continue;
+                    var ring = cut.Select(q => new Coordinate(q.X, q.Y)).Append(new Coordinate(cut[0].X, cut[0].Y)).ToArray();
+                    var poly = AxonFaces.Safe(() => MeshSlicer.Factory.CreatePolygon(ring).Buffer(0), empty);
+                    if (!poly.IsEmpty && poly.Area > 0.01) parts.Add(poly);
+                }
+                if (parts.Count == 0) continue;
+                var plan = AxonFaces.Safe(() => MeshSlicer.Polygonal(NetTopologySuite.Simplify.DouglasPeuckerSimplifier.Simplify(AxonFaces.Union(parts).Buffer(0.05), 0.25)), empty);
+                if (plan.IsEmpty || plan.Area < 1) continue;
+                var z1 = Math.Min(a + step, hi);
+                yield return new Prism($"{prefix}SLOPE_{++n:000}", plan, z1 - 0.3 + dz, z1 + dz, fill, fill, fill, "SLP");
+            }
+        }
+    }
+
+    /// <summary>The upward faces of a mesh as 3D rings (outward normals on a closed solid; every non-vertical face of an open surface).</summary>
+    static List<List<(double X, double Y, double Z)>> UpFaces(PD.Core.Model.MeshData m, bool closed)
+    {
+        var res = new List<List<(double X, double Y, double Z)>>();
+        var v = m.Vertices;
+        foreach (var f in m.Faces)
+        {
+            if (f.Length < 3) continue;
+            double nx = 0, ny = 0, nz = 0;
+            for (var k = 0; k < f.Length; k++)
+            {
+                int a = f[k] * 3, b = f[(k + 1) % f.Length] * 3;
+                nx += (v[a + 1] - v[b + 1]) * (v[a + 2] + v[b + 2]);
+                ny += (v[a + 2] - v[b + 2]) * (v[a] + v[b]);
+                nz += (v[a] - v[b]) * (v[a + 1] + v[b + 1]);
+            }
+            var len = Math.Sqrt(nx * nx + ny * ny + nz * nz);
+            if (len < 1e-9 || (closed ? nz : Math.Abs(nz)) < 0.05 * len) continue;
+            res.Add(f.Select(i => (v[i * 3], v[i * 3 + 1], v[i * 3 + 2])).ToList());
+        }
+        return res;
+    }
+
+    /// <summary>A 3D ring clipped to z ≥ <paramref name="z"/> (<paramref name="above"/>) or z ≤ <paramref name="z"/> (Sutherland–Hodgman).</summary>
+    static List<(double X, double Y, double Z)> ClipZ(List<(double X, double Y, double Z)> ring, double z, bool above)
+    {
+        var res = new List<(double X, double Y, double Z)>();
+        bool In((double X, double Y, double Z) q) => above ? q.Z >= z : q.Z <= z;
+        for (var i = 0; i < ring.Count; i++)
+        {
+            var (p, q) = (ring[i], ring[(i + 1) % ring.Count]);
+            if (In(p)) res.Add(p);
+            if (In(p) != In(q))
+            {
+                var t = (z - p.Z) / (q.Z - p.Z);
+                res.Add((p.X + t * (q.X - p.X), p.Y + t * (q.Y - p.Y), z));
+            }
+        }
+        return res;
     }
 
     /// <summary>The level a raised site object stands on (the highest level line at or under its bottom).</summary>
