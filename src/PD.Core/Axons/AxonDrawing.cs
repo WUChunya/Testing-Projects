@@ -948,7 +948,10 @@ public static class AxonDrawing
                     if (pts[i].Distance(pts[i + 1]) > 1e-3)
                         parts.Add(proj.Polygon(new[] { (pts[i].X, pts[i].Y, p.Z0), (pts[i + 1].X, pts[i + 1].Y, p.Z0), (pts[i + 1].X, pts[i + 1].Y, p.Z1), (pts[i].X, pts[i].Y, p.Z1) }));
             }
-        return AxonFaces.Safe(() => AxonFaces.Union(parts.Where(g => g.IsValid && !g.IsEmpty)).Buffer(0.02), MeshSlicer.Factory.CreatePolygon());
+        // One buffer over the whole collection: a robust union of thousands of thin side quads (a cascaded union can
+        // throw on them and fall back to a single part).
+        var all = parts.Where(g => !g.IsEmpty).Select(g => g.IsValid ? g : g.Buffer(0)).ToList();
+        return AxonFaces.Safe(() => MeshSlicer.Polygonal(MeshSlicer.Factory.BuildGeometry(all).Buffer(0.02)), MeshSlicer.Factory.CreatePolygon());
     }
 
     /// <summary>Outer shells of a screen union (no holes, no hairline gaps).</summary>
