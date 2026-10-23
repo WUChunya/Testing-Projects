@@ -2,13 +2,13 @@
 
 Update at the end of every session: keep ≤40 lines total, newest first. Replace stale lines instead of appending forever.
 ## Status
+- Rev 34 (v0.10.0): axons draw roof gardens / terraces at height, climbing ground as slope bands, tall spaces coloured.
 - Rev 33 (v0.9.9, `Rev099Tests`): axons put mezzanine blocks on their main level; canopies / top roofs kept, never over blocks.
 - Rev 32 (v0.9.8): settings re-read from the model on EndOpenDocument (a stale start-up session exported defaults).
 - Rev 31 (v0.9.7): Illustrator speed — open multi-paths (hatch, site edges) drawn as groups, not compound paths;
   no hatches on veiled upper floors / overview (`plan.upperFloorHatch / overviewHatch`).
 - Rev 30 (v0.9.6, `Rev096Tests`): our site above a block / slab shows from above (`SiteAbove`): roof view gets terraces,
   roof gardens and the slope garden; site plan yields only to climbing ground (`slopedSiteMinRiseFt`); background by height.
-- Rev 29 (v0.9.5, `Rev095Tests`): site materials by keyword (`siteMaterials`); stairs white / 0.5 pt grey (`stairs`).
 - Rev 27 (v0.9.3, `Rev093Tests`): axon style after the user's reference — exploded A = neutral slab + program volumes
   (`axon.exploded.volumeHeightFt` 8 ft), open space (`axon.openPrograms` CIRCULATION / INTERACTION) a flat layer on the floor
   in exploded A / B and floor keys; axon labels larger (`fonts.planeLabel*`, last resort `planeLabelMin`).

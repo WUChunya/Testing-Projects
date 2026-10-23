@@ -3,7 +3,9 @@
 | 文件 | 内容 |
 |---|---|
 | `RIVER_2026_1022_PD.3dm` | 在你们的 RIVER_2026_1022 上按 `000-WORKINGLINE` 批注修改后的模型。其它部分没动；被切开或替换的物件移到 `OUTSIDE BUILDING (LEFTOVERS)`。批注图层设为 Ignore（不出图）。 |
-| `RIVER_1022_Check_v096.pdf` | 用插件 0.9.6 和这个模型导出的检查图：总平面（首层 / 屋顶）、各层平面、爆炸轴测、分层轴测。 |
+| `RIVER_1022_Output_v0100.pdf` | 插件 0.10.0 的完整输出：总平面（首层 / 屋顶）、各层平面（11x17）、场地 / 叠合 / 爆炸 A / 爆炸 B / 分层轴测（1"=100'，Fit content）。 |
+| `svg/` | 同一套图的 SVG，按插件图层分组，可直接拖进 Illustrator。 |
+| `pd_settings_RIVER_1022.json` | 这个模型的插件设置；第 8 页 Load settings… 载入。 |
 | `site_check.png` / `site_roof_check.png` | 总平面首层 / 屋顶视图。 |
 | `scripts/d2_edits.py` | `python3 -I d2_edits.py <fixture.json> <RIVER_2026_1022.3dm> <out.3dm>`，可从你们的模型重做。 |
 
