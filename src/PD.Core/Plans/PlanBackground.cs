@@ -10,7 +10,7 @@ namespace PD.Core.Plans;
 
 /// <summary>A background element seen from above, clipped to the drawing extent (feet). Z = top of the object.</summary>
 public sealed record BackgroundItem(string Role, NtsGeometry Geometry, bool IsLine, string Name = "", double Z = 0, double Z0 = 0,
-    PD.Core.Config.SiteMaterial? Material = null, int MaterialIndex = -1);
+    PD.Core.Config.SiteMaterial? Material = null, int MaterialIndex = -1, string Id = "");
 
 /// <summary>
 /// Site and context seen from above (PRD 5.2 / A1, docs/SITE_STYLE.md §2): context ground (blocks, roads, landscape,
@@ -50,7 +50,7 @@ public static class PlanBackground
                 // Trees: a canopy circle at the object's centre, diameter from its size within the style range.
                 var d = Math.Clamp(Math.Max(b.MaxX - b.MinX, b.MaxY - b.MinY), dia[0], dia[1]);
                 var c = MeshSlicer.Factory.CreatePoint(new Coordinate((b.MinX + b.MaxX) / 2, (b.MinY + b.MaxY) / 2)).Buffer(d / 2, 8);
-                if (extent.Intersects(c.EnvelopeInternal)) items.Add(new BackgroundItem(o.Role, c, false, o.Name, b.MaxZ, b.MinZ));
+                if (extent.Intersects(c.EnvelopeInternal)) items.Add(new BackgroundItem(o.Role, c, false, o.Name, b.MaxZ, b.MinZ, Id: o.Id));
                 continue;
             }
             NtsGeometry? full = null;
@@ -67,7 +67,7 @@ public static class PlanBackground
                     if (o.Role == Roles.Building) continue;
                     var line = MeshSlicer.Factory.CreateLineString(pts);
                     var cut = MeshSlicer.Lineal(Safe(() => line.Intersection(clip)));
-                    if (!cut.IsEmpty && seen.Add(Key(o.Role, true, line.EnvelopeInternal))) items.Add(new BackgroundItem(o.Role, cut, true, o.Name, b.MaxZ, b.MinZ));
+                    if (!cut.IsEmpty && seen.Add(Key(o.Role, true, line.EnvelopeInternal))) items.Add(new BackgroundItem(o.Role, cut, true, o.Name, b.MaxZ, b.MinZ, Id: o.Id));
                     continue;
                 }
                 if (!pts[0].Equals2D(pts[^1])) pts = pts.Append(pts[0]).ToArray();
@@ -82,7 +82,7 @@ public static class PlanBackground
             if (o.Role == Roles.Building && !g.IsEmpty && !ours.IsEmpty && OnOurSite(g, ours)) continue;
             if (!g.IsEmpty && g.Area > 0.5)
             {
-                items.Add(Mat(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ), style, o.LayerPath));
+                items.Add(Mat(new BackgroundItem(o.Role, g, false, o.Name, b.MaxZ, b.MinZ, Id: o.Id), style, o.LayerPath));
                 if (greenTrees is { Enabled: true } && greenTrees.Roles.Contains(o.Role) && b.MaxZ <= ground + greenTrees.MaxAboveGroundFt
                     && !greenTrees.OpenNameKeywords.Any(k => o.Name.Contains(k, StringComparison.OrdinalIgnoreCase)))
                     greens.Add((full, o.Role, o.Id));
@@ -134,7 +134,7 @@ public static class PlanBackground
         : Array.IndexOf(Order, i.Role) + (i.MaterialIndex + 1) * 0.001;
 
     /// <summary>The site material of an NC area by keyword in its layer path or name (style siteMaterials).</summary>
-    static BackgroundItem Mat(BackgroundItem i, Style? s, string layer)
+    public static BackgroundItem Mat(BackgroundItem i, Style? s, string layer)
     {
         if (s == null || s.SiteMaterials.Count == 0 || i.Role is not (Roles.NcHardscape or Roles.Green or Roles.NcWater)) return i;
         var text = (layer + " " + i.Name).ToUpperInvariant();

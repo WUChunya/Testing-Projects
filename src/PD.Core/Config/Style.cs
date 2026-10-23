@@ -550,6 +550,11 @@ public sealed class AxonStyle
     /// below at their own height, its open slabs and glass go with that level.
     /// </summary>
     public bool MezzaninesOnMainLevel { get; set; } = true;
+    /// <summary>
+    /// Rev 0.10.0: our site starting this far above grade (roof gardens, terraces, planters, decks — not the climbing
+    /// slope garden) stands on its roof in the axons at its real height, its trees with it.
+    /// </summary>
+    public double RoofSiteMinAboveGroundFt { get; set; } = 3.0;
     /// <summary>04_Axon_Levels as an axonometric cutaway (user rev 0.8.3).</summary>
     public LevelsAxonStyle Levels { get; set; } = new();
     /// <summary>Direction the viewer stands in (degrees counter-clockwise from +X): 225 = south-west.</summary>

@@ -128,8 +128,10 @@ public static class AxonDrawing
         // Glass (flat canopies and the facade glass) is see-through (user rev 0.8.6): it hides nothing, so it is left
         // out of the opaque pass and drawn over it at its own opacity where nothing opaque stands in front of it.
         var glass = plates.Where(IsGlass).Concat(ax.FacadeVeil ? FacadeGlass(d, ctx, blocks) : Enumerable.Empty<Prism>()).ToList();
-        var solid = context.Concat(program).Concat(screens).Concat(plates.Where(q => !IsGlass(q))).ToList();
+        // Roof gardens and terraces on their roofs (rev 0.10.0), their trees with them.
+        var solid = context.Concat(program).Concat(screens).Concat(plates.Where(q => !IsGlass(q))).Concat(RoofSite(d, ctx, _ => 0, "")).ToList();
         var faces = AxonFaces.Render(proj, solid);
+        RoofTrees(d, ctx, sheet, proj, _ => 0, "");
         var glassFaces = glass.Count == 0 ? new List<VisibleFace>()
             : AxonFaces.Render(proj, solid.Concat(glass)).Where(f => IsGlass(f.Prism)).ToList();
         // Trees stop short of the building by axon.treeClearPt (user rev 0.8.4: room for the black outline).
@@ -632,6 +634,10 @@ public static class AxonDrawing
             // A canopy (top off the level line), a mezzanine deck or the roof over the top storey keeps its height above the plate (rev 0.9.9).
             prisms.AddRange(Exposed(d, ctx, mine, e => e.LevelIndex == i && e.Z1 <= lvl.Elevation + 3 ? (z - t, z)
                 : (z + e.Z0 - lvl.Elevation, z + Math.Max(e.Z1, e.Z0 + 0.3) - lvl.Elevation), shape: Beyond(ctx, levels, blocks), plates: levels));
+            // Roof gardens and terraces of this plate at their height above it (rev 0.10.0).
+            int? Mine(PD.Core.Model.SourceObject o) => PlateOf(ctx, levels, StandsOn(r, o)) == i ? i : null;
+            prisms.AddRange(RoofSite(d, ctx, o => Mine(o) == null ? null : z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_"));
+            RoofTrees(d, ctx, sheet, proj, o => Mine(o) == null ? null : z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_");
             // Stairs of this storey standing on the plate (user rev 0.9.5).
             if (!lvl.IsMezzanine)       // a mezzanine lies inside its main storey, whose plate carries the stairs
                 prisms.AddRange(StairPrisms(d, ctx, lvl.Elevation - 2, Sections.SectionGeometry.Top(r, i), z - lvl.Elevation, $"{SectionDrawing.Safe(lvl.Name)}_", lvl.Elevation));
@@ -868,6 +874,9 @@ public static class AxonDrawing
                 .Select(x => x with { Top = white, Side1 = white, Side2 = white, Group = "BELOW" }));
             prisms = UnderPlates(prisms, plates);
             prisms.AddRange(plates);
+            // Roof gardens and terraces of this floor and the floors below (rev 0.10.0).
+            prisms.AddRange(RoofSite(d, ctx, o => PlateOf(ctx, levels, StandsOn(r, o)) <= i ? 0 : null, ""));
+            RoofTrees(d, ctx, sheet, proj, o => PlateOf(ctx, levels, StandsOn(r, o)) <= i ? 0 : null, "");
             // This storey's stairs (user rev 0.9.5), as they stand.
             if (!lvl.IsMezzanine) prisms.AddRange(StairPrisms(d, ctx, lvl.Elevation - 2, Sections.SectionGeometry.Top(r, i), 0, "", lvl.Elevation));
             // Screens standing on this floor (or on a roof below it): solid walls, white floor, open top.
@@ -1224,7 +1233,8 @@ public static class AxonDrawing
             : new Spec("SITE", proj.Plane(ground, z), d.Swatch("AXON_SITE", pf), d.Gray(ps), pp)));
         var near = area != null ? new Envelope(area) : new Envelope(own);
         near.ExpandBy(shape != null ? 1 : area != null ? reach.ContextMarginFt - reach.SiteMarginFt : reach.ContextMarginFt);
-        var items = PlanBackground.Collect(ctx, near);
+        var raised = RaisedIds(ctx);
+        var items = PlanBackground.Collect(ctx, near).Where(b => !raised.Contains(b.Id)).ToList();
         // Below grade the hint leaves out the sidewalk paving lines (too busy dashed).
         foreach (var (bg, n) in items.Where(b => b.Role != Roles.Building && !IsTree(b) && site.Intersects(b.Geometry.EnvelopeInternal)
                      && !(outlineOnly && b.IsLine && b.Role == SiteLayout.Sidewalk)).Select((b, n) => (b, n)))
@@ -1278,23 +1288,94 @@ public static class AxonDrawing
                      .Where(b => shape == null || shape.Contains(b.Geometry.Centroid))
                      .OrderBy(b => proj.Depth(b.Geometry.Centroid.X, b.Geometry.Centroid.Y, z)).Select((b, n) => (b, n)))
         {
-            var c = tree.Geometry.Centroid.Coordinate;
-            var trunkTop = z + tr.TrunkHFt;
-            var (tx, ty) = proj.Project(c.X, c.Y, trunkTop + tr.CanopyHFt / 2);
-            var canopy = tr.Canopies.Count > 0 ? tr.Canopies[rng.Next(tr.Canopies.Count)] : "#C4ECBC";
-            var swatch = d.Swatch("AXON_TREE_" + canopy.TrimStart('#'), canopy);
-            var treeDepth = proj.Depth(c.X, c.Y, z);
-            sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}_TRUNK", Seg(proj, c.X, c.Y, z, trunkTop), null, d.Gray(tr.Trunk), tr.TrunkPt, Closed: false, Depth: treeDepth)));
-            var ellipse = MeshSlicer.Factory.CreatePolygon(Enumerable.Range(0, 25).Select(j =>
-            {
-                var a = 2 * Math.PI * (j % 24) / 24;
-                return new Coordinate(tx + tr.CanopyWFt / 2 * Math.Cos(a), ty + tr.CanopyHFt / 2 * Math.Sin(a));
-            }).ToArray());
-            sheet.Paint.Add(("AXON_TREE", new Spec($"TREE_{n:000}", ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
-                tr.StrokePt, Opacity: tr.Opacity, Depth: treeDepth)));
+            Lollipop(d, ctx, sheet, proj, tree.Geometry.Centroid.Coordinate, z, $"TREE_{n:000}", rng);
         }
         if (reach.People && !outlineOnly) People(d, ctx, sheet, proj, AxonFaces.Safe(() => PlanBackground.Walkable(items, ours).Intersection(siteGeom), siteGeom), ours, z);
         return context;
+    }
+
+    /// <summary>One lollipop tree standing at <paramref name="z"/>: trunk and canopy ellipse, hidden later where faces stand in front.</summary>
+    static void Lollipop(PD.Core.Drawing.Drawing d, ExportContext ctx, Sheet sheet, AxonProjection proj, Coordinate c, double z, string name, Random rng)
+    {
+        var tr = ctx.Style.Axon.Trees;
+        var trunkTop = z + tr.TrunkHFt;
+        var (tx, ty) = proj.Project(c.X, c.Y, trunkTop + tr.CanopyHFt / 2);
+        var canopy = tr.Canopies.Count > 0 ? tr.Canopies[rng.Next(tr.Canopies.Count)] : "#C4ECBC";
+        var swatch = d.Swatch("AXON_TREE_" + canopy.TrimStart('#'), canopy);
+        var treeDepth = proj.Depth(c.X, c.Y, z);
+        sheet.Paint.Add(("AXON_TREE", new Spec($"{name}_TRUNK", Seg(proj, c.X, c.Y, z, trunkTop), null, d.Gray(tr.Trunk), tr.TrunkPt, Closed: false, Depth: treeDepth)));
+        var ellipse = MeshSlicer.Factory.CreatePolygon(Enumerable.Range(0, 25).Select(j =>
+        {
+            var a = 2 * Math.PI * (j % 24) / 24;
+            return new Coordinate(tx + tr.CanopyWFt / 2 * Math.Cos(a), ty + tr.CanopyHFt / 2 * Math.Sin(a));
+        }).ToArray());
+        sheet.Paint.Add(("AXON_TREE", new Spec(name, ellipse, swatch, d.Swatch("AXON_TREE_" + canopy.TrimStart('#') + "_LINE", Darken(canopy, tr.StrokeDarken)),
+            tr.StrokePt, Opacity: tr.Opacity, Depth: treeDepth)));
+    }
+
+    // ---------------------------------------------------------------- roof gardens (rev 0.10.0)
+
+    /// <summary>
+    /// Our site on roofs and terraces: NC areas starting axon.roofSiteMinAboveGroundFt above grade that do not climb
+    /// (the slope garden stays on the ground plane), and the trees standing on them.
+    /// </summary>
+    static (List<PD.Core.Model.SourceObject> Areas, List<PD.Core.Model.SourceObject> Trees) Raised(ExportContext ctx)
+    {
+        if (ctx.Cache.TryGetValue("AxonRaised", out var c) && c is ValueTuple<List<PD.Core.Model.SourceObject>, List<PD.Core.Model.SourceObject>> hit) return hit;
+        var r = ctx.Result;
+        var above = ctx.Rules.Levels.GroundElevationFt + ctx.Style.Axon.RoofSiteMinAboveGroundFt;
+        var rise = ctx.Rules.Cleanup.SlopedSiteMinRiseFt;
+        var objs = r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && Roles.IsNew(o.Role) && o.BBox.MinZ > above).ToList();
+        var res = (objs.Where(o => o.Role is Roles.Green or Roles.NcHardscape or Roles.NcWater && o.Mesh != null && !PlanBackground.Climbs(o.Mesh, rise)).ToList(),
+            objs.Where(o => o.Role == Roles.NcTree).ToList());
+        ctx.Cache["AxonRaised"] = res;
+        return res;
+    }
+
+    static HashSet<string> RaisedIds(ExportContext ctx)
+    {
+        var (areas, trees) = Raised(ctx);
+        return areas.Concat(trees).Select(o => o.Id).ToHashSet();
+    }
+
+    /// <summary>The level a raised site object stands on (the highest level line at or under its bottom).</summary>
+    static int StandsOn(AnalysisResult r, PD.Core.Model.SourceObject o) =>
+        r.Levels.Select((l, i) => (l, i)).Where(x => x.l.Elevation <= o.BBox.MinZ + 1).Select(x => x.i).DefaultIfEmpty(0).Last();
+
+    /// <summary>
+    /// Roof garden areas as thin prisms of their real thickness in their material colour (group RG), raised by
+    /// <paramref name="dz"/> (null = not drawn on this sheet).
+    /// </summary>
+    static IEnumerable<Prism> RoofSite(PD.Core.Drawing.Drawing d, ExportContext ctx, Func<PD.Core.Model.SourceObject, double?> dz, string prefix)
+    {
+        var dk = ctx.Style.Axon.SideDarken;
+        var n = 0;
+        foreach (var o in Raised(ctx).Areas)
+        {
+            if (dz(o) is not { } off) continue;
+            var plan = AxonFaces.Safe(() => MeshSlicer.Polygonal(NetTopologySuite.Simplify.DouglasPeuckerSimplifier.Simplify(MeshProjection.TopDown(o.Mesh!), 0.25)),
+                MeshSlicer.Factory.CreatePolygon());
+            if (plan.IsEmpty || plan.Area < 1) continue;
+            var item = PlanBackground.Mat(new BackgroundItem(o.Role, plan, false, o.Name, o.BBox.MaxZ, o.BBox.MinZ, Id: o.Id), ctx.Style, o.LayerPath);
+            var (fill, _, _, _, _) = PlanBackground.Paint(d, ctx.Style, item, "axon");
+            if (fill == null) continue;
+            var hex = d.Swatches.First(s => s.Name == fill).Hex;
+            yield return new Prism($"{prefix}ROOF_SITE_{++n:000}", plan, o.BBox.MinZ + off, Math.Max(o.BBox.MaxZ, o.BBox.MinZ + 0.3) + off, fill,
+                d.Swatch(fill + "_SIDE1", Darken(hex, dk.ElementAtOrDefault(0))), d.Swatch(fill + "_SIDE2", Darken(hex, dk.ElementAtOrDefault(1))), "RG");
+        }
+    }
+
+    /// <summary>Trees on roofs and terraces, standing on their object's bottom raised by <paramref name="dz"/>.</summary>
+    static void RoofTrees(PD.Core.Drawing.Drawing d, ExportContext ctx, Sheet sheet, AxonProjection proj, Func<PD.Core.Model.SourceObject, double?> dz, string prefix)
+    {
+        var rng = new Random(23);
+        var n = 0;
+        foreach (var o in Raised(ctx).Trees)
+        {
+            if (dz(o) is not { } off) continue;
+            var b = o.BBox;
+            Lollipop(d, ctx, sheet, proj, new Coordinate((b.MinX + b.MaxX) / 2, (b.MinY + b.MaxY) / 2), b.MinZ + off, $"{prefix}ROOF_TREE_{++n:000}", rng);
+        }
     }
 
     /// <summary>PRD 4: people standing on the site plane around our building (never on top of it).</summary>

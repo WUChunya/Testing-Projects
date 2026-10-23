@@ -595,6 +595,7 @@
     "azimuthDeg": 225.0,
     "elevationDeg": 35.264,
     "mezzaninesOnMainLevel": true,
+    "roofSiteMinAboveGroundFt": 3.0,
     "foreshorten": false,
     "lineColor": "#000000",
     "silhouettePt": 2.5,
