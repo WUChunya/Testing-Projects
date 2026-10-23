@@ -1,5 +1,5 @@
 #!/bin/bash
-# Rebuild the CAMPUS 1022 model from the user's file. Usage: build.sh <CAMPUS_2026_1022.3dm> <repo> <workdir>
+# Rebuild the CAMPUS 1022 model (and REV1) from the user's file. Usage: build.sh <CAMPUS_2026_1022.3dm> <repo> <workdir>
 # Then export: dotnet run (Program.cs) <workdir>/c22_park.json <workdir>/c22_park_settings.json <outdir> [drawings], with
 # PD_LABEL_NAMED=1 for the labelling of this round; svgs_to_pdf.mjs + merge_pdf.py make the PDF.
 set -e
@@ -10,3 +10,7 @@ python3 -I $S/c22_clean.py $W/c22.json $src $W/c22_clean.3dm
 python3 -I $T $W/c22_clean.3dm $W/c22_clean.json --full >/dev/null
 python3 -I $S/c22_park.py $W/c22_clean.json $W/c22_clean.3dm $W/c22_park.3dm
 python3 -I $T $W/c22_park.3dm $W/c22_park.json --full | tail -1
+# REV1: the program comments (COM_261021_Atrium_Scheme)
+python3 -I $S/c23_comments.py $W/c22_park.json $W/c22_park.3dm $W/c23.3dm
+python3 -I $T $W/c23.3dm $W/c23.json --full | tail -1
+python3 -I $S/c23_landscape.py $W/c23.json $W/c23.3dm $W/c23_land.3dm     # REV1 model = c23_land.3dm
