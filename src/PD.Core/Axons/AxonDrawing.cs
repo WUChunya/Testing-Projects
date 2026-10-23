@@ -1325,7 +1325,9 @@ public static class AxonDrawing
         var r = ctx.Result;
         var above = ctx.Rules.Levels.GroundElevationFt + ctx.Style.Axon.RoofSiteMinAboveGroundFt;
         var rise = ctx.Rules.Cleanup.SlopedSiteMinRiseFt;
-        var objs = r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && Roles.IsNew(o.Role) && o.BBox.MinZ > above).ToList();
+        // Nothing far over the building's top (a stray copy moved up in the model).
+        var top = r.Masses.Select(m => m.Source.BBox.MaxZ).DefaultIfEmpty(above).Max() + 15;
+        var objs = r.Local.Objects.Where(o => !r.Stray.Contains(o.Id) && Roles.IsNew(o.Role) && o.BBox.MinZ > above && o.BBox.MinZ < top).ToList();
         var res = (objs.Where(o => o.Role is Roles.Green or Roles.NcHardscape or Roles.NcWater && o.Mesh != null && !PlanBackground.Climbs(o.Mesh, rise)).ToList(),
             objs.Where(o => o.Role == Roles.NcTree).ToList());
         ctx.Cache["AxonRaised"] = res;
